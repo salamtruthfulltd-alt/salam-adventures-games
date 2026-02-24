@@ -2,199 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Magic Colour Tap: Masterpiece Edition</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Magic Colour Tap: Fixed Edition</title>
   <style>
     :root {
-      --rainbow: linear-gradient(90deg, #ff5f6d, #ffc371, #eeff41, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8);
+      --rainbow: linear-gradient(45deg, #ff5f6d, #ffc371, #eeff41, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8);
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    
     body { 
-      margin: 0; padding: 10px; background: #fdf2f8; 
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      display: flex; justify-content: center; align-items: center; min-height: 100vh;
-      overflow: hidden;
+      margin: 0; padding: 10px; background: #f0f9ff; 
+      font-family: 'system-ui', sans-serif;
+      display: flex; flex-direction: column; height: 100vh;
+      overflow: hidden; /* Stops page bouncing */
     }
 
-    /* THE RAINBOW GLOW CONSOLE */
-    .console {
-      width: 100%; max-width: 1100px; padding: 10px; border-radius: 60px;
+    /* THE RAINBOW CONSOLE */
+    .toy-shell {
+      flex: 1; display: flex; flex-direction: column;
       background: var(--rainbow); background-size: 200% 200%;
-      animation: rainbowFlow 15s linear infinite;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+      animation: rainbowFlow 8s linear infinite;
+      padding: 8px; border-radius: 40px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+      max-width: 1000px; margin: auto; width: 100%;
     }
     @keyframes rainbowFlow { 0% {background-position:0% 50%} 100% {background-position:200% 50%} }
 
-    .screen {
-      background: white; border-radius: 52px; display: flex; flex-direction: column;
-      height: 90vh; overflow: hidden; position: relative;
+    .main-screen {
+      background: white; border-radius: 32px; flex: 1;
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
 
     header {
-      padding: 20px 40px; background: #fff; border-bottom: 2px solid #f8fafc;
+      padding: 12px 20px; background: #fff; border-bottom: 2px solid #f1f5f9;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .logo { font-size: 28px; font-weight: 900; color: #ff00c8; text-shadow: 1px 1px #eee; }
+    .brand { font-size: 20px; font-weight: 900; color: #ff00c8; }
 
-    .btn {
-      padding: 12px 25px; border: none; border-radius: 20px; font-weight: 800; cursor: pointer;
-      transition: 0.2s; background: #f1f5f9; color: #475569; box-shadow: 0 5px 0 #cbd5e1;
-    }
-    .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #cbd5e1; }
-    .btn-main { background: #db2777; color: white; box-shadow: 0 5px 0 #9d174d; }
-
-    /* VIEWPORT */
-    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px; background: #fff; }
-    svg { width: 100%; height: 100%; max-width: 850px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.05)); }
+    /* VIEWPORT: MOVED UP TO LEAVE ROOM FOR PALETTE */
+    .art-frame { flex: 1.5; display: flex; align-items: center; justify-content: center; padding: 10px; }
+    svg { height: 100%; width: 100%; max-height: 55vh; }
     
-    /* PRO LINEWORK */
-    .p { 
-      fill: #fff; stroke: #1e293b; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; 
-      cursor: pointer; transition: fill 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-    }
-    .p:hover { stroke: #ff00c8; stroke-width: 4; }
-    .ink { fill: none; stroke: #64748b; stroke-width: 1.5; pointer-events: none; opacity: 0.4; }
+    .p { fill: #fff; stroke: #2d3436; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: fill 0.3s; cursor: pointer; }
+    .ink { fill: none; stroke: #b2bec3; stroke-width: 1.5; pointer-events: none; }
 
-    /* PALETTE */
-    .palette {
-      padding: 25px; background: #fff; display: flex; justify-content: center; 
-      gap: 15px; border-top: 2px solid #f1f5f9; overflow-x: auto;
+    /* THE PALETTE: FIXED HEIGHT & POSITION */
+    .palette-container {
+      background: #f8fafc; padding: 15px; border-top: 3px solid #f1f5f9;
+      height: 140px; /* Locked height so it can't disappear */
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
     }
-    .color-swatch {
-      min-width: 58px; height: 58px; border-radius: 22px; border: 4px solid white;
-      cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    .swatches {
+      display: flex; justify-content: center; gap: 10px; width: 100%; overflow-x: auto; padding-bottom: 5px;
     }
-    .color-swatch.active { transform: scale(1.3) translateY(-15px); border-color: #1e293b; }
+    .swatch {
+      min-width: 48px; height: 48px; border-radius: 12px; border: 3px solid white;
+      cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex-shrink: 0;
+    }
+    .swatch.active { transform: scale(1.1); border-color: #2d3436; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
 
-    /* GALLERY MENU */
-    #gal-overlay {
-      position: absolute; inset: 0; background: rgba(255,255,255,0.98); z-index: 1000;
-      padding: 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; overflow-y: auto;
+    /* BUTTONS */
+    .btn {
+      padding: 8px 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
+      background: #eee; font-size: 14px;
     }
-    .scene-card { background: white; border-radius: 45px; padding: 20px; cursor: pointer; border: 4px solid #f1f5f9; transition: 0.3s; }
-    .scene-card:hover { border-color: #ff00c8; transform: scale(1.05); }
-    .scene-card svg { height: 160px; pointer-events: none; }
+    .btn-gal { background: #00b894; color: white; }
+
+    /* OVERLAY */
+    #gal { position: absolute; inset: 0; background: white; z-index: 10; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .card { border: 2px solid #eee; border-radius: 20px; padding: 10px; text-align: center; }
+    .card svg { height: 80px; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<div class="console">
-  <div class="screen">
+<div class="toy-shell">
+  <div class="main-screen">
     <header>
-      <div class="logo">SALAM ADVENTURES</div>
-      <div style="display:flex; gap:12px">
-        <button class="btn" onclick="toggleMusic()" id="mu-btn">🎵 Music: Off</button>
-        <button class="btn btn-main" onclick="openGal()">🎨 6 NEW SCENES</button>
+      <div class="brand">MAGIC TAP</div>
+      <div style="display:flex; gap:8px">
+        <button class="btn" onclick="toggleMusic()" id="mu-btn">🎵 Music</button>
+        <button class="btn btn-gal" onclick="openGal()">GALLERY</button>
       </div>
     </header>
 
-    <div id="gal-overlay" class="hidden"></div>
-    <div class="viewport" id="view"></div>
-    <div class="palette" id="pal"></div>
+    <div id="gal" class="hidden"></div>
+    
+    <div class="art-frame" id="stage"></div>
+
+    <div class="palette-container">
+      <div class="swatches" id="palette"></div>
+      <div style="font-size: 12px; color: #636e72; font-weight: bold;">TAP TO PICK A COLOUR</div>
+    </div>
   </div>
 </div>
 
 <script>
-  const COLORS = ['#FF4B4B', '#FF9F2E', '#FEE12B', '#2ECC71', '#00D2D3', '#54A0FF', '#5F27CD', '#FF9FF3', '#576574', '#FFFFFF'];
-  let pen = COLORS[0], aCtx = null, mus = false;
+  const COLS = ['#ff7675', '#fab1a0', '#fdcb6e', '#55efc4', '#81ecec', '#74b9ff', '#a29bfe', '#fd79a8', '#636e72', '#ffffff'];
+  let pen = COLS[0], aCtx = null, mus = false;
 
-  const ASSETS = [
-    { name: "The Space Whale", svg: `
-      <path class="p" d="M150 350 c0-150 500-150 500 0 c0 150-500 150-500 0"/>
-      <path class="p" d="M600 350 l150-100 v200 z"/>
-      <path class="p" d="M300 250 q100-100 200 0"/>
-      <circle class="p" cx="250" cy="330" r="20"/>
-      <circle class="p" cx="500" cy="150" r="30"/>
-      <path class="ink" d="M200 350 h400 M210 380 h380 M230 410 h340"/>
-    `},
-    { name: "Super Rocket", svg: `
-      <path class="p" d="M400 50 c150 0 150 400 150 500 h-300 c0-100 0-500 150-500 z"/>
-      <circle class="p" cx="400" cy="220" r="60"/>
-      <path class="p" d="M280 450 l-100 120 h100 z"/>
-      <path class="p" d="M520 450 l100 120 h-100 z"/>
-      <path class="ink" d="M400 50 v100 M350 480 h100 M350 510 h100"/>
-    `},
-    { name: "Rainbow Dragon", svg: `
-      <path class="p" d="M200 480 q250-400 550 0 v100 h-550 z"/>
-      <path class="p" d="M200 480 q-200 0-200-150 t180-120 h40"/>
-      <path class="p" d="M380 280 q150-250 250 100 t-100 250"/>
-      <circle class="p" cx="160" cy="290" r="15"/>
-      <path class="p" d="M620 500 l30 40 h-60 z"/> <path class="p" d="M540 500 l30 40 h-60 z"/>
-      <path class="ink" d="M250 450 q100 30 200 0 t200 0"/>
-    `},
-    { name: "Magic Kitty", svg: `
-      <circle class="p" cx="400" cy="300" r="180"/>
-      <path class="p" d="M280 180 l-50-80 l100 50 z"/>
-      <path class="p" d="M520 180 l50-80 l-100 50 z"/>
-      <circle class="p" cx="330" cy="280" r="25"/>
-      <circle class="p" cx="470" cy="280" r="25"/>
-      <path class="p" d="M380 350 q20 30 40 0"/>
-      <path class="ink" d="M250 300 h50 M500 300 h50 M400 380 v40"/>
-    `},
-    { name: "Crystal Castle", svg: `
-      <path class="p" d="M150 500 h500 v-220 h-500 z"/>
-      <path class="p" d="M180 280 v-180 h100 v180 z"/>
-      <path class="p" d="M520 280 v-180 h100 v180 z"/>
-      <path class="p" d="M350 500 v-140 q50-60 100 0 v140 z"/>
-      <path class="p" d="M160 100 l70-80 l70 80 z"/>
-      <path class="p" d="M500 100 l70-80 l70 80 z"/>
-      <path class="ink" d="M150 350 h500 M150 420 h500"/>
-    `},
-    { name: "Giant Flower", svg: `
-      <circle class="p" cx="400" cy="300" r="80"/>
-      <path class="p" d="M400 220 c100-150 200 50 0 80"/>
-      <path class="p" d="M400 220 c-100-150-200 50 0 80"/>
-      <path class="p" d="M480 300 c150-100 150 150 0 50"/>
-      <path class="p" d="M320 300 c-150-100-150 150 0 50"/>
-      <path class="p" d="M400 380 c100 150 200-50 0-80"/>
-      <path class="p" d="M400 380 c-100 150-200-50 0-80"/>
-      <path class="p" d="M400 380 v200 h-10 v-200 z"/>
-    `}
+  const SCENES = [
+    { name: "Super Dino", svg: `<path class="p" d="M200 500 q200-400 500 0 v50 h-500 z"/><path class="p" d="M200 500 q-150 0-150-180 t150-140 h50"/><circle class="p" cx="150" cy="280" r="15"/><circle class="p" cx="155" cy="275" r="5" fill="#000"/><path class="p" d="M350 350 l-30-60 l30 60"/><path class="p" d="M450 350 l-30-60 l30 60"/><path class="p" d="M600 500 v80"/><path class="ink" d="M250 500 q100 30 250 0"/>`},
+    { name: "Magic Kitty", svg: `<circle class="p" cx="400" cy="300" r="180"/><path class="p" d="M280 180 l-50-80 l100 50 z"/><path class="p" d="M520 180 l50-80 l-100 50 z"/><circle class="p" cx="330" cy="280" r="25"/><circle class="p" cx="470" cy="280" r="25"/><path class="p" d="M380 350 q20 30 40 0"/><path class="p" d="M250 350 c-50 0-50 50 0 50"/><path class="p" d="M550 350 c50 0 50 50 0 50"/>`},
+    { name: "Castle Joy", svg: `<path class="p" d="M150 500 h500 v-220 h-500 z"/><path class="p" d="M180 280 v-180 h100 v180 z"/><path class="p" d="M520 280 v-180 h100 v180 z"/><path class="p" d="M340 500 v-140 q50-60 100 0 v140 z"/><path class="p" d="M160 100 l70-80 l70 80 z"/><path class="p" d="M500 100 l70-80 l70 80 z"/><circle class="p" cx="700" cy="100" r="40"/>`},
+    { name: "Rocket Star", svg: `<path class="p" d="M400 50 c150 0 150 400 150 500 h-300 c0-100 0-500 150-500 z"/><circle class="p" cx="400" cy="220" r="60"/><circle class="p" cx="400" cy="220" r="35"/><path class="p" d="M280 450 l-100 120 h100 z"/><path class="p" d="M520 450 l100 120 h-100 z"/><circle class="p" cx="150" cy="150" r="30"/>`},
+    { name: "Ocean Whale", svg: `<path class="p" d="M150 350 c0-150 500-150 500 0 c0 150-500 150-500 0"/><path class="p" d="M600 350 l150-100 v200 z"/><path class="p" d="M300 250 q100-100 200 0"/><circle class="p" cx="250" cy="330" r="20"/><circle class="p" cx="500" cy="150" r="30"/><circle class="p" cx="580" cy="100" r="15"/>`},
+    { name: "Fun Robot", svg: `<rect class="p" x="300" y="250" width="200" height="240" rx="30"/><rect class="p" x="330" y="300" width="140" height="100" rx="15"/><rect class="p" x="350" y="120" width="100" height="100" rx="20"/><circle class="p" cx="375" cy="170" r="12"/><circle class="p" cx="425" cy="170" r="12"/><path class="p" d="M220 300 q-50 0-50 50 t50 50 h80"/>`},
   ];
 
-  function start() {
-    const pal = document.getElementById('pal');
-    COLORS.forEach(c => {
-      const sw = document.createElement('div');
-      sw.className = 'color-swatch' + (c === pen ? ' active' : '');
-      sw.style.backgroundColor = c;
-      sw.onclick = () => {
-        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-        sw.classList.add('active');
+  function init() {
+    const pal = document.getElementById('palette');
+    COLS.forEach(c => {
+      const s = document.createElement('div');
+      s.className = 'swatch' + (c === pen ? ' active' : '');
+      s.style.backgroundColor = c;
+      s.onclick = () => {
+        document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
         pen = c;
-        playNote(400, 'sine', 0.1);
+        play(440, 0.05);
       };
-      pal.appendChild(sw);
+      pal.appendChild(s);
     });
 
-    const menu = document.getElementById('gal-overlay');
-    ASSETS.forEach((a, i) => {
-      const card = document.createElement('div');
-      card.className = 'scene-card';
-      card.innerHTML = `<svg viewBox="0 0 800 600">${a.svg}</svg><p align="center"><b>${a.name}</b></p>`;
-      card.onclick = () => loadScene(i);
-      menu.appendChild(card);
+    const g = document.getElementById('gal');
+    SCENES.forEach((s, i) => {
+      const c = document.createElement('div');
+      c.className = 'card';
+      c.innerHTML = `<svg viewBox="0 0 800 600">${s.svg}</svg><div style="font-weight:bold">${s.name}</div>`;
+      c.onclick = () => load(i);
+      g.appendChild(c);
     });
-    loadScene(0);
+    load(0);
   }
 
-  function loadScene(idx) {
-    const v = document.getElementById('view');
-    v.innerHTML = `<svg viewBox="0 0 800 600">${ASSETS[idx].svg}</svg>`;
-    document.getElementById('gal-overlay').classList.add('hidden');
-    v.querySelectorAll('.p').forEach(p => {
+  function load(idx) {
+    const stage = document.getElementById('stage');
+    stage.innerHTML = `<svg viewBox="0 0 800 600">${SCENES[idx].svg}</svg>`;
+    document.getElementById('gal').classList.add('hidden');
+    stage.querySelectorAll('.p').forEach(p => {
       p.onclick = (e) => {
         e.stopPropagation();
         p.style.fill = pen;
-        brushHiss();
+        hiss();
       };
     });
   }
 
-  function openGal() { document.getElementById('gal-overlay').classList.remove('hidden'); }
+  function openGal() { document.getElementById('gal').classList.toggle('hidden'); }
 
   function getA() {
     if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -202,50 +159,46 @@
     return aCtx;
   }
 
-  function playNote(f, t, d) {
+  function play(f, d) {
     const c = getA();
     const o = c.createOscillator();
     const g = c.createGain();
-    o.type = t; o.frequency.value = f;
+    o.frequency.value = f;
     g.gain.setValueAtTime(0.1, c.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
     o.connect(g); g.connect(c.destination);
     o.start(); o.stop(c.currentTime + d);
   }
 
-  function brushHiss() {
+  function hiss() {
     const c = getA();
-    const bSize = c.sampleRate * 0.15;
-    const buf = c.createBuffer(1, bSize, c.sampleRate);
-    const d = buf.getChannelData(0);
-    for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1;
+    const b = c.createBuffer(1, c.sampleRate * 0.1, c.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < b.length; i++) d[i] = Math.random() * 2 - 1;
     const s = c.createBufferSource();
-    s.buffer = buf;
+    s.buffer = b;
     const f = c.createBiquadFilter();
-    f.type = 'lowpass'; f.frequency.setValueAtTime(1000, c.currentTime);
-    f.frequency.exponentialRampToValueAtTime(100, c.currentTime + 0.15);
+    f.type = 'lowpass'; f.frequency.value = 800;
     const g = c.createGain();
-    g.gain.setValueAtTime(0.08, c.currentTime);
-    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.15);
+    g.gain.setValueAtTime(0.05, c.currentTime);
+    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.1);
     s.connect(f); f.connect(g); g.connect(c.destination);
     s.start();
   }
 
   function toggleMusic() {
     getA(); mus = !mus;
-    document.getElementById('mu-btn').innerText = mus ? "🎵 Music: On" : "🎵 Music: Off";
+    document.getElementById('mu-btn').innerText = mus ? "🎵 ON" : "🎵 OFF";
     if (mus) loop();
   }
 
   function loop() {
     if (!mus) return;
-    const c = getA();
-    const sc = [261, 329, 392, 440];
-    playNote(sc[Math.floor(Math.random()*sc.length)], 'sine', 1.2);
-    setTimeout(loop, 700);
+    play([261, 329, 392, 523][Math.floor(Math.random()*4)], 1.5);
+    setTimeout(loop, 1000);
   }
 
-  start();
+  init();
 </script>
 </body>
 </html>
