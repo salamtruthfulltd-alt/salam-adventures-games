@@ -3,175 +3,171 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Magic Colour Tap: Ultimate Edition</title>
+  <title>Magic Colour Tap: Premium Kids Edition</title>
   <style>
     :root {
-      --rainbow: linear-gradient(90deg, #ff0000, #ffea00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-      --shell: #ffffff;
+      --rainbow: linear-gradient(90deg, #ff5f6d, #ffc371, #ffea00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
     body { 
-      margin: 0; padding: 15px; background: #f0f4f8; 
-      font-family: 'system-ui', sans-serif;
+      margin: 0; padding: 10px; background: #fdf2f8; 
+      font-family: 'Rounded Mplus 1c', 'Comic Sans MS', sans-serif;
       display: flex; justify-content: center; align-items: center; min-height: 100vh;
     }
 
-    /* THE RAINBOW GLOW CONSOLE */
-    .console-frame {
-      width: 100%; max-width: 1100px; padding: 10px; border-radius: 60px;
+    /* PREMIUM TOY CONSOLE */
+    .toy-shell {
+      width: 100%; max-width: 1000px; padding: 8px; border-radius: 55px;
       background: var(--rainbow); background-size: 200% 200%;
-      animation: rainbowFlow 10s linear infinite;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+      animation: rainbowFlow 12s linear infinite;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
     }
     @keyframes rainbowFlow { 0% {background-position:0% 50%} 100% {background-position:200% 50%} }
 
-    .inner-canvas {
-      background: white; border-radius: 50px; display: flex; flex-direction: column;
-      height: 88vh; overflow: hidden; position: relative; border: 8px solid #fff;
+    .white-screen {
+      background: white; border-radius: 48px; display: flex; flex-direction: column;
+      height: 88vh; overflow: hidden; position: relative; border: 4px solid #fff;
     }
 
     header {
-      padding: 20px 40px; background: #fff; border-bottom: 2px solid #f8fafc;
+      padding: 15px 30px; background: #fff; border-bottom: 2px solid #fce7f3;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .logo { font-size: 26px; font-weight: 900; letter-spacing: -1px; color: #334155; }
-    .logo span { color: #0ea5e9; }
+    .game-title { font-size: 24px; font-weight: 900; color: #db2777; letter-spacing: -0.5px; }
 
-    .btn {
-      padding: 12px 24px; border: none; border-radius: 16px; font-weight: 800; cursor: pointer;
-      transition: 0.2s; background: #f1f5f9; color: #475569; box-shadow: 0 5px 0 #cbd5e1;
+    .nav-btn {
+      padding: 10px 20px; border: none; border-radius: 20px; font-weight: 800; cursor: pointer;
+      transition: 0.2s; background: #fdf2f8; color: #db2777; box-shadow: 0 4px 0 #fbcfe8;
     }
-    .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #cbd5e1; }
-    .btn-blue { background: #0ea5e9; color: white; box-shadow: 0 5px 0 #0369a1; }
+    .nav-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #fbcfe8; }
+    .btn-gal { background: #db2777; color: white; box-shadow: 0 4px 0 #9d174d; }
 
-    /* VIEWPORT */
-    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; background: #fff; }
-    svg { width: 100%; height: 100%; max-width: 850px; }
+    /* VIEWPORT & ART */
+    .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 25px; background: #fff; }
+    svg { width: 100%; height: 100%; max-width: 800px; transition: transform 0.3s ease; }
     
-    /* PROFESSIONAL LINEWORK */
-    .fillable { fill: #fff; stroke: #1e293b; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; transition: fill 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
-    .fillable:hover { stroke: #0ea5e9; stroke-width: 3.5; }
-    .ink-detail { fill: none; stroke: #64748b; stroke-width: 1.2; pointer-events: none; opacity: 0.5; }
+    .part { 
+      fill: #fff; stroke: #334155; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; 
+      cursor: pointer; transition: fill 0.4s ease;
+    }
+    .part:hover { stroke: #db2777; stroke-width: 4; }
+    .decoration { fill: none; stroke: #94a3b8; stroke-width: 1.5; pointer-events: none; opacity: 0.6; }
 
-    /* COLOR PALETTE */
+    /* TOOLBAR */
     .palette {
-      padding: 25px; background: #fff; display: flex; justify-content: center; 
-      gap: 15px; border-top: 2px solid #f1f5f9; overflow-x: auto;
+      padding: 20px; background: #fff; display: flex; justify-content: center; 
+      gap: 12px; border-top: 2px solid #fce7f3; overflow-x: auto;
     }
-    .swatch {
-      min-width: 55px; height: 55px; border-radius: 20px; border: 4px solid white;
-      cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .color-pop {
+      min-width: 52px; height: 52px; border-radius: 50%; border: 4px solid white;
+      cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .swatch.active { transform: scale(1.3) translateY(-12px); border-color: #1e293b; box-shadow: 0 15px 25px rgba(0,0,0,0.15); }
+    .color-pop.active { transform: scale(1.3) translateY(-8px); border-color: #334155; }
 
-    /* GRID OVERLAY */
-    #gal-menu {
-      position: absolute; inset: 0; background: rgba(255,255,255,0.98); z-index: 999;
-      padding: 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; overflow-y: auto;
+    /* GALLERY MENU */
+    #gal-overlay {
+      position: absolute; inset: 0; background: #fff; z-index: 1000;
+      padding: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; overflow-y: auto;
     }
-    .scene-card { background: white; border-radius: 40px; padding: 25px; cursor: pointer; border: 4px solid #f1f5f9; transition: 0.3s; text-align: center;}
-    .scene-card:hover { border-color: #0ea5e9; transform: translateY(-10px); }
-    .scene-card svg { height: 180px; }
+    .art-thumb { background: #fff; border-radius: 35px; padding: 20px; cursor: pointer; border: 3px solid #fce7f3; transition: 0.3s; text-align: center;}
+    .art-thumb:hover { border-color: #db2777; transform: scale(1.03); }
+    .art-thumb svg { height: 140px; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<div class="console-frame">
-  <div class="inner-canvas">
+<div class="toy-shell">
+  <div class="white-screen">
     <header>
-      <div class="logo">SALAM <span>ADVENTURES</span></div>
-      <div style="display:flex; gap:12px">
-        <button class="btn" onclick="toggleMusic()" id="mu-btn">🎵 Music: Off</button>
-        <button class="btn btn-blue" onclick="openGallery()">🖼️ 6 SCENES</button>
+      <div class="game-title">✨ MAGIC TAP</div>
+      <div style="display:flex; gap:10px">
+        <button class="nav-btn" onclick="toggleMusic()" id="m-btn">🎵 Music Off</button>
+        <button class="nav-btn btn-gal" onclick="openGal()">🎨 6 NEW SCENES</button>
       </div>
     </header>
 
-    <div id="gal-menu" class="hidden"></div>
-    <div class="viewport" id="view"></div>
+    <div id="gal-overlay" class="hidden"></div>
+    <div class="canvas-area" id="view"></div>
     <div class="palette" id="pal"></div>
   </div>
 </div>
 
 <script>
-  const COLORS = ['#FF4B4B', '#FF9F2E', '#F4D03F', '#2ECC71', '#27AE60', '#3498DB', '#9B59B6', '#F06292', '#795548', '#BDC3C7'];
-  let activeColor = COLORS[0], audioCtx = null, playing = false;
+  const COLORS = ['#FF5F6D', '#FFC371', '#F4D03F', '#48FF00', '#00FFD5', '#00A2FF', '#A855F7', '#EC4899', '#94A3B8', '#FFFFFF'];
+  let pen = COLORS[0], aCtx = null, playing = false;
 
   const SCENES = [
-    { name: "Magical Kingdom", svg: `
-      <path class="fillable" d="M100 520 h600 v-220 h-600 z"/>
-      <path class="fillable" d="M150 300 v-240 h100 v240 z"/> <path class="fillable" d="M130 80 l70-100 l70 100 z"/>
-      <path class="fillable" d="M550 300 v-240 h100 v240 z"/> <path class="fillable" d="M530 80 l70-100 l70 100 z"/>
-      <path class="fillable" d="M330 520 v-180 q70-70 140 0 v180 z"/>
-      <rect class="fillable" x="180" y="200" width="40" height="60" rx="5"/>
-      <rect class="fillable" x="580" y="200" width="40" height="60" rx="5"/>
-      <path class="ink-detail" d="M100 380 h600 M100 440 h600 M150 220 h100 M550 220 h100 M330 420 h140"/>
+    { name: "Happy Dino", svg: `
+      <path class="part" d="M200 500 c0-250 400-250 400 0 v50 h-400 z"/>
+      <path class="part" d="M600 550 c150 0 150-200 50-200 h-50 v200"/>
+      <path class="part" d="M200 450 c-150 0-150-150-50-200 c50-20 100 0 100 50"/>
+      <circle class="part" cx="180" cy="280" r="15"/>
+      <path class="part" d="M350 300 l-30-60 l-30 60"/> <path class="part" d="M450 300 l-30-60 l-30 60"/>
+      <circle class="part" cx="400" cy="550" r="40"/>
+      <path class="decoration" d="M250 500 q100 20 200 0 t200 0"/>
     `},
-    { name: "Forest Dragon", svg: `
-      <path class="fillable" d="M200 480 q250-400 550 0 v120 h-550 z"/>
-      <path class="fillable" d="M200 480 q-220 0-220-180 t200-140 h40"/>
-      <path class="fillable" d="M380 250 q150-250 300 100 t-100 250"/>
-      <circle class="fillable" cx="150" cy="280" r="18"/> <circle class="fillable" cx="155" cy="275" r="6" fill="#000"/>
-      <path class="fillable" d="M400 420 l-40 60 h80 z"/> <path class="fillable" d="M500 420 l-40 60 h80 z"/>
-      <path class="ink-detail" d="M250 450 q100 40 250 0 t250 0 M250 500 q100 40 250 0"/>
+    { name: "Magic Butterfly", svg: `
+      <path class="part" d="M400 200 q80-150 200-50 t-50 200 q150 150 0 200 t-150-150"/>
+      <path class="part" d="M400 200 q-80-150-200-50 t50 200 q-150 150 0 200 t150-150"/>
+      <path class="part" d="M380 150 q20 350 40 0 v350 h-40 z"/>
+      <circle class="part" cx="500" cy="250" r="30"/> <circle class="part" cx="300" cy="250" r="30"/>
+      <path class="decoration" d="M380 100 q-20-50-50-20 M420 100 q20-50 50-20"/>
     `},
-    { name: "The Deep Reef", svg: `
-      <path class="fillable" d="M150 350 q150-250 500 0 l150-120 v240 l-150-120 q-350 250-500 0 z"/>
-      <circle class="fillable" cx="550" cy="320" r="30"/>
-      <path class="fillable" d="M300 250 q100-120 200 0"/>
-      <path class="fillable" d="M100 550 q80-200 80-400 v400 z"/>
-      <circle class="fillable" cx="100" cy="100" r="40"/> <circle class="fillable" cx="200" cy="40" r="20"/>
-      <path class="ink-detail" d="M250 350 h350 M260 390 h330 M280 430 h300"/>
+    { name: "Friendly Octopus", svg: `
+      <path class="part" d="M400 100 c-150 0-150 250 0 250 c150 0 150-250 0-250"/>
+      <path class="part" d="M300 330 q-100 100 0 150"/> <path class="part" d="M500 330 q100 100 0 150"/>
+      <path class="part" d="M400 350 v150"/> <path class="part" d="M200 300 q-100 50 0 100"/>
+      <circle class="part" cx="350" cy="220" r="18"/> <circle class="part" cx="450" cy="220" r="18"/>
+      <path class="decoration" d="M380 300 q20 20 40 0"/>
     `},
-    { name: "Super Robot", svg: `
-      <rect class="fillable" x="300" y="250" width="220" height="280" rx="30"/>
-      <rect class="fillable" x="350" y="100" width="120" height="120" rx="25"/>
-      <rect class="fillable" x="330" y="290" width="160" height="120" rx="15"/>
-      <circle class="fillable" cx="380" cy="160" r="15"/> <circle class="fillable" cx="440" cy="160" r="15"/>
-      <rect class="fillable" x="360" y="440" width="100" height="50" rx="10"/>
-      <path class="ink-detail" d="M300 350 h220 M300 410 h220 M300 470 h220 M350 120 h120"/>
+    { name: "Rocket Cat", svg: `
+      <path class="part" d="M400 50 c-100 0-100 300-100 450 h200 c0-150 0-450-100-450"/>
+      <path class="part" d="M350 200 a50 50 0 1 1 100 0"/>
+      <path class="part" d="M300 400 l-80 120 h80 z"/> <path class="part" d="M500 400 l80 120 h-80 z"/>
+      <path class="part" d="M360 180 l-20-40 l40 20 z"/> <path class="part" d="M440 180 l20-40 l-40 20 z"/>
+      <path class="decoration" d="M400 500 v80 M380 500 v60 M420 500 v60"/>
     `},
-    { name: "Galaxy Explorer", svg: `
-      <path class="fillable" d="M400 40 c180 0 180 400 180 500 h-360 c0-100 0-500 180-500 z"/>
-      <path class="fillable" d="M280 450 l-120 120 h120 z"/> <path class="fillable" d="M520 450 l120 120 h-120 z"/>
-      <circle class="fillable" cx="400" cy="220" r="60"/> <circle class="fillable" cx="400" cy="220" r="40"/>
-      <path class="fillable" d="M150 120 a70 70 0 1 1-1 0 z"/>
-      <path class="ink-detail" d="M400 40 v100 M400 450 v80 M320 450 h160 M150 120 l50 50"/>
+    { name: "Space Donut", svg: `
+      <circle class="part" cx="400" cy="300" r="180"/>
+      <circle class="part" cx="400" cy="300" r="70"/>
+      <path class="part" d="M150 300 q250 150 500 0 t-500 0"/>
+      <circle class="part" cx="250" cy="200" r="20"/> <circle class="part" cx="550" cy="400" r="15"/>
+      <path class="decoration" d="M300 300 l20-20 M450 350 l20 20 M380 200 l10 30"/>
     `},
-    { name: "Enchanted Cabin", svg: `
-      <path class="fillable" d="M200 550 v-280 q200-150 400 0 v280 z"/>
-      <path class="fillable" d="M350 550 v-180 h100 v180 z"/>
-      <circle class="fillable" cx="420" cy="460" r="8"/>
-      <path class="fillable" d="M150 250 a120 120 0 1 1-1 0"/>
-      <path class="fillable" d="M650 250 a120 120 0 1 1-1 0"/>
-      <path class="ink-detail" d="M200 400 h400 M200 480 h400 M350 280 l50 50 M350 450 h100"/>
+    { name: "Sunny Flower", svg: `
+      <circle class="part" cx="400" cy="300" r="80"/>
+      <path class="part" d="M400 220 c-50-150 150-150 100 0"/> <path class="part" d="M400 220 c50-150-150-150-100 0"/>
+      <path class="part" d="M480 300 c150-50 150 150 0 100"/> <path class="part" d="M320 300 c-150-50-150 150 0 100"/>
+      <path class="part" d="M400 380 c-100 150 200 150 100 0"/> <path class="part" d="M400 380 c100 150-200 150-100 0"/>
+      <path class="part" d="M400 380 v200 h-10 v-200 z"/>
+      <path class="decoration" d="M380 280 a5 5 0 1 1 10 0 M420 280 a5 5 0 1 1 10 0"/>
     `}
   ];
 
   function start() {
-    const pal = document.getElementById('pal');
+    const p = document.getElementById('pal');
     COLORS.forEach(c => {
-      const sw = document.createElement('div');
-      sw.className = 'swatch' + (c === activeColor ? ' active' : '');
-      sw.style.backgroundColor = c;
-      sw.onclick = () => {
-        document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-        sw.classList.add('active');
-        activeColor = c;
-        playNote(400, 'sine', 0.1);
+      const s = document.createElement('div');
+      s.className = 'color-pop' + (c === pen ? ' active' : '');
+      s.style.backgroundColor = c;
+      s.onclick = () => {
+        document.querySelectorAll('.color-pop').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
+        pen = c;
+        playTone(600, 'sine', 0.1);
       };
-      pal.appendChild(sw);
+      p.appendChild(s);
     });
 
-    const menu = document.getElementById('gal-menu');
+    const g = document.getElementById('gal-overlay');
     SCENES.forEach((s, i) => {
-      const card = document.createElement('div');
-      card.className = 'scene-card';
-      card.innerHTML = `<svg viewBox="0 0 800 600">${s.svg}</svg><p><b>${s.name}</b></p>`;
-      card.onclick = () => loadScene(i);
-      menu.appendChild(card);
+      const c = document.createElement('div');
+      c.className = 'art-thumb';
+      c.innerHTML = `<svg viewBox="0 0 800 600">${s.svg}</svg><p><b>${s.name}</b></p>`;
+      c.onclick = () => loadScene(i);
+      g.appendChild(c);
     });
     loadScene(0);
   }
@@ -179,26 +175,25 @@
   function loadScene(idx) {
     const v = document.getElementById('view');
     v.innerHTML = `<svg viewBox="0 0 800 600">${SCENES[idx].svg}</svg>`;
-    document.getElementById('gal-menu').classList.add('hidden');
-    v.querySelectorAll('.fillable').forEach(part => {
-      part.onclick = (e) => {
+    document.getElementById('gal-overlay').classList.add('hidden');
+    v.querySelectorAll('.part').forEach(p => {
+      p.onclick = (e) => {
         e.stopPropagation();
-        part.style.fill = activeColor;
-        brushPop();
+        p.style.fill = pen;
+        brushHiss();
       };
     });
   }
 
-  function openGallery() { document.getElementById('gal-menu').classList.remove('hidden'); }
+  function openGal() { document.getElementById('gal-overlay').classList.remove('hidden'); }
 
-  // --- AUDIO ---
   function getA() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    return audioCtx;
+    if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (aCtx.state === 'suspended') aCtx.resume();
+    return aCtx;
   }
 
-  function playNote(f, t, d) {
+  function playTone(f, t, d) {
     const c = getA();
     const o = c.createOscillator();
     const g = c.createGain();
@@ -209,38 +204,36 @@
     o.start(); o.stop(c.currentTime + d);
   }
 
-  function brushPop() {
+  function brushHiss() {
     const c = getA();
-    const bSize = c.sampleRate * 0.12;
+    const bSize = c.sampleRate * 0.15;
     const buf = c.createBuffer(1, bSize, c.sampleRate);
     const d = buf.getChannelData(0);
     for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1;
     const s = c.createBufferSource();
     s.buffer = buf;
     const f = c.createBiquadFilter();
-    f.type = 'lowpass'; f.frequency.setValueAtTime(1200, c.currentTime);
-    f.frequency.exponentialRampToValueAtTime(300, c.currentTime + 0.12);
+    f.type = 'lowpass'; f.frequency.setValueAtTime(1000, c.currentTime);
+    f.frequency.exponentialRampToValueAtTime(100, c.currentTime + 0.15);
     const g = c.createGain();
-    g.gain.setValueAtTime(0.06, c.currentTime);
-    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.12);
+    g.gain.setValueAtTime(0.08, c.currentTime);
+    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.15);
     s.connect(f); f.connect(g); g.connect(c.destination);
     s.start();
-    playNote(220, 'triangle', 0.15); // Add a subtle sub-thump
   }
 
   function toggleMusic() {
     getA();
     playing = !playing;
-    document.getElementById('mu-btn').innerText = playing ? "🎵 Music: On" : "🎵 Music: Off";
+    document.getElementById('m-btn').innerText = playing ? "🎵 Music On" : "🎵 Music Off";
     if (playing) loop();
   }
 
   function loop() {
     if (!playing) return;
-    const c = getA();
-    const pentatonic = [261.6, 293.7, 329.6, 392.0, 440.0];
-    playNote(pentatonic[Math.floor(Math.random()*pentatonic.length)], 'sine', 1.5);
-    setTimeout(loop, 600);
+    const scale = [329.6, 392.0, 440.0, 523.2];
+    playTone(scale[Math.floor(Math.random()*scale.length)], 'sine', 1.5);
+    setTimeout(loop, 800);
   }
 
   start();
