@@ -1,860 +1,205 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Spell & Sparkle | Salam Adventures</title>
-  <style>
-    :root{
-      --ink:#111827;
-      --muted:#6b7280;
-      --panel: rgba(255,255,255,.90);
-      --shadow: 0 26px 80px rgba(0,0,0,.16);
-      --shadow2: 0 18px 38px rgba(0,0,0,.14);
-      --radius: 22px;
-
-      /* Border-only glow (no flashing inside gameplay) */
-      --borderGrad: conic-gradient(
-        from 180deg,
-        #ff5fa2, #ffd54a, #4cc9ff, #63f5a6, #8b7cff, #ff9b3a, #ff5fa2
-      );
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--ink);
-      overflow:hidden;
-      background:
-        radial-gradient(1200px 700px at 10% 10%, #ffffffaa 0, transparent 55%),
-        radial-gradient(900px 650px at 90% 10%, #ffffffaa 0, transparent 50%),
-        linear-gradient(120deg, #fde7ef, #e6f4ff);
-    }
-
-    .wrap{
-      height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-    }
-
-    /* 3D frame + gentle border pulse ONLY */
-    .frame{
-      width:min(1100px, 100%);
-      height:min(740px, 100%);
-      border-radius: calc(var(--radius) + 12px);
-      padding: 10px;
-      background: var(--borderGrad);
-      box-shadow: var(--shadow);
-      position:relative;
-      transform: translateZ(0);
-      animation: borderPulse 2.4s ease-in-out infinite;
-    }
-    @keyframes borderPulse{
-      0%,100% { filter: brightness(1); }
-      50% { filter: brightness(1.22) saturate(1.06); }
-    }
-    .frame::before{
-      content:"";
-      position:absolute;
-      inset:6px;
-      border-radius: calc(var(--radius) + 8px);
-      pointer-events:none;
-      background:
-        radial-gradient(7px 7px at 12% 18%, rgba(255,255,255,.55) 0 55%, transparent 58%),
-        radial-gradient(6px 6px at 88% 22%, rgba(255,255,255,.50) 0 55%, transparent 58%),
-        radial-gradient(5px 5px at 70% 85%, rgba(255,255,255,.45) 0 55%, transparent 58%),
-        radial-gradient(6px 6px at 25% 78%, rgba(255,255,255,.45) 0 55%, transparent 58%);
-      mix-blend-mode: screen;
-      opacity:.85;
-    }
-
-    .card{
-      height:100%;
-      border-radius: var(--radius);
-      background: var(--panel);
-      overflow:hidden;
-      position:relative;
-      border:1px solid rgba(0,0,0,.08);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
-      backdrop-filter: blur(6px);
-    }
-
-    .top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px;
-      border-bottom:1px solid rgba(0,0,0,.08);
-      background: rgba(255,255,255,.92);
-    }
-
-    .title{
-      display:flex;
-      flex-direction:column;
-      gap:3px;
-      min-width:240px;
-    }
-    .title h1{
-      margin:0;
-      font-size: clamp(20px, 2.6vw, 32px);
-      letter-spacing:-.02em;
-      line-height:1.05;
-    }
-    .title p{
-      margin:0;
-      color:var(--muted);
-      font-weight:900;
-      font-size:13px;
-    }
-
-    .controls{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-    }
-
-    .pill{
-      background:#fff;
-      border:1px solid rgba(0,0,0,.10);
-      border-radius:999px;
-      padding:10px 12px;
-      font-weight:900;
-      font-size:13px;
-      box-shadow: 0 10px 18px rgba(0,0,0,.08);
-      white-space:nowrap;
-    }
-
-    .btn{
-      appearance:none;
-      border:1px solid rgba(0,0,0,.10);
-      background:#111827;
-      color:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:13px;
-      cursor:pointer;
-      box-shadow: 0 16px 28px rgba(17,24,39,.22);
-      white-space:nowrap;
-    }
-    .btn.secondary{
-      background:#fff;
-      color:var(--ink);
-      box-shadow: 0 10px 18px rgba(0,0,0,.08);
-    }
-    .btn:active{transform:translateY(1px)}
-
-    .toggle{
-      display:flex;align-items:center;gap:8px;
-      padding:10px 12px;border-radius:999px;
-      background:#fff;border:1px solid rgba(0,0,0,.10);
-      box-shadow: 0 10px 18px rgba(0,0,0,.08);
-      font-weight:900;font-size:13px;cursor:pointer;user-select:none;
-    }
-    .dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18)}
-    .dot.off{background:#9ca3af;box-shadow:0 0 0 4px rgba(156,163,175,.18)}
-
-    .main{
-      padding:14px;
-      display:grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap:14px;
-      height: calc(100% - 68px);
-    }
-
-    .panel{
-      border-radius:18px;
-      background:#fff;
-      border:1px solid rgba(0,0,0,.08);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      position:relative;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-      transform: translateZ(0);
-    }
-
-    .panelHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:10px 12px;
-      border-bottom:1px solid rgba(0,0,0,.06);
-      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.90));
-    }
-    .hint{
-      font-weight:900;
-      font-size:13px;
-      color:#374151;
-    }
-    .badge{
-      font-weight:900;
-      font-size:12px;
-      color:#111827;
-      background: #f3f4f6;
-      border:1px solid rgba(0,0,0,.08);
-      padding:8px 10px;
-      border-radius:999px;
-      white-space:nowrap;
-    }
-
-    .cardArea{
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px;
-      background:
-        radial-gradient(900px 420px at 10% 10%, rgba(255,92,162,.06), transparent 60%),
-        radial-gradient(900px 420px at 90% 10%, rgba(88,227,255,.07), transparent 55%),
-        radial-gradient(900px 520px at 50% 100%, rgba(98,245,166,.06), transparent 58%);
-    }
-
-    .wordCard{
-      width:min(560px, 100%);
-      aspect-ratio: 4 / 3;
-      border-radius:18px;
-      border:1px solid rgba(0,0,0,.10);
-      box-shadow: 0 20px 40px rgba(0,0,0,.12);
-      background:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      overflow:hidden;
-    }
-    .wordCard svg{width:100%;height:100%;display:block}
-
-    .status{
-      position:absolute;
-      left:12px;
-      right:12px;
-      bottom:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      font-weight:1000;
-      text-align:center;
-      color:#fff;
-      background: rgba(17,24,39,.92);
-      opacity:0;
-      transform: translateY(8px);
-      transition: opacity .18s ease, transform .18s ease;
-      pointer-events:none;
-    }
-    .status.show{opacity:1; transform: translateY(0)}
-
-    .right{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-      min-height:0;
-    }
-
-    .inputBox{
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .typed{
-      font-size: clamp(22px, 3vw, 34px);
-      font-weight:1000;
-      letter-spacing: .10em;
-      text-transform: uppercase;
-      padding:14px;
-      border-radius:16px;
-      border:2px solid rgba(0,0,0,.10);
-      background: #f9fafb;
-      min-height: 64px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
-      user-select:none;
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .kbd{
-      padding:12px;
-      display:grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap:8px;
-    }
-
-    .key{
-      border:none;
-      border-radius:14px;
-      background:#fff;
-      border:1px solid rgba(0,0,0,.12);
-      box-shadow: 0 10px 18px rgba(0,0,0,.10);
-      font-weight:1000;
-      font-size:16px;
-      padding:12px 0;
-      cursor:pointer;
-      user-select:none;
-    }
-    .key:active{transform:translateY(1px)}
-    .key.wide{grid-column: span 2;}
-    .key.wider{grid-column: span 3;}
-
-    .small{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      text-align:center;
-      padding:0 12px 12px;
-    }
-
-    @media (max-width: 900px){
-      .main{grid-template-columns: 1fr; height:auto}
-      .frame{height:auto}
-      body{overflow:auto}
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="frame">
-      <div class="card">
-        <div class="top">
-          <div class="title">
-            <h1>Spell & Sparkle</h1>
-            <p>Listen → tap letters → spell the word ✨</p>
-          </div>
-
-          <div class="controls">
-            <div class="pill" id="scorePill">Score: 0</div>
-            <div class="pill" id="wordPill">Word: 1 / 16</div>
-
-            <div class="toggle" id="voiceToggle" role="button" aria-pressed="true" title="Voice on/off">
-              <span class="dot" id="voiceDot"></span>
-              <span id="voiceText">Voice: On</span>
-            </div>
-
-            <button class="btn secondary" id="hearBtn">Hear Word</button>
-            <button class="btn secondary" id="nextBtn">Next</button>
-            <button class="btn" id="resetBtn">Reset</button>
-          </div>
-        </div>
-
-        <div class="main">
-          <div class="panel">
-            <div class="panelHeader">
-              <div class="hint" id="hint">Tap “Hear Word” then spell it!</div>
-              <div class="badge" id="message">Ready</div>
-            </div>
-
-            <div class="cardArea">
-              <div class="wordCard" id="wordCard"></div>
-              <div class="status" id="status">Nice!</div>
-            </div>
-          </div>
-
-          <div class="right">
-            <div class="panel">
-              <div class="panelHeader">
-                <div class="hint">Type the word</div>
-                <div class="badge" id="lenBadge">0 letters</div>
-              </div>
-
-              <div class="inputBox">
-                <div class="typed" id="typed"> </div>
-
-                <div class="actions">
-                  <button class="btn secondary" id="checkBtn">Check</button>
-                  <button class="btn secondary" id="clearBtn">Clear</button>
-                  <button class="btn secondary" id="hintBtn">Hint</button>
-                </div>
-              </div>
-
-              <div class="kbd" id="kbd"></div>
-              <div class="small">Tip: Use the on-screen keyboard (great for tablets).</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-<script>
-(() => {
-  // Words + built-in clear pictures (no uploads needed)
-  const ITEMS = [
-    { word:"apple",  svg: svgApple },
-    { word:"ball",   svg: svgBall },
-    { word:"cat",    svg: svgCat },
-    { word:"dog",    svg: svgDog },
-    { word:"fish",   svg: svgFish },
-    { word:"sun",    svg: svgSun },
-    { word:"moon",   svg: svgMoon },
-    { word:"hat",    svg: svgHat },
-    { word:"car",    svg: svgCar },
-    { word:"cake",   svg: svgCake },
-    { word:"star",   svg: svgStar },
-    { word:"tree",   svg: svgTree },
-    { word:"bus",    svg: svgBus },
-    { word:"book",   svg: svgBook },
-    { word:"duck",   svg: svgDuck },
-    { word:"frog",   svg: svgFrog }
-  ];
-
-  // Consistent card wrapper
-  function cardWrap(inner){
-    return `
-      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Picture card">
-        <defs>
-          <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#fff5fb"/>
-            <stop offset="1" stop-color="#f0fbff"/>
-          </linearGradient>
-          <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="rgba(0,0,0,.18)"/>
-          </filter>
-        </defs>
-
-        <rect width="800" height="600" fill="url(#bg)"/>
-        <circle cx="120" cy="110" r="22" fill="rgba(255,111,177,.22)"/>
-        <circle cx="700" cy="120" r="16" fill="rgba(76,201,255,.22)"/>
-        <circle cx="680" cy="500" r="24" fill="rgba(99,245,166,.22)"/>
-        <circle cx="130" cy="480" r="18" fill="rgba(255,213,74,.22)"/>
-
-        <rect x="110" y="105" width="580" height="410" rx="34" fill="#ffffff" filter="url(#softShadow)"/>
-        <rect x="140" y="132" width="520" height="356" rx="26" fill="#ffffff" stroke="rgba(17,24,39,.10)" stroke-width="4"/>
-
-        ${inner}
-      </svg>`;
-  }
-
-  const OUT = `stroke="#111827" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"`;
-
-  // ---- Clear, recognisable pictures ----
-  function svgApple(){ return cardWrap(`
-    <path d="M410 210c-55-55-150-15-170 70c-25 105 55 200 170 220c115-20 195-115 170-220c-20-85-115-125-170-70Z"
-      fill="#ff3b5c" ${OUT}/>
-    <path d="M415 200c-10-55 20-95 70-120" fill="none" ${OUT}/>
-    <path d="M480 88c40 8 72 34 85 70c-38 15-95 18-130-16c6-24 20-40 45-54Z"
-      fill="#32d583" ${OUT}/>
-    <path d="M320 250c-35 35-40 115-15 165" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="14" stroke-linecap="round"/>
-  `);}
-
-  function svgBall(){ return cardWrap(`
-    <circle cx="400" cy="325" r="155" fill="#38bdf8" ${OUT}/>
-    <path d="M245 325c65-95 245-95 310 0" fill="none" ${OUT}/>
-    <path d="M245 325c65 95 245 95 310 0" fill="none" ${OUT}/>
-    <path d="M400 170c-55 65-55 245 0 310" fill="none" ${OUT}/>
-    <path d="M300 220c35-45 95-70 150-65" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="16" stroke-linecap="round"/>
-  `);}
-
-  function svgCat(){ return cardWrap(`
-    <path d="M270 250c0-70 35-120 85-150l35 70l35-70c50 30 85 80 85 150
-             c0 110-90 200-205 200s-205-90-205-200Z"
-      fill="#fbbf24" ${OUT}/>
-    <path d="M300 230l-30-55" fill="none" ${OUT}/>
-    <path d="M500 230l30-55" fill="none" ${OUT}/>
-    <circle cx="360" cy="295" r="10" fill="#111827"/>
-    <circle cx="440" cy="295" r="10" fill="#111827"/>
-    <path d="M398 310c-10 10-10 20 0 30" fill="none" ${OUT}/>
-    <path d="M360 350c25 18 55 18 80 0" fill="none" ${OUT}/>
-    <path d="M330 328h-85M470 328h85" fill="none" ${OUT}/>
-  `);}
-
-  function svgDog(){ return cardWrap(`
-    <path d="M300 250c-55-55-105 20-80 95c-45 15-60 70-35 120c30 60 95 95 215 95
-             c120 0 185-35 215-95c25-50 10-105-35-120c25-75-25-150-80-95c-25-60-85-95-135-95
-             s-110 35-135 95Z"
-      fill="#fb923c" ${OUT}/>
-    <path d="M285 255c-35 35-30 105 10 135" fill="none" ${OUT}/>
-    <path d="M515 255c35 35 30 105-10 135" fill="none" ${OUT}/>
-    <circle cx="365" cy="330" r="10" fill="#111827"/>
-    <circle cx="435" cy="330" r="10" fill="#111827"/>
-    <path d="M400 350c-12-10-30-10-42 0c3 22 39 22 42 0Z" fill="#111827"/>
-    <path d="M372 378c18 18 38 18 56 0" fill="none" ${OUT}/>
-  `);}
-
-  function svgFish(){ return cardWrap(`
-    <path d="M280 325c45-85 170-120 285-70c55 24 95 65 115 110c-20 45-60 86-115 110
-             c-115 50-240 15-285-70Z"
-      fill="#34d399" ${OUT}/>
-    <path d="M680 365l85 70l-12-82l12-82Z" fill="#60a5fa" ${OUT}/>
-    <path d="M365 320c55-35 125-35 180 0" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="16" stroke-linecap="round"/>
-    <circle cx="385" cy="345" r="10" fill="#111827"/>
-    <path d="M420 365c20 14 44 14 62 0" fill="none" ${OUT}/>
-  `);}
-
-  function svgSun(){ return cardWrap(`
-    <circle cx="400" cy="300" r="130" fill="#fbbf24" ${OUT}/>
-    <path d="M400 110v70M400 420v70M210 300h-70M590 300h70" fill="none" ${OUT}/>
-    <path d="M265 165l-48-48M535 435l48 48M535 165l48-48M265 435l-48 48" fill="none" ${OUT}/>
-  `);}
-
-  function svgMoon(){ return cardWrap(`
-    <path d="M520 170c-70 15-120 80-120 160c0 105 80 185 185 185c65 0 120-30 150-80
-             c-25 12-55 18-85 18c-120 0-215-95-215-215c0-30 7-56 15-68Z"
-      fill="#818cf8" ${OUT}/>
-    <circle cx="560" cy="250" r="10" fill="#fbbf24" ${OUT}/>
-    <circle cx="500" cy="430" r="14" fill="#fb7185" ${OUT}/>
-    <circle cx="295" cy="280" r="14" fill="#60a5fa" ${OUT}/>
-  `);}
-
-  function svgHat(){ return cardWrap(`
-    <path d="M285 255c12-85 70-135 145-145c85 12 135 70 145 145v70H285Z"
-      fill="#38bdf8" ${OUT}/>
-    <path d="M190 345c110 70 310 70 420 0c0 75-105 135-210 135S190 420 190 345Z"
-      fill="#fb7185" ${OUT}/>
-    <path d="M310 210c30-45 90-70 140-65" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="18" stroke-linecap="round"/>
-  `);}
-
-  function svgCar(){ return cardWrap(`
-    <path d="M240 365c25-90 95-150 190-150h40c95 0 165 60 190 150h35c25 0 45 20 45 45v45
-             c0 25-20 45-45 45H205c-25 0-45-20-45-45v-45c0-25 20-45 45-45Z"
-      fill="#fb7185" ${OUT}/>
-    <path d="M320 250h160c55 0 110 35 135 95H235c25-60 80-95 85-95Z"
-      fill="#fbbf24" ${OUT}/>
-    <circle cx="305" cy="475" r="44" fill="#111827"/>
-    <circle cx="595" cy="475" r="44" fill="#111827"/>
-    <circle cx="305" cy="475" r="18" fill="#e5e7eb"/>
-    <circle cx="595" cy="475" r="18" fill="#e5e7eb"/>
-  `);}
-
-  function svgCake(){ return cardWrap(`
-    <path d="M255 430h290v120H255Z" fill="#60a5fa" ${OUT}/>
-    <path d="M255 330c45-45 90-45 135 0c45-45 90-45 135 0c45-45 90-45 135 0v100H255Z"
-      fill="#fbbf24" ${OUT}/>
-    <circle cx="320" cy="385" r="10" fill="#fb7185"/>
-    <circle cx="400" cy="385" r="10" fill="#34d399"/>
-    <circle cx="480" cy="385" r="10" fill="#818cf8"/>
-    <path d="M400 225c-28 30-28 65 0 95c28-30 28-65 0-95Z" fill="#fb923c" ${OUT}/>
-    <path d="M400 320v22" fill="none" ${OUT}/>
-  `);}
-
-  function svgStar(){ return cardWrap(`
-    <path d="M400 165l60 122l135 20l-98 96l23 136l-120-63l-120 63l23-136l-98-96l135-20Z"
-      fill="#fbbf24" ${OUT}/>
-    <path d="M310 240c22-35 70-55 120-50" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="18" stroke-linecap="round"/>
-  `);}
-
-  function svgTree(){ return cardWrap(`
-    <path d="M400 195c-105-20-190 70-190 160c0 105 85 190 190 190s190-85 190-190
-             c0-90-85-180-190-160Z"
-      fill="#34d399" ${OUT}/>
-    <path d="M365 330h70v220h-70Z" fill="#8b5e3c" ${OUT}/>
-    <path d="M300 340c30-25 70-35 100-28" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="18" stroke-linecap="round"/>
-  `);}
-
-  function svgBus(){ return cardWrap(`
-    <rect x="240" y="260" width="320" height="200" rx="32" fill="#38bdf8" ${OUT}/>
-    <rect x="270" y="285" width="90" height="70" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
-    <rect x="380" y="285" width="90" height="70" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
-    <rect x="490" y="285" width="50" height="70" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
-    <circle cx="305" cy="470" r="38" fill="#111827"/>
-    <circle cx="505" cy="470" r="38" fill="#111827"/>
-    <circle cx="305" cy="470" r="14" fill="#e5e7eb"/>
-    <circle cx="505" cy="470" r="14" fill="#e5e7eb"/>
-    <path d="M280 260c15-60 60-95 140-95h40c80 0 125 35 140 95" fill="#60a5fa" ${OUT}/>
-  `);}
-
-  function svgBook(){ return cardWrap(`
-    <path d="M260 220c60-30 120-30 180 0v290c-60-30-120-30-180 0Z" fill="#fb7185" ${OUT}/>
-    <path d="M440 220c60-30 120-30 180 0v290c-60-30-120-30-180 0Z" fill="#fbbf24" ${OUT}/>
-    <path d="M440 220v290" fill="none" ${OUT} opacity=".35"/>
-    <path d="M300 260h100M300 300h100M300 340h100" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round" opacity=".35"/>
-    <path d="M480 260h100M480 300h100M480 340h100" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round" opacity=".35"/>
-  `);}
-
-  function svgDuck(){ return cardWrap(`
-    <path d="M320 390c0-80 55-145 140-145c70 0 125 45 135 110c45 5 75 35 75 75c0 55-45 90-110 90H400c-80 0-150-55-150-130Z"
-      fill="#fbbf24" ${OUT}/>
-    <path d="M470 295c18-25 45-40 75-40c35 0 65 20 80 55c-30 10-70 10-95-10c-20 10-40 10-60-5Z"
-      fill="#fb923c" ${OUT}/>
-    <circle cx="410" cy="330" r="10" fill="#111827"/>
-    <path d="M360 430c40 25 90 25 130 0" fill="none" ${OUT}/>
-  `);}
-
-  function svgFrog(){ return cardWrap(`
-    <path d="M300 420c0-95 70-170 180-170s180 75 180 170c0 65-50 115-120 115H420c-70 0-120-50-120-115Z"
-      fill="#34d399" ${OUT}/>
-    <circle cx="350" cy="275" r="35" fill="#34d399" ${OUT}/>
-    <circle cx="510" cy="275" r="35" fill="#34d399" ${OUT}/>
-    <circle cx="350" cy="275" r="14" fill="#ffffff" stroke="#111827" stroke-width="8"/>
-    <circle cx="510" cy="275" r="14" fill="#ffffff" stroke="#111827" stroke-width="8"/>
-    <circle cx="350" cy="275" r="6" fill="#111827"/>
-    <circle cx="510" cy="275" r="6" fill="#111827"/>
-    <path d="M380 430c30 25 70 25 100 0" fill="none" ${OUT}/>
-  `);}
-
-  // -----------------------------
-  // UI + typing
-  // -----------------------------
-  const wordCard = document.getElementById("wordCard");
-  const typedEl = document.getElementById("typed");
-  const lenBadge = document.getElementById("lenBadge");
-  const hintEl = document.getElementById("hint");
-  const messageEl = document.getElementById("message");
-  const statusEl = document.getElementById("status");
-
-  const scorePill = document.getElementById("scorePill");
-  const wordPill = document.getElementById("wordPill");
-
-  const hearBtn = document.getElementById("hearBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const resetBtn = document.getElementById("resetBtn");
-
-  const checkBtn = document.getElementById("checkBtn");
-  const clearBtn = document.getElementById("clearBtn");
-  const hintBtn = document.getElementById("hintBtn");
-
-  const kbd = document.getElementById("kbd");
-
-  const voiceToggle = document.getElementById("voiceToggle");
-  const voiceDot = document.getElementById("voiceDot");
-  const voiceText = document.getElementById("voiceText");
-
-  let index = 0;
-  let typed = "";
-  let score = 0;
-
-  // -----------------------------
-  // More natural voice
-  // -----------------------------
-  let voiceOn = true;
-  let preferredVoice = null;
-
-  function setVoiceUI(){
-    voiceDot.classList.toggle("off", !voiceOn);
-    voiceText.textContent = voiceOn ? "Voice: On" : "Voice: Off";
-    voiceToggle.setAttribute("aria-pressed", String(voiceOn));
-  }
-  voiceToggle.addEventListener("click", () => {
-    voiceOn = !voiceOn;
-    setVoiceUI();
-  });
-
-  function chooseVoice(){
-    const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-    if(!voices.length) return null;
-
-    // score voices to pick the most natural on the device
-    const scored = voices
-      .filter(v => /en/i.test(v.lang))
-      .map(v => {
-        let s = 0;
-        if(/en-GB/i.test(v.lang)) s += 10;
-        if(/en-US/i.test(v.lang)) s += 8;
-        if(/Google|Microsoft|Natural|Neural|Enhanced/i.test(v.name)) s += 12;
-        if(/female|woman|zira|susan|kate|hazel|serena|sonia|libby/i.test(v.name)) s += 6;
-        if(/robot|compact/i.test(v.name)) s -= 10;
-        return {v, s};
-      })
-      .sort((a,b)=>b.s-a.s);
-
-    return scored[0]?.v || voices[0];
-  }
-
-  function speak(text){
-    if(!voiceOn) return;
-    if(!window.speechSynthesis) return;
-
-    preferredVoice = preferredVoice || chooseVoice();
-    const u = new SpeechSynthesisUtterance(text);
-    if(preferredVoice) u.voice = preferredVoice;
-
-    // warmer + more natural
-    u.rate = 0.88;
-    u.pitch = 0.98;
-    u.volume = 1;
-
-    try{
-      speechSynthesis.cancel();
-      speechSynthesis.speak(u);
-    }catch(e){}
-  }
-
-  if(window.speechSynthesis){
-    speechSynthesis.onvoiceschanged = () => { preferredVoice = chooseVoice(); };
-  }
-
-  // -----------------------------
-  // Gentle sound blips
-  // -----------------------------
-  let audioCtx = null;
-  function ensureAudio(){
-    if(audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  function blip(freq=880, dur=0.07, vol=0.06){
-    try{
-      ensureAudio();
-      const t = audioCtx.currentTime;
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type="sine";
-      o.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(vol, t+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start(t); o.stop(t+dur+0.02);
-    }catch(e){}
-  }
-
-  // -----------------------------
-  // Keyboard
-  // -----------------------------
-  const KEYS = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
-  function renderKeyboard(){
-    kbd.innerHTML = "";
-    KEYS.forEach(letter => {
-      const b = document.createElement("button");
-      b.className = "key";
-      b.textContent = letter;
-      b.addEventListener("click", () => addLetter(letter));
-      kbd.appendChild(b);
-    });
-
-    const back = document.createElement("button");
-    back.className = "key wide";
-    back.textContent = "⌫";
-    back.addEventListener("click", backspace);
-    kbd.appendChild(back);
-
-    const clear = document.createElement("button");
-    clear.className = "key wider";
-    clear.textContent = "CLEAR";
-    clear.addEventListener("click", clearTyped);
-    kbd.appendChild(clear);
-
-    const enter = document.createElement("button");
-    enter.className = "key wide";
-    enter.textContent = "CHECK";
-    enter.addEventListener("click", checkWord);
-    kbd.appendChild(enter);
-  }
-
-  function addLetter(ch){
-    const target = ITEMS[index].word.toUpperCase();
-    if(typed.length >= target.length) return;
-    typed += ch;
-    blip(520 + Math.random()*120, 0.05, 0.05);
-    updateTyped();
-  }
-  function backspace(){
-    typed = typed.slice(0, -1);
-    blip(380,0.05,0.05);
-    updateTyped();
-  }
-  function clearTyped(){
-    typed = "";
-    updateTyped();
-  }
-
-  // -----------------------------
-  // Game logic
-  // -----------------------------
-  function renderWord(){
-    const item = ITEMS[index];
-    wordCard.innerHTML = item.svg();
-    wordPill.textContent = `Word: ${index+1} / ${ITEMS.length}`;
-    hintEl.textContent = `Tap “Hear Word” then spell it.`;
-    messageEl.textContent = "Ready";
-    statusEl.classList.remove("show");
-    clearTyped();
-  }
-
-  function updateTyped(){
-    typedEl.textContent = typed || " ";
-    lenBadge.textContent = `${typed.length} letters`;
-  }
-
-  function showStatus(text){
-    statusEl.textContent = text;
-    statusEl.classList.add("show");
-    setTimeout(()=>statusEl.classList.remove("show"), 700);
-  }
-
-  function checkWord(){
-    const target = ITEMS[index].word.toUpperCase();
-    if(typed === target){
-      score++;
-      scorePill.textContent = `Score: ${score}`;
-      messageEl.textContent = "Correct!";
-      showStatus("✅ Correct!");
-      blip(880,0.08,0.07);
-      setTimeout(()=>blip(1320,0.08,0.06), 120);
-      speak("Yes! That's correct!");
-      setTimeout(nextWord, 650);
-    }else{
-      messageEl.textContent = "Try again";
-      showStatus("❌ Try again");
-      blip(220,0.10,0.06);
-      speak("Oops. Try again. Listen carefully.");
-    }
-  }
-
-  function hintWord(){
-    const target = ITEMS[index].word.toUpperCase();
-    typed = target[0];
-    updateTyped();
-    messageEl.textContent = "Hint used";
-    speak(`It starts with ${target[0]}.`);
-  }
-
-  function hearWord(){
-    const w = ITEMS[index].word;
-    speak(`Ready? Spell the word: ${w}. ${w}.`);
-  }
-
-  function nextWord(){
-    index = (index + 1) % ITEMS.length;
-    renderWord();
-  }
-
-  function resetAll(){
-    index = 0;
-    score = 0;
-    scorePill.textContent = "Score: 0";
-    renderWord();
-    speak("Let's play. Tap Hear Word.");
-  }
-
-  // Buttons
-  hearBtn.addEventListener("click", hearWord);
-  nextBtn.addEventListener("click", nextWord);
-  resetBtn.addEventListener("click", resetAll);
-
-  checkBtn.addEventListener("click", checkWord);
-  clearBtn.addEventListener("click", clearTyped);
-  hintBtn.addEventListener("click", hintWord);
-
-  // Physical keyboard
-  window.addEventListener("keydown", (e) => {
-    const k = e.key;
-    if(/^[a-z]$/i.test(k)) addLetter(k.toUpperCase());
-    else if(k === "Backspace") backspace();
-    else if(k === "Enter") checkWord();
-  });
-
-  // Init
-  renderKeyboard();
-  setVoiceUI();
-  renderWord();
-})();
-</script>
-</body>
-</html>
+// ✅ REPLACE ONLY THIS WHOLE “PICTURES” BLOCK (from svgApple() … svgFrog())
+// Keep everything else in your file EXACTLY the same.
+
+// Helper constants already in your file:
+const OUT = `stroke="#111827" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"`;
+
+// Clean, recognisable picture cards (no faces, no weird shapes)
+function svgApple(){ return cardWrap(`
+  <path d="M420 205c-70-65-185-10-200 90c-15 105 70 195 200 215c130-20 215-110 200-215c-15-100-130-155-200-90Z"
+    fill="#ff3b5c" ${OUT}/>
+  <path d="M430 195c-10-55 20-95 75-122" fill="none" ${OUT}/>
+  <path d="M505 78c45 10 80 40 92 82c-40 16-102 20-140-18c7-28 22-46 48-64Z"
+    fill="#32d583" ${OUT}/>
+  <path d="M300 245c-38 45-40 135-10 185" fill="none"
+    stroke="rgba(255,255,255,.55)" stroke-width="16" stroke-linecap="round"/>
+`);}
+
+function svgBall(){ return cardWrap(`
+  <circle cx="400" cy="320" r="155" fill="#38bdf8" ${OUT}/>
+  <path d="M245 320c65-95 245-95 310 0" fill="none" ${OUT}/>
+  <path d="M245 320c65 95 245 95 310 0" fill="none" ${OUT}/>
+  <path d="M400 165c-55 65-55 245 0 310" fill="none" ${OUT}/>
+  <path d="M300 215c35-45 95-70 150-65" fill="none"
+    stroke="rgba(255,255,255,.65)" stroke-width="16" stroke-linecap="round"/>
+`);}
+
+function svgCat(){ return cardWrap(`
+  <!-- Head -->
+  <circle cx="400" cy="320" r="150" fill="#fbbf24" ${OUT}/>
+  <!-- Ears -->
+  <path d="M310 250l-70-90l10 120Z" fill="#fbbf24" ${OUT}/>
+  <path d="M490 250l70-90l-10 120Z" fill="#fbbf24" ${OUT}/>
+  <!-- Inner ears -->
+  <path d="M300 245l-38-50l6 65Z" fill="#fb7185" stroke="rgba(17,24,39,.20)" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M500 245l38-50l-6 65Z" fill="#fb7185" stroke="rgba(17,24,39,.20)" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Eyes -->
+  <circle cx="350" cy="320" r="12" fill="#111827"/>
+  <circle cx="450" cy="320" r="12" fill="#111827"/>
+  <!-- Nose + mouth -->
+  <path d="M400 345l-14 12h28Z" fill="#fb7185" ${OUT}/>
+  <path d="M400 357c-18 20-40 20-58 6" fill="none" ${OUT}/>
+  <path d="M400 357c18 20 40 20 58 6" fill="none" ${OUT}/>
+  <!-- Whiskers -->
+  <path d="M330 360h-95M330 385h-90M470 360h95M470 385h90" fill="none" ${OUT}/>
+`);}
+
+function svgDog(){ return cardWrap(`
+  <!-- Head -->
+  <circle cx="400" cy="320" r="150" fill="#fb923c" ${OUT}/>
+  <!-- Ears -->
+  <path d="M285 295c-60-20-95 40-65 95c20 35 70 55 95 35Z" fill="#fb923c" ${OUT}/>
+  <path d="M515 295c60-20 95 40 65 95c-20 35-70 55-95 35Z" fill="#fb923c" ${OUT}/>
+  <!-- Muzzle -->
+  <ellipse cx="400" cy="385" rx="95" ry="70" fill="#fde68a" ${OUT}/>
+  <!-- Eyes -->
+  <circle cx="350" cy="320" r="12" fill="#111827"/>
+  <circle cx="450" cy="320" r="12" fill="#111827"/>
+  <!-- Nose -->
+  <path d="M400 370c-18-10-40-10-58 0c8 26 50 26 58 0Z" fill="#111827"/>
+  <!-- Smile -->
+  <path d="M360 400c25 28 55 28 80 0" fill="none" ${OUT}/>
+`);}
+
+function svgFish(){ return cardWrap(`
+  <!-- Body -->
+  <ellipse cx="410" cy="330" rx="210" ry="135" fill="#34d399" ${OUT}/>
+  <!-- Tail -->
+  <path d="M605 330l130 95l-28-95l28-95Z" fill="#60a5fa" ${OUT}/>
+  <!-- Fin -->
+  <path d="M380 360c-20 35-20 75 15 105c55-35 75-70 60-110Z" fill="#22c55e" ${OUT}/>
+  <!-- Eye -->
+  <circle cx="320" cy="315" r="20" fill="#ffffff" ${OUT}/>
+  <circle cx="320" cy="315" r="10" fill="#111827"/>
+  <!-- Gills -->
+  <path d="M360 300c-25 30-25 70 0 100" fill="none" ${OUT} opacity=".6"/>
+  <path d="M390 290c-25 35-25 85 0 120" fill="none" ${OUT} opacity=".35"/>
+`);}
+
+function svgSun(){ return cardWrap(`
+  <circle cx="400" cy="300" r="130" fill="#fbbf24" ${OUT}/>
+  <path d="M400 110v70M400 420v70M210 300h-70M590 300h70" fill="none" ${OUT}/>
+  <path d="M265 165l-48-48M535 435l48 48M535 165l48-48M265 435l-48 48" fill="none" ${OUT}/>
+  <path d="M305 245c30-55 105-90 165-80" fill="none"
+    stroke="rgba(255,255,255,.65)" stroke-width="18" stroke-linecap="round"/>
+`);}
+
+function svgMoon(){ return cardWrap(`
+  <!-- Crescent moon (super recognisable) -->
+  <path d="M520 175c-95 20-160 110-160 205c0 125 95 220 220 220c75 0 140-35 175-95
+           c-30 15-65 23-103 23c-145 0-260-115-260-260c0-35 6-66 18-93Z"
+    fill="#818cf8" ${OUT}/>
+  <!-- Stars -->
+  <path d="M250 250l18 40l44 6l-32 30l8 44l-38-20l-38 20l8-44l-32-30l44-6Z"
+    fill="#fbbf24" ${OUT}/>
+  <path d="M590 240l12 26l29 4l-21 20l5 29l-25-13l-25 13l5-29l-21-20l29-4Z"
+    fill="#fbbf24" ${OUT}/>
+  <circle cx="520" cy="460" r="10" fill="#fb7185" ${OUT}/>
+`);}
+
+function svgHat(){ return cardWrap(`
+  <!-- Top hat -->
+  <path d="M300 260c10-110 70-170 120-175c90 10 140 70 140 175v90H300Z"
+    fill="#38bdf8" ${OUT}/>
+  <!-- Brim -->
+  <path d="M180 360c120 70 320 70 440 0c0 80-115 140-220 140S180 440 180 360Z"
+    fill="#fb7185" ${OUT}/>
+  <rect x="320" y="285" width="160" height="20" rx="10" fill="#111827" opacity=".18"/>
+  <path d="M320 210c35-55 110-90 170-80" fill="none"
+    stroke="rgba(255,255,255,.65)" stroke-width="18" stroke-linecap="round"/>
+`);}
+
+function svgCar(){ return cardWrap(`
+  <!-- Body -->
+  <path d="M220 380c25-95 95-155 200-155h60c105 0 175 60 200 155h40c25 0 45 20 45 45v45
+           c0 25-20 45-45 45H200c-25 0-45-20-45-45v-45c0-25 20-45 45-45Z"
+    fill="#fb7185" ${OUT}/>
+  <!-- Roof -->
+  <path d="M310 260h180c60 0 115 35 140 105H235c25-70 80-105 75-105Z"
+    fill="#fbbf24" ${OUT}/>
+  <!-- Windows -->
+  <rect x="290" y="330" width="160" height="60" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+  <rect x="465" y="330" width="120" height="60" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+  <!-- Wheels -->
+  <circle cx="295" cy="485" r="44" fill="#111827"/>
+  <circle cx="605" cy="485" r="44" fill="#111827"/>
+  <circle cx="295" cy="485" r="18" fill="#e5e7eb"/>
+  <circle cx="605" cy="485" r="18" fill="#e5e7eb"/>
+`);}
+
+function svgCake(){ return cardWrap(`
+  <!-- Base -->
+  <rect x="250" y="420" width="300" height="120" rx="22" fill="#60a5fa" ${OUT}/>
+  <!-- Top -->
+  <path d="M250 330c45-50 95-50 150 0c55-55 105-55 160 0c55-55 105-55 160 0v110H250Z"
+    fill="#fbbf24" ${OUT}/>
+  <!-- Sprinkles -->
+  <circle cx="320" cy="385" r="10" fill="#fb7185"/>
+  <circle cx="400" cy="385" r="10" fill="#34d399"/>
+  <circle cx="480" cy="385" r="10" fill="#818cf8"/>
+  <circle cx="360" cy="410" r="8" fill="#f59e0b"/>
+  <circle cx="440" cy="410" r="8" fill="#22c55e"/>
+  <!-- Candle -->
+  <rect x="388" y="235" width="24" height="70" rx="10" fill="#ffffff" ${OUT}/>
+  <path d="M400 205c-24 25-24 55 0 80c24-25 24-55 0-80Z" fill="#fb923c" ${OUT}/>
+`);}
+
+function svgStar(){ return cardWrap(`
+  <path d="M400 155l70 145l160 25l-115 110l27 160l-142-75l-142 75l27-160l-115-110l160-25Z"
+    fill="#fbbf24" ${OUT}/>
+  <path d="M300 245c28-55 110-95 180-85" fill="none"
+    stroke="rgba(255,255,255,.65)" stroke-width="18" stroke-linecap="round"/>
+`);}
+
+function svgTree(){ return cardWrap(`
+  <!-- Leaves -->
+  <circle cx="400" cy="285" r="170" fill="#34d399" ${OUT}/>
+  <circle cx="300" cy="310" r="90" fill="#22c55e" ${OUT}/>
+  <circle cx="515" cy="315" r="95" fill="#22c55e" ${OUT}/>
+  <!-- Trunk -->
+  <rect x="365" y="350" width="70" height="200" rx="18" fill="#8b5e3c" ${OUT}/>
+  <!-- Ground -->
+  <path d="M230 540c70-60 270-60 340 0" fill="none" ${OUT} opacity=".35"/>
+`);}
+
+function svgBus(){ return cardWrap(`
+  <rect x="230" y="260" width="340" height="210" rx="34" fill="#38bdf8" ${OUT}/>
+  <rect x="260" y="290" width="95" height="70" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+  <rect x="370" y="290" width="95" height="70" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+  <rect x="480" y="290" width="70" height="70" rx="16" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+  <rect x="260" y="380" width="290" height="30" rx="14" fill="#111827" opacity=".12"/>
+  <circle cx="295" cy="485" r="40" fill="#111827"/>
+  <circle cx="505" cy="485" r="40" fill="#111827"/>
+  <circle cx="295" cy="485" r="16" fill="#e5e7eb"/>
+  <circle cx="505" cy="485" r="16" fill="#e5e7eb"/>
+`);}
+
+function svgBook(){ return cardWrap(`
+  <path d="M260 220c70-35 140-35 210 0v310c-70-35-140-35-210 0Z" fill="#fb7185" ${OUT}/>
+  <path d="M470 220c70-35 140-35 210 0v310c-70-35-140-35-210 0Z" fill="#fbbf24" ${OUT}/>
+  <path d="M470 220v310" fill="none" ${OUT} opacity=".35"/>
+  <path d="M300 275h130M300 320h130M300 365h130" fill="none"
+    stroke="#111827" stroke-width="8" stroke-linecap="round" opacity=".28"/>
+  <path d="M510 275h130M510 320h130M510 365h130" fill="none"
+    stroke="#111827" stroke-width="8" stroke-linecap="round" opacity=".28"/>
+`);}
+
+function svgDuck(){ return cardWrap(`
+  <ellipse cx="420" cy="395" rx="200" ry="120" fill="#fbbf24" ${OUT}/>
+  <circle cx="320" cy="330" r="80" fill="#fbbf24" ${OUT}/>
+  <path d="M360 330c45-40 105-40 150 0" fill="none" ${OUT} opacity=".35"/>
+  <circle cx="300" cy="320" r="10" fill="#111827"/>
+  <path d="M270 350c35-30 85-30 120 0c-40 40-80 40-120 0Z" fill="#fb923c" ${OUT}/>
+  <path d="M330 430c60 30 140 30 200 0" fill="none" ${OUT}/>
+`);}
+
+function svgFrog(){ return cardWrap(`
+  <ellipse cx="400" cy="410" rx="200" ry="140" fill="#34d399" ${OUT}/>
+  <circle cx="310" cy="300" r="55" fill="#34d399" ${OUT}/>
+  <circle cx="490" cy="300" r="55" fill="#34d399" ${OUT}/>
+  <circle cx="310" cy="300" r="22" fill="#ffffff" ${OUT}/>
+  <circle cx="490" cy="300" r="22" fill="#ffffff" ${OUT}/>
+  <circle cx="310" cy="300" r="10" fill="#111827"/>
+  <circle cx="490" cy="300" r="10" fill="#111827"/>
+  <path d="M330 455c45 40 95 40 140 0" fill="none" ${OUT}/>
+`);}
