@@ -3,236 +3,266 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Magic Colour Tap | Salam Adventures</title>
+  <title>Magic Colour Tap Pro | Salam Adventures</title>
   <style>
-    :root { --rainbow: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000); }
+    :root { --rainbow: conic-gradient(#ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000); }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { 
-      margin: 0; padding: 15px; background: #80deea; 
-      font-family: 'Arial Rounded MT Bold', sans-serif;
+      margin: 0; padding: 10px; background: #a5f3fc; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex; justify-content: center; align-items: center; min-height: 100vh;
     }
 
-    .game-box {
-      width: 100%; max-width: 950px; padding: 12px; border-radius: 40px;
-      background: var(--rainbow); background-size: 400%;
-      animation: rainbowMove 8s linear infinite; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    /* THE RAINBOW CONSOLE */
+    .console {
+      width: 100%; max-width: 1000px; padding: 15px; border-radius: 50px;
+      background: var(--rainbow); background-size: contain;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3); position: relative;
     }
-    @keyframes rainbowMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-    .inner-screen { background: white; border-radius: 30px; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 85vh; }
-
-    header { padding: 15px 25px; border-bottom: 4px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 5; }
-    
-    .game-btn {
-      padding: 10px 20px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
-      box-shadow: 0 4px 0 #ccc; transition: 0.1s; background: #4CC9FF; color: white;
+    .screen { 
+      background: white; border-radius: 35px; display: flex; flex-direction: column; 
+      overflow: hidden; height: 80vh; position: relative; border: 12px solid #222;
     }
-    .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #ccc; }
 
-    .canvas-view { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; background: #fafafa; }
-    svg { width: 100%; height: 100%; max-width: 800px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.05)); }
+    header { 
+      padding: 15px 25px; background: #fff; border-bottom: 2px solid #eee;
+      display: flex; justify-content: space-between; align-items: center; z-index: 10;
+    }
     
-    /* Intricate Art Style */
-    .p { fill: white; stroke: #111; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: fill 0.3s ease; cursor: pointer; }
-    .p:hover { filter: brightness(0.9); }
-    .detail { fill: none; stroke: #111; stroke-width: 1.2; pointer-events: none; opacity: 0.8; }
+    .btn {
+      padding: 12px 20px; border: none; border-radius: 15px; font-weight: 800; 
+      cursor: pointer; text-transform: uppercase; transition: 0.1s;
+    }
+    .btn-music { background: #3b82f6; color: white; box-shadow: 0 4px 0 #1d4ed8; }
+    .btn-gallery { background: #111; color: white; box-shadow: 0 4px 0 #000; }
+    .btn:active { transform: translateY(3px); box-shadow: none; }
 
-    .palette-tray { padding: 15px; background: #fff; display: flex; justify-content: center; gap: 10px; border-top: 4px solid #f0f0f0; }
-    .swatch { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.1); transition: 0.2s; }
-    .swatch.active { transform: scale(1.25); border-color: #000; }
+    /* ART VIEWPORT */
+    .viewport { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; padding: 10px; }
+    svg { width: 100%; height: 100%; max-width: 750px; }
+    
+    /* Coloring Logic */
+    .p { fill: #fff; stroke: #111; stroke-width: 2.2; stroke-linejoin: round; cursor: pointer; transition: fill 0.25s; }
+    .p:hover { fill: #f0f0f0; }
+    .no-fill { fill: none !important; pointer-events: none; stroke-width: 1.2; }
 
-    #gallery { position: absolute; inset: 0; background: white; z-index: 100; padding: 25px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; overflow-y: auto; }
-    .thumb { border: 3px solid #eee; border-radius: 20px; cursor: pointer; padding: 15px; background: #fff; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
-    .thumb:hover { border-color: #ff00c8; transform: translateY(-5px); }
-    .thumb svg { height: 120px; width: 100%; }
+    /* PALETTE OVERLAY */
+    .palette {
+      padding: 15px; background: #f8fafc; display: flex; justify-content: center; gap: 12px;
+      border-top: 2px solid #eee;
+    }
+    .swatch {
+      width: 50px; height: 50px; border-radius: 50%; border: 4px solid white;
+      cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s;
+    }
+    .swatch.active { transform: scale(1.2) translateY(-5px); border-color: #000; }
+
+    /* GALLERY GRID */
+    #gallery {
+      position: absolute; inset: 0; background: #fff; z-index: 100;
+      padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px; overflow-y: auto;
+    }
+    .thumb { 
+      border: 4px solid #f1f5f9; border-radius: 20px; padding: 15px; cursor: pointer;
+      text-align: center; transition: 0.2s;
+    }
+    .thumb:hover { border-color: #ff00c8; background: #fffaf0; }
+    .thumb svg { height: 140px; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<div class="game-box">
-  <div class="inner-screen">
+<div class="console">
+  <div class="screen">
     <header>
-      <h2 style="margin:0; color: #333;">✨ Magic Colour Tap</h2>
+      <h2 style="margin:0">Magic Colour Tap</h2>
       <div style="display:flex; gap:10px">
-        <button class="game-btn" onclick="toggleMusic()" id="music-btn">🎵 Music: Off</button>
-        <button class="game-btn" style="background:#111" onclick="showGallery()">🖼️ Gallery</button>
+        <button class="btn btn-music" onclick="toggleMusic()" id="m-btn">🎵 Music: Off</button>
+        <button class="btn btn-gallery" onclick="showGallery()">🖼️ Gallery</button>
       </div>
     </header>
 
     <div id="gallery" class="hidden"></div>
-    <div class="canvas-view" id="canvas"></div>
-    <div class="palette-tray" id="palette"></div>
+    <div class="viewport" id="canvas"></div>
+    <div class="palette" id="palette"></div>
   </div>
 </div>
 
 <script>
-  const COLORS = ['#FF3D00', '#FFEA00', '#00E676', '#00B0FF', '#D500F9', '#FF4081', '#795548', '#212121', '#FFFFFF'];
-  let currentSelection = COLORS[0];
-  let audioCtx = null;
-  let isMusicPlaying = false;
+  const COLORS = ['#ef4444', '#fbbf24', '#22c55e', '#0ea5e9', '#8b5cf6', '#ec4899', '#78350f', '#000000', '#ffffff'];
+  let activeColor = COLORS[0];
+  let aCtx = null;
+  let isLooping = false;
 
+  // HIGH DETAIL ART TEMPLATES
   const PAGES = [
-    { name: "Magical Castle", svg: `
-      <path class="p" d="M150 500 h500 v-150 q0-30-30-30 h-440 q-30 0-30 30 z"/>
-      <path class="p" d="M200 320 v-120 h80 v120"/> <path class="p" d="M185 200 l55-90 l55 90 z"/>
-      <path class="p" d="M520 320 v-120 h80 v120"/> <path class="p" d="M505 200 l55-90 l55 90 z"/>
-      <path class="p" d="M350 500 v-100 a50 50 0 0 1 100 0 v 100 z"/>
-      <path class="detail" d="M150 380 h500 M150 430 h500 M150 470 h500 M240 220 v80 M560 220 v80"/>
-      <rect class="p" x="220" y="350" width="30" height="40" rx="5"/>
-      <rect class="p" x="550" y="350" width="30" height="40" rx="5"/>` 
+    { 
+      name: "Magical Castle", 
+      svg: `
+        <path class="p" d="M100 500 h600 v-150 q0-30-30-30 h-540 q-30 0-30 30 z"/>
+        <path class="p" d="M150 320 v-180 h100 v180 z"/> <path class="p" d="M130 140 l60-100 l60 100 z"/>
+        <path class="p" d="M550 320 v-180 h100 v180 z"/> <path class="p" d="M530 140 l60-100 l60 100 z"/>
+        <path class="p" d="M350 500 v-120 a50 50 0 0 1 100 0 v 120 z"/>
+        <rect class="p" x="380" y="400" width="10" height="10"/> <rect class="p" x="410" y="400" width="10" height="10"/>
+        <path class="p" d="M180 200 h40 v40 h-40 z"/> <path class="p" d="M580 200 h40 v40 h-40 z"/>
+        <path class="no-fill" d="M100 400 h600 M100 450 h600 M150 250 h100 M550 250 h100"/>
+      `
     },
-    { name: "Deep Forest", svg: `
-      <path class="p" d="M380 500 q20-220 40 0 h-40 z"/>
-      <path class="p" d="M280 380 c0-150 240-150 240 0 c0 50-240 50-240 0"/>
-      <path class="p" d="M310 280 c0-120 180-120 180 0 c0 40-180 40-180 0"/>
-      <path class="p" d="M120 480 q40-60 80 0 v40 h-80 z"/>
-      <path class="detail" d="M395 350 v100 M405 320 v120 M140 460 l10 10 M180 460 l10 10"/>
-      <circle class="p" cx="350" cy="330" r="10"/><circle class="p" cx="450" cy="350" r="12"/>`
+    {
+      name: "Deep Forest",
+      svg: `
+        <path class="p" d="M350 500 c20-300 80-300 100 0 h-100 z"/>
+        <path class="p" d="M250 350 q150-250 300 0 t-300 0"/>
+        <path class="p" d="M280 250 q120-180 240 0 t-240 0"/>
+        <path class="p" d="M150 480 q50-80 100 0 v20 h-100 z"/>
+        <circle class="p" cx="350" cy="280" r="15"/> <circle class="p" cx="450" cy="300" r="20"/>
+        <path class="no-fill" d="M375 350 v150 M425 350 v150 M175 450 l10 10 M210 440 l10 10"/>
+      `
     },
-    { name: "Space Explorer", svg: `
-      <path class="p" d="M400 80 c80 0 100 200 100 350 h-200 c0-150 20-350 100-350 z"/>
-      <path class="p" d="M300 380 l-60 100 h60 z"/> <path class="p" d="M500 380 l60 100 h-60 z"/>
-      <circle class="p" cx="400" cy="220" r="35"/>
-      <path class="p" d="M650 150 a60 60 0 1 1-1 0 z"/>
-      <path class="detail" d="M580 150 h140 M400 80 v40 M400 430 v30"/>
-      <circle class="p" cx="630" cy="130" r="10"/><circle class="p" cx="680" cy="170" r="8"/>`
+    {
+      name: "Under Sea Adv",
+      svg: `
+        <path class="p" d="M150 300 q150-200 400 0 l100-80 v160 l-100-80 q-250 200-400 0 z"/>
+        <circle class="p" cx="480" cy="270" r="15"/> <circle class="p" cx="485" cy="265" r="5" fill="#000"/>
+        <path class="p" d="M250 250 q30-40 60 0 t-60 40"/>
+        <path class="p" d="M600 500 q-30-150 20-300 t20 300"/>
+        <circle class="p" cx="200" cy="150" r="20"/> <circle class="p" cx="250" cy="100" r="10"/>
+        <path class="no-fill" d="M200 300 h200 M210 330 h180 M220 360 h150"/>
+      `
     },
-    { name: "Under Sea Adventure", svg: `
-      <path class="p" d="M180 300 q150-180 350 0 l100-70 v140 l-100-70 q-200 180-350 0 z"/>
-      <circle class="p" cx="480" cy="280" r="12"/>
-      <path class="p" d="M100 500 q20-100 50-150 t50 150 z"/>
-      <path class="detail" d="M250 280 q50-30 150 0 M250 310 q50-30 150 0 M250 340 q50-30 150 0"/>
-      <circle class="p" cx="600" cy="100" r="15"/><circle class="p" cx="650" cy="150" r="10"/>`
+    {
+      name: "Space Explorer",
+      svg: `
+        <path class="p" d="M400 50 c100 0 120 250 120 400 h-240 c0-150 20-400 120-400 z"/>
+        <path class="p" d="M300 350 l-80 120 h80 z"/> <path class="p" d="M500 350 l80 120 h-80 z"/>
+        <circle class="p" cx="400" cy="220" r="40"/>
+        <circle class="p" cx="650" cy="150" r="60"/> <path class="p" d="M580 150 q70 40 140 0"/>
+        <path class="no-fill" d="M400 50 v50 M400 450 v50"/>
+      `
     },
-    { name: "Dragon's Den", svg: `
-      <path class="p" d="M250 450 q150-250 350-50 v100 h-350 z"/>
-      <path class="p" d="M250 450 q-130 0-130-110 t110-90 h20"/>
-      <path class="p" d="M350 300 q80-150 180-50 t-50 180"/>
-      <circle class="p" cx="180" cy="290" r="8"/>
-      <path class="detail" d="M300 410 q30 10 60 0 M370 410 q30 10 60 0 M440 410 q30 10 60 0"/>`
+    {
+      name: "Dragon Den",
+      svg: `
+        <path class="p" d="M200 450 q150-250 400-50 v100 h-400 z"/>
+        <path class="p" d="M200 450 q-150 0-150-120 t130-90 h20"/>
+        <path class="p" d="M350 280 q100-180 200-50 t-50 200"/>
+        <circle class="p" cx="150" cy="280" r="10"/>
+        <path class="no-fill" d="M250 400 q50 20 100 0 t100 0 t100 0"/>
+      `
     },
-    { name: "Robot City", svg: `
-      <path class="p" d="M320 220 h160 v200 h-160 z"/>
-      <path class="p" d="M350 120 h100 v100 h-100 z"/>
-      <path class="p" d="M320 250 l-80 50 v40 l80-50 z"/>
-      <path class="p" d="M480 250 l80 50 v40 l-80-50 z"/>
-      <circle class="p" cx="375" cy="160" r="10"/><circle class="p" cx="425" cy="160" r="10"/>
-      <path class="detail" d="M340 240 h120 M340 280 h120 M340 320 h120"/>`
+    {
+      name: "Seaw Forest",
+      svg: `
+        <circle class="p" cx="400" cy="150" r="100"/>
+        <path class="p" d="M320 230 l-80 150 h320 l-80-150 z"/>
+        <path class="p" d="M320 380 v120 h160 v-120 z"/>
+        <rect class="p" x="380" y="420" width="40" height="60" rx="5"/>
+        <path class="no-fill" d="M350 100 l20 20 M450 100 l-20 20 M320 400 h160 M320 440 h160"/>
+      `
     }
   ];
 
-  function init() {
+  function setup() {
     const pal = document.getElementById('palette');
     COLORS.forEach(c => {
-      const s = document.createElement('div');
-      s.className = 'swatch' + (c === currentSelection ? ' active' : '');
-      s.style.background = c;
-      s.onclick = () => {
-        document.querySelectorAll('.swatch').forEach(sw => sw.classList.remove('active'));
-        s.classList.add('active');
-        currentSelection = c;
-        playPop();
+      const sw = document.createElement('div');
+      sw.className = 'swatch' + (c === activeColor ? ' active' : '');
+      sw.style.background = c;
+      sw.onclick = () => {
+        document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+        sw.classList.add('active');
+        activeColor = c;
+        beep(440);
       };
-      pal.appendChild(s);
+      pal.appendChild(sw);
     });
 
     const gal = document.getElementById('gallery');
     PAGES.forEach((p, i) => {
       const d = document.createElement('div');
       d.className = 'thumb';
-      d.innerHTML = `<svg viewBox="0 0 800 600">${p.svg}</svg><p style="margin-top:10px; font-weight:bold;">${p.name}</p>`;
-      d.onclick = () => loadPage(i);
+      d.innerHTML = `<svg viewBox="0 0 800 600">${p.svg}</svg><p><b>${p.name}</b></p>`;
+      d.onclick = () => load(i);
       gal.appendChild(d);
     });
-
-    loadPage(0);
+    load(0);
   }
 
-  function loadPage(i) {
-    const canvas = document.getElementById('canvas');
-    canvas.innerHTML = `<svg viewBox="0 0 800 600">${PAGES[i].svg}</svg>`;
+  function load(i) {
+    const c = document.getElementById('canvas');
+    c.innerHTML = `<svg viewBox="0 0 800 600">${PAGES[i].svg}</svg>`;
     document.getElementById('gallery').classList.add('hidden');
-    canvas.querySelectorAll('.p').forEach(el => {
+    c.querySelectorAll('.p').forEach(el => {
       el.onclick = () => {
-        el.style.fill = currentSelection;
-        playBrush();
+        el.style.fill = activeColor;
+        brushSound();
       }
     });
   }
 
   function showGallery() { document.getElementById('gallery').classList.remove('hidden'); }
 
-  // --- IMPROVED AUDIO ENGINE ---
-  function getCtx() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    return audioCtx;
+  // --- AUDIO EFFECTS ---
+  function getA() {
+    if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return aCtx;
   }
 
-  function playPop() {
-    const ctx = getCtx();
+  function beep(f) {
+    const ctx = getA();
     const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(400, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
-    osc.connect(gain); gain.connect(ctx.destination);
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.value = f;
+    g.gain.setValueAtTime(0.1, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
     osc.start(); osc.stop(ctx.currentTime + 0.1);
   }
 
-  function playBrush() {
-    const ctx = getCtx();
-    const bufferSize = ctx.sampleRate * 0.3;
+  function brushSound() {
+    const ctx = getA();
+    const bufferSize = ctx.sampleRate * 0.2;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
-    
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1000, ctx.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
-    
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
-    
-    noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-    noise.start();
+    filter.frequency.value = 800;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.05, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2);
+    src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    src.start();
   }
 
   function toggleMusic() {
-    getCtx();
-    isMusicPlaying = !isMusicPlaying;
-    document.getElementById('music-btn').innerText = isMusicPlaying ? "🎵 Music: On" : "🎵 Music: Off";
-    if (isMusicPlaying) playLoop();
+    getA();
+    isLooping = !isLooping;
+    document.getElementById('m-btn').innerText = isLooping ? "🎵 Music: On" : "🎵 Music: Off";
+    if (isLooping) playMusic();
   }
 
-  function playLoop() {
-    if (!isMusicPlaying) return;
-    const ctx = getCtx();
-    const now = ctx.currentTime;
-    const notes = [261.6, 329.6, 392.0, 523.2];
-    const freq = notes[Math.floor(Math.random() * notes.length)];
-    
+  function playMusic() {
+    if (!isLooping) return;
+    const ctx = getA();
+    const n = [261, 329, 392, 523][Math.floor(Math.random()*4)];
     const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(0.03, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(now); osc.stop(now + 0.8);
-    setTimeout(playLoop, 600);
+    osc.frequency.value = n;
+    g.gain.setValueAtTime(0.03, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+    osc.start();
+    setTimeout(playMusic, 600);
   }
 
-  init();
+  setup();
 </script>
 </body>
 </html>
