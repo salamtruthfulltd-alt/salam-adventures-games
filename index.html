@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spell the Word | Salam Adventures</title>
+  <style>
+    :root{
+      --bg:#fff7f2;
+      --card:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --good:#10b981;
+      --bad:#ef4444;
+      --accent:#ff7a9e;
+      --accent2:#7dd3fc;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background: radial-gradient(1200px 600px at 20% 10%, #ffe5ee 0%, transparent 60%),
+                  radial-gradient(900px 500px at 80% 30%, #dff5ff 0%, transparent 55%),
+                  var(--bg);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .wrap{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+    }
+    @media (max-width: 860px){ .wrap{grid-template-columns:1fr} }
+
+    .panel{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+      overflow:hidden;
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    h1{
+      font-size: clamp(18px, 3.2vw, 28px);
+      margin:0;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size: 14px;
+      line-height:1.35;
+    }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:10px 12px;
+      background:#111827;
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .08s ease;
+      font-size: 13px;
+      white-space:nowrap;
+    }
+    .btn:active{transform:scale(.98)}
+    .btn.secondary{
+      background: white;
+      color: var(--ink);
+      border: 1px solid rgba(0,0,0,.12);
+      box-shadow:none;
+      font-weight:700;
+    }
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .toggle input{transform:scale(1.1)}
+
+    .card{
+      border-radius:var(--radius);
+      background: linear-gradient(180deg, #ffffff, #fff7fb);
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow:var(--shadow);
+      padding:16px;
+      min-height: 260px;
+      position:relative;
+      overflow:hidden;
+    }
+    .big{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .emoji{
+      font-size: clamp(54px, 7vw, 86px);
+      line-height:1;
+      margin:0;
+    }
+    .label{
+      font-weight:900;
+      font-size: clamp(18px, 3.5vw, 26px);
+      margin:0;
+    }
+    .hint{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.35;
+    }
+
+    .inputWrap{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    input[type="text"]{
+      flex: 1 1 220px;
+      border-radius:16px;
+      border: 2px solid rgba(0,0,0,.12);
+      padding:12px 14px;
+      font-size:18px;
+      outline:none;
+      transition: border .12s ease, box-shadow .12s ease;
+      background:white;
+    }
+    input[type="text"]:focus{
+      border-color: rgba(255,122,158,.75);
+      box-shadow: 0 0 0 4px rgba(255,122,158,.18);
+    }
+    .feedback{
+      margin-top:12px;
+      font-weight:900;
+      font-size:18px;
+      min-height: 24px;
+    }
+    .feedback.good{ color: var(--good); }
+    .feedback.bad{ color: var(--bad); }
+
+    .smallNote{
+      margin-top:10px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* confetti */
+    .confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity .15s ease;
+    }
+    .confetti.on{opacity:1}
+    .confetti i{
+      position:absolute;
+      width:10px;
+      height:16px;
+      border-radius:3px;
+      animation: fall 700ms linear forwards;
+      top:-20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    @keyframes fall{
+      to{ transform: translate(var(--dx), 340px) rotate(360deg); opacity:0; }
+    }
+
+    .list{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width: 520px){ .list{grid-template-columns: 1fr} }
+    .chip{
+      border-radius:16px;
+      padding:12px;
+      background: rgba(125,211,252,.14);
+      border: 1px solid rgba(125,211,252,.25);
+      font-weight:800;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .chip span{ color:var(--muted); font-weight:700; font-size:13px;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- LEFT: GAME -->
+    <section class="panel">
+      <h1>Spell the Word</h1>
+      <p class="sub">Listen, then type the word you hear. Press Enter to check.</p>
+
+      <div class="row">
+        <button class="btn" id="sayBtn" type="button">🔊 Say the word</button>
+        <button class="btn secondary" id="newBtn" type="button">🎲 New word</button>
+        <button class="btn secondary" id="hintBtn" type="button">💡 Show first letter</button>
+
+        <label class="toggle" title="Uses your device voice">
+          <input id="soundToggle" type="checkbox" checked />
+          Sound on
+        </label>
+      </div>
+
+      <div class="card" id="card" style="margin-top:14px;">
+        <div class="confetti" id="confetti"></div>
+
+        <div class="big">
+          <div>
+            <p class="label" id="promptTitle">What word is this?</p>
+            <p class="hint" id="promptHint">Tap “Say the word”, then type it below.</p>
+          </div>
+          <p class="emoji" id="emoji">🍎</p>
+        </div>
+
+        <div class="inputWrap">
+          <input id="answer" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+                 placeholder="Type here…" aria-label="Type the word" />
+          <button class="btn" id="checkBtn" type="button">✅ Check</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+        <div class="smallNote" id="smallNote">Tip: Lowercase is fine. Spaces don’t matter.</div>
+      </div>
+    </section>
+
+    <!-- RIGHT: QUICK WORD LIST / PROGRESS -->
+    <aside class="panel">
+      <h1>Words in this game</h1>
+      <p class="sub">Simple early words to build confidence. We can change these anytime.</p>
+
+      <div class="list" id="wordList"></div>
+
+      <div class="row" style="margin-top:16px;">
+        <div class="chip" style="flex:1;">
+          <div>✅ Correct</div><span id="scoreGood">0</span>
+        </div>
+        <div class="chip" style="flex:1; background: rgba(255,122,158,.12); border-color: rgba(255,122,158,.22);">
+          <div>🔁 Tries</div><span id="scoreTry">0</span>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+<script>
+  // Words (edit freely). Each item: word, emoji, voice phrase (optional)
+  const WORDS = [
+    { word: "apple",  emoji: "🍎", say: "Apple" },
+    { word: "cat",    emoji: "🐱", say: "Cat" },
+    { word: "dog",    emoji: "🐶", say: "Dog" },
+    { word: "sun",    emoji: "☀️", say: "Sun" },
+    { word: "moon",   emoji: "🌙", say: "Moon" },
+    { word: "hat",    emoji: "🎩", say: "Hat" },
+    { word: "ball",   emoji: "⚽", say: "Ball" },
+    { word: "fish",   emoji: "🐟", say: "Fish" },
+    { word: "kite",   emoji: "🪁", say: "Kite" },
+    { word: "juice",  emoji: "🧃", say: "Juice" }
+  ];
+
+  const emojiEl = document.getElementById("emoji");
+  const answerEl = document.getElementById("answer");
+  const feedbackEl = document.getElementById("feedback");
+  const soundToggle = document.getElementById("soundToggle");
+  const sayBtn = document.getElementById("sayBtn");
+  const newBtn = document.getElementById("newBtn");
+  const checkBtn = document.getElementById("checkBtn");
+  const hintBtn = document.getElementById("hintBtn");
+  const confetti = document.getElementById("confetti");
+  const wordList = document.getElementById("wordList");
+  const scoreGood = document.getElementById("scoreGood");
+  const scoreTry = document.getElementById("scoreTry");
+
+  let current = WORDS[0];
+  let correct = 0;
+  let tries = 0;
+  let hintShown = false;
+
+  // Build list
+  function renderList(){
+    wordList.innerHTML = "";
+    WORDS.forEach(w => {
+      const d = document.createElement("div");
+      d.className = "chip";
+      d.innerHTML = `<div>${w.emoji} ${capitalize(w.word)}</div><span>type: ${w.word}</span>`;
+      wordList.appendChild(d);
+    });
+  }
+
+  function pickNewWord(){
+    const pick = WORDS[Math.floor(Math.random() * WORDS.length)];
+    current = pick;
+    hintShown = false;
+    emojiEl.textContent = current.emoji;
+    feedbackEl.textContent = "";
+    feedbackEl.className = "feedback";
+    answerEl.value = "";
+    answerEl.focus();
+    if (soundToggle.checked) speak(current.say || capitalize(current.word));
+  }
+
+  function normalize(s){
+    return (s || "")
+      .toLowerCase()
+      .replace(/\s+/g, "")      // remove spaces
+      .replace(/[^\p{L}]/gu,""); // keep letters only (works with emojis removed)
+  }
+
+  function checkAnswer(){
+    const typed = normalize(answerEl.value);
+    const target = normalize(current.word);
+
+    tries += 1;
+    scoreTry.textContent = tries;
+
+    if (typed === target && typed.length > 0){
+      correct += 1;
+      scoreGood.textContent = correct;
+
+      feedbackEl.textContent = "Yes! Correct! ⭐";
+      feedbackEl.className = "feedback good";
+      popConfetti();
+      if (soundToggle.checked) speak("Yes! Correct!");
+      // Auto next after a short beat
+      setTimeout(() => pickNewWord(), 900);
+    } else {
+      feedbackEl.textContent = hintShown
+        ? "Try again… you’ve got this! 💛"
+        : "Try again… listen carefully! 🎧";
+      feedbackEl.className = "feedback bad";
+      if (soundToggle.checked) speak("Try again");
+      answerEl.focus();
+      answerEl.select();
+    }
+  }
+
+  function showHint(){
+    hintShown = true;
+    const first = current.word.slice(0,1).toUpperCase();
+    feedbackEl.textContent = `Hint: It starts with “${first}”…`;
+    feedbackEl.className = "feedback";
+    if (soundToggle.checked) speak(`It starts with ${first}`);
+    answerEl.focus();
+  }
+
+  // Voice
+  function speak(text){
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.92;
+      u.pitch = 1.05;
+      u.volume = 1;
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  function popConfetti(){
+    confetti.innerHTML = "";
+    confetti.classList.add("on");
+    const colors = ["#ff7a9e","#7dd3fc","#fbbf24","#34d399","#a78bfa"];
+    for(let i=0;i<18;i++){
+      const p = document.createElement("i");
+      p.style.left = (10 + Math.random()*80) + "%";
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty("--dx", (Math.random()*260 - 130) + "px");
+      p.style.animationDuration = (520 + Math.random()*420) + "ms";
+      confetti.appendChild(p);
+    }
+    setTimeout(()=> confetti.classList.remove("on"), 520);
+  }
+
+  function capitalize(s){ return s ? s[0].toUpperCase() + s.slice(1) : s; }
+
+  // Events
+  sayBtn.addEventListener("click", () => {
+    if (soundToggle.checked) speak(current.say || capitalize(current.word));
+  });
+  newBtn.addEventListener("click", pickNewWord);
+  hintBtn.addEventListener("click", showHint);
+  checkBtn.addEventListener("click", checkAnswer);
+
+  answerEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") checkAnswer();
+  });
+
+  // Init
+  renderList();
+  pickNewWord();
+</script>
+</body>
+</html>
