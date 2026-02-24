@@ -3,147 +3,191 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Artisan Coloring Book</title>
+  <title>Magic Colour Tap | Salam Adventures</title>
   <style>
-    :root { --ink: #1a1a1a; --canvas: #fff; --panel: #f8f9fa; --accent: #6366f1; }
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    :root {
+      --rainbow: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    }
     
-    /* Header */
-    header { background: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 15px rgba(0,0,0,0.1); z-index: 50; }
-    .logo { font-size: 1.5rem; font-weight: 800; color: var(--ink); letter-spacing: -1px; }
+    * { box-sizing: border-box; }
+    body { 
+      margin: 0; padding: 20px;
+      background: radial-gradient(circle, #e0f7fa 0%, #80deea 100%);
+      font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+      display: flex; justify-content: center; align-items: center; min-height: 100vh;
+    }
 
-    /* Main Area */
-    main { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    /* THE RAINBOW GAME BOX */
+    .game-box {
+      width: 100%; max-width: 900px;
+      padding: 15px; border-radius: 40px;
+      background: var(--rainbow);
+      background-size: 400%;
+      animation: rainbowMove 10s linear infinite;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    @keyframes rainbowMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+    .inner-screen {
+      background: white; border-radius: 30px;
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+    }
+
+    /* HEADER & BUTTONS */
+    header {
+      padding: 20px; border-bottom: 4px solid #f0f0f0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .game-title { font-size: 28px; color: #333; margin: 0; }
     
-    /* Gallery Grid */
-    .gallery { position: absolute; inset: 0; background: #f1f5f9; z-index: 40; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; overflow-y: auto; transition: 0.5s ease-in-out; }
-    .gallery.hide { transform: translateY(-100%); pointer-events: none; }
-    .card { background: #fff; border-radius: 12px; border: 3px solid transparent; cursor: pointer; transition: 0.3s; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .card:hover { border-color: var(--accent); transform: translateY(-5px); }
-    .card svg { width: 100%; height: 220px; padding: 15px; }
-    .card-info { padding: 1rem; text-align: center; font-weight: 700; border-top: 1px solid #eee; }
+    .btn-group { display: flex; gap: 10px; }
+    .game-btn {
+      padding: 12px 24px; border: none; border-radius: 15px;
+      font-weight: bold; cursor: pointer; font-size: 16px;
+      box-shadow: 0 4px 0 #ccc; transition: all 0.1s;
+    }
+    .game-btn:active { transform: translateY(4px); box-shadow: none; }
+    .btn-blue { background: #4CC9FF; color: white; box-shadow: 0 4px 0 #3999c2; }
+    .btn-black { background: #111; color: white; box-shadow: 0 4px 0 #000; }
 
-    /* Canvas Area */
-    .art-frame { width: 90%; height: 80%; max-width: 1000px; background: #fff; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); padding: 2rem; display: flex; }
-    #active-svg { width: 100%; height: 100%; }
+    /* DRAWING AREA */
+    .canvas-view { height: 500px; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    svg { width: 100%; height: 100%; max-width: 700px; }
+    .paint { fill: white; stroke: black; stroke-width: 3; cursor: pointer; transition: fill 0.2s; }
 
-    /* Stroke Styles */
-    .p { fill: #fff; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: fill 0.15s ease; cursor: crosshair; }
-    .p:hover { filter: drop-shadow(0 0 5px rgba(0,0,0,0.1)); }
-    .detail { fill: none; stroke: var(--ink); stroke-width: 1.5; pointer-events: none; }
+    /* PALETTE */
+    .palette-tray {
+      padding: 20px; background: #f9f9f9; display: flex; justify-content: center; gap: 12px;
+      border-top: 4px solid #f0f0f0; flex-wrap: wrap;
+    }
+    .swatch {
+      width: 45px; height: 45px; border-radius: 50%; border: 4px solid white;
+      cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .swatch.active { transform: scale(1.2); border-color: black; }
 
-    /* Controls */
-    .palette { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.8rem; background: rgba(255,255,255,0.9); padding: 1rem; border-radius: 100px; backdrop-filter: blur(10px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-    .swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 4px solid #fff; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .swatch.active { transform: scale(1.3) translateY(-10px); border-color: var(--ink); }
-
-    .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .btn-outline { border: 2px solid #ddd; background: #fff; }
-    .btn-primary { background: var(--accent); color: #fff; }
+    /* GALLERY OVERLAY */
+    #gallery {
+      position: absolute; inset: 0; background: white; z-index: 10;
+      padding: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;
+    }
+    .thumb { border: 2px solid #eee; border-radius: 15px; cursor: pointer; padding: 5px; text-align: center; }
+    .thumb:hover { border-color: #ff00c8; }
+    .thumb svg { height: 120px; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">🎨 Artisan Studio</div>
-  <div style="display:flex; gap:10px">
-    <button class="btn btn-outline" onclick="toggleGallery()">🖼️ Change Page</button>
-    <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
-  </div>
-</header>
+<div class="game-box">
+  <div class="inner-screen">
+    <header>
+      <h1 class="game-title">✨ Magic Colour Tap</h1>
+      <div class="btn-group">
+        <button class="game-btn btn-blue" onclick="toggleMusic()">🎵 Music: Off</button>
+        <button class="game-btn btn-black" onclick="showGallery()">🖼️ Gallery</button>
+      </div>
+    </header>
 
-<main>
-  <div id="gallery" class="gallery"></div>
-  
-  <div class="art-frame">
-    <div id="active-svg"></div>
-  </div>
+    <div id="gallery" class="hidden"></div>
 
-  <div class="palette" id="palette"></div>
-</main>
+    <div class="canvas-view" id="canvas"></div>
+
+    <div class="palette-tray" id="palette"></div>
+  </div>
+</div>
 
 <script>
-  const COLORS = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#78350f', '#1f2937', '#ffffff'];
-  let activeColor = COLORS[0];
+  const COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3', '#000000', '#FFFFFF'];
+  let currentSelection = COLORS[0];
+  let audioCtx = null;
+  let isMusicPlaying = false;
 
-  // Complex Hand-Drawn SVG Templates
   const PAGES = [
-    {
-      name: "The Dragon's Peak",
-      data: `<svg viewBox="0 0 800 600">
-        <path class="p" d="M100 500 Q 400 450 700 500 L 800 600 L 0 600 Z"/> <path class="p" d="M300 450 Q 250 250 450 250 T 600 350"/> <path class="p" d="M600 350 Q 700 350 720 280 L 750 300 L 710 370 Z"/> <path class="p" d="M450 250 Q 480 150 400 100 Q 350 100 320 180 Z"/> <path class="p" d="M350 140 Q 330 140 330 160"/> <path class="p" d="M480 260 Q 550 100 650 200 Q 600 250 480 270"/> <path class="p" d="M420 250 Q 350 100 250 200 Q 300 250 420 270"/> <path class="detail" d="M300 450 Q 310 430 330 440 M 340 420 Q 350 400 370 410"/> </svg>`
-    },
-    {
-      name: "Enchanted Forest",
-      data: `<svg viewBox="0 0 800 600">
-        <path class="p" d="M350 600 Q 400 300 450 600 Z"/> <path class="p" d="M400 350 C 200 350 150 100 400 50 C 650 100 600 350 400 350"/> <path class="p" d="M400 150 C 350 150 320 100 400 80 C 480 100 450 150 400 150"/> <path class="p" d="M150 500 Q 200 450 250 500 Q 200 550 150 500"/> <path class="p" d="M600 520 Q 650 470 700 520 Q 650 570 600 520"/> <path class="detail" d="M380 500 L 380 550 M 420 480 L 420 530"/> </svg>`
-    },
-    {
-        name: "Deep Sea Turtle",
-        data: `<svg viewBox="0 0 800 600">
-            <path class="p" d="M250 350 C 250 200 550 200 550 350 C 550 450 250 450 250 350"/> <path class="p" d="M280 300 C 230 280 180 320 210 380 C 230 400 280 370 280 350"/> <path class="p" d="M350 230 Q 300 150 280 230"/> <path class="p" d="M450 230 Q 500 150 520 230"/> <path class="p" d="M350 420 Q 300 500 280 420"/> <path class="p" d="M450 420 Q 500 500 520 420"/> <path class="detail" d="M350 300 L 450 300 L 480 350 L 450 400 L 350 400 L 320 350 Z"/> </svg>`
-    },
-    {
-        name: "Robot Workshop",
-        data: `<svg viewBox="0 0 800 600">
-            <path class="p" d="M300 200 H 500 V 450 H 300 Z"/> <path class="p" d="M350 100 H 450 V 190 H 350 Z"/> <path class="p" d="M375 130 A 10 10 0 1 0 376 130"/> <path class="p" d="M425 130 A 10 10 0 1 0 426 130"/> <path class="p" d="M300 250 L 220 300 L 240 320 L 300 280"/> <path class="p" d="M500 250 L 580 300 L 560 320 L 500 280"/> <path class="p" d="M350 450 V 550 H 380 V 450"/> <path class="p" d="M420 450 V 550 H 450 V 450"/> <path class="detail" d="M330 230 H 470 M 330 260 H 470"/> </svg>`
-    },
-    {
-        name: "Space Cat",
-        data: `<svg viewBox="0 0 800 600">
-            <path class="p" d="M300 300 A 100 100 0 1 0 500 300 A 100 100 0 1 0 300 300"/> <path class="p" d="M350 300 C 350 250 450 250 450 300 C 450 350 350 350 350 300"/> <path class="p" d="M360 270 L 350 230 L 380 260"/> <path class="p" d="M440 270 L 450 230 L 420 260"/> <path class="p" d="M100 100 Q 150 50 200 100 T 300 100"/> <path class="p" d="M600 100 L 610 130 L 640 140 L 610 150 L 600 180 L 590 150 L 560 140 L 590 130 Z"/> </svg>`
-    },
-    {
-        name: "Gothic Castle",
-        data: `<svg viewBox="0 0 800 600">
-            <path class="p" d="M200 550 V 300 H 300 V 200 L 350 100 L 400 200 V 300 H 500 V 550 Z"/> <path class="p" d="M325 550 V 450 A 25 25 0 1 1 375 450 V 550 Z"/> <path class="p" d="M230 350 H 270 V 400 H 230 Z"/> <path class="p" d="M430 350 H 470 V 400 H 430 Z"/> <path class="p" d="M150 550 V 400 H 220 V 550 Z"/> <path class="p" d="M480 550 V 400 H 550 V 550 Z"/> <path class="detail" d="M200 500 H 500 M 200 450 H 500"/> </svg>`
-    }
+    { name: "Magical Castle", svg: `<path class="paint" d="M150 450 h500 v-200 h-500 z"/><path class="paint" d="M150 250 l50-100 l50 100 z"/><path class="paint" d="M550 250 l50-100 l50 100 z"/><path class="paint" d="M350 450 v-100 a50 50 0 0 1 100 0 v 100 z"/>` },
+    { name: "Sea Forest", svg: `<path class="paint" d="M200 400 q100-200 400 0 t-400 0"/><circle class="paint" cx="450" cy="350" r="20"/><path class="paint" d="M600 500 q-50-150 0-300 q50 150 0 300"/>` },
+    { name: "Dragon Explorer", svg: `<path class="paint" d="M300 400 q100-200 300-50 v100 h-300 z"/><path class="paint" d="M300 400 q-100 0-100-100 q0-50 50-50 h50"/><circle class="paint" cx="250" cy="500" r="30"/>` },
+    { name: "Deep Forest", svg: `<path class="paint" d="M100 500 h50 v-200 h-50 z"/><circle class="paint" cx="125" cy="250" r="80"/><path class="paint" d="M400 500 h40 v-150 h-40 z"/><circle class="paint" cx="420" cy="300" r="60"/>` },
+    { name: "Seaw Forest", svg: `<path class="paint" d="M100 300 h100 v250 h-100 z"/><path class="paint" d="M50 300 l100-80 l100 80 z"/><circle class="paint" cx="400" cy="150" r="50"/>` },
+    { name: "Under Sea Advanture", svg: `<path class="paint" d="M100 400 q150-100 300 0 q150 100 300 0"/><circle class="paint" cx="200" cy="200" r="20"/><circle class="paint" cx="250" cy="150" r="15"/>` }
   ];
 
   function init() {
-    const gallery = document.getElementById('gallery');
-    const palette = document.getElementById('palette');
-
-    // Build Gallery
-    PAGES.forEach((page, i) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `${page.data}<div class="card-info">${page.name}</div>`;
-      card.onclick = () => loadPage(i);
-      gallery.appendChild(card);
-    });
-
-    // Build Palette
+    const pal = document.getElementById('palette');
     COLORS.forEach(c => {
       const s = document.createElement('div');
-      s.className = `swatch ${c === activeColor ? 'active' : ''}`;
-      s.style.backgroundColor = c;
+      s.className = 'swatch' + (c === currentSelection ? ' active' : '');
+      s.style.background = c;
       s.onclick = () => {
-        document.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.swatch').forEach(sw => sw.classList.remove('active'));
         s.classList.add('active');
-        activeColor = c;
-      }
-      palette.appendChild(s);
+        currentSelection = c;
+        playTone(440); // Selection sound
+      };
+      pal.appendChild(s);
+    });
+
+    const gal = document.getElementById('gallery');
+    PAGES.forEach((p, i) => {
+      const d = document.createElement('div');
+      d.className = 'thumb';
+      d.innerHTML = `<svg viewBox="0 0 800 600">${p.svg}</svg><p>${p.name}</p>`;
+      d.onclick = () => loadPage(i);
+      gal.appendChild(d);
     });
 
     loadPage(0);
   }
 
-  function loadPage(index) {
-    const container = document.getElementById('active-svg');
-    container.innerHTML = PAGES[index].data;
-    document.getElementById('gallery').classList.add('hide');
-
-    container.querySelectorAll('.p').forEach(path => {
-      path.onclick = (e) => {
-        e.stopPropagation();
-        path.style.fill = activeColor;
-      };
+  function loadPage(i) {
+    const canvas = document.getElementById('canvas');
+    canvas.innerHTML = `<svg viewBox="0 0 800 600">${PAGES[i].svg}</svg>`;
+    document.getElementById('gallery').classList.add('hidden');
+    canvas.querySelectorAll('.paint').forEach(el => {
+      el.onclick = () => {
+        el.style.fill = currentSelection;
+        playTone(660); // Paint sound
+      }
     });
   }
 
-  function toggleGallery() {
-    document.getElementById('gallery').classList.remove('hide');
+  function showGallery() { document.getElementById('gallery').classList.remove('hidden'); }
+
+  // --- AUDIO ENGINE ---
+  function playTone(freq) {
+    if(!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+  }
+
+  function toggleMusic() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    isMusicPlaying = !isMusicPlaying;
+    const btn = document.querySelector('.btn-blue');
+    btn.innerText = isMusicPlaying ? "🎵 Music: On" : "🎵 Music: Off";
+    if (isMusicPlaying) playLoop();
+  }
+
+  function playLoop() {
+    if (!isMusicPlaying) return;
+    const now = audioCtx.currentTime;
+    const notes = [261.63, 329.63, 392.00, 523.25]; // C major
+    const note = notes[Math.floor(Math.random() * notes.length)];
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.setValueAtTime(note, now);
+    gain.gain.setValueAtTime(0.05, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    osc.start(now); osc.stop(now + 0.5);
+    setTimeout(playLoop, 500);
   }
 
   init();
