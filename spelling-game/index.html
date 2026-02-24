@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imagination Station Games</title>
+    <style>
+        body { font-family: 'Comic Sans MS', cursive; text-align: center; background: #e0f7fa; margin: 0; }
+        
+        /* Navigation Bar */
+        .nav { background: #ff6b6b; padding: 15px; display: flex; justify-content: center; gap: 20px; }
+        .nav button { 
+            padding: 10px 20px; font-size: 1.2rem; cursor: pointer; 
+            border: none; border-radius: 15px; background: white; color: #ff6b6b;
+            font-weight: bold; transition: 0.3s;
+        }
+        .nav button:hover { transform: scale(1.1); background: #ffe66d; }
+
+        /* Game Screens */
+        .game-screen { display: none; padding: 20px; height: 80vh; }
+        .active { display: block; }
+
+        /* Placeholder for Game 2 (Drawing) */
+        #drawing-canvas { border: 5px dashed #4ecdc4; background: white; cursor: crosshair; }
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+        <button onclick="showGame('home')">🏠 Home</button>
+        <button onclick="showGame('game1')">🔤 Spelling Pop</button>
+        <button onclick="showGame('game2')">🎨 Magic Paint</button>
+    </div>
+
+    <div id="home" class="game-screen active">
+        <h1>Welcome to the Imagination Station!</h1>
+        <p>Pick a game above to start your adventure!</p>
+        <img src="https://via.placeholder.com/400x200?text=Pick+A+Game!" alt="Kids playing" style="border-radius: 20px;">
+    </div>
+
+    <div id="game1" class="game-screen">
+        <h2>Pop the letters to spell the word!</h2>
+        <div style="background: white; padding: 50px; border-radius: 20px;">
+            <h1 style="font-size: 4rem;">C _ T</h1>
+            <p>Game logic goes here...</p>
+        </div>
+    </div>
+
+    <div id="game2" class="game-screen">
+        <h2>Draw a Masterpiece!</h2>
+        <canvas id="drawing-canvas" width="600" height="400"></canvas>
+        <br><br>
+        <button onclick="clearCanvas()" style="padding:10px; border-radius:10px;">Clear Paper</button>
+    </div>
+
+    <script>
+        // Function to switch between games
+        function showGame(gameId) {
+            // Hide all screens
+            document.querySelectorAll('.game-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            // Show the selected screen
+            document.getElementById(gameId).classList.add('active');
+        }
+
+        // Simple Drawing Logic for Game 2
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(e) {
+            if (!drawing) return;
+            ctx.fillStyle = "#ff6b6b";
+            ctx.beginPath();
+            ctx.arc(e.offsetX, e.offsetY, 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
