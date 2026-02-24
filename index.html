@@ -2,502 +2,847 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Spell the Word | Salam Adventures</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Spell & Sparkle | Salam Adventures</title>
   <style>
     :root{
-      --bg1:#ffecf4; --bg2:#e9fbff;
-      --ink:#1f2937; --muted:#6b7280;
-      --good:#10b981; --bad:#ef4444;
-      --shadow: 0 14px 35px rgba(0,0,0,.12);
+      --ink:#111827;
+      --muted:#6b7280;
+      --panel: rgba(255,255,255,.90);
+      --shadow: 0 26px 80px rgba(0,0,0,.16);
+      --shadow2: 0 18px 38px rgba(0,0,0,.14);
       --radius: 22px;
+
+      /* Border-only glow (no flashing inside gameplay) */
+      --borderGrad: conic-gradient(
+        from 180deg,
+        #ff5fa2, #ffd54a, #4cc9ff, #63f5a6, #8b7cff, #ff9b3a, #ff5fa2
+      );
     }
+
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--ink);
-      min-height:100vh;
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 700px at 10% 10%, #ffffffaa 0, transparent 55%),
+        radial-gradient(900px 650px at 90% 10%, #ffffffaa 0, transparent 50%),
+        linear-gradient(120deg, #fde7ef, #e6f4ff);
+    }
+
+    .wrap{
+      height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:18px;
-      background:
-        radial-gradient(1200px 700px at 15% 10%, rgba(255,79,163,.24), transparent 60%),
-        radial-gradient(1000px 650px at 85% 30%, rgba(56,189,248,.22), transparent 55%),
-        radial-gradient(900px 550px at 45% 90%, rgba(251,191,36,.18), transparent 55%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      overflow-x:hidden;
+      padding:16px;
     }
 
-    /* Sparkle background */
-    .sparkle-layer{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
-    .sparkle{
-      position:absolute; width:10px; height:10px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%);
-      filter: drop-shadow(0 0 8px rgba(255,255,255,.65));
-      opacity:0;
-      animation: floatSparkle linear forwards;
-    }
-    @keyframes floatSparkle{
-      0%{transform:translateY(40px) scale(.6); opacity:0;}
-      15%{opacity:.9;}
-      70%{opacity:.55;}
-      100%{transform:translateY(-120vh) scale(1.15); opacity:0;}
-    }
-
-    /* ✨ FLASHING SPARKLY BORDER PANEL */
-    .panel{
-      width:min(860px, 100%);
+    /* 3D frame + gentle border pulse ONLY */
+    .frame{
+      width:min(1100px, 100%);
+      height:min(740px, 100%);
+      border-radius: calc(var(--radius) + 12px);
+      padding: 10px;
+      background: var(--borderGrad);
+      box-shadow: var(--shadow);
       position:relative;
-      z-index:1;
-      border-radius:calc(var(--radius) + 10px);
-      padding:6px; /* border thickness */
-      /* animated rainbow border */
-      background: conic-gradient(from 0deg,
-        #ff4fa3, #38bdf8, #fbbf24, #34d399, #a78bfa, #ff4fa3);
-      background-size: 200% 200%;
-      animation: rainbowSpin 2.8s linear infinite;
-      box-shadow: 0 18px 45px rgba(0,0,0,.16);
+      transform: translateZ(0);
+      animation: borderPulse 2.4s ease-in-out infinite;
     }
-    /* sparkle glints on border */
-    .panel::after{
+    @keyframes borderPulse{
+      0%,100% { filter: brightness(1); }
+      50% { filter: brightness(1.22) saturate(1.06); }
+    }
+    .frame::before{
       content:"";
       position:absolute;
-      inset:-6px;
-      border-radius:calc(var(--radius) + 16px);
-      background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.85), transparent 30%),
-        radial-gradient(circle at 80% 25%, rgba(255,255,255,.75), transparent 28%),
-        radial-gradient(circle at 60% 85%, rgba(255,255,255,.65), transparent 30%),
-        radial-gradient(circle at 30% 80%, rgba(255,255,255,.55), transparent 32%);
-      filter: drop-shadow(0 0 12px rgba(255,255,255,.55));
-      opacity:.55;
-      animation: borderSparkle 1.6s ease-in-out infinite alternate;
+      inset:6px;
+      border-radius: calc(var(--radius) + 8px);
       pointer-events:none;
+      background:
+        radial-gradient(7px 7px at 12% 18%, rgba(255,255,255,.55) 0 55%, transparent 58%),
+        radial-gradient(6px 6px at 88% 22%, rgba(255,255,255,.50) 0 55%, transparent 58%),
+        radial-gradient(5px 5px at 70% 85%, rgba(255,255,255,.45) 0 55%, transparent 58%),
+        radial-gradient(6px 6px at 25% 78%, rgba(255,255,255,.45) 0 55%, transparent 58%);
       mix-blend-mode: screen;
-    }
-    @keyframes rainbowSpin{
-      0%{filter:hue-rotate(0deg); transform: translateZ(0);}
-      100%{filter:hue-rotate(360deg); transform: translateZ(0);}
-    }
-    @keyframes borderSparkle{
-      0%{opacity:.30; transform: scale(1);}
-      100%{opacity:.75; transform: scale(1.01);}
-    }
-
-    /* Inner content box (the real panel) */
-    .panelInner{
-      background:rgba(255,255,255,.86);
-      backdrop-filter: blur(10px);
-      border-radius:var(--radius);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
-      padding:18px;
-      border: 1px solid rgba(0,0,0,.06);
-    }
-
-    .top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-    h1{font-size: clamp(18px, 3.2vw, 28px); margin:0; letter-spacing:-.02em;}
-    .sub{margin:6px 0 0; color:var(--muted); font-size:14px; line-height:1.35;}
-    .toggle{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); user-select:none; margin-left:auto;}
-    .toggle input{transform:scale(1.1)}
-
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px;}
-    .btn{
-      appearance:none; border:none; border-radius:16px;
-      padding:11px 13px; color:white; font-weight:900;
-      cursor:pointer; font-size:13px; white-space:nowrap;
-      box-shadow: 0 10px 0 rgba(0,0,0,.14), 0 18px 26px rgba(0,0,0,.18);
-      transition: transform .08s ease;
-      background: linear-gradient(180deg, #111827, #0b1220);
-    }
-    .btn:active{transform: translateY(2px); box-shadow: 0 8px 0 rgba(0,0,0,.14), 0 14px 22px rgba(0,0,0,.16);}
-    .btn.secondary{
-      background: linear-gradient(180deg, #ffffff, #f3f4f6);
-      color: var(--ink);
-      border: 1px solid rgba(0,0,0,.12);
-      box-shadow: 0 10px 0 rgba(0,0,0,.08), 0 18px 26px rgba(0,0,0,.12);
+      opacity:.85;
     }
 
     .card{
-      border-radius:var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,247,251,.94));
+      height:100%;
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow:hidden;
+      position:relative;
       border:1px solid rgba(0,0,0,.08);
-      box-shadow: 0 18px 40px rgba(0,0,0,.12);
-      padding:16px;
-      margin-top:14px;
-      position:relative;
-      overflow:hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+      backdrop-filter: blur(6px);
     }
 
-    .big{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
-    .label{font-weight:1000; font-size: clamp(18px, 3.5vw, 26px); margin:0; letter-spacing:-.01em;}
-    .hint{margin:8px 0 0; color:var(--muted); font-size:14px; line-height:1.35;}
-    .emoji{font-size: clamp(58px, 7vw, 92px); line-height:1; margin:0; filter: drop-shadow(0 12px 18px rgba(0,0,0,.10));}
-
-    .inputWrap{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
-    input[type="text"]{
-      flex: 1 1 240px;
-      border-radius:18px;
-      border: 2px solid rgba(0,0,0,.12);
-      padding:13px 14px;
-      font-size:20px;
-      outline:none;
-      transition: border .12s ease, box-shadow .12s ease;
-      background:white;
-      box-shadow: inset 0 2px 0 rgba(0,0,0,.05);
-    }
-    input[type="text"]:focus{
-      border-color: rgba(255,79,163,.8);
-      box-shadow: 0 0 0 5px rgba(255,79,163,.18);
-    }
-
-    .feedback{margin-top:12px; font-weight:1000; font-size:20px; min-height:26px; text-shadow:0 2px 0 rgba(0,0,0,.04);}
-    .feedback.good{color:var(--good);}
-    .feedback.bad{color:var(--bad);}
-
-    /* confetti */
-    .confetti{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .15s ease; z-index:2;}
-    .confetti.on{opacity:1}
-    .confetti i{
-      position:absolute; width:10px; height:16px; border-radius:3px;
-      animation: fall 700ms linear forwards;
-      top:-20px; left:50%; transform:translateX(-50%);
-    }
-    @keyframes fall{to{transform:translate(var(--dx), 380px) rotate(360deg); opacity:0;}}
-
-    /* glitter burst */
-    .glitter{position:absolute; inset:0; pointer-events:none; z-index:3;}
-    .glitter b{
-      position:absolute; width:8px; height:8px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,1), rgba(255,255,255,0) 70%);
-      filter: drop-shadow(0 0 10px rgba(255,255,255,.8));
-      animation: pop 520ms ease-out forwards;
-      opacity:0;
-    }
-    @keyframes pop{
-      0%{transform:translate(0,0) scale(.6); opacity:0;}
-      20%{opacity:1;}
-      100%{transform:translate(var(--dx), var(--dy)) scale(1.2); opacity:0;}
-    }
-
-    /* On-screen keyboard */
-    .kbd{
-      margin-top:14px;
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
       padding:14px;
-      border-radius:20px;
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(0,0,0,.08);
-      box-shadow: 0 14px 28px rgba(0,0,0,.10);
-    }
-    .kbdRow{display:flex; gap:10px; justify-content:center; flex-wrap:nowrap; margin-bottom:10px;}
-    @media (max-width: 860px){ .kbdRow{gap:8px} }
-
-    .key{
-      flex: 1 1 0;
-      min-width: 34px;
-      border:none;
-      border-radius:16px;
-      padding:14px 0;
-      font-weight:1000;
-      font-size:18px;
-      cursor:pointer;
-      color:#0b1220;
-      background: linear-gradient(180deg, #ffffff, #f3f4f6);
-      border: 1px solid rgba(0,0,0,.12);
-      box-shadow: 0 10px 0 rgba(0,0,0,.10), 0 16px 22px rgba(0,0,0,.12);
-      transition: transform .08s ease;
-      position:relative;
-      overflow:hidden;
-      user-select:none;
-      touch-action: manipulation;
-    }
-    .key::after{
-      content:"";
-      position:absolute;
-      inset:-40% -60%;
-      background:
-        radial-gradient(circle at 30% 30%, rgba(255,79,163,.14), transparent 55%),
-        radial-gradient(circle at 70% 60%, rgba(56,189,248,.14), transparent 55%);
-      transform: rotate(10deg);
-      pointer-events:none;
-    }
-    .key:active{transform: translateY(2px); box-shadow: 0 8px 0 rgba(0,0,0,.10), 0 12px 18px rgba(0,0,0,.10);}
-
-    .key.special{
-      flex: 1.5 1 0;
-      font-size:14px;
-      background: linear-gradient(180deg, rgba(255,79,163,.20), rgba(255,79,163,.10));
-      border-color: rgba(255,79,163,.25);
-    }
-    .key.space{
-      flex: 3 1 0;
-      font-size:14px;
-      background: linear-gradient(180deg, rgba(56,189,248,.20), rgba(56,189,248,.10));
-      border-color: rgba(56,189,248,.25);
+      border-bottom:1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.92);
     }
 
-    .scoreRow{
-      margin-top:12px;
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      min-width:240px;
+    }
+    .title h1{
+      margin:0;
+      font-size: clamp(20px, 2.6vw, 32px);
+      letter-spacing:-.02em;
+      line-height:1.05;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      font-weight:900;
+      font-size:13px;
+    }
+
+    .controls{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .pill{
+      background:#fff;
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      font-size:13px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+      white-space:nowrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid rgba(0,0,0,.10);
+      background:#111827;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      box-shadow: 0 16px 28px rgba(17,24,39,.22);
+      white-space:nowrap;
+    }
+    .btn.secondary{
+      background:#fff;
+      color:var(--ink);
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+    }
+    .btn:active{transform:translateY(1px)}
+
+    .toggle{
+      display:flex;align-items:center;gap:8px;
+      padding:10px 12px;border-radius:999px;
+      background:#fff;border:1px solid rgba(0,0,0,.10);
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+      font-weight:900;font-size:13px;cursor:pointer;user-select:none;
+    }
+    .dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+    .dot.off{background:#9ca3af;box-shadow:0 0 0 4px rgba(156,163,175,.18)}
+
+    .main{
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap:14px;
+      height: calc(100% - 68px);
+    }
+
+    .panel{
+      border-radius:18px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      transform: translateZ(0);
+    }
+
+    .panelHeader{
+      display:flex;
       align-items:center;
       justify-content:space-between;
-      color:var(--muted);
-      font-weight:800;
+      gap:10px;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(0,0,0,.06);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.90));
+    }
+    .hint{
+      font-weight:900;
       font-size:13px;
+      color:#374151;
     }
     .badge{
-      border-radius:999px;
+      font-weight:900;
+      font-size:12px;
+      color:#111827;
+      background: #f3f4f6;
+      border:1px solid rgba(0,0,0,.08);
       padding:8px 10px;
-      background: rgba(56,189,248,.12);
-      border: 1px solid rgba(56,189,248,.22);
+      border-radius:999px;
+      white-space:nowrap;
     }
-    .badge.pink{background: rgba(255,79,163,.10); border-color: rgba(255,79,163,.20);}
+
+    .cardArea{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      background:
+        radial-gradient(900px 420px at 10% 10%, rgba(255,92,162,.06), transparent 60%),
+        radial-gradient(900px 420px at 90% 10%, rgba(88,227,255,.07), transparent 55%),
+        radial-gradient(900px 520px at 50% 100%, rgba(98,245,166,.06), transparent 58%);
+    }
+
+    .wordCard{
+      width:min(560px, 100%);
+      aspect-ratio: 4 / 3;
+      border-radius:18px;
+      border:1px solid rgba(0,0,0,.10);
+      box-shadow: 0 20px 40px rgba(0,0,0,.12);
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .wordCard svg{width:100%;height:100%;display:block}
+
+    .status{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:1000;
+      text-align:center;
+      color:#fff;
+      background: rgba(17,24,39,.92);
+      opacity:0;
+      transform: translateY(8px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
+    }
+    .status.show{opacity:1; transform: translateY(0)}
+
+    .right{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-height:0;
+    }
+
+    .inputBox{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .typed{
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight:1000;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      padding:14px;
+      border-radius:16px;
+      border:2px solid rgba(0,0,0,.10);
+      background: #f9fafb;
+      min-height: 64px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+      user-select:none;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .kbd{
+      padding:12px;
+      display:grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap:8px;
+    }
+
+    .key{
+      border:none;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.12);
+      box-shadow: 0 10px 18px rgba(0,0,0,.10);
+      font-weight:1000;
+      font-size:16px;
+      padding:12px 0;
+      cursor:pointer;
+      user-select:none;
+    }
+    .key:active{transform:translateY(1px)}
+    .key.wide{grid-column: span 2;}
+    .key.wider{grid-column: span 3;}
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      text-align:center;
+      padding:0 12px 12px;
+    }
+
+    @media (max-width: 900px){
+      .main{grid-template-columns: 1fr; height:auto}
+      .frame{height:auto}
+      body{overflow:auto}
+    }
   </style>
 </head>
-
 <body>
-  <div class="sparkle-layer" id="sparkleLayer"></div>
-
-  <main class="panel">
-    <div class="panelInner">
-      <div class="top">
-        <div>
-          <h1>Spell the Word</h1>
-          <p class="sub">Tap <b>Say</b>, then spell the word using the big keyboard.</p>
-        </div>
-
-        <label class="toggle" title="Uses your device voice">
-          <input id="soundToggle" type="checkbox" checked />
-          Sound on
-        </label>
-      </div>
-
-      <div class="row">
-        <button class="btn" id="sayBtn" type="button">🔊 Say</button>
-        <button class="btn secondary" id="newBtn" type="button">🎲 New</button>
-        <button class="btn secondary" id="hintBtn" type="button">💡 First letter</button>
-      </div>
-
-      <section class="card">
-        <div class="confetti" id="confetti"></div>
-        <div class="glitter" id="glitter"></div>
-
-        <div class="big">
-          <div>
-            <p class="label">What word is this?</p>
-            <p class="hint">Listen… then spell it!</p>
+  <div class="wrap">
+    <div class="frame">
+      <div class="card">
+        <div class="top">
+          <div class="title">
+            <h1>Spell & Sparkle</h1>
+            <p>Listen → tap letters → spell the word ✨</p>
           </div>
-          <p class="emoji" id="emoji">🍎</p>
+
+          <div class="controls">
+            <div class="pill" id="scorePill">Score: 0</div>
+            <div class="pill" id="wordPill">Word: 1 / 12</div>
+
+            <div class="toggle" id="voiceToggle" role="button" aria-pressed="true" title="Voice on/off">
+              <span class="dot" id="voiceDot"></span>
+              <span id="voiceText">Voice: On</span>
+            </div>
+
+            <button class="btn secondary" id="hearBtn">Hear Word</button>
+            <button class="btn secondary" id="nextBtn">Next</button>
+            <button class="btn" id="resetBtn">Reset</button>
+          </div>
         </div>
 
-        <div class="inputWrap">
-          <input id="answer" type="text" inputmode="text" autocomplete="off" spellcheck="false"
-                 placeholder="Spell here…" aria-label="Spell the word" />
-          <button class="btn" id="checkBtn" type="button">✅ Check</button>
+        <div class="main">
+          <!-- LEFT: Picture card -->
+          <div class="panel">
+            <div class="panelHeader">
+              <div class="hint" id="hint">Tap “Hear Word” then spell it!</div>
+              <div class="badge" id="message">Ready</div>
+            </div>
+
+            <div class="cardArea">
+              <div class="wordCard" id="wordCard"></div>
+              <div class="status" id="status">Nice!</div>
+            </div>
+          </div>
+
+          <!-- RIGHT: typing + keyboard -->
+          <div class="right">
+            <div class="panel">
+              <div class="panelHeader">
+                <div class="hint">Type the word</div>
+                <div class="badge" id="lenBadge">0 letters</div>
+              </div>
+
+              <div class="inputBox">
+                <div class="typed" id="typed"> </div>
+
+                <div class="actions">
+                  <button class="btn secondary" id="checkBtn">Check</button>
+                  <button class="btn secondary" id="clearBtn">Clear</button>
+                  <button class="btn secondary" id="hintBtn">Hint</button>
+                </div>
+              </div>
+
+              <div class="kbd" id="kbd"></div>
+              <div class="small">Tip: Use the on-screen keyboard (great for tablets).</div>
+            </div>
+          </div>
         </div>
 
-        <div class="feedback" id="feedback"></div>
-
-        <div class="kbd" aria-label="On screen keyboard">
-          <div class="kbdRow" id="row1"></div>
-          <div class="kbdRow" id="row2"></div>
-          <div class="kbdRow" id="row3"></div>
-          <div class="kbdRow" id="row4"></div>
-        </div>
-
-        <div class="scoreRow">
-          <span class="badge">✅ Correct: <span id="scoreGood">0</span></span>
-          <span class="badge pink">🔁 Tries: <span id="scoreTry">0</span></span>
-        </div>
-      </section>
+      </div>
     </div>
-  </main>
+  </div>
 
 <script>
-  const WORDS = [
-    { word: "apple",  emoji: "🍎", say: "Apple" },
-    { word: "cat",    emoji: "🐱", say: "Cat" },
-    { word: "dog",    emoji: "🐶", say: "Dog" },
-    { word: "sun",    emoji: "☀️", say: "Sun" },
-    { word: "moon",   emoji: "🌙", say: "Moon" },
-    { word: "hat",    emoji: "🎩", say: "Hat" },
-    { word: "ball",   emoji: "⚽", say: "Ball" },
-    { word: "fish",   emoji: "🐟", say: "Fish" },
-    { word: "kite",   emoji: "🪁", say: "Kite" },
-    { word: "juice",  emoji: "🧃", say: "Juice" }
+(() => {
+  // -----------------------------
+  // Extra words + “nice” built-in images (SVG cards)
+  // -----------------------------
+  const ITEMS = [
+    { word:"apple",  svg: svgApple },
+    { word:"ball",   svg: svgBall },
+    { word:"cat",    svg: svgCat },
+    { word:"dog",    svg: svgDog },
+    { word:"fish",   svg: svgFish },
+    { word:"sun",    svg: svgSun },
+    { word:"moon",   svg: svgMoon },
+    { word:"hat",    svg: svgHat },
+    { word:"car",    svg: svgCar },
+    { word:"cake",   svg: svgCake },
+    { word:"star",   svg: svgStar },
+    { word:"tree",   svg: svgTree },
   ];
 
-  const emojiEl = document.getElementById("emoji");
-  const answerEl = document.getElementById("answer");
-  const feedbackEl = document.getElementById("feedback");
-  const soundToggle = document.getElementById("soundToggle");
-  const sayBtn = document.getElementById("sayBtn");
-  const newBtn = document.getElementById("newBtn");
+  // Consistent “3D card” wrapper
+  function cardWrap(inner){
+    return `
+      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Picture">
+        <defs>
+          <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#fff5fb"/>
+            <stop offset="1" stop-color="#f0fbff"/>
+          </linearGradient>
+          <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="rgba(0,0,0,.18)"/>
+          </filter>
+        </defs>
+
+        <rect width="800" height="600" fill="url(#bg)"/>
+        <circle cx="120" cy="110" r="22" fill="rgba(255,111,177,.22)"/>
+        <circle cx="700" cy="120" r="16" fill="rgba(76,201,255,.22)"/>
+        <circle cx="680" cy="500" r="24" fill="rgba(99,245,166,.22)"/>
+        <circle cx="130" cy="480" r="18" fill="rgba(255,213,74,.22)"/>
+
+        <rect x="110" y="105" width="580" height="410" rx="34" fill="#ffffff" filter="url(#softShadow)"/>
+        <rect x="140" y="132" width="520" height="356" rx="26" fill="#ffffff" stroke="rgba(17,24,39,.10)" stroke-width="4"/>
+        ${inner}
+      </svg>`;
+  }
+
+  const OUT = `stroke="#111827" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"`;
+
+  // --- SVG pictures (cute + consistent) ---
+  function svgApple(){ return cardWrap(`
+    <path d="M410 210c-40-40-110-20-130 35c-30 80 35 170 130 195c95-25 160-115 130-195c-20-55-90-75-130-35Z"
+      fill="#ff4d6d" ${OUT}/>
+    <path d="M410 190c0-40 25-70 60-85" fill="none" ${OUT}/>
+    <path d="M470 95c30 5 55 25 65 52c-28 10-70 12-95-12c5-18 15-30 30-40Z"
+      fill="#63f5a6" ${OUT}/>
+    <circle cx="350" cy="275" r="10" fill="#111827"/>
+    <circle cx="470" cy="275" r="10" fill="#111827"/>
+    <path d="M372 312c18 16 38 16 56 0" fill="none" ${OUT}/>
+    <circle cx="330" cy="310" r="10" fill="#ff9bb3" opacity=".85"/>
+    <circle cx="490" cy="310" r="10" fill="#ff9bb3" opacity=".85"/>
+  `);}
+
+  function svgBall(){ return cardWrap(`
+    <circle cx="400" cy="320" r="140" fill="#4cc9ff" ${OUT}/>
+    <path d="M270 320c50-80 210-80 260 0" fill="none" ${OUT}/>
+    <path d="M270 320c50 80 210 80 260 0" fill="none" ${OUT}/>
+    <path d="M400 180c-35 45-35 235 0 280" fill="none" ${OUT}/>
+    <circle cx="340" cy="265" r="12" fill="#111827"/>
+    <circle cx="460" cy="265" r="12" fill="#111827"/>
+    <path d="M372 305c18 16 38 16 56 0" fill="none" ${OUT}/>
+    <path d="M310 220c20-35 60-55 95-55" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="12" stroke-linecap="round"/>
+  `);}
+
+  function svgCat(){ return cardWrap(`
+    <path d="M280 255c-20-70 20-115 60-135l35 55l35-55c40 20 80 65 60 135
+             c40 25 65 70 55 125c-15 80-95 130-150 130s-135-50-150-130c-10-55 15-100 55-125Z"
+      fill="#ffd54a" ${OUT}/>
+    <circle cx="350" cy="290" r="12" fill="#111827"/>
+    <circle cx="450" cy="290" r="12" fill="#111827"/>
+    <path d="M360 338c20 18 60 18 80 0" fill="none" ${OUT}/>
+    <path d="M325 320h-70M475 320h70" fill="none" ${OUT}/>
+    <circle cx="320" cy="330" r="12" fill="#ffb2c8" opacity=".85"/>
+    <circle cx="480" cy="330" r="12" fill="#ffb2c8" opacity=".85"/>
+  `);}
+
+  function svgDog(){ return cardWrap(`
+    <path d="M310 240c-60-35-90 25-70 80c-40 15-55 65-35 105c25 55 85 90 195 90
+             c110 0 170-35 195-90c20-40 5-90-35-105c20-55-10-115-70-80c-20-55-70-85-125-85
+             s-105 30-125 85Z"
+      fill="#ff9b3a" ${OUT}/>
+    <circle cx="350" cy="320" r="12" fill="#111827"/>
+    <circle cx="450" cy="320" r="12" fill="#111827"/>
+    <path d="M400 340c-10-10-30-10-40 0c0 20 40 20 40 0Z" fill="#111827"/>
+    <path d="M370 365c18 22 42 22 60 0" fill="none" ${OUT}/>
+    <circle cx="325" cy="360" r="12" fill="#ffd1e1" opacity=".85"/>
+    <circle cx="475" cy="360" r="12" fill="#ffd1e1" opacity=".85"/>
+  `);}
+
+  function svgFish(){ return cardWrap(`
+    <path d="M280 330c40-70 140-100 230-60c50 20 85 55 100 90c-15 35-50 70-100 90
+             c-90 40-190 10-230-60Z"
+      fill="#63f5a6" ${OUT}/>
+    <path d="M610 360l90 60l-15-70l15-70Z" fill="#4cc9ff" ${OUT}/>
+    <circle cx="380" cy="340" r="12" fill="#111827"/>
+    <path d="M420 360c18 16 38 16 56 0" fill="none" ${OUT}/>
+    <path d="M330 305c45-30 110-30 150 0" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="12" stroke-linecap="round"/>
+  `);}
+
+  function svgSun(){ return cardWrap(`
+    <circle cx="400" cy="300" r="120" fill="#ffd54a" ${OUT}/>
+    <path d="M400 120v60M400 420v60M220 300h-60M580 300h60" fill="none" ${OUT}/>
+    <path d="M270 170l-40-40M530 430l40 40M530 170l40-40M270 430l-40 40" fill="none" ${OUT}/>
+    <circle cx="350" cy="285" r="12" fill="#111827"/>
+    <circle cx="450" cy="285" r="12" fill="#111827"/>
+    <path d="M360 330c25 20 55 20 80 0" fill="none" ${OUT}/>
+  `);}
+
+  function svgMoon(){ return cardWrap(`
+    <path d="M480 170c-60 10-105 65-105 135c0 85 65 150 150 150c50 0 95-25 120-65
+             c-20 10-45 15-70 15c-95 0-170-75-170-170c0-25 5-50 15-65Z"
+      fill="#8b7cff" ${OUT}/>
+    <circle cx="325" cy="250" r="18" fill="#4cc9ff" ${OUT}/>
+    <circle cx="280" cy="360" r="14" fill="#63f5a6" ${OUT}/>
+    <circle cx="520" cy="260" r="12" fill="#ffd54a" ${OUT}/>
+    <circle cx="460" cy="420" r="16" fill="#ff6fb1" ${OUT}/>
+    <circle cx="420" cy="300" r="10" fill="#111827"/>
+    <circle cx="485" cy="310" r="10" fill="#111827"/>
+    <path d="M435 340c18 14 35 14 52 0" fill="none" ${OUT}/>
+  `);}
+
+  function svgHat(){ return cardWrap(`
+    <path d="M280 250c10-70 55-110 120-120c70 10 110 50 120 120v60H280Z"
+      fill="#4cc9ff" ${OUT}/>
+    <path d="M200 330c90 55 310 55 400 0c0 60-90 110-200 110S200 390 200 330Z"
+      fill="#ff6fb1" ${OUT}/>
+    <circle cx="350" cy="285" r="10" fill="#111827"/>
+    <circle cx="450" cy="285" r="10" fill="#111827"/>
+    <path d="M372 315c18 16 38 16 56 0" fill="none" ${OUT}/>
+  `);}
+
+  function svgCar(){ return cardWrap(`
+    <path d="M240 360c20-70 80-120 160-120h40c80 0 140 50 160 120h30c20 0 35 15 35 35v40
+             c0 20-15 35-35 35H230c-20 0-35-15-35-35v-40c0-20 15-35 35-35Z"
+      fill="#ff6fb1" ${OUT}/>
+    <path d="M320 260h160c40 0 80 25 100 70H260c20-45 60-70 60-70Z"
+      fill="#ffd54a" ${OUT}/>
+    <circle cx="310" cy="465" r="40" fill="#111827"/>
+    <circle cx="590" cy="465" r="40" fill="#111827"/>
+    <circle cx="310" cy="465" r="18" fill="#e5e7eb"/>
+    <circle cx="590" cy="465" r="18" fill="#e5e7eb"/>
+    <circle cx="390" cy="390" r="10" fill="#111827"/>
+    <circle cx="510" cy="390" r="10" fill="#111827"/>
+    <path d="M410 420c25 18 55 18 80 0" fill="none" ${OUT}/>
+  `);}
+
+  function svgCake(){ return cardWrap(`
+    <path d="M260 410h280v120H260Z" fill="#4cc9ff" ${OUT}/>
+    <path d="M260 330c40-40 80-40 120 0c40-40 80-40 120 0c40-40 80-40 120 0v80H260Z"
+      fill="#ffd54a" ${OUT}/>
+    <path d="M280 460h240" fill="none" ${OUT} opacity=".35"/>
+    <circle cx="320" cy="380" r="10" fill="#ff6fb1"/>
+    <circle cx="400" cy="380" r="10" fill="#63f5a6"/>
+    <circle cx="480" cy="380" r="10" fill="#8b7cff"/>
+    <path d="M400 240c-25 25-25 55 0 80c25-25 25-55 0-80Z" fill="#ff9b3a" ${OUT}/>
+    <path d="M400 320v20" fill="none" ${OUT}/>
+    <circle cx="360" cy="420" r="10" fill="#111827"/>
+    <circle cx="440" cy="420" r="10" fill="#111827"/>
+    <path d="M380 450c18 16 38 16 56 0" fill="none" ${OUT}/>
+  `);}
+
+  function svgStar(){ return cardWrap(`
+    <path d="M400 170l55 110l122 18l-88 86l20 122l-109-57l-109 57l20-122l-88-86l122-18Z"
+      fill="#ffd54a" ${OUT}/>
+    <circle cx="350" cy="315" r="10" fill="#111827"/>
+    <circle cx="450" cy="315" r="10" fill="#111827"/>
+    <path d="M370 350c22 18 58 18 80 0" fill="none" ${OUT}/>
+    <circle cx="320" cy="345" r="10" fill="#ffb2c8" opacity=".85"/>
+    <circle cx="480" cy="345" r="10" fill="#ffb2c8" opacity=".85"/>
+  `);}
+
+  function svgTree(){ return cardWrap(`
+    <path d="M400 210c-90-15-160 60-160 140c0 80 70 145 160 145s160-65 160-145
+             c0-80-70-155-160-140Z"
+      fill="#63f5a6" ${OUT}/>
+    <path d="M370 330h60v200h-60Z" fill="#8b5e3c" ${OUT}/>
+    <circle cx="350" cy="330" r="10" fill="#111827"/>
+    <circle cx="450" cy="330" r="10" fill="#111827"/>
+    <path d="M372 360c18 16 38 16 56 0" fill="none" ${OUT}/>
+    <circle cx="320" cy="360" r="10" fill="#ffd1e1" opacity=".85"/>
+    <circle cx="480" cy="360" r="10" fill="#ffd1e1" opacity=".85"/>
+  `);}
+
+  // -----------------------------
+  // UI + typing
+  // -----------------------------
+  const wordCard = document.getElementById("wordCard");
+  const typedEl = document.getElementById("typed");
+  const lenBadge = document.getElementById("lenBadge");
+  const hintEl = document.getElementById("hint");
+  const messageEl = document.getElementById("message");
+  const statusEl = document.getElementById("status");
+
+  const scorePill = document.getElementById("scorePill");
+  const wordPill = document.getElementById("wordPill");
+
+  const hearBtn = document.getElementById("hearBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
   const checkBtn = document.getElementById("checkBtn");
+  const clearBtn = document.getElementById("clearBtn");
   const hintBtn = document.getElementById("hintBtn");
-  const confetti = document.getElementById("confetti");
-  const glitter = document.getElementById("glitter");
-  const scoreGood = document.getElementById("scoreGood");
-  const scoreTry = document.getElementById("scoreTry");
-  const sparkleLayer = document.getElementById("sparkleLayer");
 
-  let current = WORDS[0];
-  let correct = 0;
-  let tries = 0;
-  let hintShown = false;
+  const kbd = document.getElementById("kbd");
 
-  function pickNewWord(){
-    current = WORDS[Math.floor(Math.random()*WORDS.length)];
-    hintShown = false;
-    emojiEl.textContent = current.emoji;
-    feedbackEl.textContent = "";
-    feedbackEl.className = "feedback";
-    answerEl.value = "";
-    answerEl.focus();
-    if (soundToggle.checked) speak(current.say);
+  const voiceToggle = document.getElementById("voiceToggle");
+  const voiceDot = document.getElementById("voiceDot");
+  const voiceText = document.getElementById("voiceText");
+
+  let index = 0;
+  let typed = "";
+  let score = 0;
+
+  // -----------------------------
+  // More natural voice setup
+  // -----------------------------
+  let voiceOn = true;
+  let preferredVoice = null;
+
+  function setVoiceUI(){
+    voiceDot.classList.toggle("off", !voiceOn);
+    voiceText.textContent = voiceOn ? "Voice: On" : "Voice: Off";
+    voiceToggle.setAttribute("aria-pressed", String(voiceOn));
   }
+  voiceToggle.addEventListener("click", () => {
+    voiceOn = !voiceOn;
+    setVoiceUI();
+  });
 
-  function normalize(s){
-    return (s||"").toLowerCase().replace(/\s+/g,"").replace(/[^\p{L}]/gu,"");
-  }
+  function chooseVoice(){
+    const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+    if(!voices.length) return null;
 
-  function checkAnswer(){
-    const typed = normalize(answerEl.value);
-    const target = normalize(current.word);
+    // Prefer natural-ish English voices where available
+    const good = voices
+      .filter(v => /en/i.test(v.lang))
+      .map(v => {
+        let s = 0;
+        if(/en-GB/i.test(v.lang)) s += 6;
+        if(/en-US/i.test(v.lang)) s += 4;
+        if(/Google|Microsoft|Natural|Neural|Enhanced/i.test(v.name)) s += 8;
+        if(/female|woman|zira|susan|kate|hazel|serena|sonia|libby/i.test(v.name)) s += 4;
+        if(/robot|compact/i.test(v.name)) s -= 6;
+        return {v, s};
+      })
+      .sort((a,b)=>b.s-a.s);
 
-    tries += 1;
-    scoreTry.textContent = tries;
-
-    if (typed === target && typed.length > 0){
-      correct += 1;
-      scoreGood.textContent = correct;
-      feedbackEl.textContent = "YES! Correct! ⭐✨";
-      feedbackEl.className = "feedback good";
-      popConfetti();
-      popGlitterBurst();
-      if (soundToggle.checked) speak("Yes! Correct!");
-      setTimeout(pickNewWord, 900);
-    } else {
-      feedbackEl.textContent = hintShown ? "Try again… you’ve got this! 💛" : "Try again… listen carefully! 🎧";
-      feedbackEl.className = "feedback bad";
-      if (soundToggle.checked) speak("Try again");
-      answerEl.focus();
-      answerEl.select();
-    }
-  }
-
-  function showHint(){
-    hintShown = true;
-    const first = current.word.slice(0,1).toUpperCase();
-    feedbackEl.textContent = `Hint: It starts with “${first}”…`;
-    feedbackEl.className = "feedback";
-    if (soundToggle.checked) speak(`It starts with ${first}`);
-    answerEl.focus();
+    return good[0]?.v || voices[0];
   }
 
   function speak(text){
+    if(!voiceOn) return;
+    if(!window.speechSynthesis) return;
+
+    preferredVoice = preferredVoice || chooseVoice();
+    const u = new SpeechSynthesisUtterance(text);
+    if(preferredVoice) u.voice = preferredVoice;
+
+    // Slightly slower + warmer
+    u.rate = 0.90;
+    u.pitch = 0.98;
+    u.volume = 1;
+
     try{
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.92; u.pitch = 1.08; u.volume = 1;
-      window.speechSynthesis.speak(u);
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
     }catch(e){}
   }
 
-  function popConfetti(){
-    confetti.innerHTML = "";
-    confetti.classList.add("on");
-    const colors = ["#ff4fa3","#38bdf8","#fbbf24","#34d399","#a78bfa"];
-    for(let i=0;i<22;i++){
-      const p=document.createElement("i");
-      p.style.left=(10+Math.random()*80)+"%";
-      p.style.background=colors[i%colors.length];
-      p.style.setProperty("--dx",(Math.random()*280-140)+"px");
-      p.style.animationDuration=(520+Math.random()*450)+"ms";
-      confetti.appendChild(p);
+  if(window.speechSynthesis){
+    speechSynthesis.onvoiceschanged = () => { preferredVoice = chooseVoice(); };
+  }
+
+  // -----------------------------
+  // Gentle sounds (no flashing)
+  // -----------------------------
+  let audioCtx = null;
+  function ensureAudio(){
+    if(audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  function blip(freq=880, dur=0.07, vol=0.06){
+    try{
+      ensureAudio();
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type="sine";
+      o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t+dur+0.02);
+    }catch(e){}
+  }
+
+  // -----------------------------
+  // Keyboard
+  // -----------------------------
+  const KEYS = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+  function renderKeyboard(){
+    kbd.innerHTML = "";
+    KEYS.forEach(letter => {
+      const b = document.createElement("button");
+      b.className = "key";
+      b.textContent = letter;
+      b.addEventListener("click", () => addLetter(letter));
+      kbd.appendChild(b);
+    });
+
+    const back = document.createElement("button");
+    back.className = "key wide";
+    back.textContent = "⌫";
+    back.addEventListener("click", backspace);
+    kbd.appendChild(back);
+
+    const clear = document.createElement("button");
+    clear.className = "key wider";
+    clear.textContent = "CLEAR";
+    clear.addEventListener("click", clearTyped);
+    kbd.appendChild(clear);
+
+    const enter = document.createElement("button");
+    enter.className = "key wide";
+    enter.textContent = "CHECK";
+    enter.addEventListener("click", checkWord);
+    kbd.appendChild(enter);
+  }
+
+  function addLetter(ch){
+    const target = ITEMS[index].word.toUpperCase();
+    if(typed.length >= target.length) return;
+    typed += ch;
+    blip(520 + Math.random()*120, 0.05, 0.05);
+    updateTyped();
+  }
+  function backspace(){
+    typed = typed.slice(0, -1);
+    blip(380,0.05,0.05);
+    updateTyped();
+  }
+  function clearTyped(){
+    typed = "";
+    updateTyped();
+  }
+
+  // -----------------------------
+  // Game logic
+  // -----------------------------
+  function renderWord(){
+    const item = ITEMS[index];
+    wordCard.innerHTML = item.svg();
+    wordPill.textContent = `Word: ${index+1} / ${ITEMS.length}`;
+    hintEl.textContent = `Tap “Hear Word” then spell it.`;
+    messageEl.textContent = "Ready";
+    statusEl.classList.remove("show");
+    clearTyped();
+  }
+
+  function updateTyped(){
+    typedEl.textContent = typed || " ";
+    lenBadge.textContent = `${typed.length} letters`;
+  }
+
+  function showStatus(text){
+    statusEl.textContent = text;
+    statusEl.classList.add("show");
+    setTimeout(()=>statusEl.classList.remove("show"), 700);
+  }
+
+  function checkWord(){
+    const target = ITEMS[index].word.toUpperCase();
+    if(typed === target){
+      score++;
+      scorePill.textContent = `Score: ${score}`;
+      messageEl.textContent = "Correct!";
+      showStatus("✅ Correct!");
+      blip(880,0.08,0.07);
+      setTimeout(()=>blip(1320,0.08,0.06), 120);
+      speak("Yes! That's correct!");
+      setTimeout(nextWord, 650);
+    }else{
+      messageEl.textContent = "Try again";
+      showStatus("❌ Try again");
+      blip(220,0.10,0.06);
+      speak("Oops. Try again. Listen carefully.");
     }
-    setTimeout(()=>confetti.classList.remove("on"),560);
   }
 
-  function popGlitterBurst(){
-    glitter.innerHTML="";
-    for(let i=0;i<26;i++){
-      const s=document.createElement("b");
-      s.style.left=(50+(Math.random()*30-15))+"%";
-      s.style.top=(40+(Math.random()*16-8))+"%";
-      s.style.setProperty("--dx",(Math.random()*260-130)+"px");
-      s.style.setProperty("--dy",(Math.random()*220-160)+"px");
-      s.style.animationDuration=(420+Math.random()*260)+"ms";
-      glitter.appendChild(s);
-    }
-    setTimeout(()=>glitter.innerHTML="",650);
+  function hintWord(){
+    const target = ITEMS[index].word.toUpperCase();
+    typed = target[0];
+    updateTyped();
+    messageEl.textContent = "Hint used";
+    speak(`It starts with ${target[0]}.`);
   }
 
-  /* Keyboard */
-  const row1 = document.getElementById("row1");
-  const row2 = document.getElementById("row2");
-  const row3 = document.getElementById("row3");
-  const row4 = document.getElementById("row4");
-
-  const keys = [
-    ["Q","W","E","R","T","Y","U","I","O","P"],
-    ["A","S","D","F","G","H","J","K","L"],
-    ["Z","X","C","V","B","N","M"],
-  ];
-
-  function makeKey(label, opts={}){
-    const b=document.createElement("button");
-    b.type="button";
-    b.className="key"+(opts.special?" special":"")+(opts.space?" space":"");
-    b.textContent=label;
-    b.addEventListener("click",()=>onKey(label,opts));
-    return b;
-  }
-  function onKey(label,opts){
-    answerEl.focus();
-    if (opts.backspace){ answerEl.value = answerEl.value.slice(0,-1); return; }
-    if (opts.clear){ answerEl.value = ""; return; }
-    if (opts.space){ answerEl.value += " "; return; }
-    answerEl.value += label.toLowerCase();
-  }
-  function buildKeyboard(){
-    row1.innerHTML=""; row2.innerHTML=""; row3.innerHTML=""; row4.innerHTML="";
-    keys[0].forEach(k=>row1.appendChild(makeKey(k)));
-    keys[1].forEach(k=>row2.appendChild(makeKey(k)));
-    keys[2].forEach(k=>row3.appendChild(makeKey(k)));
-    row3.appendChild(makeKey("⌫",{special:true,backspace:true}));
-    row4.appendChild(makeKey("Clear",{special:true,clear:true}));
-    row4.appendChild(makeKey("Space",{space:true}));
-    const check=makeKey("Check ✅",{special:true});
-    check.addEventListener("click",checkAnswer);
-    row4.appendChild(check);
+  function hearWord(){
+    const w = ITEMS[index].word;
+    // more natural phrasing
+    speak(`Ready? Spell the word: ${w}. ${w}.`);
   }
 
-  /* Background sparkles */
-  function spawnSparkle(){
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left=Math.random()*100+"vw";
-    s.style.top=(100+Math.random()*20)+"vh";
-    const size=6+Math.random()*10;
-    s.style.width=size+"px"; s.style.height=size+"px";
-    s.style.animationDuration=(5+Math.random()*5)+"s";
-    sparkleLayer.appendChild(s);
-    setTimeout(()=>s.remove(),11000);
+  function nextWord(){
+    index = (index + 1) % ITEMS.length;
+    renderWord();
   }
-  setInterval(spawnSparkle,220);
 
-  sayBtn.addEventListener("click",()=> soundToggle.checked && speak(current.say));
-  newBtn.addEventListener("click",pickNewWord);
-  hintBtn.addEventListener("click",showHint);
-  checkBtn.addEventListener("click",checkAnswer);
-  answerEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") checkAnswer(); });
+  function resetAll(){
+    index = 0;
+    score = 0;
+    scorePill.textContent = "Score: 0";
+    renderWord();
+    speak("Let's play. Tap Hear Word.");
+  }
 
-  buildKeyboard();
-  pickNewWord();
+  // Buttons
+  hearBtn.addEventListener("click", hearWord);
+  nextBtn.addEventListener("click", nextWord);
+  resetBtn.addEventListener("click", resetAll);
+
+  checkBtn.addEventListener("click", checkWord);
+  clearBtn.addEventListener("click", clearTyped);
+  hintBtn.addEventListener("click", hintWord);
+
+  // Physical keyboard
+  window.addEventListener("keydown", (e) => {
+    const k = e.key;
+    if(/^[a-z]$/i.test(k)) addLetter(k.toUpperCase());
+    else if(k === "Backspace") backspace();
+    else if(k === "Enter") checkWord();
+  });
+
+  // Init
+  renderKeyboard();
+  setVoiceUI();
+  renderWord();
+})();
 </script>
 </body>
 </html>
