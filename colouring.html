@@ -3,254 +3,233 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Magic Colour Tap: Artisan Edition</title>
+  <title>Magic Colour Tap | Salam Adventures</title>
   <style>
     :root {
-      --rainbow: linear-gradient(90deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      --rainbow: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      --bg: #e0f7fa;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { 
-      margin: 0; padding: 10px; background: #222; 
-      font-family: 'Helvetica Neue', sans-serif;
+      margin: 0; padding: 15px; background: var(--bg); 
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex; justify-content: center; align-items: center; min-height: 100vh;
-      overflow: hidden;
     }
 
-    /* THE PHYSICAL TOY BOX */
-    .toy-outer {
-      width: 100%; max-width: 1100px; padding: 18px; border-radius: 65px;
-      background: var(--rainbow); background-size: 200% 200%;
-      animation: rainbowFlow 5s linear infinite;
-      box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 5px 15px rgba(255,255,255,0.4);
+    /* THE BRIGHT RAINBOW CONSOLE */
+    .toy-box {
+      width: 100%; max-width: 1000px; padding: 12px; border-radius: 50px;
+      background: var(--rainbow); background-size: 300% 300%;
+      animation: rainbowFlow 8s ease infinite;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     }
-    @keyframes rainbowFlow { 0% {background-position:0% 50%} 100% {background-position:200% 50%} }
+    @keyframes rainbowFlow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-    .toy-inner {
-      background: #ffffff; border-radius: 50px; overflow: hidden;
-      display: flex; flex-direction: column; height: 88vh; border: 18px solid #1a1a1a;
-      box-shadow: inset 0 10px 30px rgba(0,0,0,0.5); position: relative;
+    .inner-white {
+      background: #ffffff; border-radius: 40px; display: flex; flex-direction: column; 
+      height: 85vh; overflow: hidden; position: relative; border: 4px solid rgba(255,255,255,0.5);
     }
 
-    /* HEADER */
     header {
-      padding: 15px 40px; background: #1a1a1a; color: white;
+      padding: 15px 25px; background: #fcfcfc; border-bottom: 2px solid #f0f0f0;
       display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 5px solid #333;
     }
-    .game-logo { font-weight: 900; font-size: 24px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px #ff00c8; }
+    .logo { font-size: 24px; font-weight: 900; color: #ff00c8; text-transform: uppercase; letter-spacing: 1px; }
 
+    .btn-group { display: flex; gap: 10px; }
     .btn {
-      padding: 10px 25px; border-radius: 50px; border: none; font-weight: 800;
-      cursor: pointer; transition: 0.2s; font-size: 14px; text-transform: uppercase;
+      padding: 10px 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
+      transition: 0.2s; font-size: 14px; box-shadow: 0 4px 0 #ddd; background: #fff;
     }
-    .btn-action { background: #fff; color: #000; box-shadow: 0 4px 0 #999; }
-    .btn-action:active { transform: translateY(4px); box-shadow: none; }
+    .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #ddd; }
+    .btn-magic { background: #ffca28; color: #724b00; box-shadow: 0 4px 0 #c79100; }
 
-    /* CANVAS */
-    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; background: #fff; position: relative; }
-    svg { width: 100%; height: 100%; max-width: 850px; }
+    /* HIGH DENSITY CANVAS */
+    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; background: #fff; }
+    svg { width: 100%; height: 100%; max-width: 800px; }
 
-    /* ART PATH STYLES */
-    .paint-zone { 
-      fill: #fff; stroke: #000; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; 
-      transition: fill 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; 
-    }
-    .ink-detail { fill: none; stroke: #000; stroke-width: 1.2; pointer-events: none; opacity: 0.6; }
-    
-    /* ANIMATED LINES */
-    .paint-zone:hover { stroke-width: 4; stroke: #ff00c8; }
+    /* ART PATHS */
+    .p { fill: #fff; stroke: #333; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; transition: fill 0.3s; }
+    .p:hover { filter: brightness(0.95); }
+    .det { fill: none; stroke: #333; stroke-width: 1; pointer-events: none; opacity: 0.4; }
 
-    /* TOOLBAR */
-    .toolbar {
-      padding: 25px; background: #1a1a1a; display: flex; justify-content: center; gap: 15px;
-      border-top: 5px solid #333; flex-wrap: wrap;
+    /* PALETTE */
+    .tray { padding: 20px; background: #f9f9f9; display: flex; justify-content: center; gap: 10px; border-top: 2px solid #eee; }
+    .swatch {
+      width: 50px; height: 50px; border-radius: 50%; border: 4px solid white;
+      cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
     }
-    .color-pill {
-      width: 60px; height: 60px; border-radius: 20px; border: 4px solid #333;
-      cursor: pointer; transition: 0.3s; box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-    }
-    .color-pill.active { transform: scale(1.2) translateY(-10px); border-color: #fff; box-shadow: 0 0 20px currentColor; }
+    .swatch.active { transform: scale(1.25); border-color: #333; }
 
     /* OVERLAYS */
     #gallery {
-      position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000;
-      padding: 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px; overflow-y: auto; color: white;
+      position: absolute; inset: 0; background: rgba(255,255,255,0.98); z-index: 100;
+      padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; overflow-y: auto;
     }
-    .card { background: #222; border-radius: 35px; padding: 25px; cursor: pointer; transition: 0.3s; border: 2px solid #444; }
-    .card:hover { border-color: #ff00c8; transform: scale(1.05); }
-    .card svg { height: 180px; pointer-events: none; }
+    .thumb { border: 3px solid #eee; border-radius: 25px; padding: 15px; cursor: pointer; transition: 0.2s; background: #fff; }
+    .thumb:hover { border-color: #ff00c8; transform: translateY(-5px); }
+    .thumb svg { height: 140px; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<div class="toy-outer">
-  <div class="toy-inner">
+<div class="toy-box">
+  <div class="inner-white">
     <header>
-      <div class="game-logo">SALAM ADVENTURES</div>
-      <div style="display:flex; gap:15px">
-        <button class="btn btn-action" onclick="toggleMusic()" id="m-btn">🎵 Music: Off</button>
-        <button class="btn btn-action" onclick="showGallery()">🖼️ Gallery</button>
+      <div class="logo">Magic Colour Tap</div>
+      <div class="btn-group">
+        <button class="btn btn-magic" onclick="magicFill()">✨ Magic Fill</button>
+        <button class="btn" onclick="toggleMusic()" id="m-btn">🎵 Music Off</button>
+        <button class="btn" style="background:#03a9f4; color:white; box-shadow:0 4px 0 #0277bd" onclick="openGal()">🖼️ Gallery</button>
       </div>
     </header>
 
     <div id="gallery" class="hidden"></div>
     <div class="viewport" id="canvas"></div>
-    <div class="toolbar" id="palette"></div>
+    <div class="tray" id="palette"></div>
   </div>
 </div>
 
 <script>
-  const COLORS = ['#FF0000', '#FF7B00', '#FFD000', '#00FF6A', '#00A2FF', '#7000FF', '#FF00A2', '#1A1A1A', '#FFFFFF'];
-  let currentSelection = COLORS[0];
-  let audioCtx = null;
-  let musicIsOn = false;
+  const COLORS = ['#FF5252', '#FF4081', '#E040FB', '#7C4DFF', '#536DFE', '#448AFF', '#40C4FF', '#18FFFF', '#64FFDA', '#B2FF59', '#EEFF41', '#FFFF00', '#FFD740', '#FFAB40', '#FF6E40'];
+  let activeCol = COLORS[0];
+  let aCtx = null;
+  let music = false;
 
-  // HIGH-FIDELITY ASSETS
-  const DRAWINGS = [
-    { name: "The Crystal Castle", svg: `
-      <path class="paint-zone" d="M100 550 h600 v-200 h-600 z"/>
-      <path class="paint-zone" d="M120 350 v-250 l80-50 l80 50 v250 z"/>
-      <path class="paint-zone" d="M520 350 v-250 l80-50 l80 50 v250 z"/>
-      <path class="paint-zone" d="M330 550 v-150 a70 70 0 0 1 140 0 v 150 z"/>
-      <path class="ink-detail" d="M120 150 h160 M520 150 h160 M120 250 h160 M100 450 h600 M100 500 h600"/>
-      <circle class="paint-zone" cx="200" cy="200" r="30"/> <circle class="paint-zone" cx="600" cy="200" r="30"/>
+  const ART = [
+    { name: "Crystal Castle", svg: `
+      <path class="p" d="M100 500 h600 v-180 h-600 z"/>
+      <path class="p" d="M150 320 v-220 h100 v220 z"/> <path class="p" d="M140 100 l60-80 l60 80 z"/>
+      <path class="p" d="M550 320 v-220 h100 v220 z"/> <path class="p" d="M540 100 l60-80 l60 80 z"/>
+      <path class="p" d="M340 500 v-140 c0-50 120-50 120 0 v140 z"/>
+      <path class="det" d="M100 400 h600 M100 440 h600 M100 480 h600 M150 200 h100 M550 200 h100"/>
+      <rect class="p" x="180" y="240" width="40" height="40" rx="4"/> <rect class="p" x="580" y="240" width="40" height="40" rx="4"/>
     `},
-    { name: "Enchanted Woods", svg: `
-      <path class="paint-zone" d="M380 550 c-50-300 100-300 50 0 z"/>
-      <path class="paint-zone" d="M200 400 c0-120 400-120 400 0 q-200 80-400 0 z"/>
-      <path class="paint-zone" d="M250 300 c0-100 300-100 300 0 q-150 60-300 0 z"/>
-      <path class="paint-zone" d="M300 220 c0-80 200-80 200 0 q-100 40-200 0 z"/>
-      <circle class="paint-zone" cx="150" cy="520" r="40"/>
-      <path class="ink-detail" d="M400 350 v200 M390 400 v100 M250 380 l50-20 M550 380 l-50-20"/>
+    { name: "Sea Dragon", svg: `
+      <path class="p" d="M150 450 q150-300 450 0 v100 h-450 z"/>
+      <path class="p" d="M150 450 q-180 0-180-150 t150-100 h50"/>
+      <path class="p" d="M350 250 q100-200 200 50 t-50 250"/>
+      <circle class="p" cx="120" cy="280" r="12"/>
+      <path class="det" d="M220 450 q50 30 150 0 t150 0 t150 0 M220 480 q50 30 150 0"/>
+      <path class="p" d="M600 500 l30 40 h-60 z"/>
     `},
-    { name: "The Deep Sea Explorer", svg: `
-      <path class="paint-zone" d="M150 350 q150-250 450 0 l150-100 v200 l-150-100 q-300 250-450 0 z"/>
-      <path class="paint-zone" d="M250 250 q80-100 150 0"/>
-      <circle class="paint-zone" cx="500" cy="320" r="25"/>
-      <circle class="paint-zone" cx="505" cy="315" r="8" fill="#000"/>
-      <path class="ink-detail" d="M200 350 h300 M210 380 h280 M220 410 h250"/>
-      <circle class="paint-zone" cx="100" cy="100" r="30"/> <circle class="paint-zone" cx="200" cy="50" r="15"/>
-    `},
-    { name: "Cosmic Rocket", svg: `
-      <path class="paint-zone" d="M400 50 c150 0 150 350 150 450 h-300 c0-100 0-450 150-450 z"/>
-      <path class="paint-zone" d="M300 400 l-100 150 h100 z"/>
-      <path class="paint-zone" d="M500 400 l100 150 h-100 z"/>
-      <circle class="paint-zone" cx="400" cy="200" r="50"/>
-      <path class="ink-detail" d="M400 50 v100 M350 450 h100 M350 480 h100"/>
-    `},
-    { name: "Sleeping Dragon", svg: `
-      <path class="paint-zone" d="M200 500 q200-300 500 0 v80 h-500 z"/>
-      <path class="paint-zone" d="M200 500 q-180 0-180-150 t150-100 h50"/>
-      <circle class="paint-zone" cx="150" cy="320" r="15"/>
-      <path class="paint-zone" d="M400 350 q150-200 250 50 t-100 250"/>
-      <path class="ink-detail" d="M250 500 q50 30 150 0 t150 0 t150 0"/>
-    `},
-    { name: "Solar Temple", svg: `
-      <circle class="paint-zone" cx="400" cy="200" r="150"/>
-      <path class="paint-zone" d="M200 550 l200-250 l200 250 z"/>
-      <path class="ink-detail" d="M400 50 v100 M400 350 v100 M200 200 h100 M500 200 h100"/>
-      <path class="paint-zone" d="M350 450 h100 v100 h-100 z"/>
+    { name: "Space Station", svg: `
+      <circle class="p" cx="400" cy="300" r="150"/>
+      <path class="p" d="M250 300 h300 v40 h-300 z"/>
+      <path class="p" d="M400 50 v100"/> <path class="p" d="M400 450 v100"/>
+      <circle class="p" cx="400" cy="300" r="80"/>
+      <path class="det" d="M300 200 l200 200 M300 400 l200-200"/>
+      <circle class="p" cx="150" cy="100" r="30"/>
     `}
   ];
 
-  function init() {
-    const pal = document.getElementById('palette');
+  function setup() {
+    const p = document.getElementById('palette');
     COLORS.forEach(c => {
-      const p = document.createElement('div');
-      p.className = 'color-pill' + (c === currentSelection ? ' active' : '');
-      p.style.backgroundColor = c;
-      p.style.color = c;
-      p.onclick = () => {
-        document.querySelectorAll('.color-pill').forEach(x => x.classList.remove('active'));
-        p.classList.add('active');
-        currentSelection = c;
-        playTone(300, 'sine', 0.1);
+      const s = document.createElement('div');
+      s.className = 'swatch' + (c === activeCol ? ' active' : '');
+      s.style.background = c;
+      s.onclick = () => {
+        document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
+        activeCol = c;
+        beep(440);
       };
-      pal.appendChild(p);
+      p.appendChild(s);
     });
 
-    const gal = document.getElementById('gallery');
-    DRAWINGS.forEach((d, i) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `<svg viewBox="0 0 800 600">${d.svg}</svg><h3>${d.name}</h3>`;
-      card.onclick = () => loadArt(i);
-      gal.appendChild(card);
+    const g = document.getElementById('gallery');
+    ART.forEach((d, i) => {
+      const t = document.createElement('div');
+      t.className = 'thumb';
+      t.innerHTML = `<svg viewBox="0 0 800 600">${d.svg}</svg><p align="center"><b>${d.name}</b></p>`;
+      t.onclick = () => load(i);
+      g.appendChild(t);
     });
-    loadArt(0);
+    load(0);
   }
 
-  function loadArt(idx) {
-    const canvas = document.getElementById('canvas');
-    canvas.innerHTML = `<svg viewBox="0 0 800 600">${DRAWINGS[idx].svg}</svg>`;
+  function load(idx) {
+    const v = document.getElementById('canvas');
+    v.innerHTML = `<svg viewBox="0 0 800 600">${ART[idx].svg}</svg>`;
     document.getElementById('gallery').classList.add('hidden');
-    canvas.querySelectorAll('.paint-zone').forEach(path => {
+    v.querySelectorAll('.p').forEach(path => {
       path.onclick = (e) => {
         e.stopPropagation();
-        path.style.fill = currentSelection;
-        playPaintSound();
+        path.style.fill = activeCol;
+        brushEffect();
       };
     });
   }
 
-  function showGallery() { document.getElementById('gallery').classList.remove('hidden'); }
+  function openGal() { document.getElementById('gallery').classList.remove('hidden'); }
 
-  // --- AUDIO ENGINE ---
-  function getCtx() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    return audioCtx;
+  function magicFill() {
+    document.querySelectorAll('.p').forEach(p => {
+      p.style.fill = COLORS[Math.floor(Math.random()*COLORS.length)];
+    });
+    beep(660);
   }
 
-  function playTone(freq, type, dur) {
-    const ctx = getCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type; osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + dur);
+  // --- AUDIO ---
+  function getA() {
+    if(!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(aCtx.state==='suspended') aCtx.resume();
+    return aCtx;
   }
 
-  function playPaintSound() {
-    const ctx = getCtx();
-    const bufferSize = ctx.sampleRate * 0.15;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1000, ctx.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.15);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.1, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-    noise.connect(filter); filter.connect(g); g.connect(ctx.destination);
-    noise.start();
-    playTone(200, 'triangle', 0.2); // Squelch
+  function beep(f) {
+    const c = getA();
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0.1, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.1);
+    o.start(); o.stop(c.currentTime + 0.1);
+  }
+
+  function brushEffect() {
+    const c = getA();
+    const b = c.createBuffer(1, c.sampleRate * 0.2, c.sampleRate);
+    const d = b.getChannelData(0);
+    for(let i=0; i<b.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = c.createBufferSource();
+    s.buffer = b;
+    const f = c.createBiquadFilter();
+    f.type = 'lowpass'; f.frequency.value = 500;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.08, c.currentTime);
+    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.2);
+    s.connect(f); f.connect(g); g.connect(c.destination);
+    s.start();
   }
 
   function toggleMusic() {
-    getCtx();
-    musicIsOn = !musicIsOn;
-    document.getElementById('m-btn').innerText = musicIsOn ? "🎵 Music: On" : "🎵 Music: Off";
-    if (musicIsOn) startLoop();
+    getA();
+    music = !music;
+    document.getElementById('m-btn').innerText = music ? "🎵 Music On" : "🎵 Music Off";
+    if(music) loop();
   }
 
-  function startLoop() {
-    if (!musicIsOn) return;
-    const scale = [261.6, 329.6, 392.0, 440.0, 523.2];
-    playTone(scale[Math.floor(Math.random()*scale.length)], 'sine', 1.0);
-    setTimeout(startLoop, 800);
+  function loop() {
+    if(!music) return;
+    const c = getA();
+    const n = [261.6, 329.6, 392.0, 523.2][Math.floor(Math.random()*4)];
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = 'sine'; o.frequency.value = n;
+    g.gain.setValueAtTime(0.04, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 1.5);
+    o.connect(g); g.connect(c.destination);
+    o.start();
+    setTimeout(loop, 700);
   }
 
-  init();
+  setup();
 </script>
 </body>
 </html>
