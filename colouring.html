@@ -2,472 +2,449 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Magic Colour Tap | Salam Adventures</title>
+  <meta name="description" content="Online tap-to-colour game for kids. Choose a picture, pick a colour, tap to fill, and sparkle when finished!" />
+
   <style>
     :root{
-      --bg1:#ffe9f3; --bg2:#e9fbff;
-      --ink:#111827; --muted:#6b7280;
-      --radius:22px;
+      --frame-radius: 28px;
+      --frame-thickness: 10px;
+      --pop-depth: 20px;
+
+      --ink:#111827;
+      --muted:#6b7280;
+      --panel: rgba(255,255,255,.92);
     }
-    *{box-sizing:border-box}
+
+    html,body{height:100%;}
     body{
       margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
       background:
-        radial-gradient(1200px 700px at 15% 10%, rgba(255,79,163,.22), transparent 60%),
-        radial-gradient(1000px 650px at 85% 30%, rgba(56,189,248,.22), transparent 55%),
-        radial-gradient(900px 550px at 45% 90%, rgba(251,191,36,.18), transparent 55%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      overflow-x:hidden;
-      color:var(--ink);
+        radial-gradient(1200px 700px at 30% 10%, rgba(255,255,255,.95), rgba(255,255,255,.65)),
+        linear-gradient(135deg, rgba(255,220,235,.35), rgba(210,240,255,.35));
+      display:grid;
+      place-items:center;
+      padding: 10px;
+      overflow:hidden;
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
     }
 
-    /* background sparkles */
-    .sparkle-layer{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
-    .sparkle{
-      position:absolute; width:10px; height:10px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%);
-      filter: drop-shadow(0 0 8px rgba(255,255,255,.65));
-      opacity:0;
-      animation: floatSparkle linear forwards;
-    }
-    @keyframes floatSparkle{
-      0%{transform:translateY(40px) scale(.6); opacity:0;}
-      15%{opacity:.9;}
-      70%{opacity:.55;}
-      100%{transform:translateY(-120vh) scale(1.15); opacity:0;}
+    /* 3D frame */
+    .neon-frame{
+      position: relative;
+      border-radius: var(--frame-radius);
+      transform: perspective(1200px) rotateX(2.2deg);
+      filter: drop-shadow(0 22px 46px rgba(0,0,0,.14));
     }
 
-    /* flashing sparkly border */
-    .panel{
-      width:min(980px, 100%);
-      position:relative;
-      z-index:1;
-      border-radius:calc(var(--radius) + 10px);
-      padding:6px;
-      background: conic-gradient(from 0deg,
-        #ff4fa3, #38bdf8, #fbbf24, #34d399, #a78bfa, #ff4fa3);
-      animation: rainbowSpin 2.8s linear infinite;
-      box-shadow: 0 18px 45px rgba(0,0,0,.16);
-    }
-    .panel::after{
+    /* Flashing edge lights ONLY */
+    .neon-frame::before{
       content:"";
       position:absolute;
-      inset:-6px;
-      border-radius:calc(var(--radius) + 16px);
+      inset: calc(-1 * var(--frame-thickness));
+      border-radius: calc(var(--frame-radius) + var(--frame-thickness));
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.85), transparent 30%),
-        radial-gradient(circle at 80% 25%, rgba(255,255,255,.75), transparent 28%),
-        radial-gradient(circle at 60% 85%, rgba(255,255,255,.65), transparent 30%),
-        radial-gradient(circle at 30% 80%, rgba(255,255,255,.55), transparent 32%);
-      filter: drop-shadow(0 0 12px rgba(255,255,255,.55));
-      opacity:.55;
-      animation: borderSparkle 1.6s ease-in-out infinite alternate;
+        conic-gradient(from 0deg,
+          #ff4fd8, #ffcc00, #4dff7a, #33c3ff, #8a5bff, #ff4fd8
+        );
+      animation: edgeSpin 2.2s linear infinite;
+      box-shadow:
+        0 0 20px rgba(255,79,216,.22),
+        0 0 34px rgba(51,195,255,.18),
+        0 0 50px rgba(255,204,0,.12);
+      filter: saturate(1.2);
+      z-index: 0;
+    }
+
+    /* Mask middle so glow stays on the border only */
+    .neon-frame::after{
+      content:"";
+      position:absolute;
+      inset: 0;
+      border-radius: var(--frame-radius);
+      background: rgba(255,255,255,.86);
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      padding: var(--frame-thickness);
       pointer-events:none;
-      mix-blend-mode: screen;
-    }
-    @keyframes rainbowSpin{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
-    @keyframes borderSparkle{0%{opacity:.30; transform:scale(1)}100%{opacity:.78; transform:scale(1.01)}}
-
-    .inner{
-      background:rgba(255,255,255,.86);
-      backdrop-filter: blur(10px);
-      border-radius:var(--radius);
-      padding:18px 18px 14px;
-      border: 1px solid rgba(0,0,0,.06);
+      z-index: 1;
     }
 
-    .top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
-      margin-bottom:10px;
+    @keyframes edgeSpin{
+      0% { transform: rotate(0deg); opacity: .95; }
+      50%{ opacity: 1; }
+      100%{ transform: rotate(360deg); opacity: .95; }
     }
-    .title{margin:0; font-weight:1000; letter-spacing:-.02em; font-size: clamp(18px, 3.2vw, 28px);}
-    .sub{margin:6px 0 0; color:var(--muted); font-size:14px; line-height:1.35}
-    .toggle{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); user-select:none; margin-left:auto}
-    .toggle input{transform:scale(1.1)}
 
-    .stage{
-      position:relative;
-      border-radius:18px;
-      border:1px solid rgba(0,0,0,.10);
-      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,247,251,.94));
-      box-shadow: 0 18px 40px rgba(0,0,0,.12);
+    /* Game surface: BIGGER screen */
+    .game-surface{
+      position: relative;
+      border-radius: var(--frame-radius);
+      background: var(--panel);
+      overflow: hidden;
+      transform: translateZ(var(--pop-depth));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.75),
+        0 14px 34px rgba(0,0,0,.10);
+      z-index: 2;
+
+      /* bigger: uses almost full screen */
+      width: min(1280px, 98vw);
+      height: min(820px, 96vh);
+      display:flex;
+      flex-direction: column;
+    }
+
+    /* IMPORTANT: no filters inside (prevents colour distortion) */
+    .game-surface *{
+      filter: none !important;
+      backdrop-filter: none !important;
+    }
+
+    .sparkles{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
       overflow:hidden;
-      padding:12px;
+      border-radius: var(--frame-radius);
+      display:none;
+      z-index: 5;
     }
+    .sparkles.on{ display:block; }
 
-    /* confetti + glitter */
-    .confetti, .glitter{position:absolute; inset:0; pointer-events:none;}
-    .confetti{opacity:0; transition:opacity .12s ease;}
-    .confetti.on{opacity:1}
-    .confetti i{
-      position:absolute; width:10px; height:16px; border-radius:3px;
-      animation: fall 720ms linear forwards;
-      top:-22px; left:50%; transform:translateX(-50%);
-    }
-    @keyframes fall{to{transform:translate(var(--dx), 420px) rotate(360deg); opacity:0;}}
-    .glitter b{
-      position:absolute; width:8px; height:8px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,1), rgba(255,255,255,0) 70%);
-      filter: drop-shadow(0 0 10px rgba(255,255,255,.85));
-      animation: pop 560ms ease-out forwards;
-      opacity:0;
+    .spark{
+      position:absolute;
+      width: 10px; height: 10px;
+      border-radius: 4px;
+      opacity: 0;
+      animation: pop 900ms ease-out forwards;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
     }
     @keyframes pop{
-      0%{transform:translate(0,0) scale(.6); opacity:0;}
-      20%{opacity:1;}
-      100%{transform:translate(var(--dx), var(--dy)) scale(1.2); opacity:0;}
+      0%{ transform: translate(var(--x), var(--y)) scale(.6) rotate(0deg); opacity: 0; }
+      15%{ opacity: 1; }
+      100%{ transform: translate(calc(var(--x) * 1.9), calc(var(--y) * 1.9)) scale(1.2) rotate(240deg); opacity: 0; }
     }
 
-    /* palette */
+    /* Header */
+    .topbar{
+      padding: 16px 16px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .title{
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(20px, 2.2vw, 30px);
+      letter-spacing: .2px;
+      font-weight: 1000;
+    }
+    .sub{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .btnrow{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .btn{
+      border: 1px solid rgba(0,0,0,.10);
+      background: white;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 900;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(0,0,0,.06);
+      transition: transform .12s ease, box-shadow .12s ease;
+      user-select:none;
+    }
+    .btn:active{
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,.06);
+    }
+    .btn.dark{
+      background: linear-gradient(180deg, #111827, #0b1220);
+      color: #fff;
+      border-color: rgba(0,0,0,.25);
+    }
+
+    /* Body layout: Gallery OR Colouring board (single panel) */
+    .content{
+      flex: 1;
+      display:flex;
+      gap: 12px;
+      padding: 0 16px 16px;
+      min-height:0;
+    }
+
+    /* Left main zone */
+    .main{
+      flex: 1;
+      min-width:0;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height:0;
+    }
+
+    /* Right palette zone (still within the single panel) */
+    .side{
+      width: 320px;
+      max-width: 38vw;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height:0;
+    }
+
+    .card{
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      box-shadow: 0 16px 30px rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+
+    /* Gallery */
+    .gallery{
+      flex: 1;
+      display:flex;
+      flex-direction: column;
+      min-height:0;
+    }
+    .galleryGrid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+      overflow:auto;
+    }
+    @media (max-width: 980px){
+      .content{flex-direction: column;}
+      .side{width:auto; max-width:none;}
+      .galleryGrid{grid-template-columns: repeat(2, minmax(0, 1fr));}
+    }
+    @media (max-width: 560px){
+      .galleryGrid{grid-template-columns: 1fr;}
+    }
+
+    .thumb{
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.86);
+      cursor:pointer;
+      padding: 10px;
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 12px 22px rgba(0,0,0,.08);
+      transition: transform .12s ease;
+    }
+    .thumb:active{ transform: scale(.99); }
+
+    .thumbTitle{
+      margin:0;
+      font-weight: 1000;
+      font-size: 14px;
+    }
+    .thumbNote{
+      margin:0;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      line-height:1.25;
+    }
+
+    .miniPreview{
+      width:100%;
+      height: 150px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      border-radius: 14px;
+      background:
+        radial-gradient(600px 260px at 30% 10%, rgba(255,255,255,.9), rgba(255,255,255,.55)),
+        linear-gradient(135deg, rgba(255,220,235,.25), rgba(210,240,255,.25));
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .miniPreview svg{ width: 100%; height: 100%; }
+
+    /* Colouring board */
+    .boardWrap{
+      flex: 1;
+      display:none;
+      min-height:0;
+    }
+    .boardWrap.on{ display:flex; flex-direction: column; gap: 10px; min-height:0; }
+
+    .board{
+      flex: 1;
+      display:grid;
+      place-items:center;
+      padding: 10px;
+      min-height:0;
+    }
+    .board svg{
+      width: min(920px, 100%);
+      height: auto;
+      max-height: 56vh;
+    }
+
+    .hint{
+      padding: 10px 12px;
+      text-align:center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      border-top: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.7);
+    }
+
+    /* Palette */
     .palette{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
-      padding-top:12px;
+      padding: 12px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content:center;
+      align-items:center;
     }
     .swatch{
-      width:42px; height:42px; border-radius:999px;
-      border:2px solid rgba(0,0,0,.14);
-      box-shadow: 0 10px 0 rgba(0,0,0,.10), 0 16px 22px rgba(0,0,0,.12);
-      cursor:pointer; position:relative;
-      transition: transform .08s ease;
-      touch-action: manipulation;
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 3px solid rgba(255,255,255,.9);
+      box-shadow: 0 12px 20px rgba(0,0,0,.10);
+      cursor:pointer;
+      position: relative;
+      transition: transform .12s ease;
     }
-    .swatch:active{transform: translateY(2px); box-shadow: 0 8px 0 rgba(0,0,0,.10), 0 12px 18px rgba(0,0,0,.10);}
+    .swatch:active{ transform: scale(.98); }
     .swatch.selected::after{
       content:"✓";
-      position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      font-weight:1000; color:#0b1220;
-      text-shadow:0 2px 0 rgba(255,255,255,.6);
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      font-weight: 1000;
+      color: rgba(0,0,0,.75);
+      text-shadow: 0 1px 0 rgba(255,255,255,.7);
+      font-size: 16px;
     }
 
-    .actions{
-      display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
-      margin-top:10px;
+    .sideTop{
+      padding: 12px 12px 8px;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .btn{
-      appearance:none; border:none; border-radius:16px;
-      padding:10px 13px; font-weight:1000; cursor:pointer; font-size:13px;
-      box-shadow: 0 10px 0 rgba(0,0,0,.12), 0 18px 26px rgba(0,0,0,.16);
-      transition: transform .08s ease;
-      background: linear-gradient(180deg, #111827, #0b1220);
-      color:#fff;
+    .sideTitle{
+      margin:0;
+      font-weight: 1000;
+      font-size: 16px;
     }
-    .btn.secondary{
-      background: linear-gradient(180deg, #ffffff, #f3f4f6);
-      color:#111827;
-      border:1px solid rgba(0,0,0,.12);
-      box-shadow: 0 10px 0 rgba(0,0,0,.08), 0 18px 26px rgba(0,0,0,.12);
+    .sideSub{
+      margin:0;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12.5px;
+      line-height:1.3;
     }
-    .btn:active{transform: translateY(2px); box-shadow: 0 8px 0 rgba(0,0,0,.12), 0 14px 22px rgba(0,0,0,.14);}
 
-    .hintbar{
-      margin-top:10px;
-      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center;
-      color:var(--muted);
-      font-weight:800; font-size:13px;
-    }
-    .badge{
-      border-radius:999px;
-      padding:8px 10px;
-      background: rgba(56,189,248,.12);
-      border: 1px solid rgba(56,189,248,.22);
-    }
-    .badge.pink{background: rgba(255,79,163,.10); border-color: rgba(255,79,163,.20);}
-
-    /* SVG click areas */
-    svg{width:100%; height:auto; display:block;}
-    .tapArea{
-      cursor:pointer;
-      transition: filter .12s ease, transform .08s ease;
-      transform-origin:center;
-    }
-    .tapArea:hover{filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));}
-    .tapArea:active{transform: scale(0.99);}
+    /* SVG shape styling */
     .outline{
-      fill: rgba(255,255,255,.65);
-      stroke:#0b1220;
-      stroke-width:6;
-      stroke-linecap:round;
-      stroke-linejoin:round;
+      fill: #ffffff;
+      stroke: rgba(0,0,0,.55);
+      stroke-width: 4;
+      stroke-linejoin: round;
+      cursor: pointer;
+      transition: stroke .12s ease;
     }
-    .strokeOnly{
-      fill:none;
-      stroke:#0b1220;
-      stroke-width:6;
-      stroke-linecap:round;
-      stroke-linejoin:round;
-      pointer-events:none;
-      opacity:.95;
+    .outline:hover{ stroke: rgba(0,0,0,.72); }
+
+    /* Small helper */
+    .small{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 850;
+    }
+
+    @media (max-width: 700px){
+      :root{ --frame-thickness: 8px; }
+      .neon-frame{ transform: perspective(900px) rotateX(2deg); }
+      .game-surface{ height: min(860px, 96vh); }
+      .board svg{ max-height: 48vh; }
     }
   </style>
 </head>
 
 <body>
-  <div class="sparkle-layer" id="sparkleLayer"></div>
+  <div class="neon-frame">
+    <div class="game-surface">
+      <div class="sparkles" id="sparkles"></div>
 
-  <main class="panel">
-    <div class="inner">
-      <div class="top">
-        <div>
-          <h1 class="title">Magic Colour Tap</h1>
-          <p class="sub">Tap a colour, then tap the picture to fill it. When it’s finished… it sparkles! ✨</p>
+      <div class="topbar">
+        <div class="title">
+          <h1>Magic Colour Tap</h1>
+          <p class="sub">Choose a picture, pick a colour, then tap to fill. Finish the whole picture to get a sparkle celebration.</p>
         </div>
-        <label class="toggle" title="Uses your device voice">
-          <input id="soundToggle" type="checkbox" checked />
-          Sound on
-        </label>
+        <div class="btnrow">
+          <button class="btn" id="backBtn" type="button" style="display:none;">Back to pictures</button>
+          <button class="btn" id="resetBtn" type="button" style="display:none;">Reset</button>
+          <button class="btn" id="surpriseBtn" type="button" style="display:none;">Surprise colours</button>
+          <button class="btn dark" id="musicBtn" type="button" aria-pressed="true">Music: On</button>
+        </div>
       </div>
 
-      <section class="stage" aria-label="Colouring picture">
-        <div class="confetti" id="confetti"></div>
-        <div class="glitter" id="glitter"></div>
+      <div class="content">
+        <div class="main">
+          <!-- GALLERY -->
+          <div class="card gallery" id="galleryCard">
+            <div style="padding:12px 12px 0; display:flex; align-items:flex-end; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+              <div>
+                <div style="font-weight:1000; font-size:16px;">Pick a colouring picture</div>
+                <div class="small">Tap one to start. You can come back anytime.</div>
+              </div>
+              <div class="small">6 pictures • tap-to-fill</div>
+            </div>
 
-        <!-- One clean panel: picture only -->
-        <svg viewBox="0 0 1200 720" role="img" aria-label="Smiling star in clouds colouring page">
-          <!-- dreamy sky -->
-          <defs>
-            <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#bfe7ff"/>
-              <stop offset="1" stop-color="#ffe6f2"/>
-            </linearGradient>
-            <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="6" result="blur"/>
-              <feColorMatrix type="matrix"
-                values="1 0 0 0 0
-                        0 1 0 0 0
-                        0 0 1 0 0
-                        0 0 0 0.6 0" result="alpha"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
+            <div class="galleryGrid" id="galleryGrid"></div>
 
-          <rect x="0" y="0" width="1200" height="720" fill="url(#sky)"/>
+            <div class="hint">Tip: After you choose a picture, tap shapes to colour them in.</div>
+          </div>
 
-          <!-- twinkles (non-click) -->
-          <g opacity="0.55" filter="url(#softGlow)">
-            <circle cx="160" cy="120" r="6" fill="#fff"/>
-            <circle cx="280" cy="190" r="4" fill="#fff"/>
-            <circle cx="980" cy="140" r="6" fill="#fff"/>
-            <circle cx="1040" cy="240" r="4" fill="#fff"/>
-            <circle cx="860" cy="90" r="4" fill="#fff"/>
-            <circle cx="520" cy="120" r="5" fill="#fff"/>
-            <circle cx="640" cy="210" r="4" fill="#fff"/>
-            <circle cx="760" cy="160" r="5" fill="#fff"/>
-          </g>
-
-          <!-- CLICK AREAS -->
-          <!-- cloud left -->
-          <path id="cloudLeft" class="tapArea outline"
-            d="M190,500
-               C150,500 120,470 120,430
-               C120,395 148,367 185,367
-               C200,320 245,287 300,287
-               C350,287 392,312 412,349
-               C430,340 452,335 475,335
-               C540,335 592,387 592,452
-               C592,490 562,520 524,520
-               L210,520
-               C200,520 190,510 190,500 Z" />
-
-          <!-- cloud right -->
-          <path id="cloudRight" class="tapArea outline"
-            d="M620,520
-               C585,520 558,492 558,457
-               C558,418 590,387 630,387
-               C646,338 692,304 747,304
-               C792,304 830,327 853,360
-               C867,355 883,352 900,352
-               C960,352 1008,400 1008,460
-               C1008,498 978,528 940,528
-               L640,528
-               C628,528 620,526 620,520 Z" />
-
-          <!-- big star -->
-          <path id="star" class="tapArea outline"
-            d="M600,210
-               L675,360
-               L840,385
-               L720,500
-               L750,670
-               L600,590
-               L450,670
-               L480,500
-               L360,385
-               L525,360
-               Z" />
-
-          <!-- cheeks (separate fill areas) -->
-          <ellipse id="cheekLeft" class="tapArea outline" cx="535" cy="450" rx="38" ry="28"/>
-          <ellipse id="cheekRight" class="tapArea outline" cx="665" cy="450" rx="38" ry="28"/>
-
-          <!-- face lines (non-click) -->
-          <g class="strokeOnly">
-            <!-- eyes -->
-            <circle cx="545" cy="410" r="18"/>
-            <circle cx="655" cy="410" r="18"/>
-            <circle cx="552" cy="405" r="5" fill="#0b1220" stroke="none"/>
-            <circle cx="662" cy="405" r="5" fill="#0b1220" stroke="none"/>
-            <!-- smile -->
-            <path d="M545,485 C575,520 625,520 655,485"/>
-          </g>
-        </svg>
-
-        <!-- palette (mix of pastel + bold) -->
-        <div class="palette" aria-label="Colour palette">
-          <button class="swatch selected" data-color="#FDE68A" style="background:#FDE68A" aria-label="Soft yellow"></button>
-          <button class="swatch" data-color="#93C5FD" style="background:#93C5FD" aria-label="Soft blue"></button>
-          <button class="swatch" data-color="#FBCFE8" style="background:#FBCFE8" aria-label="Soft pink"></button>
-          <button class="swatch" data-color="#A7F3D0" style="background:#A7F3D0" aria-label="Soft mint"></button>
-          <button class="swatch" data-color="#C4B5FD" style="background:#C4B5FD" aria-label="Soft lilac"></button>
-
-          <button class="swatch" data-color="#EF4444" style="background:#EF4444" aria-label="Red"></button>
-          <button class="swatch" data-color="#3B82F6" style="background:#3B82F6" aria-label="Blue"></button>
-          <button class="swatch" data-color="#22C55E" style="background:#22C55E" aria-label="Green"></button>
-          <button class="swatch" data-color="#F59E0B" style="background:#F59E0B" aria-label="Orange"></button>
-          <button class="swatch" data-color="#A855F7" style="background:#A855F7" aria-label="Purple"></button>
+          <!-- BOARD -->
+          <div class="card boardWrap" id="boardCard">
+            <div class="board" id="board"></div>
+            <div class="hint" id="hint">Pick a colour, then tap a shape.</div>
+          </div>
         </div>
 
-        <div class="actions">
-          <button class="btn secondary" id="resetBtn" type="button">↩ Reset</button>
-          <button class="btn" id="finishBtn" type="button">✨ Celebrate</button>
-        </div>
-
-        <div class="hintbar">
-          <span class="badge">Tap & Fill</span>
-          <span class="badge pink">Pieces coloured: <span id="count">0</span>/5</span>
-        </div>
-      </section>
-    </div>
-  </main>
-
-<script>
-  // sparkles background
-  const sparkleLayer = document.getElementById("sparkleLayer");
-  function spawnSparkle(){
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left=Math.random()*100+"vw";
-    s.style.top=(100+Math.random()*20)+"vh";
-    const size=6+Math.random()*10;
-    s.style.width=size+"px"; s.style.height=size+"px";
-    s.style.animationDuration=(5+Math.random()*5)+"s";
-    sparkleLayer.appendChild(s);
-    setTimeout(()=>s.remove(),11000);
-  }
-  setInterval(spawnSparkle,220);
-
-  // speech (optional)
-  const soundToggle = document.getElementById("soundToggle");
-  function speak(text){
-    try{
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.92; u.pitch = 1.12; u.volume = 1;
-      window.speechSynthesis.speak(u);
-    }catch(e){}
-  }
-
-  // confetti + glitter
-  const confetti = document.getElementById("confetti");
-  const glitter = document.getElementById("glitter");
-  function popConfetti(){
-    confetti.innerHTML="";
-    confetti.classList.add("on");
-    const colors = ["#ff4fa3","#38bdf8","#fbbf24","#34d399","#a78bfa"];
-    for(let i=0;i<24;i++){
-      const p=document.createElement("i");
-      p.style.left=(10+Math.random()*80)+"%";
-      p.style.background=colors[i%colors.length];
-      p.style.setProperty("--dx",(Math.random()*300-150)+"px");
-      p.style.animationDuration=(520+Math.random()*520)+"ms";
-      confetti.appendChild(p);
-    }
-    setTimeout(()=>confetti.classList.remove("on"),600);
-  }
-  function popGlitterBurst(){
-    glitter.innerHTML="";
-    for(let i=0;i<30;i++){
-      const s=document.createElement("b");
-      s.style.left=(50+(Math.random()*30-15))+"%";
-      s.style.top=(40+(Math.random()*18-9))+"%";
-      s.style.setProperty("--dx",(Math.random()*280-140)+"px");
-      s.style.setProperty("--dy",(Math.random()*240-170)+"px");
-      s.style.animationDuration=(420+Math.random()*320)+"ms";
-      glitter.appendChild(s);
-    }
-    setTimeout(()=>glitter.innerHTML="",700);
-  }
-
-  // colouring logic
-  let selectedColor = "#FDE68A";
-  const swatches = [...document.querySelectorAll(".swatch")];
-  swatches.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      swatches.forEach(b=>b.classList.remove("selected"));
-      btn.classList.add("selected");
-      selectedColor = btn.dataset.color;
-      if (soundToggle.checked) speak("Colour selected");
-    });
-  });
-
-  const pieces = [
-    document.getElementById("star"),
-    document.getElementById("cloudLeft"),
-    document.getElementById("cloudRight"),
-    document.getElementById("cheekLeft"),
-    document.getElementById("cheekRight"),
-  ];
-  const total = pieces.length;
-  const countEl = document.getElementById("count");
-
-  function updateCount(){
-    const done = pieces.filter(p=>p.dataset.filled==="1").length;
-    countEl.textContent = done;
-    if (done === total) celebrate(true);
-  }
-
-  function fillPiece(el){
-    el.style.fill = selectedColor;
-    el.dataset.filled = "1";
-    popGlitterBurst();
-    if (soundToggle.checked) speak("Nice!");
-    updateCount();
-  }
-
-  pieces.forEach(el=>{
-    el.addEventListener("click", ()=>fillPiece(el));
-  });
-
-  function resetAll(){
-    pieces.forEach(el=>{
-      el.style.fill = "rgba(255,255,255,.65)";
-      el.dataset.filled = "0";
-    });
-    countEl.textContent = "0";
-    if (soundToggle.checked) speak("All clean. Let’s colour again!");
-  }
-
-  function celebrate(auto=false){
-    popConfetti();
-    popGlitterBurst();
-    if (soundToggle.checked) speak(auto ? "Beautiful colouring! You finished it!" : "Yay! Sparkle time!");
-  }
-
-  document.getElementById("resetBtn").addEventListener("click", resetAll);
-  document.getElementById("finishBtn").addEventListener("click", ()=>celebrate(false));
-
-  // init
-  resetAll();
-</script>
-</body>
-</html>
+        <!-- PALETTE (only shows while colouring) -->
+        <div class="side" id="sidePanel" style="display:none;">
+          <div class="card">
+            <div class="sideTop">
+              <p class="sideTitle">Pick a colour</p>
+              <p class="sideSub" id="pickedLabel">Colour selected: Sunshine</p
