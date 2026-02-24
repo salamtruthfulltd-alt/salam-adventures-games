@@ -8,15 +8,14 @@
     :root{
       --bg1:#fde7ef;
       --bg2:#e6f4ff;
-      --ink:#1f2937;
+      --ink:#111827;
       --muted:#6b7280;
-      --panel:#ffffffea;
-      --panel2:#ffffffd6;
-      --shadow: 0 24px 70px rgba(0,0,0,.14);
-      --shadow2: 0 14px 30px rgba(0,0,0,.12);
+      --panel:#ffffffef;
+      --shadow: 0 26px 80px rgba(0,0,0,.16);
+      --shadow2: 0 16px 34px rgba(0,0,0,.12);
       --radius: 22px;
 
-      /* Fixed colourful border (NOT spinning) */
+      /* FIXED colourful border (no rotation) */
       --borderGrad: conic-gradient(
         from 180deg,
         #ff5fa2, #ffcc3a, #58e3ff, #7c5cff, #ff8b3a, #62f5a6, #ff5fa2
@@ -33,7 +32,6 @@
         radial-gradient(1200px 700px at 10% 10%, #ffffffaa 0, transparent 55%),
         radial-gradient(900px 650px at 90% 10%, #ffffffaa 0, transparent 50%),
         linear-gradient(120deg, var(--bg1), var(--bg2));
-      overflow-x:hidden;
     }
 
     .wrap{
@@ -41,30 +39,27 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:18px;
+      padding:16px;
     }
 
-    /* 3D frame with fixed colourful border */
     .frame{
-      width:min(1120px, 100%);
-      border-radius: calc(var(--radius) + 8px);
-      background:
-        var(--borderGrad) border-box;
-      padding:10px; /* border thickness */
+      width:min(1200px, 100%);
+      border-radius: calc(var(--radius) + 10px);
+      background: var(--borderGrad) border-box;
+      padding: 10px;
       box-shadow: var(--shadow);
       position:relative;
     }
-    /* subtle sparkle dots on the border (static-ish, not rotating) */
     .frame::before{
       content:"";
       position:absolute;
-      inset:6px;
-      border-radius: calc(var(--radius) + 4px);
+      inset:7px;
+      border-radius: calc(var(--radius) + 6px);
       pointer-events:none;
       background:
-        radial-gradient(6px 6px at 12% 20%, rgba(255,255,255,.55) 0 55%, transparent 58%),
-        radial-gradient(5px 5px at 82% 22%, rgba(255,255,255,.50) 0 55%, transparent 58%),
-        radial-gradient(4px 4px at 70% 80%, rgba(255,255,255,.45) 0 55%, transparent 58%),
+        radial-gradient(6px 6px at 10% 18%, rgba(255,255,255,.55) 0 55%, transparent 58%),
+        radial-gradient(5px 5px at 85% 22%, rgba(255,255,255,.50) 0 55%, transparent 58%),
+        radial-gradient(4px 4px at 70% 85%, rgba(255,255,255,.45) 0 55%, transparent 58%),
         radial-gradient(5px 5px at 25% 78%, rgba(255,255,255,.45) 0 55%, transparent 58%);
       mix-blend-mode: screen;
       opacity:.85;
@@ -72,31 +67,40 @@
 
     .card{
       border-radius: var(--radius);
-      background: linear-gradient(180deg, var(--panel), var(--panel2));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+      background: var(--panel);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
       overflow:hidden;
+      position:relative;
     }
 
     .top{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
-      gap:14px;
-      padding:16px 16px 10px;
+      gap:12px;
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(0,0,0,.06);
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.86));
     }
 
     .title{
-      line-height:1.1;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      min-width: 220px;
     }
     .title h1{
       margin:0;
-      font-size: clamp(22px, 3.2vw, 34px);
+      font-size: clamp(20px, 2.6vw, 30px);
       letter-spacing:-.02em;
+      line-height:1.05;
     }
     .title p{
-      margin:6px 0 0;
+      margin:0;
       color:var(--muted);
-      font-size:14px;
+      font-weight:650;
+      font-size:13px;
+      line-height:1.25;
     }
 
     .controls{
@@ -114,10 +118,10 @@
       color:var(--ink);
       padding:10px 12px;
       border-radius:999px;
-      font-weight:700;
+      font-weight:800;
       font-size:13px;
       cursor:pointer;
-      box-shadow: 0 8px 18px rgba(0,0,0,.08);
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
       user-select:none;
       white-space:nowrap;
     }
@@ -125,9 +129,10 @@
       background:#111827;
       color:#fff;
       border-color: transparent;
-      box-shadow: 0 14px 26px rgba(17,24,39,.22);
+      box-shadow: 0 16px 28px rgba(17,24,39,.22);
     }
     .btn:active{transform:translateY(1px)}
+
     .toggle{
       display:flex;
       align-items:center;
@@ -136,41 +141,30 @@
       border-radius:999px;
       background:#fff;
       border:1px solid rgba(0,0,0,.10);
-      box-shadow: 0 8px 18px rgba(0,0,0,.08);
-      font-weight:700;
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+      font-weight:800;
       font-size:13px;
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
     }
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      background:#22c55e;
-      box-shadow: 0 0 0 4px rgba(34,197,94,.18);
-    }
-    .dot.off{
-      background:#9ca3af;
-      box-shadow: 0 0 0 4px rgba(156,163,175,.18);
+    .dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+    .dot.off{background:#9ca3af;box-shadow:0 0 0 4px rgba(156,163,175,.18)}
+
+    /* SINGLE PANEL GAME AREA */
+    .game{
+      position:relative;
+      padding: 12px;
     }
 
-    .main{
-      display:grid;
-      grid-template-columns: 1fr 320px;
-      gap:14px;
-      padding: 12px 16px 16px;
-    }
-
-    /* bigger art board */
     .board{
       border-radius:18px;
-      background: rgba(255,255,255,.92);
+      background:#fff;
       border:1px solid rgba(0,0,0,.08);
       box-shadow: var(--shadow2);
       overflow:hidden;
       position:relative;
-      min-height: 520px;
-      display:flex;
-      flex-direction:column;
+      min-height: 560px;
     }
 
     .boardHeader{
@@ -182,14 +176,11 @@
       border-bottom:1px solid rgba(0,0,0,.06);
       background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.90));
     }
-
     .hint{
-      font-weight:800;
+      font-weight:900;
       font-size:13px;
       color:#374151;
     }
-    .hint small{font-weight:700;color:#6b7280}
-
     .badge{
       font-weight:900;
       font-size:12px;
@@ -202,80 +193,62 @@
     }
 
     .canvasWrap{
-      flex:1;
+      position:relative;
+      height: calc(100% - 44px);
+      min-height: 516px;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:12px;
       background:
-        radial-gradient(1200px 400px at 10% 10%, rgba(255,92,162,.06), transparent 60%),
-        radial-gradient(1000px 400px at 90% 10%, rgba(88,227,255,.07), transparent 55%),
-        radial-gradient(900px 460px at 50% 100%, rgba(98,245,166,.06), transparent 58%);
+        radial-gradient(1200px 420px at 10% 10%, rgba(255,92,162,.06), transparent 60%),
+        radial-gradient(1000px 420px at 90% 10%, rgba(88,227,255,.07), transparent 55%),
+        radial-gradient(900px 520px at 50% 100%, rgba(98,245,166,.06), transparent 58%);
     }
 
-    /* the actual SVG holder */
     .art{
-      width: min(760px, 100%);
+      width:min(900px, 100%);
       aspect-ratio: 4 / 3;
-      max-height: 520px;
+      max-height: 620px;
       border-radius:16px;
       background:#fff;
       border:1px solid rgba(0,0,0,.08);
-      box-shadow: 0 18px 32px rgba(0,0,0,.10);
+      box-shadow: 0 20px 38px rgba(0,0,0,.12);
       overflow:hidden;
       position:relative;
     }
+    .art svg{width:100%;height:100%;display:block;background:#fff}
 
-    .art svg{
-      width:100%;
-      height:100%;
-      display:block;
-      background:#fff;
-    }
-
-    /* colouring areas */
-    .paint{
-      cursor:pointer;
-      transition: filter .12s ease, transform .12s ease;
-    }
-    .paint:hover{
-      filter: brightness(1.03);
-    }
-    .paint:active{
-      transform: translateY(0.5px);
-    }
-
-    .side{
-      border-radius:18px;
-      background: rgba(255,255,255,.92);
-      border:1px solid rgba(0,0,0,.08);
-      box-shadow: var(--shadow2);
-      padding:12px;
+    /* IMPORTANT: palette is OVERLAY inside the board (never underneath) */
+    .paletteBar{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:12px;
       display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height: 520px;
-    }
-
-    .panelTitle{
-      font-weight:900;
-      margin:0;
-      font-size:14px;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 10px;
+      border-radius:16px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.10);
+      box-shadow: 0 14px 26px rgba(0,0,0,.12);
+      backdrop-filter: blur(6px);
     }
 
     .palette{
-      display:grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap:10px;
-      padding:10px;
-      background: rgba(17,24,39,.03);
-      border:1px solid rgba(0,0,0,.06);
-      border-radius:16px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      width:100%;
     }
 
     .swatch{
-      width:100%;
-      aspect-ratio:1/1;
+      width:44px;
+      height:44px;
       border-radius:999px;
       border: 3px solid rgba(255,255,255,.9);
       box-shadow:
@@ -283,6 +256,7 @@
         0 10px 18px rgba(0,0,0,.10);
       cursor:pointer;
       position:relative;
+      flex: 0 0 auto;
     }
     .swatch.selected::after{
       content:"✓";
@@ -294,21 +268,27 @@
       font-weight:1000;
       color:#111827;
       text-shadow: 0 2px 0 rgba(255,255,255,.65);
+      font-size:18px;
     }
 
-    .miniHelp{
-      margin:0;
+    .miniTip{
+      display:none;
+      font-weight:800;
       color:#6b7280;
-      font-size:13px;
-      line-height:1.35;
+      font-size:12px;
+      white-space:nowrap;
+      margin-left:8px;
     }
 
     .gallery{
-      display:none;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
       gap:12px;
       padding:12px;
+      width:100%;
+      height:100%;
+      background:#fff;
     }
-    .gallery.show{display:grid; grid-template-columns: repeat(3, 1fr);}
     .thumb{
       border-radius:16px;
       overflow:hidden;
@@ -316,8 +296,10 @@
       background:#fff;
       box-shadow: 0 14px 26px rgba(0,0,0,.10);
       cursor:pointer;
-      transform: translateZ(0);
-      transition: transform .12s ease, filter .12s ease;
+      transition: transform .12s ease;
+      display:flex;
+      flex-direction:column;
+      min-height: 0;
     }
     .thumb:hover{transform: translateY(-2px)}
     .thumb svg{width:100%; height:100%; display:block}
@@ -325,63 +307,59 @@
       padding:10px 10px 12px;
       font-weight:900;
       font-size:13px;
-      color:#111827;
       border-top:1px solid rgba(0,0,0,.06);
       background: linear-gradient(180deg, #fff, #f9fafb);
     }
 
     .toast{
       position:absolute;
-      left:12px; right:12px; bottom:12px;
+      left:12px; right:12px; top:12px;
       background: rgba(17,24,39,.92);
       color:#fff;
       border-radius:14px;
       padding:10px 12px;
-      font-weight:800;
+      font-weight:900;
       font-size:13px;
       opacity:0;
-      transform: translateY(8px);
+      transform: translateY(-8px);
       transition: opacity .18s ease, transform .18s ease;
       pointer-events:none;
+      text-align:center;
     }
     .toast.show{opacity:1; transform: translateY(0)}
 
-    /* Confetti canvas */
     #fx{
       position:absolute;
       inset:0;
       pointer-events:none;
     }
 
-    @media (max-width: 980px){
-      .main{grid-template-columns: 1fr}
-      .side{min-height:auto}
-      .board{min-height: 480px}
-      .art{max-height: 460px}
+    /* keep things readable inside embeds */
+    @media (max-width: 760px){
+      .miniTip{display:block}
+      .swatch{width:40px;height:40px}
+      .gallery{grid-template-columns: repeat(2, 1fr);}
     }
-    @media (max-width: 560px){
-      .controls{justify-content:flex-start}
-      .gallery.show{grid-template-columns: repeat(2, 1fr);}
-      .board{min-height: 420px}
-      .art{aspect-ratio: 1 / 1; max-height: 420px}
-      .palette{grid-template-columns: repeat(5, 1fr)}
+    @media (max-width: 480px){
+      .swatch{width:38px;height:38px}
+      .gallery{grid-template-columns: 1fr;}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="frame" aria-label="Magic Colour Tap game frame">
+    <div class="frame">
       <div class="card">
         <div class="top">
           <div class="title">
             <h1>Magic Colour Tap</h1>
-            <p>Choose a picture, pick a colour, then tap to fill. Finish the picture to unlock a sparkle celebration ✨</p>
+            <p>Pick a picture → pick a colour → tap to fill ✨</p>
           </div>
 
           <div class="controls">
-            <button class="btn" id="backBtn" title="Choose another picture">Back to pictures</button>
-            <button class="btn" id="resetBtn" title="Clear colours">Reset</button>
-            <button class="btn" id="surpriseBtn" title="Random colour fun">Surprise colours</button>
+            <button class="btn" id="backBtn">Pick a picture</button>
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn" id="surpriseBtn">Surprise</button>
 
             <div class="toggle" id="musicToggle" role="button" aria-pressed="true" title="Toggle background music">
               <span class="dot" id="musicDot"></span>
@@ -390,50 +368,44 @@
           </div>
         </div>
 
-        <div class="main">
+        <div class="game">
           <div class="board">
             <div class="boardHeader">
-              <div class="hint" id="hint">
-                Pick a picture, then choose a colour. <small>Tap an area to fill.</small>
-              </div>
+              <div class="hint" id="hint">Pick a picture to start.</div>
               <div class="badge" id="progress">0 / 0 filled</div>
             </div>
 
             <div class="canvasWrap">
-              <div class="art" id="art" aria-label="Colouring canvas">
-                <!-- Confetti canvas -->
+              <div class="art" id="art">
                 <canvas id="fx"></canvas>
 
-                <!-- Gallery -->
-                <div class="gallery show" id="gallery"></div>
+                <!-- toast -->
+                <div class="toast" id="toast">✨ You did it! ✨</div>
 
-                <!-- SVG will be injected here -->
-                <div id="svgHost" style="display:none; width:100%; height:100%;"></div>
+                <!-- gallery -->
+                <div class="gallery" id="gallery"></div>
 
-                <div class="toast" id="toast">✨ Yay! You finished! ✨</div>
+                <!-- svg host -->
+                <div id="svgHost" style="display:none;width:100%;height:100%;"></div>
+
+                <!-- palette overlay INSIDE game (never under) -->
+                <div class="paletteBar" aria-label="Colour palette">
+                  <div class="palette" id="palette"></div>
+                  <div class="miniTip">Tap shapes (not lines)</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="side">
-            <h3 class="panelTitle">Pick a colour</h3>
-            <div class="palette" id="palette"></div>
-            <p class="miniHelp">
-              Tip: Little fingers work best when you <b>tap the shapes</b>, not the lines.  
-              You can change colours anytime. ✨
-            </p>
-            <p class="miniHelp" style="margin-top:auto;">
-              If the game looks “small” inside your website embed, just drag the bottom of the embed box taller.
-            </p>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
 <script>
 (() => {
-  // ---------- Palette ----------
+  // ---- Palette ----
   const COLORS = [
     {name:"Sunshine", hex:"#FFD54A"},
     {name:"Candy Pink", hex:"#FF6FB1"},
@@ -467,283 +439,231 @@
     });
   }
 
-  // ---------- Pictures (Better outlines: thicker stroke + clean shapes) ----------
-  // Each picture is a function returning SVG string. Areas to fill: class="paint" and data-fill="id"
-  const PICTURES = [
-    { id:"garden", label:"Flower Garden", svg: () => svgGarden() },
-    { id:"rocket", label:"Rocket Ride", svg: () => svgRocket() },
-    { id:"dino", label:"Friendly Dino", svg: () => svgDino() },
-    { id:"castle", label:"Fairy Castle", svg: () => svgCastle() },
-    { id:"ocean", label:"Ocean Friends", svg: () => svgOcean() },
-    { id:"stars", label:"Starry Night", svg: () => svgStars() },
-  ];
-
-  function outlineStyle(){
-    return `fill="white" stroke="#1f2937" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"`;
+  // ---- Nicer colouring pages (clean + cute + more detail) ----
+  // Big bold outlines + multiple fill areas for better “real” colouring pages
+  function outline() {
+    return `fill="white" stroke="#111827" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"`;
   }
-
-  function svgWrap(inner){
-    // viewBox 0 0 800 600 (4:3)
+  function wrapSVG(inner){
     return `
-      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Colouring picture">
-        <rect x="0" y="0" width="800" height="600" fill="#ffffff"/>
+      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Colouring page">
+        <rect width="800" height="600" fill="#ffffff"/>
         ${inner}
       </svg>`;
   }
 
-  function svgGarden(){
-    return svgWrap(`
-      <path d="M0 470 C130 420 210 520 320 470 C430 420 520 520 650 470 C720 445 760 450 800 465 L800 600 L0 600 Z"
-        ${outlineStyle()} class="paint" data-fill="hill" />
+  // 1) Cute Unicorn
+  function svgUnicorn(){
+    return wrapSVG(`
+      <!-- clouds -->
+      <path d="M90 170 C130 130 190 125 225 160 C265 195 240 245 195 255 C140 268 85 230 90 170 Z" ${outline()} class="paint" data-fill="cloud1"/>
+      <path d="M560 160 C600 120 675 120 715 160 C750 198 720 250 670 258 C610 268 545 220 560 160 Z" ${outline()} class="paint" data-fill="cloud2"/>
 
-      ${flower(170,350,80,"f1")}
-      ${flower(400,320,105,"f2")}
-      ${flower(640,360,86,"f3")}
+      <!-- rainbow (separate bands to colour) -->
+      <path d="M260 160 C330 95 470 95 540 160 C575 192 590 235 590 275 L560 275 C560 245 548 215 525 192 C465 135 335 135 275 192 C252 215 240 245 240 275 L210 275 C210 235 225 192 260 160 Z" ${outline()} class="paint" data-fill="rain1"/>
+      <path d="M285 180 C345 130 455 130 515 180 C540 202 552 232 552 270 L524 270 C524 246 515 226 498 210 C450 170 350 170 302 210 C285 226 276 246 276 270 L248 270 C248 232 260 202 285 180 Z" ${outline()} class="paint" data-fill="rain2"/>
+      <path d="M310 202 C360 165 440 165 490 202 C508 215 517 235 517 265 L490 265 C490 250 484 238 472 228 C435 198 365 198 328 228 C316 238 310 250 310 265 L283 265 C283 235 292 215 310 202 Z" ${outline()} class="paint" data-fill="rain3"/>
 
-      <path d="M90 220 C120 180 170 170 200 210 C230 250 210 300 160 308 C110 318 70 270 90 220 Z"
-        ${outlineStyle()} class="paint" data-fill="cloud1" />
-      <path d="M600 200 C635 170 690 170 720 205 C750 240 730 290 680 298 C625 306 575 255 600 200 Z"
-        ${outlineStyle()} class="paint" data-fill="cloud2" />
+      <!-- unicorn body -->
+      <path d="M260 370 C245 300 290 245 360 250 C395 210 470 215 500 270
+               C560 275 600 330 575 385 C545 460 460 475 410 440
+               C370 500 270 485 260 410 C255 395 255 382 260 370 Z"
+            ${outline()} class="paint" data-fill="body"/>
 
-      <circle cx="690" cy="120" r="62" ${outlineStyle()} class="paint" data-fill="sun" />
-      <path d="M690 40 L690 10 M690 230 L690 260 M610 120 L580 120 M800 120 L770 120
-               M635 65 L614 44 M745 175 L765 195 M635 175 L614 195 M745 65 L765 44"
-            stroke="#1f2937" stroke-width="6" stroke-linecap="round" />
+      <!-- belly -->
+      <path d="M345 370 C340 320 380 295 420 300 C470 308 500 350 490 395
+               C478 450 410 455 375 430 C355 415 348 395 345 370 Z"
+            ${outline()} class="paint" data-fill="belly"/>
+
+      <!-- head -->
+      <path d="M350 260 C365 215 420 195 460 210 C505 228 510 285 478 315
+               C448 343 395 340 368 312 C350 294 343 282 350 260 Z"
+            ${outline()} class="paint" data-fill="head"/>
+
+      <!-- horn -->
+      <path d="M430 195 L465 120 L498 205 Z" ${outline()} class="paint" data-fill="horn"/>
+      <path d="M455 150 L475 170" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+
+      <!-- mane (sections) -->
+      <path d="M365 240 C335 230 315 255 330 285 C300 285 295 315 320 335 C300 350 315 385 350 380
+               C360 395 388 400 410 390 C430 405 470 395 470 370 C510 370 520 335 495 318
+               C520 295 500 262 470 268 C455 245 400 230 365 240 Z"
+            ${outline()} class="paint" data-fill="mane"/>
+
+      <!-- tail -->
+      <path d="M250 360 C205 350 175 330 150 300 C182 295 210 280 235 260"
+            ${outline()} class="paint" data-fill="tail"/>
+
+      <!-- legs -->
+      <path d="M320 440 C300 500 305 540 350 540 C390 540 395 505 375 445 Z" ${outline()} class="paint" data-fill="leg1"/>
+      <path d="M470 430 C450 495 455 540 500 540 C540 540 545 498 525 435 Z" ${outline()} class="paint" data-fill="leg2"/>
+
+      <!-- stars -->
+      <path d="M690 70 l12 16 20 2-15 12 5 19-17-10-17 10 5-19-15-12 20-2z" ${outline()} class="paint" data-fill="star1"/>
+      <path d="M120 70 l12 16 20 2-15 12 5 19-17-10-17 10 5-19-15-12 20-2z" ${outline()} class="paint" data-fill="star2"/>
+
+      <!-- face -->
+      <circle cx="450" cy="265" r="10" ${outline()} class="paint" data-fill="eye"/>
+      <path d="M430 295 C445 305 462 305 478 295" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="420" cy="292" r="6" ${outline()} class="paint" data-fill="cheek"/>
     `);
   }
 
-  function flower(x,y,size,id){
-    const r = size/3;
-    const pet = `
-      <ellipse cx="${x}" cy="${y-size/2}" rx="${r}" ry="${r*1.25}" ${outlineStyle()} class="paint" data-fill="${id}-p1"/>
-      <ellipse cx="${x+size/2}" cy="${y}" rx="${r}" ry="${r*1.25}" transform="rotate(90 ${x+size/2} ${y})" ${outlineStyle()} class="paint" data-fill="${id}-p2"/>
-      <ellipse cx="${x}" cy="${y+size/2}" rx="${r}" ry="${r*1.25}" ${outlineStyle()} class="paint" data-fill="${id}-p3"/>
-      <ellipse cx="${x-size/2}" cy="${y}" rx="${r}" ry="${r*1.25}" transform="rotate(90 ${x-size/2} ${y})" ${outlineStyle()} class="paint" data-fill="${id}-p4"/>
-    `;
-    const stem = `
-      <path d="M${x} ${y+size/2} C${x} ${y+size} ${x} ${y+size+60} ${x} ${y+size+120}"
-        ${outlineStyle()} class="paint" data-fill="${id}-stem"/>
-      <path d="M${x} ${y+size+60} C${x-50} ${y+size+40} ${x-70} ${y+size+90} ${x-20} ${y+size+100} C${x-5} ${y+size+102} ${x+0} ${y+size+90} ${x} ${y+size+80}"
-        ${outlineStyle()} class="paint" data-fill="${id}-leaf1"/>
-      <path d="M${x} ${y+size+80} C${x+50} ${y+size+60} ${x+70} ${y+size+110} ${x+15} ${y+size+125} C${x+2} ${y+size+128} ${x} ${y+size+115} ${x} ${y+size+105}"
-        ${outlineStyle()} class="paint" data-fill="${id}-leaf2"/>
-    `;
-    const center = `<circle cx="${x}" cy="${y}" r="${r*0.75}" ${outlineStyle()} class="paint" data-fill="${id}-center"/>`;
-    return pet + stem + center;
+  // 2) Cute Puppy
+  function svgPuppy(){
+    return wrapSVG(`
+      <!-- ground -->
+      <path d="M0 470 C150 430 280 520 410 470 C560 420 650 520 800 470 L800 600 L0 600 Z"
+        ${outline()} class="paint" data-fill="ground"/>
+
+      <!-- body -->
+      <path d="M260 360 C240 280 285 230 360 240 C395 205 470 210 510 260
+               C575 260 610 320 585 380 C560 460 470 480 410 450
+               C360 510 260 485 255 410 C252 395 252 380 260 360 Z"
+        ${outline()} class="paint" data-fill="body"/>
+
+      <!-- tummy -->
+      <path d="M350 365 C350 320 385 295 420 300 C470 308 498 350 488 392
+               C476 445 410 450 375 428 C360 418 352 395 350 365 Z"
+        ${outline()} class="paint" data-fill="tummy"/>
+
+      <!-- head -->
+      <path d="M350 250 C370 205 435 190 480 215 C530 245 530 310 490 340
+               C448 372 390 365 360 335 C340 315 338 276 350 250 Z"
+        ${outline()} class="paint" data-fill="head"/>
+
+      <!-- ears -->
+      <path d="M360 250 C330 240 310 265 320 300 C300 300 290 330 310 348 C330 365 360 350 365 325"
+        ${outline()} class="paint" data-fill="ear1"/>
+      <path d="M490 240 C530 230 555 265 545 300 C565 300 575 330 555 348 C535 365 505 350 500 325"
+        ${outline()} class="paint" data-fill="ear2"/>
+
+      <!-- legs -->
+      <path d="M320 440 C300 505 305 540 350 540 C390 540 395 505 375 445 Z"
+        ${outline()} class="paint" data-fill="leg1"/>
+      <path d="M470 435 C450 500 455 540 500 540 C540 540 545 500 525 438 Z"
+        ${outline()} class="paint" data-fill="leg2"/>
+
+      <!-- tail -->
+      <path d="M255 355 C210 340 180 315 160 285 C190 282 220 270 245 255"
+        ${outline()} class="paint" data-fill="tail"/>
+
+      <!-- face -->
+      <circle cx="420" cy="280" r="10" ${outline()} class="paint" data-fill="eye1"/>
+      <circle cx="470" cy="280" r="10" ${outline()} class="paint" data-fill="eye2"/>
+      <path d="M430 312 C445 332 460 332 475 312" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M445 305 C450 300 455 300 460 305 C460 318 445 318 445 305 Z"
+        ${outline()} class="paint" data-fill="nose"/>
+      <circle cx="400" cy="310" r="6" ${outline()} class="paint" data-fill="cheek1"/>
+      <circle cx="490" cy="310" r="6" ${outline()} class="paint" data-fill="cheek2"/>
+
+      <!-- ball -->
+      <circle cx="650" cy="420" r="45" ${outline()} class="paint" data-fill="ball"/>
+      <path d="M620 420 C650 395 680 395 705 420" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+      <path d="M620 420 C650 445 680 445 705 420" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+    `);
   }
 
+  // 3) Ice Cream (lots of sections)
+  function svgIceCream(){
+    return wrapSVG(`
+      <!-- sprinkles background dots (paintable) -->
+      <circle cx="120" cy="120" r="14" ${outline()} class="paint" data-fill="d1"/>
+      <circle cx="200" cy="90" r="12" ${outline()} class="paint" data-fill="d2"/>
+      <circle cx="680" cy="110" r="14" ${outline()} class="paint" data-fill="d3"/>
+      <circle cx="720" cy="180" r="12" ${outline()} class="paint" data-fill="d4"/>
+      <circle cx="90" cy="240" r="12" ${outline()} class="paint" data-fill="d5"/>
+      <circle cx="730" cy="320" r="14" ${outline()} class="paint" data-fill="d6"/>
+
+      <!-- cone -->
+      <path d="M360 560 L440 560 L520 260 L280 260 Z" ${outline()} class="paint" data-fill="cone"/>
+      <path d="M305 310 L495 310" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+      <path d="M320 360 L480 360" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+      <path d="M340 410 L460 410" stroke="#111827" stroke-width="6" stroke-linecap="round"/>
+
+      <!-- scoops -->
+      <path d="M280 270 C290 185 350 140 400 145 C455 140 515 185 520 270
+               C525 345 470 395 400 395 C330 395 275 345 280 270 Z"
+        ${outline()} class="paint" data-fill="scoop1"/>
+
+      <path d="M320 210 C330 155 365 120 400 120 C440 120 475 155 485 210
+               C495 265 455 300 400 300 C345 300 305 265 320 210 Z"
+        ${outline()} class="paint" data-fill="scoop2"/>
+
+      <!-- drizzle -->
+      <path d="M315 270 C345 250 360 290 390 270 C420 250 435 290 465 270 C485 260 500 275 505 290 C510 320 485 350 455 355 C420 360 410 330 390 345 C365 370 330 355 320 335 C310 315 300 290 315 270 Z"
+        ${outline()} class="paint" data-fill="drizzle"/>
+
+      <!-- cherry -->
+      <circle cx="400" cy="95" r="30" ${outline()} class="paint" data-fill="cherry"/>
+      <path d="M400 65 C420 40 450 35 470 45" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M470 45 C490 55 495 75 485 90" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M470 45 C465 60 455 70 440 75" stroke="#111827" stroke-width="6" stroke-linecap="round" fill="none"/>
+    `);
+  }
+
+  // 4) Rocket (cleaner sections)
   function svgRocket(){
-    return svgWrap(`
-      <path d="M120 520 C210 470 310 560 400 520 C520 470 610 560 700 520 L800 600 L0 600 Z"
-        ${outlineStyle()} class="paint" data-fill="ground"/>
+    return wrapSVG(`
+      <!-- stars -->
+      <path d="M100 90 l12 16 20 2-15 12 5 19-17-10-17 10 5-19-15-12 20-2z" ${outline()} class="paint" data-fill="s1"/>
+      <path d="M700 80 l12 16 20 2-15 12 5 19-17-10-17 10 5-19-15-12 20-2z" ${outline()} class="paint" data-fill="s2"/>
 
-      <path d="M400 110 C470 170 520 260 520 350 C520 470 460 530 400 530 C340 530 280 470 280 350 C280 260 330 170 400 110 Z"
-        ${outlineStyle()} class="paint" data-fill="rocketBody"/>
+      <!-- clouds -->
+      <path d="M120 170 C160 135 215 135 245 170 C275 205 255 250 210 260 C160 273 110 235 120 170 Z"
+        ${outline()} class="paint" data-fill="c1"/>
+      <path d="M580 175 C620 140 690 140 720 175 C750 210 730 255 685 265 C625 278 565 235 580 175 Z"
+        ${outline()} class="paint" data-fill="c2"/>
 
-      <path d="M400 110 C435 145 465 195 480 240 C445 252 355 252 320 240 C335 195 365 145 400 110 Z"
-        ${outlineStyle()} class="paint" data-fill="rocketTop"/>
+      <!-- body -->
+      <path d="M400 120 C470 180 520 270 520 360 C520 485 450 545 400 545 C350 545 280 485 280 360 C280 270 330 180 400 120 Z"
+        ${outline()} class="paint" data-fill="body"/>
+      <path d="M400 120 C438 155 465 200 480 245 C445 258 355 258 320 245 C335 200 362 155 400 120 Z"
+        ${outline()} class="paint" data-fill="nose"/>
 
-      <circle cx="400" cy="300" r="55" ${outlineStyle()} class="paint" data-fill="window"/>
-      <path d="M280 340 C230 360 200 410 210 465 C255 445 300 420 320 380 Z"
-        ${outlineStyle()} class="paint" data-fill="finL"/>
-      <path d="M520 340 C570 360 600 410 590 465 C545 445 500 420 480 380 Z"
-        ${outlineStyle()} class="paint" data-fill="finR"/>
+      <!-- window -->
+      <circle cx="400" cy="305" r="58" ${outline()} class="paint" data-fill="window"/>
+      <circle cx="400" cy="305" r="28" ${outline()} class="paint" data-fill="window2"/>
 
-      <path d="M360 530 C350 560 360 590 400 595 C440 590 450 560 440 530 Z"
-        ${outlineStyle()} class="paint" data-fill="flame1"/>
-      <path d="M380 540 C375 560 385 578 400 580 C415 578 425 560 420 540 Z"
-        ${outlineStyle()} class="paint" data-fill="flame2"/>
+      <!-- fins -->
+      <path d="M280 350 C230 372 200 425 212 485 C258 465 300 438 322 392 Z"
+        ${outline()} class="paint" data-fill="finL"/>
+      <path d="M520 350 C570 372 600 425 588 485 C542 465 500 438 478 392 Z"
+        ${outline()} class="paint" data-fill="finR"/>
 
-      <path d="M120 140 C160 110 210 110 240 140 C270 170 250 220 210 230 C165 240 120 205 120 140 Z"
-        ${outlineStyle()} class="paint" data-fill="cloudA"/>
-      <path d="M590 150 C630 120 690 120 720 150 C750 180 730 230 690 240 C635 255 575 215 590 150 Z"
-        ${outlineStyle()} class="paint" data-fill="cloudB"/>
-
-      ${starsScatter()}
+      <!-- flames -->
+      <path d="M360 545 C345 585 370 600 400 600 C430 600 455 585 440 545 Z"
+        ${outline()} class="paint" data-fill="flame1"/>
+      <path d="M385 555 C378 575 390 590 400 590 C410 590 422 575 415 555 Z"
+        ${outline()} class="paint" data-fill="flame2"/>
     `);
   }
 
-  function starsScatter(){
-    return `
-      <path d="M85 70 l14 18 22 2-17 14 6 21-19-11-19 11 6-21-17-14 22-2z"
-        ${outlineStyle()} class="paint" data-fill="s1"/>
-      <path d="M720 60 l12 16 20 2-15 12 5 19-17-10-17 10 5-19-15-12 20-2z"
-        ${outlineStyle()} class="paint" data-fill="s2"/>
-      <path d="M680 320 l10 13 16 2-12 10 4 15-14-8-14 8 4-15-12-10 16-2z"
-        ${outlineStyle()} class="paint" data-fill="s3"/>
-      <path d="M140 300 l10 13 16 2-12 10 4 15-14-8-14 8 4-15-12-10 16-2z"
-        ${outlineStyle()} class="paint" data-fill="s4"/>
-    `;
-  }
+  const PICTURES = [
+    { id:"unicorn", label:"Unicorn Rainbow", svg: svgUnicorn },
+    { id:"puppy",   label:"Happy Puppy",    svg: svgPuppy },
+    { id:"ice",     label:"Ice Cream",      svg: svgIceCream },
+    { id:"rocket",  label:"Rocket",         svg: svgRocket }
+  ];
 
-  function svgDino(){
-    return svgWrap(`
-      <path d="M0 470 C160 430 280 520 400 470 C540 415 660 520 800 470 L800 600 L0 600 Z"
-        ${outlineStyle()} class="paint" data-fill="grass"/>
-
-      <!-- Dino body -->
-      <path d="M250 360 C220 250 290 190 380 200 C430 145 520 165 545 235
-               C590 245 630 290 620 345 C610 410 555 450 500 445
-               C470 495 395 510 345 475 C285 455 265 410 250 360 Z"
-        ${outlineStyle()} class="paint" data-fill="dinoBody"/>
-
-      <!-- Belly -->
-      <path d="M320 360 C315 290 360 260 410 265 C455 270 495 305 500 360
-               C505 420 455 452 410 450 C360 448 325 420 320 360 Z"
-        ${outlineStyle()} class="paint" data-fill="belly"/>
-
-      <!-- Head + face -->
-      <path d="M365 210 C380 175 425 160 460 175 C500 190 505 240 480 265
-               C455 292 410 290 385 265 C365 245 355 235 365 210 Z"
-        ${outlineStyle()} class="paint" data-fill="head"/>
-
-      <circle cx="450" cy="215" r="10" ${outlineStyle()} class="paint" data-fill="eye"/>
-      <path d="M430 245 C445 255 462 255 478 245" stroke="#1f2937" stroke-width="6" stroke-linecap="round"/>
-
-      <!-- Spikes -->
-      ${spike(340,205,"sp1")}
-      ${spike(310,235,"sp2")}
-      ${spike(285,275,"sp3")}
-      ${spike(275,325,"sp4")}
-      ${spike(285,375,"sp5")}
-
-      <!-- Tail -->
-      <path d="M250 350 C190 345 150 320 120 290 C155 285 195 270 230 250"
-        ${outlineStyle()} class="paint" data-fill="tail"/>
-
-      <!-- Feet -->
-      <path d="M330 475 C310 525 310 545 350 545 C390 545 395 525 375 480 Z"
-        ${outlineStyle()} class="paint" data-fill="footL"/>
-      <path d="M470 470 C450 525 455 545 495 545 C535 545 540 525 520 475 Z"
-        ${outlineStyle()} class="paint" data-fill="footR"/>
-
-      <path d="M610 200 C640 175 685 175 710 200 C735 225 720 265 685 275 C645 286 605 255 610 200 Z"
-        ${outlineStyle()} class="paint" data-fill="cloud"/>
-    `);
-  }
-
-  function spike(x,y,id){
-    return `<path d="M${x} ${y} L${x-18} ${y+40} L${x+18} ${y+40} Z" ${outlineStyle()} class="paint" data-fill="${id}"/>`;
-  }
-
-  function svgCastle(){
-    return svgWrap(`
-      <path d="M0 480 C140 430 270 520 410 480 C540 440 640 520 800 480 L800 600 L0 600 Z"
-        ${outlineStyle()} class="paint" data-fill="ground"/>
-
-      <rect x="240" y="240" width="320" height="260" rx="16"
-        ${outlineStyle()} class="paint" data-fill="wall"/>
-
-      <rect x="200" y="210" width="90" height="290" rx="16"
-        ${outlineStyle()} class="paint" data-fill="towerL"/>
-      <rect x="510" y="210" width="90" height="290" rx="16"
-        ${outlineStyle()} class="paint" data-fill="towerR"/>
-
-      <path d="M200 210 L200 160 L220 180 L240 160 L260 180 L280 160 L290 170 L290 210 Z"
-        ${outlineStyle()} class="paint" data-fill="roofL"/>
-      <path d="M510 210 L510 160 L530 180 L550 160 L570 180 L590 160 L600 170 L600 210 Z"
-        ${outlineStyle()} class="paint" data-fill="roofR"/>
-
-      <path d="M240 240 L240 180 L270 200 L300 180 L330 200 L360 180 L390 200 L420 180 L450 200 L480 180 L510 200 L540 180 L560 195 L560 240 Z"
-        ${outlineStyle()} class="paint" data-fill="roofMid"/>
-
-      <path d="M365 500 C340 470 340 430 365 405 C390 380 430 380 455 405 C480 430 480 470 455 500 Z"
-        ${outlineStyle()} class="paint" data-fill="door"/>
-
-      <rect x="290" y="310" width="70" height="70" rx="10"
-        ${outlineStyle()} class="paint" data-fill="win1"/>
-      <rect x="440" y="310" width="70" height="70" rx="10"
-        ${outlineStyle()} class="paint" data-fill="win2"/>
-
-      ${starsScatter()}
-      <path d="M120 150 C160 115 215 115 245 150 C275 185 255 235 210 245 C160 258 110 220 120 150 Z"
-        ${outlineStyle()} class="paint" data-fill="cloudA"/>
-      <path d="M590 155 C630 120 690 120 720 150 C750 180 735 235 690 245 C635 258 575 220 590 155 Z"
-        ${outlineStyle()} class="paint" data-fill="cloudB"/>
-    `);
-  }
-
-  function svgOcean(){
-    return svgWrap(`
-      <path d="M0 360 C120 330 220 395 320 360 C420 330 520 395 620 360 C700 332 760 340 800 352 L800 600 L0 600 Z"
-        ${outlineStyle()} class="paint" data-fill="sea"/>
-
-      <path d="M0 430 C120 400 220 465 320 430 C420 400 520 465 620 430 C700 402 760 410 800 422"
-        stroke="#1f2937" stroke-width="6" stroke-linecap="round" fill="none"/>
-
-      <!-- Big fish -->
-      <path d="M260 330 C290 285 360 270 420 300 C470 325 470 365 420 390
-               C360 420 290 405 260 360 C230 385 205 400 180 405
-               C195 380 200 360 200 345 C200 330 195 310 180 285
-               C205 290 230 305 260 330 Z"
-        ${outlineStyle()} class="paint" data-fill="fish1"/>
-      <circle cx="385" cy="330" r="10" ${outlineStyle()} class="paint" data-fill="fishEye"/>
-
-      <!-- Turtle -->
-      <path d="M590 355 C560 315 560 275 600 255 C645 233 705 253 725 300
-               C742 340 725 382 685 395 C640 410 605 390 590 355 Z"
-        ${outlineStyle()} class="paint" data-fill="shell"/>
-      <circle cx="715" cy="315" r="18" ${outlineStyle()} class="paint" data-fill="head"/>
-      <path d="M605 395 C590 420 560 435 535 435 C545 415 555 400 565 388 Z"
-        ${outlineStyle()} class="paint" data-fill="fin1"/>
-      <path d="M670 405 C665 430 645 450 620 455 C620 430 630 412 642 400 Z"
-        ${outlineStyle()} class="paint" data-fill="fin2"/>
-
-      <!-- Bubbles -->
-      ${bubble(120,160,"b1")}${bubble(165,210,"b2")}${bubble(120,250,"b3")}
-      ${bubble(720,160,"b4")}${bubble(680,210,"b5")}${bubble(720,250,"b6")}
-
-      <path d="M120 120 C160 85 210 85 240 120 C270 155 250 205 210 215 C165 227 115 190 120 120 Z"
-        ${outlineStyle()} class="paint" data-fill="cloud"/>
-    `);
-  }
-
-  function bubble(x,y,id){
-    return `<circle cx="${x}" cy="${y}" r="20" ${outlineStyle()} class="paint" data-fill="${id}"/>`;
-  }
-
-  function svgStars(){
-    return svgWrap(`
-      <path d="M0 470 C130 420 240 520 360 470 C500 415 620 520 800 470 L800 600 L0 600 Z"
-        ${outlineStyle()} class="paint" data-fill="ground"/>
-
-      <path d="M520 170 C520 120 560 90 600 90 C650 90 690 130 690 180
-               C690 240 640 280 585 270 C550 265 520 230 520 170 Z"
-        ${outlineStyle()} class="paint" data-fill="moon"/>
-
-      <path d="M200 360 C220 310 270 280 320 290 C360 298 395 330 405 375
-               C420 445 360 505 285 495 C220 488 180 425 200 360 Z"
-        ${outlineStyle()} class="paint" data-fill="cloudBig"/>
-
-      ${starsScatter()}
-      ${starsScatter().replaceAll("data-fill=\"s","data-fill=\"t")}
-
-      <path d="M120 220 C150 190 205 190 230 220 C255 250 240 295 205 305 C160 318 112 280 120 220 Z"
-        ${outlineStyle()} class="paint" data-fill="cloud1"/>
-      <path d="M610 235 C640 205 695 205 720 235 C745 265 730 310 695 320 C650 333 602 295 610 235 Z"
-        ${outlineStyle()} class="paint" data-fill="cloud2"/>
-    `);
-  }
-
-  // ---------- State ----------
+  // ---- State ----
   const svgHost = document.getElementById("svgHost");
   const gallery = document.getElementById("gallery");
   const progressEl = document.getElementById("progress");
   const hintEl = document.getElementById("hint");
   const toast = document.getElementById("toast");
-  const art = document.getElementById("art");
   const fx = document.getElementById("fx");
 
   let activePicture = null;
-  let fillMap = new Map(); // data-fill -> current color
+  let fillMap = new Map();
 
-  // ---------- Gallery ----------
+  // ---- Gallery ----
   function renderGallery(){
     gallery.innerHTML = "";
     PICTURES.forEach(p => {
       const wrap = document.createElement("div");
       wrap.className = "thumb";
-      wrap.innerHTML = p.svg().replace('aria-label="Colouring picture"', 'aria-label="Thumbnail picture"');
+      wrap.innerHTML = p.svg();
       const lab = document.createElement("div");
       lab.className = "thumbLabel";
       lab.textContent = p.label;
@@ -753,21 +673,6 @@
     });
   }
 
-  // ---------- Load picture ----------
-  function loadPicture(id){
-    activePicture = PICTURES.find(p => p.id === id);
-    fillMap.clear();
-    toast.classList.remove("show");
-
-    gallery.classList.remove("show");
-    svgHost.style.display = "block";
-    svgHost.innerHTML = activePicture.svg();
-
-    hookPaintAreas();
-    updateProgress();
-    hintEl.innerHTML = `You picked <b>${activePicture.label}</b>. <small>Choose a colour, then tap a shape.</small>`;
-  }
-
   function showGallery(){
     activePicture = null;
     fillMap.clear();
@@ -775,36 +680,46 @@
 
     svgHost.style.display = "none";
     svgHost.innerHTML = "";
-    gallery.classList.add("show");
+    gallery.style.display = "grid";
 
     progressEl.textContent = "0 / 0 filled";
-    hintEl.innerHTML = `Pick a picture, then choose a colour. <small>Tap an area to fill.</small>`;
+    hintEl.textContent = "Choose a picture, then colour it in!";
   }
 
-  // ---------- Paint logic ----------
+  function loadPicture(id){
+    activePicture = PICTURES.find(p => p.id === id);
+    fillMap.clear();
+    toast.classList.remove("show");
+
+    gallery.style.display = "none";
+    svgHost.style.display = "block";
+    svgHost.innerHTML = activePicture.svg();
+
+    hookPaintAreas();
+    updateProgress();
+    hintEl.textContent = `Colour: ${activePicture.label} — tap an area to fill.`;
+    resizeFx();
+  }
+
+  // ---- Paint ----
   function hookPaintAreas(){
     const svg = svgHost.querySelector("svg");
     if(!svg) return;
-
-    // Make paint areas clickable
     const areas = svg.querySelectorAll(".paint");
     areas.forEach(el => {
       el.style.fill = "#ffffff";
-      el.addEventListener("click", (e) => {
+      el.addEventListener("click", () => {
         const key = el.getAttribute("data-fill");
         fillMap.set(key, currentColor);
         el.style.fill = currentColor;
 
-        // tiny tap feedback without distorting colours
-        el.style.filter = "brightness(1.04)";
-        setTimeout(() => el.style.filter = "", 110);
+        // tiny feedback, no colour distortion
+        el.style.filter = "brightness(1.03)";
+        setTimeout(() => el.style.filter = "", 100);
 
         updateProgress();
       }, {passive:true});
     });
-
-    // fit confetti canvas size
-    resizeFx();
   }
 
   function updateProgress(){
@@ -821,49 +736,20 @@
       if(fillMap.has(key)) filled++;
     });
     progressEl.textContent = `${filled} / ${total} filled`;
-
-    if(total > 0 && filled === total){
-      celebrate();
-    }
+    if(total>0 && filled===total) celebrate();
   }
 
-  // ---------- Buttons ----------
-  document.getElementById("backBtn").addEventListener("click", showGallery);
-
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    fillMap.clear();
-    toast.classList.remove("show");
-    const svg = svgHost.querySelector("svg");
-    if(svg){
-      svg.querySelectorAll(".paint").forEach(el => el.style.fill = "#ffffff");
-    }
-    updateProgress();
-  });
-
-  document.getElementById("surpriseBtn").addEventListener("click", () => {
-    const svg = svgHost.querySelector("svg");
-    if(!svg) return;
-    const areas = [...svg.querySelectorAll(".paint")];
-    areas.forEach(el => {
-      const c = COLORS[Math.floor(Math.random() * COLORS.length)].hex;
-      const key = el.getAttribute("data-fill");
-      fillMap.set(key, c);
-      el.style.fill = c;
-    });
-    updateProgress();
-  });
-
-  // ---------- Confetti / sparkle celebration ----------
-  let confettiTimer = null;
+  // ---- Celebration ----
   function resizeFx(){
     const r = fx.getBoundingClientRect();
     fx.width = Math.max(1, Math.floor(r.width * devicePixelRatio));
     fx.height = Math.max(1, Math.floor(r.height * devicePixelRatio));
   }
-  window.addEventListener("resize", () => { resizeFx(); }, {passive:true});
+  window.addEventListener("resize", resizeFx, {passive:true});
 
+  let confettiRAF = null;
   function celebrate(){
-    toast.textContent = "✨ Yay! You finished! ✨";
+    toast.textContent = "✨ You finished! ✨";
     toast.classList.add("show");
     burstConfetti();
     playDing();
@@ -874,6 +760,7 @@
     const ctx = fx.getContext("2d");
     const w = fx.width, h = fx.height;
 
+    const cols = ["#FF6FB1","#FFD54A","#4CC9FF","#63F5A6","#8B7CFF","#FF9B3A"];
     const pieces = Array.from({length: 120}, () => ({
       x: Math.random()*w,
       y: Math.random()*h*0.25,
@@ -883,22 +770,15 @@
       a: Math.random()*Math.PI*2,
       va: (Math.random()-0.5)*0.25,
       life: Math.random()*40+60,
-      col: ["#FF6FB1","#FFD54A","#4CC9FF","#63F5A6","#8B7CFF","#FF9B3A"][Math.floor(Math.random()*6)]
+      col: cols[Math.floor(Math.random()*cols.length)]
     }));
 
-    let t = 0;
-    if(confettiTimer) cancelAnimationFrame(confettiTimer);
+    if(confettiRAF) cancelAnimationFrame(confettiRAF);
 
     const tick = () => {
-      t++;
       ctx.clearRect(0,0,w,h);
-      pieces.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy *= 0.995;
-        p.a += p.va;
-        p.life--;
-
+      for(const p of pieces){
+        p.x += p.vx; p.y += p.vy; p.a += p.va; p.life--;
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.a);
@@ -906,22 +786,39 @@
         ctx.globalAlpha = Math.max(0, p.life/80);
         ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2);
         ctx.restore();
-      });
-
-      // remove dead
+      }
       for(let i=pieces.length-1;i>=0;i--){
-        if(pieces[i].life<=0 || pieces[i].y>h+50) pieces.splice(i,1);
+        if(pieces[i].life<=0 || pieces[i].y>h+60) pieces.splice(i,1);
       }
-      if(pieces.length){
-        confettiTimer = requestAnimationFrame(tick);
-      } else {
-        ctx.clearRect(0,0,w,h);
-      }
+      if(pieces.length) confettiRAF = requestAnimationFrame(tick);
+      else ctx.clearRect(0,0,w,h);
     };
     tick();
   }
 
-  // ---------- Audio (soft background) ----------
+  // ---- Controls ----
+  document.getElementById("backBtn").addEventListener("click", showGallery);
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    fillMap.clear();
+    toast.classList.remove("show");
+    const svg = svgHost.querySelector("svg");
+    if(svg) svg.querySelectorAll(".paint").forEach(el => el.style.fill="#ffffff");
+    updateProgress();
+  });
+
+  document.getElementById("surpriseBtn").addEventListener("click", () => {
+    const svg = svgHost.querySelector("svg");
+    if(!svg) return;
+    svg.querySelectorAll(".paint").forEach(el => {
+      const c = COLORS[Math.floor(Math.random()*COLORS.length)].hex;
+      fillMap.set(el.getAttribute("data-fill"), c);
+      el.style.fill = c;
+    });
+    updateProgress();
+  });
+
+  // ---- Music + Ding ----
   const musicToggle = document.getElementById("musicToggle");
   const musicDot = document.getElementById("musicDot");
   const musicText = document.getElementById("musicText");
@@ -935,47 +832,38 @@
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
-  // gentle ambient pad
   function startMusic(){
     ensureAudio();
     if(musicNode) return;
-
     const ctx = audioCtx;
+
     const o1 = ctx.createOscillator();
     const o2 = ctx.createOscillator();
     const g = ctx.createGain();
     const f = ctx.createBiquadFilter();
 
-    o1.type = "sine";
-    o2.type = "triangle";
+    o1.type = "sine"; o2.type="triangle";
     o1.frequency.value = 220;
     o2.frequency.value = 330;
 
-    f.type = "lowpass";
-    f.frequency.value = 900;
+    f.type="lowpass"; f.frequency.value = 900;
     g.gain.value = 0.0;
 
     o1.connect(f); o2.connect(f);
-    f.connect(g);
-    g.connect(ctx.destination);
+    f.connect(g); g.connect(ctx.destination);
 
     o1.start(); o2.start();
-
-    // fade in
     g.gain.setValueAtTime(0.0, ctx.currentTime);
     g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 1.2);
 
-    // slow wobble
     const lfo = ctx.createOscillator();
     const lfoG = ctx.createGain();
-    lfo.type="sine";
-    lfo.frequency.value = 0.08;
+    lfo.type="sine"; lfo.frequency.value = 0.08;
     lfoG.gain.value = 20;
-    lfo.connect(lfoG);
-    lfoG.connect(o2.frequency);
+    lfo.connect(lfoG); lfoG.connect(o2.frequency);
     lfo.start();
 
-    musicNode = {o1,o2,g,f,lfo,lfoG};
+    musicNode = {o1,o2,g,lfo};
   }
 
   function stopMusic(){
@@ -984,11 +872,8 @@
     musicNode.g.gain.cancelScheduledValues(ctx.currentTime);
     musicNode.g.gain.setValueAtTime(musicNode.g.gain.value, ctx.currentTime);
     musicNode.g.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.6);
-
     setTimeout(() => {
-      try{
-        musicNode.o1.stop(); musicNode.o2.stop(); musicNode.lfo.stop();
-      }catch(e){}
+      try{ musicNode.o1.stop(); musicNode.o2.stop(); musicNode.lfo.stop(); }catch(e){}
       musicNode = null;
     }, 650);
   }
@@ -1004,7 +889,7 @@
     setMusicUI();
     try{
       if(musicOn){
-        if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+        if(audioCtx && audioCtx.state==="suspended") await audioCtx.resume();
         startMusic();
       }else{
         stopMusic();
@@ -1012,7 +897,6 @@
     }catch(e){}
   });
 
-  // tiny success ding
   function playDing(){
     if(!musicOn) return;
     try{
@@ -1020,32 +904,23 @@
       const ctx = audioCtx;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = "sine";
+      o.type="sine";
       o.frequency.setValueAtTime(880, ctx.currentTime);
       o.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.18);
-
       g.gain.setValueAtTime(0.0001, ctx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
       g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
-
       o.connect(g); g.connect(ctx.destination);
-      o.start();
-      o.stop(ctx.currentTime + 0.28);
+      o.start(); o.stop(ctx.currentTime + 0.28);
     }catch(e){}
   }
 
-  // ---------- Init ----------
-  renderPalette();
-  renderGallery();
-  showGallery();
-  setMusicUI();
-
-  // autoplay music only after first interaction (browser rules)
+  // Autoplay only after first tap (browser rule)
   const unlock = async () => {
     try{
       if(!musicOn) return;
       ensureAudio();
-      if(audioCtx.state === "suspended") await audioCtx.resume();
+      if(audioCtx.state==="suspended") await audioCtx.resume();
       startMusic();
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
@@ -1054,6 +929,11 @@
   window.addEventListener("pointerdown", unlock, {passive:true});
   window.addEventListener("keydown", unlock);
 
+  // ---- Init ----
+  renderPalette();
+  renderGallery();
+  showGallery();
+  setMusicUI();
 })();
 </script>
 </body>
