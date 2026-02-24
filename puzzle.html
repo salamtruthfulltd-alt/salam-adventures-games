@@ -35,11 +35,19 @@
       position:relative;
       border-radius:calc(var(--r) + 10px);
       padding:6px;
+      /* Background for the border */
       background: conic-gradient(from 0deg,
         #ff4fa3, #38bdf8, #fbbf24, #34d399, #a78bfa, #ff4fa3);
-      animation: hue 2.9s linear infinite;
+      /* FIXED: Animation applied only to background hue via filter on a pseudo-layer or restricted here */
+      animation: borderHue 2.9s linear infinite;
       box-shadow: 0 18px 45px rgba(0,0,0,.16);
     }
+    
+    /* This ensures only the background of the panel flashes, not the children */
+    @keyframes borderHue {
+      to { filter: hue-rotate(360deg); }
+    }
+
     .panel::after{
       content:"";
       position:absolute;
@@ -56,7 +64,6 @@
       pointer-events:none;
       mix-blend-mode: screen;
     }
-    @keyframes hue{to{filter:hue-rotate(360deg)}}
     @keyframes sparkle{from{opacity:.28; transform:scale(1)}to{opacity:.80; transform:scale(1.01)}}
 
     .inner{
@@ -65,6 +72,8 @@
       border-radius:var(--r);
       padding:18px;
       border: 1px solid rgba(0,0,0,.06);
+      /* Reset filter so children don't flash */
+      filter: hue-rotate(0deg) !important; 
     }
 
     .top{
@@ -284,7 +293,6 @@
         </div>
       </div>
 
-      <!-- GALLERY -->
       <section id="gallery">
         <div class="grid">
           <div class="card" data-pick="star">
@@ -315,7 +323,6 @@
         <div class="centerNote">Tip: 2×2 is easy, 3×3 is a little challenge.</div>
       </section>
 
-      <!-- PUZZLE -->
       <section id="stageWrap" class="stageWrap">
         <div class="stage" id="stage">
           <canvas id="cv"></canvas>
@@ -343,14 +350,6 @@
   </main>
 
 <script>
-  /**
-   * ✅ IMPORTANT: Put these 3 images into the SAME GitHub repo folder as this file:
-   *   star.png
-   *   balloon.png
-   *   salam.png
-   *
-   * Then this puzzle page will load them.
-   */
   const IMAGES = {
     star:   { title: "Star in the Clouds", file: "star.png" },
     balloon:{ title: "Balloon Surprise",   file: "balloon.png" },
@@ -381,7 +380,6 @@
   let currentKey = null;
   let img = null;
 
-  // audio (tiny success chime, no music)
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let audioCtx = null;
   function ensureAudio(){
@@ -397,7 +395,7 @@
     g.gain.value = 0.06;
     g.connect(audioCtx.destination);
 
-    const seq = [523.25, 659.25, 783.99]; // C5 E5 G5
+    const seq = [523.25, 659.25, 783.99]; 
     seq.forEach((f,i)=>{
       const o = audioCtx.createOscillator();
       const og = audioCtx.createGain();
@@ -412,9 +410,8 @@
     });
   }
 
-  // puzzle pieces
   let pieces = [];
-  let dragging = null; // { idx, offX, offY }
+  let dragging = null; 
   let board = { x: 0, y: 0, w: 0, h: 0 };
   let anim = null;
   let completed = false;
@@ -426,7 +423,6 @@
     cv.height = Math.floor(rect.height * dpr);
     ctx2d.setTransform(dpr,0,0,dpr,0,0);
 
-    // compute board area (square centered)
     const pad = 18;
     const w = rect.width;
     const h = rect.height;
@@ -461,7 +457,6 @@
     const pw = board.w / N;
     const ph = board.h / N;
 
-    // image crop uses full image
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
 
@@ -472,17 +467,12 @@
 
         pieces.push({
           r, c,
-          // source crop in image coords
           sx: (c / N) * iw,
           sy: (r / N) * ih,
           sw: iw / N,
           sh: ih / N,
-
-          // target on board
           tx: targetX,
           ty: targetY,
-
-          // current position (spawn around edges)
           x: 0, y: 0,
           w: pw, h: ph,
           placed: false
@@ -495,13 +485,12 @@
     const rect = cv.getBoundingClientRect();
     const margin = 16;
     const spawnZones = [
-      {x: margin, y: margin, w: rect.width - margin*2, h: board.y - margin*2}, // top
-      {x: margin, y: board.y + board.h + margin, w: rect.width - margin*2, h: rect.height - (board.y + board.h) - margin*2}, // bottom
-      {x: margin, y: board.y + margin, w: board.x - margin*2, h: board.h - margin*2}, // left
-      {x: board.x + board.w + margin, y: board.y + margin, w: rect.width - (board.x + board.w) - margin*2, h: board.h - margin*2} // right
+      {x: margin, y: margin, w: rect.width - margin*2, h: board.y - margin*2}, 
+      {x: margin, y: board.y + board.h + margin, w: rect.width - margin*2, h: rect.height - (board.y + board.h) - margin*2}, 
+      {x: margin, y: board.y + margin, w: board.x - margin*2, h: board.h - margin*2}, 
+      {x: board.x + board.w + margin, y: board.y + margin, w: rect.width - (board.x + board.w) - margin*2, h: board.h - margin*2} 
     ].filter(z => z.w > 60 && z.h > 60);
 
-    // fallback if embed is narrow: scatter over canvas
     const fallback = {x: margin, y: margin, w: rect.width - margin*2, h: rect.height - margin*2};
 
     pieces.forEach(p=>{
@@ -511,7 +500,6 @@
       p.y = z.y + Math.random() * Math.max(1,(z.h - p.h));
     });
 
-    // randomize draw order
     pieces.sort(()=> Math.random() - 0.5);
   }
 
@@ -519,7 +507,6 @@
     const rect = cv.getBoundingClientRect();
     ctx2d.clearRect(0,0,rect.width,rect.height);
 
-    // board glow
     ctx2d.save();
     ctx2d.globalAlpha = 0.22;
     ctx2d.fillStyle = "#ffffff";
@@ -527,7 +514,6 @@
     ctx2d.fill();
     ctx2d.restore();
 
-    // board outline
     ctx2d.save();
     ctx2d.strokeStyle = "rgba(0,0,0,.18)";
     ctx2d.lineWidth = 2;
@@ -535,7 +521,6 @@
     ctx2d.stroke();
     ctx2d.restore();
 
-    // faint grid lines
     const N = gridN;
     ctx2d.save();
     ctx2d.strokeStyle = "rgba(0,0,0,.10)";
@@ -548,7 +533,6 @@
     }
     ctx2d.restore();
 
-    // draw pieces (placed first, then unplaced on top)
     const placed = pieces.filter(p=>p.placed);
     const loose = pieces.filter(p=>!p.placed);
 
@@ -558,22 +542,18 @@
 
   function drawPiece(p, lift){
     ctx2d.save();
-    // shadow
     ctx2d.shadowColor = "rgba(0,0,0,.18)";
     ctx2d.shadowBlur = lift ? 14 : 8;
     ctx2d.shadowOffsetY = lift ? 10 : 6;
 
-    // rounded clip
     const rr = 12;
     roundRect(ctx2d, p.x, p.y, p.w, p.h, rr);
     ctx2d.clip();
 
-    // image
     ctx2d.drawImage(img, p.sx, p.sy, p.sw, p.sh, p.x, p.y, p.w, p.h);
 
     ctx2d.restore();
 
-    // border
     ctx2d.save();
     ctx2d.lineWidth = 2;
     ctx2d.strokeStyle = p.placed ? "rgba(34,197,94,.65)" : "rgba(0,0,0,.22)";
@@ -594,7 +574,6 @@
   }
 
   function hitTest(mx,my){
-    // topmost piece first: iterate reverse draw order
     for (let i=pieces.length-1;i>=0;i--){
       const p = pieces[i];
       if (p.placed) continue;
@@ -701,7 +680,6 @@
     completed = false;
   }
 
-  // wire buttons
   btn2.addEventListener("click", ()=> setDifficulty(2));
   btn3.addEventListener("click", ()=> setDifficulty(3));
   shuffleBtn.addEventListener("click", ()=>{
@@ -711,7 +689,6 @@
   });
   homeBtn.addEventListener("click", goHome);
 
-  // click cards
   document.querySelectorAll(".card").forEach(card=>{
     card.addEventListener("click", async ()=>{
       ensureAudio();
@@ -720,7 +697,6 @@
     });
   });
 
-  // canvas pointer dragging
   cv.addEventListener("pointerdown", (ev)=>{
     ensureAudio();
     const {x,y} = toLocal(ev);
@@ -751,11 +727,9 @@
   cv.addEventListener("pointerup", endDrag);
   cv.addEventListener("pointercancel", endDrag);
 
-  // responsive
   window.addEventListener("resize", ()=>{
     if (!stageWrap.classList.contains("on")) return;
     resizeCanvas();
-    // keep placed pieces aligned after resize
     const N = gridN;
     const pw = board.w / N;
     const ph = board.h / N;
@@ -767,9 +741,7 @@
     });
   });
 
-  // preload thumbs
   (async function initThumbs(){
-    // set thumb sources (same files)
     thumbStar.src = IMAGES.star.file;
     thumbBalloon.src = IMAGES.balloon.file;
     thumbSalam.src = IMAGES.salam.file;
