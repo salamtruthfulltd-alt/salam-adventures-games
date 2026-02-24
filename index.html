@@ -1,217 +1,132 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-  <title>Magic Tap: Ultimate Edition</title>
-  <style>
-    :root {
-      --rainbow: linear-gradient(45deg, #ff0000, #ffea00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-    }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-    body { 
-      margin: 0; padding: 10px; background: #e2e8f0; 
-      font-family: 'system-ui', sans-serif;
-      display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
-    }
+  // --- SVG pictures (clear + recognisable) ---
+  function svgApple(){ return cardWrap(`
+    <path d="M410 210c-55-55-150-15-170 70c-25 105 55 200 170 220c115-20 195-115 170-220c-20-85-115-125-170-70Z"
+      fill="#ff3b5c" ${OUT}/>
+    <path d="M415 200c-10-55 20-95 70-120" fill="none" ${OUT}/>
+    <path d="M480 88c40 8 72 34 85 70c-38 15-95 18-130-16c6-24 20-40 45-54Z"
+      fill="#32d583" ${OUT}/>
+    <path d="M320 250c-35 35-40 115-15 165" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="385" cy="320" r="8" fill="#111827"/>
+    <circle cx="450" cy="320" r="8" fill="#111827"/>
+    <path d="M395 350c18 14 42 14 60 0" fill="none" ${OUT}/>
+  `);}
 
-    /* CHUNKY 3D CASE WITH NEON GLOW */
-    .console-3d {
-      width: 100%; max-width: 950px; height: 95vh;
-      background: #ffffff; padding: 12px; border-radius: 50px;
-      position: relative;
-      box-shadow: 
-        0 15px 0 #cbd5e1, 
-        0 25px 50px rgba(0,0,0,0.2),
-        inset 0 0 20px rgba(0,0,0,0.05);
-      border: 8px solid transparent;
-      background-image: linear-gradient(white, white), var(--rainbow);
-      background-origin: border-box; background-clip: content-box, border-box;
-      display: flex; flex-direction: column;
-    }
+  function svgBall(){ return cardWrap(`
+    <circle cx="400" cy="325" r="155" fill="#38bdf8" ${OUT}/>
+    <path d="M245 325c65-95 245-95 310 0" fill="none" ${OUT}/>
+    <path d="M245 325c65 95 245 95 310 0" fill="none" ${OUT}/>
+    <path d="M400 170c-55 65-55 245 0 310" fill="none" ${OUT}/>
+    <path d="M300 220c35-45 95-70 150-65" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="16" stroke-linecap="round"/>
+  `);}
 
-    .screen {
-      background: white; border-radius: 35px; flex: 1;
-      display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: inset 0 8px 15px rgba(0,0,0,0.1);
-      border: 4px solid #f1f5f9; position: relative;
-    }
+  function svgCat(){ return cardWrap(`
+    <path d="M270 250c0-70 35-120 85-150l35 70l35-70c50 30 85 80 85 150
+             c0 110-90 200-205 200s-205-90-205-200Z"
+      fill="#fbbf24" ${OUT}/>
+    <path d="M330 215c20-15 50-15 70 0" fill="none" ${OUT}/>
+    <path d="M430 215c20-15 50-15 70 0" fill="none" ${OUT}/>
+    <circle cx="360" cy="285" r="9" fill="#111827"/>
+    <circle cx="440" cy="285" r="9" fill="#111827"/>
+    <path d="M398 300c-10 10-10 20 0 30" fill="none" ${OUT}/>
+    <path d="M360 335c25 18 55 18 80 0" fill="none" ${OUT}/>
+    <path d="M330 315h-85M470 315h85" fill="none" ${OUT}/>
+    <circle cx="335" cy="335" r="10" fill="#ffb2c8" opacity=".85"/>
+    <circle cx="465" cy="335" r="10" fill="#ffb2c8" opacity=".85"/>
+  `);}
 
-    header {
-      padding: 10px 25px; background: #fff; border-bottom: 2px solid #f1f5f9;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .btn {
-      padding: 10px 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer;
-      background: #f8fafc; box-shadow: 0 4px 0 #e2e8f0; transition: 0.1s;
-    }
-    .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #e2e8f0; }
+  function svgDog(){ return cardWrap(`
+    <path d="M300 250c-55-55-105 20-80 95c-45 15-60 70-35 120c30 60 95 95 215 95
+             c120 0 185-35 215-95c25-50 10-105-35-120c25-75-25-150-80-95c-25-60-85-95-135-95
+             s-110 35-135 95Z"
+      fill="#fb923c" ${OUT}/>
+    <path d="M285 255c-35 35-30 105 10 135" fill="none" ${OUT}/>
+    <path d="M515 255c35 35 30 105-10 135" fill="none" ${OUT}/>
+    <circle cx="365" cy="325" r="9" fill="#111827"/>
+    <circle cx="435" cy="325" r="9" fill="#111827"/>
+    <path d="M400 343c-12-10-30-10-42 0c3 22 39 22 42 0Z" fill="#111827"/>
+    <path d="M372 370c18 18 38 18 56 0" fill="none" ${OUT}/>
+    <circle cx="345" cy="372" r="10" fill="#ffd1e1" opacity=".85"/>
+    <circle cx="455" cy="372" r="10" fill="#ffd1e1" opacity=".85"/>
+  `);}
 
-    /* VIEWPORT */
-    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 15px; }
-    svg { width: 100%; height: 100%; max-height: 55vh; }
-    
-    /* PRO ILLUSTRATION PATHS */
-    .p { fill: #fff; stroke: #1e293b; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; transition: fill 0.2s; }
-    .p:hover { stroke: #3b82f6; stroke-width: 3.5; }
-    .det { fill: none; stroke: #94a3b8; stroke-width: 1; pointer-events: none; opacity: 0.5; }
+  function svgFish(){ return cardWrap(`
+    <path d="M280 325c45-85 170-120 285-70c55 24 95 65 115 110c-20 45-60 86-115 110
+             c-115 50-240 15-285-70Z"
+      fill="#34d399" ${OUT}/>
+    <path d="M680 365l85 70l-12-82l12-82Z" fill="#60a5fa" ${OUT}/>
+    <path d="M365 320c55-35 125-35 180 0" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="385" cy="345" r="9" fill="#111827"/>
+    <path d="M420 365c20 14 44 14 62 0" fill="none" ${OUT}/>
+    <path d="M520 300c0 120 0 180 0 240" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round" opacity=".28"/>
+  `);}
 
-    /* RECESSED 3D PALETTE */
-    .tray {
-      background: #f1f5f9; padding: 15px; border-radius: 0 0 35px 35px;
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-    }
-    .swatches { display: flex; gap: 8px; overflow-x: auto; width: 100%; justify-content: center; padding: 5px; }
-    .swatch {
-      min-width: 45px; height: 45px; border-radius: 12px; border: 3px solid white;
-      cursor: pointer; box-shadow: 0 4px 0 #cbd5e1;
-    }
-    .swatch.active { transform: translateY(2px); box-shadow: 0 1px 0 #cbd5e1; border-color: #3b82f6; }
+  function svgSun(){ return cardWrap(`
+    <circle cx="400" cy="300" r="130" fill="#fbbf24" ${OUT}/>
+    <path d="M400 110v70M400 420v70M210 300h-70M590 300h70" fill="none" ${OUT}/>
+    <path d="M265 165l-48-48M535 435l48 48M535 165l48-48M265 435l-48 48" fill="none" ${OUT}/>
+    <circle cx="360" cy="290" r="9" fill="#111827"/>
+    <circle cx="440" cy="290" r="9" fill="#111827"/>
+    <path d="M360 330c30 20 70 20 100 0" fill="none" ${OUT}/>
+    <path d="M320 245c25-40 80-60 125-55" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="18" stroke-linecap="round"/>
+  `);}
 
-    #gal { position: absolute; inset: 0; background: white; z-index: 100; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .hidden { display: none !important; }
-  </style>
-</head>
-<body>
+  function svgMoon(){ return cardWrap(`
+    <path d="M520 170c-70 15-120 80-120 160c0 105 80 185 185 185c65 0 120-30 150-80
+             c-25 12-55 18-85 18c-120 0-215-95-215-215c0-30 7-56 15-68Z"
+      fill="#818cf8" ${OUT}/>
+    <path d="M265 250c15-10 30-10 45 0" fill="none" ${OUT}/>
+    <circle cx="295" cy="280" r="14" fill="#60a5fa" ${OUT}/>
+    <circle cx="260" cy="370" r="12" fill="#34d399" ${OUT}/>
+    <circle cx="560" cy="250" r="10" fill="#fbbf24" ${OUT}/>
+    <circle cx="500" cy="430" r="14" fill="#fb7185" ${OUT}/>
+  `);}
 
-<div class="console-3d">
-  <div class="screen">
-    <header>
-      <div style="font-weight:900; color:#334155">MAGIC TAP <span>PRO</span></div>
-      <button class="btn" onclick="openGal()" style="background:#3b82f6; color:white; box-shadow:0 4px 0 #1d4ed8;">CHANGE IMAGE</button>
-    </header>
+  function svgHat(){ return cardWrap(`
+    <path d="M285 255c12-85 70-135 145-145c85 12 135 70 145 145v70H285Z"
+      fill="#38bdf8" ${OUT}/>
+    <path d="M190 345c110 70 310 70 420 0c0 75-105 135-210 135S190 420 190 345Z"
+      fill="#fb7185" ${OUT}/>
+    <path d="M315 265h170" fill="none" stroke="#111827" stroke-width="10" stroke-linecap="round" opacity=".28"/>
+    <path d="M310 210c30-45 90-70 140-65" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="18" stroke-linecap="round"/>
+  `);}
 
-    <div id="gal" class="hidden"></div>
-    <div class="viewport" id="view"></div>
+  function svgCar(){ return cardWrap(`
+    <path d="M240 365c25-90 95-150 190-150h40c95 0 165 60 190 150h35c25 0 45 20 45 45v45
+             c0 25-20 45-45 45H205c-25 0-45-20-45-45v-45c0-25 20-45 45-45Z"
+      fill="#fb7185" ${OUT}/>
+    <path d="M320 250h160c55 0 110 35 135 95H235c25-60 80-95 85-95Z"
+      fill="#fbbf24" ${OUT}/>
+    <circle cx="305" cy="475" r="44" fill="#111827"/>
+    <circle cx="595" cy="475" r="44" fill="#111827"/>
+    <circle cx="305" cy="475" r="18" fill="#e5e7eb"/>
+    <circle cx="595" cy="475" r="18" fill="#e5e7eb"/>
+    <rect x="295" y="352" width="210" height="70" rx="18" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+    <circle cx="545" cy="385" r="12" fill="#ffffff" stroke="rgba(17,24,39,.12)" stroke-width="6"/>
+  `);}
 
-    <div class="tray">
-      <div class="swatches" id="swatches"></div>
-      <div style="display:flex; gap:10px; width:100%; justify-content:center">
-         <button class="btn" onclick="reset()">🔄 Clear</button>
-         <button class="btn" onclick="toggleMusic()" id="m-btn">🎵 Music: Off</button>
-      </div>
-    </div>
-  </div>
-</div>
+  function svgCake(){ return cardWrap(`
+    <path d="M255 430h290v120H255Z" fill="#60a5fa" ${OUT}/>
+    <path d="M255 330c45-45 90-45 135 0c45-45 90-45 135 0c45-45 90-45 135 0v100H255Z"
+      fill="#fbbf24" ${OUT}/>
+    <path d="M280 470h240" fill="none" ${OUT} opacity=".25"/>
+    <circle cx="320" cy="385" r="10" fill="#fb7185"/>
+    <circle cx="400" cy="385" r="10" fill="#34d399"/>
+    <circle cx="480" cy="385" r="10" fill="#818cf8"/>
+    <path d="M400 225c-28 30-28 65 0 95c28-30 28-65 0-95Z" fill="#fb923c" ${OUT}/>
+    <path d="M400 320v22" fill="none" ${OUT}/>
+  `);}
 
-<script>
-  const COLS = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55', '#8E8E93', '#FFFFFF'];
-  let pen = COLS[0], aCtx = null, mus = false;
+  function svgStar(){ return cardWrap(`
+    <path d="M400 165l60 122l135 20l-98 96l23 136l-120-63l-120 63l23-136l-98-96l135-20Z"
+      fill="#fbbf24" ${OUT}/>
+    <path d="M310 240c22-35 70-55 120-50" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="18" stroke-linecap="round"/>
+  `);}
 
-  const SCENES = [
-    { name: "Flower Garden", svg: `
-      <path class="p" d="M100 550 q300-50 600 0 v50 h-600 z"/>
-      <path class="p" d="M385 400 v150 h30 v-150 z"/>
-      <circle class="p" cx="400" cy="300" r="60"/>
-      <path class="p" d="M400 240 q80-100 120 0 t-120 60"/> <path class="p" d="M400 240 q-80-100-120 0 t120 60"/>
-      <path class="p" d="M460 300 q100-80 100 60 t-160 0"/> <path class="p" d="M340 300 q-100-80-100 60 t160 0"/>
-      <path class="p" d="M400 360 q80 100 120 0 t-120-60"/> <path class="p" d="M400 360 q-80 100-120 0 t120-60"/>
-      <path class="p" d="M150 480 q50-80 100 0 t-100 80"/>
-      <path class="det" d="M380 280 a5 5 0 1 1 10 0 M410 280 a5 5 0 1 1 10 0 M380 310 q20 15 40 0"/>
-    `},
-    { name: "Fish in Sea", svg: `
-      <path class="p" d="M200 300 q200-200 450 0 c150 150 0 250-100 100 l100 100 v-200 l-100 100 q-250 150-350-100 z"/>
-      <circle class="p" cx="300" cy="270" r="20"/>
-      <path class="p" d="M450 200 q50-80 100 0"/> <path class="p" d="M450 400 q50 80 100 0"/>
-      <circle class="p" cx="150" cy="150" r="25"/> <circle class="p" cx="220" cy="80" r="15"/>
-      <path class="p" d="M100 500 q100-200 150 0 t-150 100 z"/>
-      <path class="det" d="M350 300 h200 M360 330 h180 M370 360 h160"/>
-    `},
-    { name: "Magic Castle", svg: `
-      <path class="p" d="M150 500 h500 v-250 h-500 z"/>
-      <path class="p" d="M180 250 v-150 h120 v150 z"/> <path class="p" d="M500 250 v-150 h120 v150 z"/>
-      <path class="p" d="M170 100 l70-80 l70 80 z"/> <path class="p" d="M490 100 l70-80 l70 80 z"/>
-      <path class="p" d="M340 500 v-140 q60-80 120 0 v140 z"/>
-      <rect class="p" x="210" y="280" width="60" height="60" rx="10"/>
-      <rect class="p" x="530" y="280" width="60" height="60" rx="10"/>
-      <circle class="p" cx="720" cy="100" r="50"/>
-    `},
-    { name: "Rocket Sky", svg: `
-      <path class="p" d="M400 40 c150 0 150 400 150 500 h-300 c0-100 0-500 150-500 z"/>
-      <circle class="p" cx="400" cy="220" r="60"/>
-      <path class="p" d="M280 450 l-120 120 h120 z"/> <path class="p" d="M520 450 l120 120 h-120 z"/>
-      <path class="p" d="M150 100 l15-15 l15 15 l-15 15 z"/> <path class="p" d="M700 200 l25-25 l25 25 l-25 25 z"/> <path class="p" d="M100 350 q50-60 100 0 t100 0 t100 0 h-300 z"/> <path class="p" d="M600 50 l30-30 l30 30 l-30 30 z"/> `}
-  ];
-
-  function init() {
-    const sw = document.getElementById('swatches');
-    COLS.forEach(c => {
-      const d = document.createElement('div');
-      d.className = 'swatch' + (c === pen ? ' active' : '');
-      d.style.backgroundColor = c;
-      d.onclick = () => {
-        document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-        d.classList.add('active');
-        pen = c;
-        play(600, 0.05);
-      };
-      sw.appendChild(d);
-    });
-
-    const g = document.getElementById('gal');
-    SCENES.forEach((s, i) => {
-      const c = document.createElement('div');
-      c.className = "btn"; c.style.height = "120px";
-      c.innerHTML = `<svg viewBox="0 0 800 600">${s.svg}</svg><div>${s.name}</div>`;
-      c.onclick = () => load(i);
-      g.appendChild(c);
-    });
-    load(0);
-  }
-
-  function load(idx) {
-    const v = document.getElementById('view');
-    v.innerHTML = `<svg viewBox="0 0 800 600" id="current-svg">${SCENES[idx].svg}</svg>`;
-    document.getElementById('gal').classList.add('hidden');
-    v.querySelectorAll('.p').forEach(p => {
-      p.onclick = (e) => { e.stopPropagation(); p.style.fill = pen; hiss(); };
-    });
-  }
-
-  function openGal() { document.getElementById('gal').classList.remove('hidden'); }
-  function reset() { document.querySelectorAll('#current-svg .p').forEach(p => p.style.fill = "#fff"); }
-
-  function getCtx() {
-    if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (aCtx.state === 'suspended') aCtx.resume();
-    return aCtx;
-  }
-
-  function play(f, d) {
-    const c = getCtx();
-    const o = c.createOscillator(); const g = c.createGain();
-    o.frequency.value = f; g.gain.setValueAtTime(0.1, c.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + d);
-    o.connect(g); g.connect(c.destination);
-    o.start(); o.stop(c.currentTime + d);
-  }
-
-  function hiss() {
-    const c = getCtx();
-    const b = c.createBuffer(1, c.sampleRate * 0.1, c.sampleRate);
-    const d = b.getChannelData(0);
-    for (let i = 0; i < b.length; i++) d[i] = Math.random() * 2 - 1;
-    const s = c.createBufferSource(); s.buffer = b;
-    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1000;
-    const g = c.createGain(); g.gain.setValueAtTime(0.05, c.currentTime);
-    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.1);
-    s.connect(f); f.connect(g); g.connect(c.destination);
-    s.start();
-  }
-
-  function toggleMusic() {
-    getCtx(); mus = !mus;
-    document.getElementById('m-btn').innerText = mus ? "🎵 Music: On" : "🎵 Music: Off";
-    if (mus) loop();
-  }
-
-  function loop() {
-    if (!mus) return;
-    play([329, 392, 440, 523][Math.floor(Math.random()*4)], 1.5);
-    setTimeout(loop, 900);
-  }
-
-  init();
-</script>
-</body>
-</html>
+  function svgTree(){ return cardWrap(`
+    <path d="M400 195c-105-20-190 70-190 160c0 105 85 190 190 190s190-85 190-190
+             c0-90-85-180-190-160Z"
+      fill="#34d399" ${OUT}/>
+    <path d="M365 330h70v220h-70Z" fill="#8b5e3c" ${OUT}/>
+    <path d="M300 340c30-25 70-35 100-28" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="18" stroke-linecap="round"/>
+    <path d="M320 395c30 20 65 20 95 0" fill="none" ${OUT}/>
+  `);}
