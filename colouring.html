@@ -3,236 +3,221 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Magic Colour Tap | Salam Adventures</title>
+  <title>Premium Magic Colour | Salam Adventures</title>
   <style>
-    :root{
-      --bg1:#fde7ef; --bg2:#e6f4ff; --ink:#111827; --muted:#6b7280;
-      --panel:#ffffffef; --shadow: 0 20px 50px rgba(0,0,0,.1);
-      --radius: 24px;
-      --borderGrad: conic-gradient(from 180deg, #ff5fa2, #ffcc3a, #58e3ff, #7c5cff, #ff8b3a, #62f5a6, #ff5fa2);
+    :root {
+      --ink: #1a1a1a;
+      --accent: #ff5fa2;
+      --panel: #ffffff;
+      --bg: #f0f2f5;
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at top, #fff, var(--bg2));
-      height: 100vh; display: flex; align-items: center; justify-content: center;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { 
+      margin: 0; font-family: 'Comic Sans MS', cursive, sans-serif; 
+      background: var(--bg); height: 100vh; display: flex; flex-direction: column;
     }
 
-    .frame{
-      width: min(1000px, 95vw); height: min(800px, 90vh);
-      background: var(--borderGrad); padding: 12px; border-radius: 32px;
-      box-shadow: var(--shadow); position: relative;
+    /* --- Layout --- */
+    .app-header {
+      background: #fff; padding: 15px 25px; display: flex; 
+      justify-content: space-between; align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
     }
 
-    .card{
-      height: 100%; background: #fff; border-radius: 22px;
-      display: flex; flex-direction: column; overflow: hidden; position: relative;
-    }
+    .main-view { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
 
-    /* --- UI Components --- */
-    .header{
-      padding: 15px 25px; border-bottom: 2px solid #f0f0f0;
-      display: flex; justify-content: space-between; align-items: center;
+    /* --- Gallery --- */
+    .gallery-overlay {
+      position: absolute; inset: 0; background: var(--bg); z-index: 100;
+      padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .header h1 { margin: 0; font-size: 22px; color: var(--ink); }
+    .gallery-hidden { transform: translateY(-100%); }
 
-    .controls{ display: flex; gap: 10px; }
-    .btn{
-      padding: 8px 16px; border-radius: 12px; border: 1px solid #ddd;
-      background: #fff; cursor: pointer; font-weight: 700; transition: 0.2s;
+    .card {
+      background: #fff; border-radius: 20px; border: 4px solid #fff;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08); overflow: hidden; cursor: pointer;
+      transition: 0.2s;
     }
-    .btn:hover{ background: #f5f5f5; transform: translateY(-1px); }
-    .btn.primary { background: var(--ink); color: #fff; border: none; }
+    .card:hover { transform: scale(1.03); border-color: var(--accent); }
+    .card svg { width: 100%; height: 200px; display: block; pointer-events: none; padding: 10px; }
+    .card-label { padding: 15px; text-align: center; font-weight: bold; font-size: 1.1em; background: #fff; }
 
-    .game-area{ flex: 1; position: relative; background: #fafafa; overflow: hidden; }
-
-    /* --- Gallery View --- */
-    .gallery {
-      position: absolute; inset: 0; background: #fff; z-index: 20;
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px; padding: 30px; overflow-y: auto;
+    /* --- Coloring Area --- */
+    .drawing-canvas {
+      width: 90vw; height: 75vh; max-width: 900px; background: #fff;
+      border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 20px; display: flex; align-items: center; justify-content: center;
     }
-    .thumb {
-      border: 2px solid #eee; border-radius: 16px; cursor: pointer;
-      transition: 0.3s; background: #fff; overflow: hidden;
-    }
-    .thumb:hover { border-color: #ff5fa2; transform: scale(1.02); }
-    .thumb svg { width: 100%; height: 180px; padding: 10px; pointer-events: none; }
-    .thumb-label { padding: 10px; text-align: center; font-weight: 800; background: #f9f9f9; }
+    .drawing-canvas svg { width: 100%; height: 100%; }
 
-    /* --- Canvas/Drawing --- */
-    .canvas-container {
-      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-      padding: 40px; padding-bottom: 120px;
+    /* The "Ink" look */
+    .paint { 
+      fill: #fff; stroke: var(--ink); stroke-width: 2.5; 
+      stroke-linecap: round; stroke-linejoin: round;
+      transition: fill 0.2s; cursor: pointer;
     }
-    .art-svg { width: 100%; height: 100%; max-width: 750px; }
-    
-    /* The magic paint effect */
-    .paint { transition: fill 0.2s ease; cursor: crosshair; }
-    .paint:hover { filter: brightness(0.95); }
+    .paint:hover { filter: brightness(0.9); }
 
+    /* --- Palette --- */
     .palette {
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: rgba(255,255,255,0.95); padding: 12px; border-radius: 20px;
-      display: flex; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      border: 1px solid #eee; backdrop-filter: blur(5px);
+      position: absolute; bottom: 25px; background: #fff;
+      padding: 12px 20px; border-radius: 100px; display: flex; gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee;
     }
     .swatch {
-      width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff;
-      cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s;
+      width: 45px; height: 45px; border-radius: 50%; border: 4px solid #fff;
+      cursor: pointer; transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
-    .swatch.active { transform: scale(1.2); border-color: var(--ink); }
+    .swatch.active { transform: scale(1.2) translateY(-5px); border-color: var(--ink); }
+
+    .btn {
+      padding: 10px 20px; border-radius: 15px; border: none;
+      background: #eee; font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn:active { transform: scale(0.95); }
 
     .toast {
-      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-      background: var(--ink); color: white; padding: 10px 25px; border-radius: 50px;
-      font-weight: 800; opacity: 0; pointer-events: none; transition: 0.5s; z-index: 100;
+      position: absolute; top: 100px; background: var(--ink); color: #fff;
+      padding: 12px 30px; border-radius: 50px; font-weight: bold;
+      transform: translateY(-50px); opacity: 0; transition: 0.4s;
     }
-    .toast.show { opacity: 1; top: 40px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
 
-<div class="frame">
-  <div class="card">
-    <div class="header">
-      <h1>✨ Magic Colour Tap</h1>
-      <div class="controls">
-        <button class="btn" onclick="showGallery()">🖼️ Gallery</button>
-        <button class="btn" onclick="resetImage()">🔄 Reset</button>
-        <button class="btn primary" onclick="surprise()">🎲 Random</button>
-      </div>
-    </div>
-
-    <div class="game-area">
-      <div class="toast" id="toast">Amazing! You finished it! 🌟</div>
-      
-      <div class="gallery" id="gallery"></div>
-      
-      <div class="canvas-container" id="canvasContainer">
-        <div class="art-svg" id="svgHost"></div>
-      </div>
-
-      <div class="palette" id="palette"></div>
-    </div>
+<header class="app-header">
+  <button class="btn" onclick="openGallery()">🏠 Gallery</button>
+  <h2 style="margin:0">✨ Magic Fill</h2>
+  <div style="display:flex; gap:10px">
+    <button class="btn" onclick="resetArt()">🔄 Clear</button>
+    <button class="btn btn-primary" onclick="randomFill()">🎲 Surprise</button>
   </div>
-</div>
+</header>
+
+<main class="main-view">
+  <div id="gallery" class="gallery-overlay"></div>
+  
+  <div class="toast" id="toast">Amazing Work! 🌟</div>
+
+  <div class="drawing-canvas" id="canvas"></div>
+
+  <div class="palette" id="palette"></div>
+</main>
 
 <script>
-  const COLORS = ['#FF6FB1', '#FFD54A', '#4CC9FF', '#63F5A6', '#8B7CFF', '#FF9B3A', '#FF3B4D', '#555555', '#FFFFFF'];
-  let currentColor = COLORS[0];
+  const COLORS = ['#FF5555', '#FFBB33', '#99CC00', '#33B5E5', '#AA66CC', '#FF4444', '#FF8800', '#669900', '#0099CC', '#9933CC', '#FFFFFF', '#444444'];
+  let selectedColor = COLORS[0];
 
-  // Helper for consistent SVG styling
-  const s = 'fill="white" stroke="#111827" stroke-width="2.5" class="paint"';
+  const s = 'class="paint"'; // Helper for class
 
+  // 6 Detailed Coloring Pages (Organic SVGs)
   const PAGES = [
     {
-      id: 'castle', label: 'Magical Castle',
+      title: "Friendly Dino",
       svg: `<svg viewBox="0 0 800 600">
-        <rect width="800" height="600" fill="#fff"/>
-        <path d="M200 500 h400 v-200 h-400 z" ${s}/> <path d="M200 300 l50 -80 h-100 z" ${s}/> <path d="M150 450 h100 v-150 h-100 z" ${s}/> <path d="M550 450 h100 v-150 h-100 z" ${s}/> <path d="M600 300 l50 -80 h-100 z" ${s}/> <path d="M350 500 v-100 a50 50 0 0 1 100 0 v 100 z" ${s}/> <rect x="280" y="320" width="40" height="60" ${s}/> <rect x="480" y="320" width="40" height="60" ${s}/> <path d="M300 200 l100 -120 l100 120 h-200 z" ${s}/> <path d="M100 500 q200 -50 400 0 q200 50 200 0 v 100 h-800 z" ${s}/> </svg>`
+        <path d="M200 450 C 200 200, 500 150, 600 300 C 650 400, 600 500, 400 500 C 300 500, 200 450, 200 450" ${s}/> <path d="M220 380 C 150 380, 100 300, 150 250 C 180 220, 250 250, 250 300" ${s}/> <path d="M400 210 Q 420 180, 440 210" ${s}/> <path d="M460 225 Q 480 195, 500 225" ${s}/> <circle cx="180" cy="280" r="15" ${s}/> <path d="M400 500 L 380 560 L 440 560 L 420 500" ${s}/> <path d="M500 480 L 480 540 L 540 540 L 520 480" ${s}/> <path d="M600 400 Q 750 450, 700 550 Q 650 500, 600 450" ${s}/> <circle cx="350" cy="350" r="20" ${s}/> <circle cx="450" cy="380" r="15" ${s}/> </svg>`
     },
     {
-      id: 'space', label: 'Space Explorer',
+      title: "Space Adventure",
       svg: `<svg viewBox="0 0 800 600">
-        <rect width="800" height="600" fill="#fff"/>
-        <circle cx="150" cy="150" r="80" ${s}/> <circle cx="120" cy="120" r="15" ${s}/> <path d="M400 100 q80 150 80 300 h-160 q0 -150 80 -300" ${s}/> <path d="M400 100 l30 50 h-60 z" ${s}/> <circle cx="400" cy="250" r="30" ${s}/> <path d="M320 350 l-50 80 l50 -20 z" ${s}/> <path d="M480 350 l50 80 l-50 -20 z" ${s}/> <path d="M350 400 q50 80 100 0" ${s}/> <path d="M650 450 r60" cx="650" cy="450" ${s}/> <ellipse cx="650" cy="450" rx="100" ry="20" fill="none" stroke="#111827" stroke-width="3"/>
+        <path d="M400 50 C 450 150, 450 350, 400 450 C 350 350, 350 150, 400 50" ${s}/> <path d="M400 50 L 430 120 L 370 120 Z" ${s}/> <circle cx="400" cy="200" r="40" ${s}/> <circle cx="400" cy="200" r="25" ${s}/> <path d="M365 350 L 300 450 L 365 420" ${s}/> <path d="M435 350 L 500 450 L 435 420" ${s}/> <circle cx="150" cy="150" r="60" ${s}/> <path d="M80 160 Q 150 220, 220 160" fill="none" stroke="#000" stroke-width="3"/> <path d="M600 400 L 620 440 L 660 440 L 630 460 L 640 500 L 600 480 L 560 500 L 570 460 L 540 440 L 580 440 Z" ${s}/> </svg>`
+    },
+    {
+      title: "Magic Cupcake",
+      svg: `<svg viewBox="0 0 800 600">
+        <path d="M300 350 L 500 350 L 470 550 L 330 550 Z" ${s}/> <path d="M310 370 L 320 540 M 360 360 L 370 540 M 440 360 L 430 540" stroke="#000" stroke-width="2"/> <path d="M250 350 C 250 200, 550 200, 550 350" ${s}/> <path d="M300 250 C 300 150, 500 150, 500 250" ${s}/> <path d="M350 180 C 350 120, 450 120, 450 180" ${s}/> <circle cx="400" cy="110" r="30" ${s}/> <path d="M410 85 Q 430 40, 460 50" fill="none" stroke="#000" stroke-width="3"/> <rect x="320" y="280" width="10" height="20" rx="5" ${s}/> <rect x="450" y="220" width="10" height="20" rx="5" transform="rotate(45 450 220)" ${s}/> </svg>`
+    },
+    {
+      title: "Under the Sea",
+      svg: `<svg viewBox="0 0 800 600">
+        <path d="M150 300 Q 300 150, 500 300 Q 300 450, 150 300" ${s}/> <path d="M150 300 L 50 220 L 50 380 Z" ${s}/> <path d="M350 215 Q 400 150, 450 225" ${s}/> <circle cx="430" cy="280" r="12" ${s}/> <path d="M600 550 Q 550 400, 600 300 Q 650 400, 600 550" ${s}/> <circle cx="580" cy="150" r="20" ${s}/> <circle cx="620" cy="80" r="12" ${s}/> <path d="M200 550 Q 250 480, 300 550" ${s}/> </svg>`
+    },
+    {
+      title: "Royal Flower",
+      svg: `<svg viewBox="0 0 800 600">
+        <rect x="385" y="300" width="30" height="300" ${s}/> <path d="M415 450 Q 500 400, 415 520" ${s}/> <circle cx="400" cy="200" r="60" ${s}/> <path d="M400 140 C 450 40, 550 40, 500 160" ${s}/> <path d="M460 200 C 560 150, 560 250, 440 300" ${s}/> <path d="M400 260 C 350 360, 250 360, 300 240" ${s}/> <path d="M340 200 C 240 250, 240 150, 360 100" ${s}/> <circle cx="400" cy="200" r="30" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="5 5"/>
       </svg>`
     },
     {
-      id: 'underwater', label: 'Sea Adventure',
+      title: "The Hot Air Balloon",
       svg: `<svg viewBox="0 0 800 600">
-        <rect width="800" height="600" fill="#fff"/>
-        <path d="M0 500 q200 -30 400 0 t 400 0 v100 h-800 z" ${s}/> <path d="M200 300 q100 -100 250 0 t 0 200 t -250 -100" ${s}/> <path d="M200 300 l-80 -50 v100 z" ${s}/> <circle cx="380" cy="330" r="10" fill="#111827"/> <path d="M500 450 q20 -100 0 -150" ${s}/> <path d="M530 450 q20 -80 0 -120" ${s}/> <circle cx="650" cy="450" r="40" ${s}/> <path d="M610 430 l-30 -20" stroke="#111827" stroke-width="5"/> <circle cx="200" cy="100" r="20" ${s}/> <circle cx="250" cy="150" r="15" ${s}/> </svg>`
-    },
-    {
-      id: 'dragon', label: 'Dragon Lair',
-      svg: `<svg viewBox="0 0 800 600">
-        <rect width="800" height="600" fill="#fff"/>
-        <path d="M300 450 q100 -200 300 -50 v100 h-300 z" ${s}/> <path d="M300 450 q-100 0 -100 -100 q0 -50 50 -50 h50" ${s}/> <path d="M400 320 q50 -100 150 -50 t -50 150" ${s}/> <circle cx="220" cy="320" r="5" fill="#111827"/> <path d="M600 400 l100 50 l-100 20 z" ${s}/> <path d="M100 100 q50 50 100 0" ${s}/> <circle cx="100" cy="500" r="30" ${s}/> <circle cx="140" cy="510" r="25" ${s}/> </svg>`
-    },
-    {
-      id: 'forest', label: 'Deep Forest',
-      svg: `<svg viewBox="0 0 800 600">
-        <rect width="800" height="600" fill="#fff"/>
-        <path d="M200 500 h40 v-200 h-40 z" ${s}/> <path d="M120 300 q100 -150 200 0 z" ${s}/> <path d="M500 500 h50 v-250 h-50 z" ${s}/> <circle cx="525" cy="200" r="80" ${s}/> <path d="M350 450 q20 -40 40 0" ${s}/> <rect x="365" y="450" width="10" height="20" ${s}/> <path d="M0 500 q400 -50 800 0 v100 h-800 z" ${s}/> <circle cx="700" cy="100" r="40" ${s}/> </svg>`
-    },
-    {
-      id: 'hero', label: 'Superhero City',
-      svg: `<svg viewBox="0 0 800 600">
-        <rect width="800" height="600" fill="#fff"/>
-        <rect x="50" y="300" width="100" height="200" ${s}/> <rect x="180" y="200" width="120" height="300" ${s}/> <rect x="330" y="350" width="80" height="150" ${s}/> <path d="M500 200 l50 50 l-50 50 l-50 -50 z" ${s}/> <circle cx="500" cy="180" r="20" ${s}/> <path d="M450 200 q-50 0 -20 -50" ${s}/> <path d="M600 100 h150 v50 h-150 z" ${s}/> <circle cx="70" cy="350" r="5" ${s}/> <circle cx="110" cy="350" r="5" ${s}/> </svg>`
+        <path d="M400 50 C 250 50, 200 200, 300 350 L 500 350 C 600 200, 550 50, 400 50" ${s}/> <path d="M230 150 Q 400 100, 570 150" fill="none" stroke="#000" stroke-width="2"/> <path d="M260 250 Q 400 200, 540 250" fill="none" stroke="#000" stroke-width="2"/> <rect x="350" y="450" width="100" height="80" ${s}/> <line x1="300" y1="350" x2="350" y2="450" stroke="#000" stroke-width="3"/> <line x1="500" y1="350" x2="450" y2="450" stroke="#000" stroke-width="3"/> <path d="M100 150 Q 150 100, 200 150 T 300 150" ${s}/> </svg>`
     }
   ];
 
-  const gallery = document.getElementById('gallery');
-  const svgHost = document.getElementById('svgHost');
-  const palette = document.getElementById('palette');
-  const toast = document.getElementById('toast');
+  const galleryEl = document.getElementById('gallery');
+  const canvasEl = document.getElementById('canvas');
+  const paletteEl = document.getElementById('palette');
+  const toastEl = document.getElementById('toast');
 
   function init() {
-    // Build Palette
-    COLORS.forEach(c => {
+    // Generate Palette
+    COLORS.forEach(color => {
       const sw = document.createElement('div');
-      sw.className = 'swatch' + (c === currentColor ? ' active' : '');
-      sw.style.background = c;
+      sw.className = `swatch ${color === selectedColor ? 'active' : ''}`;
+      sw.style.backgroundColor = color;
       sw.onclick = () => {
-        document.querySelector('.swatch.active').classList.remove('active');
+        document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
         sw.classList.add('active');
-        currentColor = c;
+        selectedColor = color;
       };
-      palette.appendChild(sw);
+      paletteEl.appendChild(sw);
     });
 
-    // Build Gallery
-    PAGES.forEach(p => {
-      const item = document.createElement('div');
-      item.className = 'thumb';
-      item.innerHTML = `${p.svg}<div class="thumb-label">${p.label}</div>`;
-      item.onclick = () => loadPage(p);
-      gallery.appendChild(item);
+    // Generate Gallery
+    PAGES.forEach((page, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `${page.svg} <div class="card-label">${page.title}</div>`;
+      card.onclick = () => selectPage(index);
+      galleryEl.appendChild(card);
     });
 
-    loadPage(PAGES[0]);
+    selectPage(0);
   }
 
-  function loadPage(page) {
-    svgHost.innerHTML = page.svg;
-    gallery.style.display = 'none';
+  function selectPage(index) {
+    canvasEl.innerHTML = PAGES[index].svg;
+    galleryEl.classList.add('gallery-hidden');
     
-    // Attach click events to all "paint" classes
-    const paths = svgHost.querySelectorAll('.paint');
-    paths.forEach(p => {
-      p.onclick = (e) => {
+    // Setup Fill Logic
+    canvasEl.querySelectorAll('.paint').forEach(el => {
+      el.onclick = (e) => {
         e.stopPropagation();
-        p.style.fill = currentColor;
-        checkComplete();
+        el.style.fill = selectedColor;
+        checkProgress();
       };
     });
   }
 
-  function showGallery() {
-    gallery.style.display = 'grid';
+  function openGallery() {
+    galleryEl.classList.remove('gallery-hidden');
   }
 
-  function resetImage() {
-    svgHost.querySelectorAll('.paint').forEach(p => p.style.fill = 'white');
+  function resetArt() {
+    canvasEl.querySelectorAll('.paint').forEach(el => el.style.fill = '#ffffff');
   }
 
-  function surprise() {
-    svgHost.querySelectorAll('.paint').forEach(p => {
-      p.style.fill = COLORS[Math.floor(Math.random() * COLORS.length)];
+  function randomFill() {
+    canvasEl.querySelectorAll('.paint').forEach(el => {
+      el.style.fill = COLORS[Math.floor(Math.random() * COLORS.length)];
     });
-    checkComplete();
+    checkProgress();
   }
 
-  function checkComplete() {
-    const paths = [...svgHost.querySelectorAll('.paint')];
-    const done = paths.every(p => p.style.fill !== '' && p.style.fill !== 'white' && p.style.fill !== 'rgb(255, 255, 255)');
-    if (done) {
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+  function checkProgress() {
+    const total = canvasEl.querySelectorAll('.paint').length;
+    const filled = Array.from(canvasEl.querySelectorAll('.paint')).filter(el => 
+      el.style.fill !== '' && el.style.fill !== 'rgb(255, 255, 255)' && el.style.fill !== '#ffffff'
+    ).length;
+
+    if (filled === total) {
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 3000);
     }
   }
 
