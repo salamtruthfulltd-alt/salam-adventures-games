@@ -2,853 +2,1059 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Magic Colour Tap | Salam Adventures</title>
-  <meta name="description" content="Online tap-to-colour game for kids. Choose a picture, pick a colour, tap to fill, and sparkle when finished!" />
-
   <style>
     :root{
-      --frame-radius: 28px;
-      --frame-thickness: 10px;
-      --pop-depth: 20px;
-
-      --ink:#111827;
+      --bg1:#fde7ef;
+      --bg2:#e6f4ff;
+      --ink:#1f2937;
       --muted:#6b7280;
-      --panel: rgba(255,255,255,.92);
+      --panel:#ffffffea;
+      --panel2:#ffffffd6;
+      --shadow: 0 24px 70px rgba(0,0,0,.14);
+      --shadow2: 0 14px 30px rgba(0,0,0,.12);
+      --radius: 22px;
+
+      /* Fixed colourful border (NOT spinning) */
+      --borderGrad: conic-gradient(
+        from 180deg,
+        #ff5fa2, #ffcc3a, #58e3ff, #7c5cff, #ff8b3a, #62f5a6, #ff5fa2
+      );
     }
 
-    html,body{height:100%;}
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--ink);
+      color:var(--ink);
       background:
-        radial-gradient(1200px 700px at 30% 10%, rgba(255,255,255,.95), rgba(255,255,255,.65)),
-        linear-gradient(135deg, rgba(255,220,235,.35), rgba(210,240,255,.35));
-      display:grid;
-      place-items:center;
-      padding: 10px;
-      overflow:hidden;
-      -webkit-tap-highlight-color: transparent;
-      user-select:none;
+        radial-gradient(1200px 700px at 10% 10%, #ffffffaa 0, transparent 55%),
+        radial-gradient(900px 650px at 90% 10%, #ffffffaa 0, transparent 50%),
+        linear-gradient(120deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
     }
 
-    /* 3D frame wrapper */
-    .neon-frame{
-      position: relative;
-      border-radius: var(--frame-radius);
-      transform: perspective(1200px) rotateX(2.2deg);
-      filter: drop-shadow(0 22px 46px rgba(0,0,0,.14));
-    }
-
-    /* Flashing edge lights ONLY */
-    .neon-frame::before{
-      content:"";
-      position:absolute;
-      inset: calc(-1 * var(--frame-thickness));
-      border-radius: calc(var(--frame-radius) + var(--frame-thickness));
-      background:
-        conic-gradient(from 0deg,
-          #ff4fd8, #ffcc00, #4dff7a, #33c3ff, #8a5bff, #ff4fd8
-        );
-      animation: edgeSpin 2.2s linear infinite;
-      box-shadow:
-        0 0 20px rgba(255,79,216,.22),
-        0 0 34px rgba(51,195,255,.18),
-        0 0 50px rgba(255,204,0,.12);
-      filter: saturate(1.2);
-      z-index: 0;
-    }
-
-    /* Mask middle so glow stays on the border only */
-    .neon-frame::after{
-      content:"";
-      position:absolute;
-      inset: 0;
-      border-radius: var(--frame-radius);
-      background: rgba(255,255,255,.86);
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      padding: var(--frame-thickness);
-      pointer-events:none;
-      z-index: 1;
-    }
-
-    @keyframes edgeSpin{
-      0% { transform: rotate(0deg); opacity: .95; }
-      50%{ opacity: 1; }
-      100%{ transform: rotate(360deg); opacity: .95; }
-    }
-
-    /* Game surface: BIGGER screen */
-    .game-surface{
-      position: relative;
-      border-radius: var(--frame-radius);
-      background: var(--panel);
-      overflow: hidden;
-      transform: translateZ(var(--pop-depth));
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.75),
-        0 14px 34px rgba(0,0,0,.10);
-      z-index: 2;
-
-      width: min(1280px, 98vw);
-      height: min(820px, 96vh);
+    .wrap{
+      min-height:100%;
       display:flex;
-      flex-direction: column;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
     }
 
-    /* IMPORTANT: no filters inside (prevents colour distortion) */
-    .game-surface *{
-      filter: none !important;
-      backdrop-filter: none !important;
+    /* 3D frame with fixed colourful border */
+    .frame{
+      width:min(1120px, 100%);
+      border-radius: calc(var(--radius) + 8px);
+      background:
+        var(--borderGrad) border-box;
+      padding:10px; /* border thickness */
+      box-shadow: var(--shadow);
+      position:relative;
     }
-
-    /* Completion sparkles (only on finish) */
-    .sparkles{
+    /* subtle sparkle dots on the border (static-ish, not rotating) */
+    .frame::before{
+      content:"";
       position:absolute;
-      inset:0;
+      inset:6px;
+      border-radius: calc(var(--radius) + 4px);
       pointer-events:none;
+      background:
+        radial-gradient(6px 6px at 12% 20%, rgba(255,255,255,.55) 0 55%, transparent 58%),
+        radial-gradient(5px 5px at 82% 22%, rgba(255,255,255,.50) 0 55%, transparent 58%),
+        radial-gradient(4px 4px at 70% 80%, rgba(255,255,255,.45) 0 55%, transparent 58%),
+        radial-gradient(5px 5px at 25% 78%, rgba(255,255,255,.45) 0 55%, transparent 58%);
+      mix-blend-mode: screen;
+      opacity:.85;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
       overflow:hidden;
-      border-radius: var(--frame-radius);
-      display:none;
-      z-index: 50;
-    }
-    .sparkles.on{ display:block; }
-
-    .spark{
-      position:absolute;
-      width: 10px; height: 10px;
-      border-radius: 4px;
-      opacity: 0;
-      animation: pop 900ms ease-out forwards;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
-    }
-    @keyframes pop{
-      0%{ transform: translate(var(--x), var(--y)) scale(.6) rotate(0deg); opacity: 0; }
-      15%{ opacity: 1; }
-      100%{ transform: translate(calc(var(--x) * 1.9), calc(var(--y) * 1.9)) scale(1.2) rotate(240deg); opacity: 0; }
     }
 
-    /* Header */
-    .topbar{
-      padding: 16px 16px 10px;
+    .top{
       display:flex;
       align-items:flex-start;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .title{
-      display:flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 240px;
-    }
-    h1{
-      margin:0;
-      font-size: clamp(20px, 2.2vw, 30px);
-      letter-spacing: .2px;
-      font-weight: 1000;
-    }
-    .sub{
-      margin:0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.35;
-      font-weight: 750;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 16px 10px;
     }
 
-    .btnrow{
+    .title{
+      line-height:1.1;
+    }
+    .title h1{
+      margin:0;
+      font-size: clamp(22px, 3.2vw, 34px);
+      letter-spacing:-.02em;
+    }
+    .title p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .controls{
       display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap:10px;
+      flex-wrap:wrap;
       justify-content:flex-end;
       align-items:center;
     }
 
     .btn{
-      border: 1px solid rgba(0,0,0,.10);
-      background: white;
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-weight: 900;
+      appearance:none;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      color:var(--ink);
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
       cursor:pointer;
-      box-shadow: 0 6px 14px rgba(0,0,0,.06);
-      transition: transform .12s ease, box-shadow .12s ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,.08);
       user-select:none;
+      white-space:nowrap;
     }
-    .btn:active{
-      transform: translateY(1px);
-      box-shadow: 0 4px 10px rgba(0,0,0,.06);
+    .btn.primary{
+      background:#111827;
+      color:#fff;
+      border-color: transparent;
+      box-shadow: 0 14px 26px rgba(17,24,39,.22);
     }
-    .btn.dark{
-      background: linear-gradient(180deg, #111827, #0b1220);
-      color: #fff;
-      border-color: rgba(0,0,0,.25);
-    }
-
-    /* Body layout */
-    .content{
-      flex: 1;
+    .btn:active{transform:translateY(1px)}
+    .toggle{
       display:flex;
-      gap: 12px;
-      padding: 0 16px 16px;
-      min-height:0;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.10);
+      box-shadow: 0 8px 18px rgba(0,0,0,.08);
+      font-weight:700;
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:#22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,.18);
+    }
+    .dot.off{
+      background:#9ca3af;
+      box-shadow: 0 0 0 4px rgba(156,163,175,.18);
     }
 
     .main{
-      flex: 1;
-      min-width:0;
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      min-height:0;
-    }
-
-    .side{
-      width: 340px;
-      max-width: 40vw;
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      min-height:0;
-    }
-
-    .card{
-      background: rgba(255,255,255,.72);
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 18px;
-      box-shadow: 0 16px 30px rgba(0,0,0,.08);
-      overflow:hidden;
-      min-height:0;
-    }
-
-    /* Gallery */
-    .galleryHead{
-      padding:12px 12px 0;
-      display:flex; align-items:flex-end; justify-content:space-between;
-      gap:10px; flex-wrap:wrap;
-    }
-    .galleryGrid{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      padding: 12px;
-      overflow:auto;
-    }
-    @media (max-width: 980px){
-      .content{flex-direction: column;}
-      .side{width:auto; max-width:none;}
-      .galleryGrid{grid-template-columns: repeat(2, minmax(0, 1fr));}
-    }
-    @media (max-width: 560px){
-      .galleryGrid{grid-template-columns: 1fr;}
+      grid-template-columns: 1fr 320px;
+      gap:14px;
+      padding: 12px 16px 16px;
     }
 
-    .thumb{
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,.10);
-      background: rgba(255,255,255,.86);
-      cursor:pointer;
-      padding: 10px;
-      display:flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 12px 22px rgba(0,0,0,.08);
-      transition: transform .12s ease;
-    }
-    .thumb:active{ transform: scale(.99); }
-
-    .thumbTitle{ margin:0; font-weight:1000; font-size: 14px; }
-    .thumbNote{ margin:0; color:var(--muted); font-weight:800; font-size:12px; line-height:1.25; }
-
-    .miniPreview{
-      width:100%;
-      height: 160px;
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      border-radius: 14px;
-      background:
-        radial-gradient(600px 260px at 30% 10%, rgba(255,255,255,.9), rgba(255,255,255,.55)),
-        linear-gradient(135deg, rgba(255,220,235,.25), rgba(210,240,255,.25));
-      border: 1px solid rgba(0,0,0,.06);
-    }
-    .miniPreview svg{ width: 100%; height: 100%; }
-
-    /* Board */
-    .boardWrap{ flex:1; display:none; min-height:0; }
-    .boardWrap.on{ display:flex; flex-direction:column; gap: 0; min-height:0; }
+    /* bigger art board */
     .board{
-      flex:1;
-      display:grid;
-      place-items:center;
-      padding: 10px;
-      min-height:0;
+      border-radius:18px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+      min-height: 520px;
+      display:flex;
+      flex-direction:column;
     }
-    .board svg{
-      width: min(980px, 100%);
-      height: auto;
-      max-height: 60vh;
+
+    .boardHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(0,0,0,.06);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.90));
     }
 
     .hint{
-      padding: 10px 12px;
-      text-align:center;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-      border-top: 1px solid rgba(0,0,0,.06);
-      background: rgba(255,255,255,.7);
+      font-weight:800;
+      font-size:13px;
+      color:#374151;
+    }
+    .hint small{font-weight:700;color:#6b7280}
+
+    .badge{
+      font-weight:900;
+      font-size:12px;
+      color:#111827;
+      background: #f3f4f6;
+      border:1px solid rgba(0,0,0,.08);
+      padding:8px 10px;
+      border-radius:999px;
+      white-space:nowrap;
     }
 
-    /* Palette */
-    .sideTop{ padding: 12px 12px 8px; display:flex; flex-direction:column; gap:6px; }
-    .sideTitle{ margin:0; font-weight:1000; font-size: 16px; }
-    .sideSub{ margin:0; color:var(--muted); font-weight:800; font-size:12.5px; line-height:1.3; }
+    .canvasWrap{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      background:
+        radial-gradient(1200px 400px at 10% 10%, rgba(255,92,162,.06), transparent 60%),
+        radial-gradient(1000px 400px at 90% 10%, rgba(88,227,255,.07), transparent 55%),
+        radial-gradient(900px 460px at 50% 100%, rgba(98,245,166,.06), transparent 58%);
+    }
+
+    /* the actual SVG holder */
+    .art{
+      width: min(760px, 100%);
+      aspect-ratio: 4 / 3;
+      max-height: 520px;
+      border-radius:16px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow: 0 18px 32px rgba(0,0,0,.10);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .art svg{
+      width:100%;
+      height:100%;
+      display:block;
+      background:#fff;
+    }
+
+    /* colouring areas */
+    .paint{
+      cursor:pointer;
+      transition: filter .12s ease, transform .12s ease;
+    }
+    .paint:hover{
+      filter: brightness(1.03);
+    }
+    .paint:active{
+      transform: translateY(0.5px);
+    }
+
+    .side{
+      border-radius:18px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow: var(--shadow2);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height: 520px;
+    }
+
+    .panelTitle{
+      font-weight:900;
+      margin:0;
+      font-size:14px;
+    }
 
     .palette{
-      padding: 12px;
-      display:flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content:center;
-      align-items:center;
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:10px;
+      padding:10px;
+      background: rgba(17,24,39,.03);
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:16px;
     }
+
     .swatch{
-      width: 48px;
-      height: 48px;
-      border-radius: 999px;
+      width:100%;
+      aspect-ratio:1/1;
+      border-radius:999px;
       border: 3px solid rgba(255,255,255,.9);
-      box-shadow: 0 12px 20px rgba(0,0,0,.10);
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,.12),
+        0 10px 18px rgba(0,0,0,.10);
       cursor:pointer;
-      position: relative;
-      transition: transform .12s ease;
+      position:relative;
     }
-    .swatch:active{ transform: scale(.98); }
     .swatch.selected::after{
       content:"✓";
       position:absolute;
       inset:0;
-      display:grid;
-      place-items:center;
-      font-weight: 1000;
-      color: rgba(0,0,0,.75);
-      text-shadow: 0 1px 0 rgba(255,255,255,.7);
-      font-size: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      color:#111827;
+      text-shadow: 0 2px 0 rgba(255,255,255,.65);
     }
 
-    /* SVG shape styling */
-    .outline{
-      fill: #ffffff;
-      stroke: rgba(0,0,0,.55);
-      stroke-width: 4;
-      stroke-linejoin: round;
-      cursor: pointer;
-      transition: stroke .12s ease;
+    .miniHelp{
+      margin:0;
+      color:#6b7280;
+      font-size:13px;
+      line-height:1.35;
     }
-    .outline:hover{ stroke: rgba(0,0,0,.72); }
 
-    .small{ font-size: 12px; color: var(--muted); font-weight: 850; }
+    .gallery{
+      display:none;
+      gap:12px;
+      padding:12px;
+    }
+    .gallery.show{display:grid; grid-template-columns: repeat(3, 1fr);}
+    .thumb{
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      box-shadow: 0 14px 26px rgba(0,0,0,.10);
+      cursor:pointer;
+      transform: translateZ(0);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .thumb:hover{transform: translateY(-2px)}
+    .thumb svg{width:100%; height:100%; display:block}
+    .thumbLabel{
+      padding:10px 10px 12px;
+      font-weight:900;
+      font-size:13px;
+      color:#111827;
+      border-top:1px solid rgba(0,0,0,.06);
+      background: linear-gradient(180deg, #fff, #f9fafb);
+    }
 
-    @media (max-width: 700px){
-      :root{ --frame-thickness: 8px; }
-      .neon-frame{ transform: perspective(900px) rotateX(2deg); }
-      .game-surface{ height: min(860px, 96vh); }
-      .board svg{ max-height: 52vh; }
-      .swatch{ width:46px; height:46px; }
+    .toast{
+      position:absolute;
+      left:12px; right:12px; bottom:12px;
+      background: rgba(17,24,39,.92);
+      color:#fff;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      font-size:13px;
+      opacity:0;
+      transform: translateY(8px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
+    }
+    .toast.show{opacity:1; transform: translateY(0)}
+
+    /* Confetti canvas */
+    #fx{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    @media (max-width: 980px){
+      .main{grid-template-columns: 1fr}
+      .side{min-height:auto}
+      .board{min-height: 480px}
+      .art{max-height: 460px}
+    }
+    @media (max-width: 560px){
+      .controls{justify-content:flex-start}
+      .gallery.show{grid-template-columns: repeat(2, 1fr);}
+      .board{min-height: 420px}
+      .art{aspect-ratio: 1 / 1; max-height: 420px}
+      .palette{grid-template-columns: repeat(5, 1fr)}
     }
   </style>
 </head>
-
 <body>
-  <div class="neon-frame">
-    <div class="game-surface">
-      <div class="sparkles" id="sparkles"></div>
+  <div class="wrap">
+    <div class="frame" aria-label="Magic Colour Tap game frame">
+      <div class="card">
+        <div class="top">
+          <div class="title">
+            <h1>Magic Colour Tap</h1>
+            <p>Choose a picture, pick a colour, then tap to fill. Finish the picture to unlock a sparkle celebration ✨</p>
+          </div>
 
-      <div class="topbar">
-        <div class="title">
-          <h1>Magic Colour Tap</h1>
-          <p class="sub">Choose a picture, pick a colour, then tap to fill. Finish the whole picture to get a sparkle celebration.</p>
-        </div>
-        <div class="btnrow">
-          <button class="btn" id="backBtn" type="button" style="display:none;">Back to pictures</button>
-          <button class="btn" id="resetBtn" type="button" style="display:none;">Reset</button>
-          <button class="btn" id="surpriseBtn" type="button" style="display:none;">Surprise colours</button>
-          <button class="btn dark" id="musicBtn" type="button" aria-pressed="true">Music: On</button>
-        </div>
-      </div>
+          <div class="controls">
+            <button class="btn" id="backBtn" title="Choose another picture">Back to pictures</button>
+            <button class="btn" id="resetBtn" title="Clear colours">Reset</button>
+            <button class="btn" id="surpriseBtn" title="Random colour fun">Surprise colours</button>
 
-      <div class="content">
+            <div class="toggle" id="musicToggle" role="button" aria-pressed="true" title="Toggle background music">
+              <span class="dot" id="musicDot"></span>
+              <span id="musicText">Music: On</span>
+            </div>
+          </div>
+        </div>
+
         <div class="main">
-          <!-- GALLERY -->
-          <div class="card" id="galleryCard">
-            <div class="galleryHead">
-              <div>
-                <div style="font-weight:1000; font-size:16px;">Pick a colouring picture</div>
-                <div class="small">Tap one to start. You can come back anytime.</div>
+          <div class="board">
+            <div class="boardHeader">
+              <div class="hint" id="hint">
+                Pick a picture, then choose a colour. <small>Tap an area to fill.</small>
               </div>
-              <div class="small">6 pictures • tap-to-fill</div>
+              <div class="badge" id="progress">0 / 0 filled</div>
             </div>
 
-            <div class="galleryGrid" id="galleryGrid"></div>
+            <div class="canvasWrap">
+              <div class="art" id="art" aria-label="Colouring canvas">
+                <!-- Confetti canvas -->
+                <canvas id="fx"></canvas>
 
-            <div class="hint">Tip: After you choose a picture, pick a colour then tap shapes to colour them in.</div>
-          </div>
+                <!-- Gallery -->
+                <div class="gallery show" id="gallery"></div>
 
-          <!-- BOARD -->
-          <div class="card boardWrap" id="boardCard">
-            <div class="board" id="board"></div>
-            <div class="hint" id="hint">Pick a colour, then tap a shape.</div>
-          </div>
-        </div>
+                <!-- SVG will be injected here -->
+                <div id="svgHost" style="display:none; width:100%; height:100%;"></div>
 
-        <!-- PALETTE -->
-        <div class="side" id="sidePanel" style="display:none;">
-          <div class="card">
-            <div class="sideTop">
-              <p class="sideTitle">Pick a colour</p>
-              <p class="sideSub" id="pickedLabel">Colour selected: Sunshine</p>
+                <div class="toast" id="toast">✨ Yay! You finished! ✨</div>
+              </div>
             </div>
-            <div class="palette" id="palette" aria-label="Colour palette"></div>
-            <div class="hint">Little tip: You can change colours anytime. ✨</div>
+          </div>
+
+          <div class="side">
+            <h3 class="panelTitle">Pick a colour</h3>
+            <div class="palette" id="palette"></div>
+            <p class="miniHelp">
+              Tip: Little fingers work best when you <b>tap the shapes</b>, not the lines.  
+              You can change colours anytime. ✨
+            </p>
+            <p class="miniHelp" style="margin-top:auto;">
+              If the game looks “small” inside your website embed, just drag the bottom of the embed box taller.
+            </p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    // ------------ COLOURS ------------
-    const COLORS = [
-      {name:"Sunshine", value:"#FFD93D"},
-      {name:"Bubblegum", value:"#FF6FB1"},
-      {name:"Sky", value:"#5BC0FF"},
-      {name:"Mint", value:"#4DFF7A"},
-      {name:"Lavender", value:"#A98BFF"},
-      {name:"Orange", value:"#FF9F43"},
-      {name:"Red", value:"#FF4D4D"},
-      {name:"Ocean", value:"#2E86FF"},
-      {name:"Chocolate", value:"#8D5A3B"},
-      {name:"Grey", value:"#B7C0CC"},
-      {name:"Black", value:"#2B2F36"}
-    ];
+<script>
+(() => {
+  // ---------- Palette ----------
+  const COLORS = [
+    {name:"Sunshine", hex:"#FFD54A"},
+    {name:"Candy Pink", hex:"#FF6FB1"},
+    {name:"Sky", hex:"#4CC9FF"},
+    {name:"Mint", hex:"#63F5A6"},
+    {name:"Lavender", hex:"#8B7CFF"},
+    {name:"Orange", hex:"#FF9B3A"},
+    {name:"Cherry", hex:"#FF3B4D"},
+    {name:"Ocean", hex:"#2D7CFF"},
+    {name:"Cocoa", hex:"#8B5E3C"},
+    {name:"Cloud", hex:"#E5E7EB"},
+    {name:"Night", hex:"#111827"}
+  ];
 
-    let selected = COLORS[0].value;
-    let selectedName = COLORS[0].name;
+  const paletteEl = document.getElementById("palette");
+  let currentColor = COLORS[0].hex;
 
-    const paletteEl = document.getElementById("palette");
-    const pickedLabel = document.getElementById("pickedLabel");
-    const hintEl = document.getElementById("hint");
-    const sparklesEl = document.getElementById("sparkles");
+  function renderPalette(){
+    paletteEl.innerHTML = "";
+    COLORS.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.className = "swatch" + (i===0 ? " selected" : "");
+      b.style.background = c.hex;
+      b.title = c.name;
+      b.addEventListener("click", () => {
+        currentColor = c.hex;
+        [...paletteEl.children].forEach(ch => ch.classList.remove("selected"));
+        b.classList.add("selected");
+      });
+      paletteEl.appendChild(b);
+    });
+  }
 
-    const galleryCard = document.getElementById("galleryCard");
-    const boardCard = document.getElementById("boardCard");
-    const boardEl = document.getElementById("board");
-    const sidePanel = document.getElementById("sidePanel");
+  // ---------- Pictures (Better outlines: thicker stroke + clean shapes) ----------
+  // Each picture is a function returning SVG string. Areas to fill: class="paint" and data-fill="id"
+  const PICTURES = [
+    { id:"garden", label:"Flower Garden", svg: () => svgGarden() },
+    { id:"rocket", label:"Rocket Ride", svg: () => svgRocket() },
+    { id:"dino", label:"Friendly Dino", svg: () => svgDino() },
+    { id:"castle", label:"Fairy Castle", svg: () => svgCastle() },
+    { id:"ocean", label:"Ocean Friends", svg: () => svgOcean() },
+    { id:"stars", label:"Starry Night", svg: () => svgStars() },
+  ];
 
-    const backBtn = document.getElementById("backBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const surpriseBtn = document.getElementById("surpriseBtn");
-    const musicBtn = document.getElementById("musicBtn");
+  function outlineStyle(){
+    return `fill="white" stroke="#1f2937" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"`;
+  }
 
-    // ------------ MUSIC (soft, kid-friendly) ------------
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    let ctx = null;
-    let musicOn = true;
-    let musicTimer = null;
-    let musicGain = null;
-    let audioStarted = false;
+  function svgWrap(inner){
+    // viewBox 0 0 800 600 (4:3)
+    return `
+      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Colouring picture">
+        <rect x="0" y="0" width="800" height="600" fill="#ffffff"/>
+        ${inner}
+      </svg>`;
+  }
 
-    function ensureAudio(){
-      if (!ctx) ctx = new AudioCtx();
-      if (ctx.state === "suspended") ctx.resume();
+  function svgGarden(){
+    return svgWrap(`
+      <path d="M0 470 C130 420 210 520 320 470 C430 420 520 520 650 470 C720 445 760 450 800 465 L800 600 L0 600 Z"
+        ${outlineStyle()} class="paint" data-fill="hill" />
+
+      ${flower(170,350,80,"f1")}
+      ${flower(400,320,105,"f2")}
+      ${flower(640,360,86,"f3")}
+
+      <path d="M90 220 C120 180 170 170 200 210 C230 250 210 300 160 308 C110 318 70 270 90 220 Z"
+        ${outlineStyle()} class="paint" data-fill="cloud1" />
+      <path d="M600 200 C635 170 690 170 720 205 C750 240 730 290 680 298 C625 306 575 255 600 200 Z"
+        ${outlineStyle()} class="paint" data-fill="cloud2" />
+
+      <circle cx="690" cy="120" r="62" ${outlineStyle()} class="paint" data-fill="sun" />
+      <path d="M690 40 L690 10 M690 230 L690 260 M610 120 L580 120 M800 120 L770 120
+               M635 65 L614 44 M745 175 L765 195 M635 175 L614 195 M745 65 L765 44"
+            stroke="#1f2937" stroke-width="6" stroke-linecap="round" />
+    `);
+  }
+
+  function flower(x,y,size,id){
+    const r = size/3;
+    const pet = `
+      <ellipse cx="${x}" cy="${y-size/2}" rx="${r}" ry="${r*1.25}" ${outlineStyle()} class="paint" data-fill="${id}-p1"/>
+      <ellipse cx="${x+size/2}" cy="${y}" rx="${r}" ry="${r*1.25}" transform="rotate(90 ${x+size/2} ${y})" ${outlineStyle()} class="paint" data-fill="${id}-p2"/>
+      <ellipse cx="${x}" cy="${y+size/2}" rx="${r}" ry="${r*1.25}" ${outlineStyle()} class="paint" data-fill="${id}-p3"/>
+      <ellipse cx="${x-size/2}" cy="${y}" rx="${r}" ry="${r*1.25}" transform="rotate(90 ${x-size/2} ${y})" ${outlineStyle()} class="paint" data-fill="${id}-p4"/>
+    `;
+    const stem = `
+      <path d="M${x} ${y+size/2} C${x} ${y+size} ${x} ${y+size+60} ${x} ${y+size+120}"
+        ${outlineStyle()} class="paint" data-fill="${id}-stem"/>
+      <path d="M${x} ${y+size+60} C${x-50} ${y+size+40} ${x-70} ${y+size+90} ${x-20} ${y+size+100} C${x-5} ${y+size+102} ${x+0} ${y+size+90} ${x} ${y+size+80}"
+        ${outlineStyle()} class="paint" data-fill="${id}-leaf1"/>
+      <path d="M${x} ${y+size+80} C${x+50} ${y+size+60} ${x+70} ${y+size+110} ${x+15} ${y+size+125} C${x+2} ${y+size+128} ${x} ${y+size+115} ${x} ${y+size+105}"
+        ${outlineStyle()} class="paint" data-fill="${id}-leaf2"/>
+    `;
+    const center = `<circle cx="${x}" cy="${y}" r="${r*0.75}" ${outlineStyle()} class="paint" data-fill="${id}-center"/>`;
+    return pet + stem + center;
+  }
+
+  function svgRocket(){
+    return svgWrap(`
+      <path d="M120 520 C210 470 310 560 400 520 C520 470 610 560 700 520 L800 600 L0 600 Z"
+        ${outlineStyle()} class="paint" data-fill="ground"/>
+
+      <path d="M400 110 C470 170 520 260 520 350 C520 470 460 530 400 530 C340 530 280 470 280 350 C280 260 330 170 400 110 Z"
+        ${outlineStyle()} class="paint" data-fill="rocketBody"/>
+
+      <path d="M400 110 C435 145 465 195 480 240 C445 252 355 252 320 240 C335 195 365 145 400 110 Z"
+        ${outlineStyle()} class="paint" data-fill="rocketTop"/>
+
+      <circle cx="400" cy="300" r="55" ${outlineStyle()} class="paint" data-fill="window"/>
+      <path d="M280 340 C230 360 200 410 210 465 C255 445 300 420 320 380 Z"
+        ${outlineStyle()} class="paint" data-fill="finL"/>
+      <path d="M520 340 C570 360 600 410 590 465 C545 445 500 420 480 380 Z"
+        ${outlineStyle()} class="paint" data-fill="finR"/>
+
+      <path d="M360 530 C350 560 360 590 400 595 C440 590 450 560 440 530 Z"
+        ${outlineStyle()} class="paint" data-fill="flame1"/>
+      <path d="M380 540 C375 560 385 578 400 580 C415 578 425 560 420 540 Z"
+        ${outlineStyle()} class="paint" data-fill="flame2"/>
+
+      <path d="M120 140 C160 110 210 110 240 140 C270 170 250 220 210 230 C165 240 120 205 120 140 Z"
+        ${outlineStyle()} class="paint" data-fill="cloudA"/>
+      <path d="M590 150 C630 120 690 120 720 150 C750 180 730 230 690 240 C635 255 575 215 590 150 Z"
+        ${outlineStyle()} class="paint" data-fill="cloudB"/>
+
+      ${starsScatter()}
+    `);
+  }
+
+  function starsScatter(){
+    return `
+      <path d="M85 70 l14 18 22 2-17 14 6 21-19-11-19 11 6-21-17-14 22-2z"
+        ${outlineStyle()} class="paint" data-fill="s1"/>
+      <path d="M720 60 l12 16 20 2-15 12 5 19-17-10-17 10 5-19-15-12 20-2z"
+        ${outlineStyle()} class="paint" data-fill="s2"/>
+      <path d="M680 320 l10 13 16 2-12 10 4 15-14-8-14 8 4-15-12-10 16-2z"
+        ${outlineStyle()} class="paint" data-fill="s3"/>
+      <path d="M140 300 l10 13 16 2-12 10 4 15-14-8-14 8 4-15-12-10 16-2z"
+        ${outlineStyle()} class="paint" data-fill="s4"/>
+    `;
+  }
+
+  function svgDino(){
+    return svgWrap(`
+      <path d="M0 470 C160 430 280 520 400 470 C540 415 660 520 800 470 L800 600 L0 600 Z"
+        ${outlineStyle()} class="paint" data-fill="grass"/>
+
+      <!-- Dino body -->
+      <path d="M250 360 C220 250 290 190 380 200 C430 145 520 165 545 235
+               C590 245 630 290 620 345 C610 410 555 450 500 445
+               C470 495 395 510 345 475 C285 455 265 410 250 360 Z"
+        ${outlineStyle()} class="paint" data-fill="dinoBody"/>
+
+      <!-- Belly -->
+      <path d="M320 360 C315 290 360 260 410 265 C455 270 495 305 500 360
+               C505 420 455 452 410 450 C360 448 325 420 320 360 Z"
+        ${outlineStyle()} class="paint" data-fill="belly"/>
+
+      <!-- Head + face -->
+      <path d="M365 210 C380 175 425 160 460 175 C500 190 505 240 480 265
+               C455 292 410 290 385 265 C365 245 355 235 365 210 Z"
+        ${outlineStyle()} class="paint" data-fill="head"/>
+
+      <circle cx="450" cy="215" r="10" ${outlineStyle()} class="paint" data-fill="eye"/>
+      <path d="M430 245 C445 255 462 255 478 245" stroke="#1f2937" stroke-width="6" stroke-linecap="round"/>
+
+      <!-- Spikes -->
+      ${spike(340,205,"sp1")}
+      ${spike(310,235,"sp2")}
+      ${spike(285,275,"sp3")}
+      ${spike(275,325,"sp4")}
+      ${spike(285,375,"sp5")}
+
+      <!-- Tail -->
+      <path d="M250 350 C190 345 150 320 120 290 C155 285 195 270 230 250"
+        ${outlineStyle()} class="paint" data-fill="tail"/>
+
+      <!-- Feet -->
+      <path d="M330 475 C310 525 310 545 350 545 C390 545 395 525 375 480 Z"
+        ${outlineStyle()} class="paint" data-fill="footL"/>
+      <path d="M470 470 C450 525 455 545 495 545 C535 545 540 525 520 475 Z"
+        ${outlineStyle()} class="paint" data-fill="footR"/>
+
+      <path d="M610 200 C640 175 685 175 710 200 C735 225 720 265 685 275 C645 286 605 255 610 200 Z"
+        ${outlineStyle()} class="paint" data-fill="cloud"/>
+    `);
+  }
+
+  function spike(x,y,id){
+    return `<path d="M${x} ${y} L${x-18} ${y+40} L${x+18} ${y+40} Z" ${outlineStyle()} class="paint" data-fill="${id}"/>`;
+  }
+
+  function svgCastle(){
+    return svgWrap(`
+      <path d="M0 480 C140 430 270 520 410 480 C540 440 640 520 800 480 L800 600 L0 600 Z"
+        ${outlineStyle()} class="paint" data-fill="ground"/>
+
+      <rect x="240" y="240" width="320" height="260" rx="16"
+        ${outlineStyle()} class="paint" data-fill="wall"/>
+
+      <rect x="200" y="210" width="90" height="290" rx="16"
+        ${outlineStyle()} class="paint" data-fill="towerL"/>
+      <rect x="510" y="210" width="90" height="290" rx="16"
+        ${outlineStyle()} class="paint" data-fill="towerR"/>
+
+      <path d="M200 210 L200 160 L220 180 L240 160 L260 180 L280 160 L290 170 L290 210 Z"
+        ${outlineStyle()} class="paint" data-fill="roofL"/>
+      <path d="M510 210 L510 160 L530 180 L550 160 L570 180 L590 160 L600 170 L600 210 Z"
+        ${outlineStyle()} class="paint" data-fill="roofR"/>
+
+      <path d="M240 240 L240 180 L270 200 L300 180 L330 200 L360 180 L390 200 L420 180 L450 200 L480 180 L510 200 L540 180 L560 195 L560 240 Z"
+        ${outlineStyle()} class="paint" data-fill="roofMid"/>
+
+      <path d="M365 500 C340 470 340 430 365 405 C390 380 430 380 455 405 C480 430 480 470 455 500 Z"
+        ${outlineStyle()} class="paint" data-fill="door"/>
+
+      <rect x="290" y="310" width="70" height="70" rx="10"
+        ${outlineStyle()} class="paint" data-fill="win1"/>
+      <rect x="440" y="310" width="70" height="70" rx="10"
+        ${outlineStyle()} class="paint" data-fill="win2"/>
+
+      ${starsScatter()}
+      <path d="M120 150 C160 115 215 115 245 150 C275 185 255 235 210 245 C160 258 110 220 120 150 Z"
+        ${outlineStyle()} class="paint" data-fill="cloudA"/>
+      <path d="M590 155 C630 120 690 120 720 150 C750 180 735 235 690 245 C635 258 575 220 590 155 Z"
+        ${outlineStyle()} class="paint" data-fill="cloudB"/>
+    `);
+  }
+
+  function svgOcean(){
+    return svgWrap(`
+      <path d="M0 360 C120 330 220 395 320 360 C420 330 520 395 620 360 C700 332 760 340 800 352 L800 600 L0 600 Z"
+        ${outlineStyle()} class="paint" data-fill="sea"/>
+
+      <path d="M0 430 C120 400 220 465 320 430 C420 400 520 465 620 430 C700 402 760 410 800 422"
+        stroke="#1f2937" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+      <!-- Big fish -->
+      <path d="M260 330 C290 285 360 270 420 300 C470 325 470 365 420 390
+               C360 420 290 405 260 360 C230 385 205 400 180 405
+               C195 380 200 360 200 345 C200 330 195 310 180 285
+               C205 290 230 305 260 330 Z"
+        ${outlineStyle()} class="paint" data-fill="fish1"/>
+      <circle cx="385" cy="330" r="10" ${outlineStyle()} class="paint" data-fill="fishEye"/>
+
+      <!-- Turtle -->
+      <path d="M590 355 C560 315 560 275 600 255 C645 233 705 253 725 300
+               C742 340 725 382 685 395 C640 410 605 390 590 355 Z"
+        ${outlineStyle()} class="paint" data-fill="shell"/>
+      <circle cx="715" cy="315" r="18" ${outlineStyle()} class="paint" data-fill="head"/>
+      <path d="M605 395 C590 420 560 435 535 435 C545 415 555 400 565 388 Z"
+        ${outlineStyle()} class="paint" data-fill="fin1"/>
+      <path d="M670 405 C665 430 645 450 620 455 C620 430 630 412 642 400 Z"
+        ${outlineStyle()} class="paint" data-fill="fin2"/>
+
+      <!-- Bubbles -->
+      ${bubble(120,160,"b1")}${bubble(165,210,"b2")}${bubble(120,250,"b3")}
+      ${bubble(720,160,"b4")}${bubble(680,210,"b5")}${bubble(720,250,"b6")}
+
+      <path d="M120 120 C160 85 210 85 240 120 C270 155 250 205 210 215 C165 227 115 190 120 120 Z"
+        ${outlineStyle()} class="paint" data-fill="cloud"/>
+    `);
+  }
+
+  function bubble(x,y,id){
+    return `<circle cx="${x}" cy="${y}" r="20" ${outlineStyle()} class="paint" data-fill="${id}"/>`;
+  }
+
+  function svgStars(){
+    return svgWrap(`
+      <path d="M0 470 C130 420 240 520 360 470 C500 415 620 520 800 470 L800 600 L0 600 Z"
+        ${outlineStyle()} class="paint" data-fill="ground"/>
+
+      <path d="M520 170 C520 120 560 90 600 90 C650 90 690 130 690 180
+               C690 240 640 280 585 270 C550 265 520 230 520 170 Z"
+        ${outlineStyle()} class="paint" data-fill="moon"/>
+
+      <path d="M200 360 C220 310 270 280 320 290 C360 298 395 330 405 375
+               C420 445 360 505 285 495 C220 488 180 425 200 360 Z"
+        ${outlineStyle()} class="paint" data-fill="cloudBig"/>
+
+      ${starsScatter()}
+      ${starsScatter().replaceAll("data-fill=\"s","data-fill=\"t")}
+
+      <path d="M120 220 C150 190 205 190 230 220 C255 250 240 295 205 305 C160 318 112 280 120 220 Z"
+        ${outlineStyle()} class="paint" data-fill="cloud1"/>
+      <path d="M610 235 C640 205 695 205 720 235 C745 265 730 310 695 320 C650 333 602 295 610 235 Z"
+        ${outlineStyle()} class="paint" data-fill="cloud2"/>
+    `);
+  }
+
+  // ---------- State ----------
+  const svgHost = document.getElementById("svgHost");
+  const gallery = document.getElementById("gallery");
+  const progressEl = document.getElementById("progress");
+  const hintEl = document.getElementById("hint");
+  const toast = document.getElementById("toast");
+  const art = document.getElementById("art");
+  const fx = document.getElementById("fx");
+
+  let activePicture = null;
+  let fillMap = new Map(); // data-fill -> current color
+
+  // ---------- Gallery ----------
+  function renderGallery(){
+    gallery.innerHTML = "";
+    PICTURES.forEach(p => {
+      const wrap = document.createElement("div");
+      wrap.className = "thumb";
+      wrap.innerHTML = p.svg().replace('aria-label="Colouring picture"', 'aria-label="Thumbnail picture"');
+      const lab = document.createElement("div");
+      lab.className = "thumbLabel";
+      lab.textContent = p.label;
+      wrap.appendChild(lab);
+      wrap.addEventListener("click", () => loadPicture(p.id));
+      gallery.appendChild(wrap);
+    });
+  }
+
+  // ---------- Load picture ----------
+  function loadPicture(id){
+    activePicture = PICTURES.find(p => p.id === id);
+    fillMap.clear();
+    toast.classList.remove("show");
+
+    gallery.classList.remove("show");
+    svgHost.style.display = "block";
+    svgHost.innerHTML = activePicture.svg();
+
+    hookPaintAreas();
+    updateProgress();
+    hintEl.innerHTML = `You picked <b>${activePicture.label}</b>. <small>Choose a colour, then tap a shape.</small>`;
+  }
+
+  function showGallery(){
+    activePicture = null;
+    fillMap.clear();
+    toast.classList.remove("show");
+
+    svgHost.style.display = "none";
+    svgHost.innerHTML = "";
+    gallery.classList.add("show");
+
+    progressEl.textContent = "0 / 0 filled";
+    hintEl.innerHTML = `Pick a picture, then choose a colour. <small>Tap an area to fill.</small>`;
+  }
+
+  // ---------- Paint logic ----------
+  function hookPaintAreas(){
+    const svg = svgHost.querySelector("svg");
+    if(!svg) return;
+
+    // Make paint areas clickable
+    const areas = svg.querySelectorAll(".paint");
+    areas.forEach(el => {
+      el.style.fill = "#ffffff";
+      el.addEventListener("click", (e) => {
+        const key = el.getAttribute("data-fill");
+        fillMap.set(key, currentColor);
+        el.style.fill = currentColor;
+
+        // tiny tap feedback without distorting colours
+        el.style.filter = "brightness(1.04)";
+        setTimeout(() => el.style.filter = "", 110);
+
+        updateProgress();
+      }, {passive:true});
+    });
+
+    // fit confetti canvas size
+    resizeFx();
+  }
+
+  function updateProgress(){
+    const svg = svgHost.querySelector("svg");
+    if(!svg){
+      progressEl.textContent = "0 / 0 filled";
+      return;
     }
+    const areas = [...svg.querySelectorAll(".paint")];
+    const total = areas.length;
+    let filled = 0;
+    areas.forEach(a => {
+      const key = a.getAttribute("data-fill");
+      if(fillMap.has(key)) filled++;
+    });
+    progressEl.textContent = `${filled} / ${total} filled`;
 
-    function startMusic(){
-      if (!musicOn) return;
+    if(total > 0 && filled === total){
+      celebrate();
+    }
+  }
+
+  // ---------- Buttons ----------
+  document.getElementById("backBtn").addEventListener("click", showGallery);
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    fillMap.clear();
+    toast.classList.remove("show");
+    const svg = svgHost.querySelector("svg");
+    if(svg){
+      svg.querySelectorAll(".paint").forEach(el => el.style.fill = "#ffffff");
+    }
+    updateProgress();
+  });
+
+  document.getElementById("surpriseBtn").addEventListener("click", () => {
+    const svg = svgHost.querySelector("svg");
+    if(!svg) return;
+    const areas = [...svg.querySelectorAll(".paint")];
+    areas.forEach(el => {
+      const c = COLORS[Math.floor(Math.random() * COLORS.length)].hex;
+      const key = el.getAttribute("data-fill");
+      fillMap.set(key, c);
+      el.style.fill = c;
+    });
+    updateProgress();
+  });
+
+  // ---------- Confetti / sparkle celebration ----------
+  let confettiTimer = null;
+  function resizeFx(){
+    const r = fx.getBoundingClientRect();
+    fx.width = Math.max(1, Math.floor(r.width * devicePixelRatio));
+    fx.height = Math.max(1, Math.floor(r.height * devicePixelRatio));
+  }
+  window.addEventListener("resize", () => { resizeFx(); }, {passive:true});
+
+  function celebrate(){
+    toast.textContent = "✨ Yay! You finished! ✨";
+    toast.classList.add("show");
+    burstConfetti();
+    playDing();
+  }
+
+  function burstConfetti(){
+    resizeFx();
+    const ctx = fx.getContext("2d");
+    const w = fx.width, h = fx.height;
+
+    const pieces = Array.from({length: 120}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h*0.25,
+      vx: (Math.random()-0.5)*6*devicePixelRatio,
+      vy: (Math.random()*2+2)*devicePixelRatio,
+      r: (Math.random()*5+3)*devicePixelRatio,
+      a: Math.random()*Math.PI*2,
+      va: (Math.random()-0.5)*0.25,
+      life: Math.random()*40+60,
+      col: ["#FF6FB1","#FFD54A","#4CC9FF","#63F5A6","#8B7CFF","#FF9B3A"][Math.floor(Math.random()*6)]
+    }));
+
+    let t = 0;
+    if(confettiTimer) cancelAnimationFrame(confettiTimer);
+
+    const tick = () => {
+      t++;
+      ctx.clearRect(0,0,w,h);
+      pieces.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy *= 0.995;
+        p.a += p.va;
+        p.life--;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.a);
+        ctx.fillStyle = p.col;
+        ctx.globalAlpha = Math.max(0, p.life/80);
+        ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2);
+        ctx.restore();
+      });
+
+      // remove dead
+      for(let i=pieces.length-1;i>=0;i--){
+        if(pieces[i].life<=0 || pieces[i].y>h+50) pieces.splice(i,1);
+      }
+      if(pieces.length){
+        confettiTimer = requestAnimationFrame(tick);
+      } else {
+        ctx.clearRect(0,0,w,h);
+      }
+    };
+    tick();
+  }
+
+  // ---------- Audio (soft background) ----------
+  const musicToggle = document.getElementById("musicToggle");
+  const musicDot = document.getElementById("musicDot");
+  const musicText = document.getElementById("musicText");
+
+  let musicOn = true;
+  let audioCtx = null;
+  let musicNode = null;
+
+  function ensureAudio(){
+    if(audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  // gentle ambient pad
+  function startMusic(){
+    ensureAudio();
+    if(musicNode) return;
+
+    const ctx = audioCtx;
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    const g = ctx.createGain();
+    const f = ctx.createBiquadFilter();
+
+    o1.type = "sine";
+    o2.type = "triangle";
+    o1.frequency.value = 220;
+    o2.frequency.value = 330;
+
+    f.type = "lowpass";
+    f.frequency.value = 900;
+    g.gain.value = 0.0;
+
+    o1.connect(f); o2.connect(f);
+    f.connect(g);
+    g.connect(ctx.destination);
+
+    o1.start(); o2.start();
+
+    // fade in
+    g.gain.setValueAtTime(0.0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 1.2);
+
+    // slow wobble
+    const lfo = ctx.createOscillator();
+    const lfoG = ctx.createGain();
+    lfo.type="sine";
+    lfo.frequency.value = 0.08;
+    lfoG.gain.value = 20;
+    lfo.connect(lfoG);
+    lfoG.connect(o2.frequency);
+    lfo.start();
+
+    musicNode = {o1,o2,g,f,lfo,lfoG};
+  }
+
+  function stopMusic(){
+    if(!audioCtx || !musicNode) return;
+    const ctx = audioCtx;
+    musicNode.g.gain.cancelScheduledValues(ctx.currentTime);
+    musicNode.g.gain.setValueAtTime(musicNode.g.gain.value, ctx.currentTime);
+    musicNode.g.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.6);
+
+    setTimeout(() => {
+      try{
+        musicNode.o1.stop(); musicNode.o2.stop(); musicNode.lfo.stop();
+      }catch(e){}
+      musicNode = null;
+    }, 650);
+  }
+
+  function setMusicUI(){
+    musicDot.classList.toggle("off", !musicOn);
+    musicText.textContent = musicOn ? "Music: On" : "Music: Off";
+    musicToggle.setAttribute("aria-pressed", String(musicOn));
+  }
+
+  musicToggle.addEventListener("click", async () => {
+    musicOn = !musicOn;
+    setMusicUI();
+    try{
+      if(musicOn){
+        if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+        startMusic();
+      }else{
+        stopMusic();
+      }
+    }catch(e){}
+  });
+
+  // tiny success ding
+  function playDing(){
+    if(!musicOn) return;
+    try{
       ensureAudio();
-      if (musicTimer) return;
+      const ctx = audioCtx;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(880, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.18);
 
-      musicGain = ctx.createGain();
-      musicGain.gain.value = 0.03; // very soft
-      musicGain.connect(ctx.destination);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
 
-      const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; // C E G C G E
-      let i = 0;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + 0.28);
+    }catch(e){}
+  }
 
-      musicTimer = setInterval(() => {
-        if (!musicOn || ctx.state !== "running") return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.value = notes[i % notes.length];
-        g.gain.setValueAtTime(0.0001, ctx.currentTime);
-        g.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-        osc.connect(g);
-        g.connect(musicGain);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.26);
-        i++;
-      }, 280);
-    }
+  // ---------- Init ----------
+  renderPalette();
+  renderGallery();
+  showGallery();
+  setMusicUI();
 
-    function stopMusic(){
-      if (musicTimer){
-        clearInterval(musicTimer);
-        musicTimer = null;
-      }
-      if (musicGain){
-        try{ musicGain.disconnect(); }catch(e){}
-        musicGain = null;
-      }
-    }
+  // autoplay music only after first interaction (browser rules)
+  const unlock = async () => {
+    try{
+      if(!musicOn) return;
+      ensureAudio();
+      if(audioCtx.state === "suspended") await audioCtx.resume();
+      startMusic();
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    }catch(e){}
+  };
+  window.addEventListener("pointerdown", unlock, {passive:true});
+  window.addEventListener("keydown", unlock);
 
-    function userStartAudio(){
-      if (audioStarted) return;
-      audioStarted = true;
-      if (musicOn) startMusic();
-    }
-    document.addEventListener("pointerdown", userStartAudio, { once:true });
-
-    musicBtn.addEventListener("click", () => {
-      userStartAudio();
-      musicOn = !musicOn;
-      musicBtn.textContent = "Music: " + (musicOn ? "On" : "Off");
-      musicBtn.setAttribute("aria-pressed", String(musicOn));
-      if (musicOn) startMusic(); else stopMusic();
-    });
-
-    // ------------ PICTURES (6 SVGs) ------------
-    const PICTURES = [
-      { id:"rainbow", title:"Rainbow & Stars", note:"Happy sky sparkle ⭐", svg: svgRainbow() },
-      { id:"balloon", title:"Balloon Party", note:"Floaty fun 🎈", svg: svgBalloon() },
-      { id:"castle", title:"Fairy Castle", note:"Magic towers 🏰", svg: svgCastle() },
-      { id:"ocean", title:"Ocean Friends", note:"Fish & waves 🐟", svg: svgOcean() },
-      { id:"garden", title:"Flower Garden", note:"Bees & blooms 🌸", svg: svgGarden() },
-      { id:"space", title:"Space Rocket", note:"Zoom to the moon 🚀", svg: svgSpace() }
-    ];
-
-    // ------------ UI: palette ------------
-    function renderPalette(){
-      paletteEl.innerHTML = "";
-      COLORS.forEach((c) => {
-        const b = document.createElement("button");
-        b.className = "swatch" + (c.value === selected ? " selected" : "");
-        b.style.background = c.value;
-        b.title = c.name;
-        b.setAttribute("aria-label", "Select colour " + c.name);
-        b.addEventListener("click", () => {
-          selected = c.value;
-          selectedName = c.name;
-          pickedLabel.textContent = "Colour selected: " + selectedName;
-          document.querySelectorAll(".swatch").forEach(s => s.classList.remove("selected"));
-          b.classList.add("selected");
-          hintEl.textContent = `Colour selected: ${selectedName}. Now tap a shape!`;
-        });
-        paletteEl.appendChild(b);
-      });
-      pickedLabel.textContent = "Colour selected: " + selectedName;
-    }
-    renderPalette();
-
-    // ------------ UI: gallery ------------
-    const galleryGrid = document.getElementById("galleryGrid");
-    function renderGallery(){
-      galleryGrid.innerHTML = "";
-      PICTURES.forEach(pic => {
-        const card = document.createElement("div");
-        card.className = "thumb";
-        card.innerHTML = `
-          <div class="miniPreview" aria-hidden="true">${pic.svg}</div>
-          <p class="thumbTitle">${pic.title}</p>
-          <p class="thumbNote">${pic.note}</p>
-        `;
-        card.addEventListener("click", () => openPicture(pic));
-        galleryGrid.appendChild(card);
-      });
-    }
-    renderGallery();
-
-    // ------------ open picture + colouring logic ------------
-    let currentShapes = [];
-    let currentPic = null;
-
-    function openPicture(pic){
-      userStartAudio();
-      currentPic = pic;
-
-      galleryCard.style.display = "none";
-      boardCard.classList.add("on");
-      sidePanel.style.display = "";
-
-      backBtn.style.display = "";
-      resetBtn.style.display = "";
-      surpriseBtn.style.display = "";
-
-      boardEl.innerHTML = pic.svg;
-
-      currentShapes = Array.from(boardEl.querySelectorAll(".outline"));
-      currentShapes.forEach(sh => {
-        sh.addEventListener("click", () => {
-          sh.style.fill = selected;
-          checkDone();
-        });
-      });
-
-      hintEl.textContent = "Pick a colour, then tap a shape.";
-      clearSparkles();
-    }
-
-    function goBack(){
-      boardEl.innerHTML = "";
-      currentShapes = [];
-      currentPic = null;
-
-      galleryCard.style.display = "";
-      boardCard.classList.remove("on");
-      sidePanel.style.display = "none";
-
-      backBtn.style.display = "none";
-      resetBtn.style.display = "none";
-      surpriseBtn.style.display = "none";
-
-      clearSparkles();
-    }
-
-    backBtn.addEventListener("click", goBack);
-
-    resetBtn.addEventListener("click", () => {
-      userStartAudio();
-      currentShapes.forEach(s => s.style.fill = "#ffffff");
-      hintEl.textContent = "All reset! Pick a colour, then tap a shape.";
-      clearSparkles();
-    });
-
-    surpriseBtn.addEventListener("click", () => {
-      userStartAudio();
-      if (!currentShapes.length) return;
-      const picks = currentShapes.slice().sort(()=>Math.random()-0.5).slice(0, Math.min(10, currentShapes.length));
-      picks.forEach(s => s.style.fill = COLORS[Math.floor(Math.random()*COLORS.length)].value);
-      hintEl.textContent = "Surprise colours added! Keep colouring your way.";
-    });
-
-    function checkDone(){
-      const done = currentShapes.every(s => {
-        const fill = (s.style.fill || "").trim().toLowerCase();
-        return fill && fill !== "#ffffff" && fill !== "white";
-      });
-      if (done){
-        hintEl.textContent = "WOW! You finished! ✨ Great colouring!";
-        celebrate();
-      }
-    }
-
-    function clearSparkles(){
-      sparklesEl.classList.remove("on");
-      sparklesEl.innerHTML = "";
-    }
-
-    function celebrate(){
-      sparklesEl.innerHTML = "";
-      sparklesEl.classList.add("on");
-      const count = 38;
-
-      for (let i=0;i<count;i++){
-        const sp = document.createElement("div");
-        sp.className = "spark";
-        sp.style.background = COLORS[Math.floor(Math.random()*COLORS.length)].value;
-
-        const x = (Math.random()*2 - 1) * 220;
-        const y = (Math.random()*2 - 1) * 140;
-        sp.style.setProperty("--x", x + "px");
-        sp.style.setProperty("--y", y + "px");
-
-        sp.style.left = (50 + (Math.random()*14 - 7)) + "%";
-        sp.style.top  = (45 + (Math.random()*14 - 7)) + "%";
-        sp.style.animationDelay = (Math.random()*240) + "ms";
-
-        sparklesEl.appendChild(sp);
-      }
-
-      setTimeout(clearSparkles, 1400);
-    }
-
-    // ------------ SVG PICTURES ------------
-    // All shapes use class="outline" and start white so they can be coloured.
-
-    function svgRainbow(){
-      return `
-      <svg viewBox="0 0 900 520" role="img" aria-label="Rainbow and stars">
-        <path class="outline" d="M120,210c-35,0-64,24-64,54s29,54,64,54h160c32,0,58-21,58-47 0-24-21-44-50-47-10-33-44-58-85-58-35,0-65,17-83,44z"/>
-        <path class="outline" d="M545,220c-30,0-55,20-55,45 0,26,25,46,55,46h170c30,0,55-20,55-45 0-22-18-40-43-44-9-28-38-49-74-49-30,0-56,14-73,35z"/>
-
-        <path class="outline" d="M260,200c40-70,110-115,190-115s150,45,190,115l-60,0c-28-38-76-65-130-65s-102,27-130,65z"/>
-        <path class="outline" d="M300,200c34-52,88-85,150-85s116,33,150,85l-55,0c-22-26-56-45-95-45s-73,19-95,45z"/>
-        <path class="outline" d="M340,200c26-34,64-55,110-55s84,21,110,55l-50,0c-16-14-36-22-60-22s-44,8-60,22z"/>
-
-        <path class="outline" d="M170 95l16 32 35 5-25 25 6 35-32-17-32 17 6-35-25-25 35-5z"/>
-        <path class="outline" d="M725 95l16 32 35 5-25 25 6 35-32-17-32 17 6-35-25-25 35-5z"/>
-        <path class="outline" d="M450 45l12 24 26 4-19 18 5 26-24-13-24 13 5-26-19-18 26-4z"/>
-
-        <path class="outline" d="M300,380c70-30,130-30,200,0v90c-70-30-130-30-200,0z"/>
-        <path class="outline" d="M500,380c70-30,130-30,200,0v90c-70-30-130-30-200,0z"/>
-        <path class="outline" d="M495,380h10v90h-10z"/>
-
-        <circle class="outline" cx="170" cy="360" r="60"/>
-        <path class="outline" d="M130,430c20-35,80-35,100,0v40H130z"/>
-        <circle class="outline" cx="150" cy="350" r="8"/>
-        <circle class="outline" cx="190" cy="350" r="8"/>
-        <path class="outline" d="M150,380c12,12,28,12,40,0" />
-      </svg>`;
-    }
-
-    function svgBalloon(){
-      return `
-      <svg viewBox="0 0 900 520" role="img" aria-label="Balloon party">
-        <path class="outline" d="M80,410c0-45,55-85,120-85 40,0 75,14 98,35 18-10 40-16 64-16 60,0 110,38 110,86 0,48-50,86-110,86H200c-66,0-120-40-120-86z"/>
-        <circle class="outline" cx="230" cy="190" r="70"/>
-        <circle class="outline" cx="410" cy="150" r="60"/>
-        <circle class="outline" cx="610" cy="180" r="75"/>
-        <circle class="outline" cx="730" cy="120" r="55"/>
-
-        <path class="outline" d="M220,260c10,18 30,30 50,30 20,0 40-12 50-30" />
-        <path class="outline" d="M400,210c10,16 26,26 45,26 19,0 35-10 45-26" />
-        <path class="outline" d="M600,265c12,20 34,34 58,34 24,0 46-14 58-34" />
-        <path class="outline" d="M720,165c8,14 22,23 38,23 16,0 30-9 38-23" />
-
-        <path class="outline" d="M230,260c0,40 20,70 40,90 10,10 10,25 0,35l-15,15" />
-        <path class="outline" d="M410,210c0,45 18,80 36,100 9,10 9,25 0,35l-14,14" />
-        <path class="outline" d="M610,265c0,45 22,80 44,100 10,10 10,25 0,35l-16,16" />
-        <path class="outline" d="M730,165c0,45 18,80 36,100 9,10 9,25 0,35l-14,14" />
-
-        <path class="outline" d="M235,420h40l-20,25z"/>
-        <path class="outline" d="M415,420h40l-20,25z"/>
-        <path class="outline" d="M635,420h40l-20,25z"/>
-        <path class="outline" d="M735,420h40l-20,25z"/>
-      </svg>`;
-    }
-
-    function svgCastle(){
-      return `
-      <svg viewBox="0 0 900 520" role="img" aria-label="Fairy castle">
-        <path class="outline" d="M160,420h580v80H160z"/>
-        <path class="outline" d="M220,260h140v240H220z"/>
-        <path class="outline" d="M540,260h140v240H540z"/>
-        <path class="outline" d="M380,220h140v280H380z"/>
-
-        <path class="outline" d="M220,260v-70l30,20 30-20 30,20 20-20v70z"/>
-        <path class="outline" d="M540,260v-70l30,20 30-20 30,20 20-20v70z"/>
-        <path class="outline" d="M380,220v-85l35,25 35-25 35,25 25-25v85z"/>
-
-        <path class="outline" d="M435,500v-95c0-30 30-55 65-55s65,25 65,55v95z"/>
-        <circle class="outline" cx="290" cy="360" r="28"/>
-        <circle class="outline" cx="610" cy="360" r="28"/>
-        <circle class="outline" cx="450" cy="310" r="26"/>
-        <circle class="outline" cx="500" cy="310" r="26"/>
-
-        <path class="outline" d="M90 140l18 36 40 6-29 28 7 40-36-19-36 19 7-40-29-28 40-6z"/>
-        <path class="outline" d="M780 120l18 36 40 6-29 28 7 40-36-19-36 19 7-40-29-28 40-6z"/>
-        <path class="outline" d="M450 60l14 28 30 4-22 22 5 31-27-14-27 14 5-31-22-22 30-4z"/>
-      </svg>`;
-    }
-
-    function svgOcean(){
-      return `
-      <svg viewBox="0 0 900 520" role="img" aria-label="Ocean friends">
-        <path class="outline" d="M0,360c80-40,140-40,220,0 80,40 140,40 220,0 80-40 140-40 220,0 80,40 140,40 220,0v160H0z"/>
-        <path class="outline" d="M0,410c80-40,140-40,220,0 80,40 140,40 220,0 80-40 140-40 220,0 80,40 140,40 220,0v110H0z"/>
-
-        <path class="outline" d="M220,280c60-40,140-40,200,0-60,70-140,70-200,0z"/>
-        <circle class="outline" cx="290" cy="270" r="8"/>
-        <path class="outline" d="M230,280l-45,25 45,25z"/>
-        <path class="outline" d="M390,280l45,25-45,25z"/>
-
-        <path class="outline" d="M560,240c55-35,130-35,185,0-55,62-130,62-185,0z"/>
-        <circle class="outline" cx="620" cy="232" r="8"/>
-        <path class="outline" d="M565,240l-40,22 40,22z"/>
-        <path class="outline" d="M735,240l40,22-40,22z"/>
-
-        <path class="outline" d="M120,500c0-40,50-80,110-80s110,40,110,80"/>
-        <path class="outline" d="M610,500c0-40,50-80,110-80s110,40,110,80"/>
-
-        <circle class="outline" cx="120" cy="160" r="40"/>
-        <circle class="outline" cx="760" cy="140" r="35"/>
-      </svg>`;
-    }
-
-    function svgGarden(){
-      return `
-      <svg viewBox="0 0 900 520" role="img" aria-label="Flower garden">
-        <path class="outline" d="M0,420c120-70,260-70,380,0 120,70 260,70 520,0v120H0z"/>
-
-        <circle class="outline" cx="200" cy="260" r="32"/>
-        <circle class="outline" cx="170" cy="230" r="32"/>
-        <circle class="outline" cx="230" cy="230" r="32"/>
-        <circle class="outline" cx="170" cy="290" r="32"/>
-        <circle class="outline" cx="230" cy="290" r="32"/>
-        <circle class="outline" cx="200" cy="260" r="16"/>
-
-        <circle class="outline" cx="460" cy="230" r="34"/>
-        <circle class="outline" cx="425" cy="200" r="34"/>
-        <circle class="outline" cx="495" cy="200" r="34"/>
-        <circle class="outline" cx="425" cy="265" r="34"/>
-        <circle class="outline" cx="495" cy="265" r="34"/>
-        <circle class="outline" cx="460" cy="230" r="16"/>
-
-        <circle class="outline" cx="700" cy="270" r="30"/>
-        <circle class="outline" cx="670" cy="245" r="30"/>
-        <circle class="outline" cx="730" cy="245" r="30"/>
-        <circle class="outline" cx="670" cy="295" r="30"/>
-        <circle class="outline" cx="730" cy="295" r="30"/>
-        <circle class="outline" cx="700" cy="270" r="14"/>
-
-        <path class="outline" d="M200,308v90"/>
-        <path class="outline" d="M460,284v114"/>
-        <path class="outline" d="M700,312v86"/>
-
-        <path class="outline" d="M160,360c20-30,60-30,80,0-20,20-60,20-80,0z"/>
-        <path class="outline" d="M420,360c20-30,80-30,100,0-20,20-80,20-100,0z"/>
-        <path class="outline" d="M665,360c20-30,70-30,90,0-20,20-70,20-90,0z"/>
-
-        <path class="outline" d="M120,150c18-12,42-12,60,0-18,26-42,26-60,0z"/>
-        <path class="outline" d="M135,150c-10-18 0-35 18-38 14,10 14,26 0,38z"/>
-        <path class="outline" d="M165,150c10-18 0-35-18-38-14,10-14,26 0,38z"/>
-
-        <path class="outline" d="M620,130c18-12,42-12,60,0-18,26-42,26-60,0z"/>
-        <path class="outline" d="M635,130c-10-18 0-35 18-38 14,10 14,26 0,38z"/>
-        <path class="outline" d="M665,130c10-18 0-35-18-38-14,10-14,26 0,38z"/>
-      </svg>`;
-    }
-
-    function svgSpace(){
-      return `
-      <svg viewBox="0 0 900 520" role="img" aria-label="Space rocket">
-        <circle class="outline" cx="140" cy="120" r="38"/>
-        <circle class="outline" cx="760" cy="120" r="34"/>
-        <circle class="outline" cx="700" cy="230" r="18"/>
-        <circle class="outline" cx="200" cy="240" r="14"/>
-        <circle class="outline" cx="450" cy="90" r="12"/>
-        <path class="outline" d="M450 150l14 28 30 4-22 22 5 31-27-14-27 14 5-31-22-22 30-4z"/>
-
-        <path class="outline" d="M420,410c0-45,35-140,80-190 45,50 80,145 80,190-30,20-130,20-160,0z"/>
-        <path class="outline" d="M450,310c30-10,70-10,100,0-30,60-70,60-100,0z"/>
-        <circle class="outline" cx="500" cy="305" r="22"/>
-
-        <path class="outline" d="M420,410l-55,35 25-70z"/>
-        <path class="outline" d="M580,410l55,35-25-70z"/>
-
-        <path class="outline" d="M450,410c15,40 40,70 50,90-30,10-70,10-100,0 10-20 35-50 50-90z"/>
-        <path class="outline" d="M415,470c20,12 50,12 70,0-20,26-50,26-70,0z"/>
-
-        <path class="outline" d="M0,480c120-55,260-55,380,0 120,55 260,55 520,0v40H0z"/>
-      </svg>`;
-    }
-  </script>
+})();
+</script>
 </body>
 </html>
