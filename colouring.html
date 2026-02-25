@@ -18,14 +18,14 @@
         }
         button:active { box-shadow: 0 2px #2e7d32; transform: translateY(4px); }
         .print-btn { background-color: #008CBA; box-shadow: 0 6px #005f7a; }
-        #status-msg { color: #ff1493; font-weight: bold; margin-bottom: 5px; }
+        #status-msg { color: #ff1493; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2 style="color: #ff1493; margin: 0;">🎨 Colouring Expedition</h2>
-    <p id="status-msg">Click to find a picture!</p>
+    <p id="status-msg">Click 'Get New Image' to start!</p>
     
     <button onclick="generateImage()">✨ Get New Image</button>
     <button class="print-btn" onclick="printImage()">🖨️ Print</button>
@@ -36,19 +36,28 @@
 </div>
 
 <script>
-    // 1. Double-check: Is your branch 'main' or 'master'? 
-    const branch = "main"; 
-    
-    // 2. Base URL structure
-    const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/" + branch + "/colouring%20images/";
+    // MATCHING YOUR ADDITION FOLDER LOGIC:
+    // We use %20 for the space in "colouring images"
+    const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
 
-    // 3. Filenames - matched to your screenshot
+    // Filenames with %20 for spaces to match how GitHub serves "Raw" files
     const images = [
-        "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
-        "dolly.png", "flower%20design.png", "fruit%20and%20veg.png", 
-        "garden.png", "horse.png", "house.png", "mobile%20phone.png", 
-        "moon%20(2).png", "planes.png", "prince%20and%20princess.png", 
-        "swans.png.jpg", "tresure%20chest.png"
+        "butterfly.png.jpg", 
+        "car.png.jpg", 
+        "dinosaur.png", 
+        "dog1.png", 
+        "dolly.png", 
+        "flower%20design.png", 
+        "fruit%20and%20veg.png", 
+        "garden.png", 
+        "horse.png", 
+        "house.png", 
+        "mobile%20phone.png", 
+        "moon%20(2).png", 
+        "planes.png", 
+        "prince%20and%20princess.png", 
+        "swans.png.jpg", 
+        "tresure%20chest.png"
     ];
 
     function generateImage() {
@@ -57,19 +66,19 @@
         const randomIndex = Math.floor(Math.random() * images.length);
         const selectedImage = images[randomIndex];
         
-        status.innerText = "Searching for: " + selectedImage;
+        status.innerText = "Loading " + selectedImage.replace(/%20/g, " ") + "...";
         imgElement.style.display = "none";
         
-        // Build the final link
+        // Building the link exactly like the Logo link
         imgElement.src = repoBase + selectedImage;
 
         imgElement.onload = function() {
-            status.innerText = "✨ Found it! Ready to Color ✨";
+            status.innerText = "✨ Ready to Color! ✨";
             imgElement.style.display = "block";
         };
         
         imgElement.onerror = function() {
-            status.innerText = "❌ Could not load: " + selectedImage;
+            status.innerText = "❌ Image not found: " + selectedImage;
         };
     }
 
