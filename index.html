@@ -3,701 +3,618 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Spell & Sparkle — Salam Adventures</title>
-  <meta name="description" content="Listen, tap the letters, and spell the word. A gentle phonics spelling game for ages 3–5 with a sparkly border reward." />
+  <title>Spell & Sparkle – Salam Adventures</title>
 
   <style>
     :root{
-      --bg1:#f8f3ff;
-      --bg2:#eaf6ff;
-      --card:#ffffffcc;
-      --ink:#182033;
-      --muted:#5c6783;
-      --shadow: 0 18px 60px rgba(20,30,60,.15);
-      --radius: 26px;
+      --bg1:#fff7fb;
+      --bg2:#f2fbff;
+      --ink:#0b1220;
+      --muted:#5b6476;
+      --radius:28px;
+      --panelRadius:22px;
+      --shadow: 0 18px 55px rgba(20,40,80,.18);
     }
 
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--ink);
       background:
-        radial-gradient(1200px 600px at 20% 10%, #ffe7f4 0%, transparent 55%),
-        radial-gradient(1000px 550px at 80% 15%, #e8fff9 0%, transparent 55%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      min-height:100vh;
+        radial-gradient(1200px 600px at 20% 0%, rgba(255,105,180,.20), transparent 60%),
+        radial-gradient(900px 650px at 85% 10%, rgba(0,200,255,.18), transparent 55%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:20px;
+      padding:18px;
+      overflow-x:hidden;
     }
 
-    /* --- 3D game frame (sparkle only on border) --- */
+    /* =========================
+       3D FLASHING FRAME (NO SPIN)
+       ========================= */
     .frame{
-      width:min(1100px, 100%);
+      width:min(980px, 100%);
       border-radius: var(--radius);
       padding:14px;
       position:relative;
-      filter: drop-shadow(0 24px 70px rgba(10,20,40,.18));
+      filter: drop-shadow(0 28px 90px rgba(0,0,0,.18));
       isolation:isolate;
     }
+
+    /* Outer glossy border base */
     .frame::before{
       content:"";
       position:absolute;
       inset:0;
       border-radius: var(--radius);
-      background: conic-gradient(
-        from 0deg,
-        #ff5ec4, #7a5cff, #00d4ff, #00ffa8, #ffd84d, #ff7a2f, #ff5ec4
+      background: linear-gradient(135deg,
+        #ff57c8 0%,
+        #7a5cff 18%,
+        #00d4ff 36%,
+        #00ffb3 54%,
+        #ffe45a 72%,
+        #ff7a2f 90%,
+        #ff57c8 100%
       );
-      z-index:-2;
-      animation: borderSpin 14s linear infinite;
+      z-index:-3;
     }
-    .frame::after{
-      content:"";
+
+    /* 3D bevel ring */
+    .bevel{
       position:absolute;
-      inset:4px;
-      border-radius: calc(var(--radius) - 4px);
-      background: rgba(255,255,255,.88);
-      z-index:-1;
-      box-shadow: var(--shadow);
+      inset:0;
+      border-radius: var(--radius);
+      pointer-events:none;
+      z-index:-2;
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.75),
+        inset 0 -10px 30px rgba(0,0,0,.18),
+        0 10px 30px rgba(0,0,0,.10);
     }
 
-    /* Keeps colours stable: gradient rotates behind the frame, not the content */
-    @keyframes borderSpin{
-      to{ transform: rotate(360deg); }
-    }
-
-    /* sparkle dots on border only */
-    .sparkle{
+    /* FLASHING glow ring (no rotation) */
+    .glow{
       position:absolute;
       inset:-2px;
       border-radius: var(--radius);
       pointer-events:none;
-      overflow:hidden;
-      mix-blend-mode: screen;
       z-index:-1;
-      mask: radial-gradient(circle at 50% 50%, transparent 58%, black 62%);
-      -webkit-mask: radial-gradient(circle at 50% 50%, transparent 58%, black 62%);
+      filter: blur(10px);
+      opacity:.9;
+      background: linear-gradient(135deg,
+        rgba(255,87,200,.75),
+        rgba(122,92,255,.75),
+        rgba(0,212,255,.75),
+        rgba(0,255,179,.75),
+        rgba(255,228,90,.75),
+        rgba(255,122,47,.75),
+        rgba(255,87,200,.75)
+      );
+      animation: glowPulse 1.2s ease-in-out infinite;
     }
+
+    @keyframes glowPulse{
+      0%,100%{ transform: scale(1); opacity:.55; }
+      50%{ transform: scale(1.012); opacity:1; }
+    }
+
+    /* Inner panel */
+    .panel{
+      background: rgba(255,255,255,.92);
+      border-radius: calc(var(--radius) - 6px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* sparkle dots ONLY around edge (masked ring) */
+    .sparkle{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:5;
+      mix-blend-mode: screen;
+
+      /* Ring mask to keep sparkles at edge only */
+      -webkit-mask: radial-gradient(circle at 50% 50%, transparent 62%, black 68%);
+              mask: radial-gradient(circle at 50% 50%, transparent 62%, black 68%);
+    }
+
     .sparkle i{
       position:absolute;
-      width:6px; height:6px;
+      width:8px; height:8px;
       border-radius:50%;
-      background: radial-gradient(circle, #fff 0%, rgba(255,255,255,.2) 55%, transparent 70%);
-      opacity:.0;
-      animation: twinkle 2.8s ease-in-out infinite;
+      background: radial-gradient(circle, #fff 0%, rgba(255,255,255,.25) 60%, transparent 70%);
+      opacity:0;
+      animation: twinkle 1.9s ease-in-out infinite;
     }
     @keyframes twinkle{
       0%,100%{ transform: translateY(0) scale(.7); opacity:0; }
-      35%{ opacity:.85; }
-      50%{ transform: translateY(-6px) scale(1.15); opacity:1; }
-      70%{ opacity:.35; }
+      35%{ opacity:.95; }
+      55%{ transform: translateY(-8px) scale(1.25); opacity:1; }
+      75%{ opacity:.35; }
     }
 
-    /* --- Game layout (single panel) --- */
-    .game{
-      border-radius: calc(var(--radius) - 6px);
-      padding:18px;
-    }
-
+    /* =========================
+       CONTENT
+       ========================= */
     header{
+      padding:18px 18px 8px;
       display:flex;
-      gap:14px;
+      gap:12px;
       align-items:flex-start;
       justify-content:space-between;
       flex-wrap:wrap;
-      margin-bottom:14px;
     }
-    .titleWrap h1{
+    .titleWrap{min-width:240px}
+    h1{
       margin:0;
-      font-size: clamp(20px, 2.2vw, 30px);
+      font-size: clamp(22px, 3.2vw, 34px);
       letter-spacing:.2px;
     }
-    .titleWrap p{
+    .sub{
       margin:6px 0 0;
       color:var(--muted);
       font-size: 14px;
       line-height:1.35;
-      max-width: 54ch;
     }
 
-    .topControls{
+    .topBtns{
       display:flex;
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
+      justify-content:flex-end;
     }
-
     .btn{
-      appearance:none;
       border:0;
-      background:#101826;
-      color:#fff;
-      font-weight:700;
+      border-radius:999px;
       padding:10px 14px;
-      border-radius:14px;
+      font-weight:700;
       cursor:pointer;
-      box-shadow: 0 10px 22px rgba(16,24,38,.18);
-      transition: transform .08s ease, filter .18s ease;
+      background:#0b1220;
+      color:#fff;
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      transition: transform .08s ease, filter .15s ease;
       user-select:none;
-      font-size:14px;
     }
-    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn:active{transform: translateY(1px) scale(.99)}
     .btn.secondary{
-      background:#ffffff;
-      color:#101826;
-      border:1px solid rgba(16,24,38,.12);
-      box-shadow: none;
+      background:#fff;
+      color:#0b1220;
+      border:1px solid rgba(20,30,50,.14);
+      box-shadow:none;
     }
     .toggle{
       display:flex;
       align-items:center;
       gap:8px;
-      background:#ffffff;
-      border:1px solid rgba(16,24,38,.12);
-      padding:9px 12px;
-      border-radius:14px;
-      font-size:14px;
-      color:#101826;
-      user-select:none;
+      font-size:13px;
+      color:var(--muted);
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(0,0,0,.035);
+      border:1px solid rgba(20,30,50,.08);
     }
-    .toggle input{ width:16px; height:16px; }
+    .toggle input{transform: scale(1.1)}
 
-    .main{
+    .content{
+      padding:14px 18px 18px;
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:16px;
-      align-items:stretch;
-    }
-    @media (max-width: 860px){
-      .main{ grid-template-columns: 1fr; }
+      gap:14px;
     }
 
     .card{
-      background: var(--card);
-      border:1px solid rgba(16,24,38,.10);
-      border-radius: 22px;
-      padding:16px;
-      box-shadow: 0 10px 30px rgba(10,20,40,.08);
-      backdrop-filter: blur(8px);
+      border-radius: var(--panelRadius);
+      background: rgba(255,255,255,.86);
+      border:1px solid rgba(20,30,50,.08);
+      box-shadow: 0 10px 26px rgba(20,40,80,.08);
+      padding:14px;
     }
 
-    .promptRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+    .wordArea{
+      display:grid;
       gap:12px;
-      margin-bottom:10px;
-    }
-    .promptRow h2{
-      margin:0;
-      font-size:18px;
-    }
-    .score{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .pill{
-      background:#fff;
-      border:1px solid rgba(16,24,38,.10);
-      padding:7px 10px;
-      border-radius:999px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      font-weight:700;
-      color:#101826;
-    }
-    .pill small{
-      font-weight:600;
-      color:var(--muted);
+      justify-items:center;
+      text-align:center;
+      padding:14px;
     }
 
-    .pictureBox{
+    .imgWrap{
+      width: min(360px, 70vw);
+      aspect-ratio: 1 / 1;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,87,200,.12), rgba(0,212,255,.10));
+      border:1px solid rgba(20,30,50,.10);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.7);
       display:grid;
       place-items:center;
-      border-radius:18px;
-      background:#fff;
-      border:1px solid rgba(16,24,38,.08);
-      padding:12px;
-      min-height:260px;
+      overflow:hidden;
     }
-    .pictureBox img{
-      max-width: 82%;
-      max-height: 240px;
+    .imgWrap img{
+      width: 78%;
+      height: 78%;
       object-fit: contain;
-      image-rendering:auto;
-    }
-    .wordHint{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:13px;
-      text-align:center;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.10));
     }
 
-    .answerRow{
+    .prompt{
+      font-weight:900;
+      font-size: clamp(18px, 2.4vw, 24px);
+      margin-top:6px;
+    }
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:-6px;
+    }
+
+    /* INPUT + keyboard UNDER (not side-by-side) */
+    .inputRow{
+      width: min(720px, 100%);
+      display:grid;
+      gap:10px;
+      justify-items:center;
+      margin-top:4px;
+    }
+    .inputBox{
+      width:100%;
       display:flex;
       gap:10px;
       align-items:center;
       justify-content:center;
-      margin-top:12px;
       flex-wrap:wrap;
     }
-    .answer{
-      width:min(460px, 100%);
-      height:50px;
-      border-radius:14px;
-      border:1px solid rgba(16,24,38,.14);
-      background:#fff;
-      padding:0 14px;
-      font-size:20px;
-      letter-spacing: .5px;
+    input[type="text"]{
+      width:min(520px, 100%);
+      font-size: 18px;
+      padding:14px 14px;
+      border-radius: 14px;
+      border: 2px solid rgba(20,30,50,.14);
       outline:none;
-      text-transform: lowercase;
+      background:#fff;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.7);
     }
-    .answer:focus{
-      box-shadow: 0 0 0 4px rgba(0,212,255,.18);
-      border-color: rgba(0,212,255,.55);
+    input[type="text"]:focus{
+      border-color: rgba(0,150,255,.55);
+      box-shadow: 0 0 0 5px rgba(0,170,255,.14);
     }
 
-    .msg{
-      margin-top:10px;
-      text-align:center;
-      min-height:22px;
-      font-weight:800;
-    }
-    .msg.good{ color:#157a3b; }
-    .msg.bad{ color:#b23b3b; }
-
-    /* --- On-screen keyboard --- */
-    .kbd{
+    .status{
+      width:min(720px, 100%);
       display:flex;
-      flex-direction:column;
+      align-items:center;
+      justify-content:space-between;
       gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:13px;
     }
-    .kbdRow{
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:8px 12px;
+      border:1px solid rgba(20,30,50,.10);
+      background: rgba(255,255,255,.7);
+      font-weight:800;
+      color:#0b1220;
+    }
+
+    /* On-screen keyboard */
+    .kbd{
+      width: min(720px, 100%);
       display:grid;
       gap:8px;
-      grid-template-columns: repeat(10, minmax(0,1fr));
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.03);
+      border:1px solid rgba(20,30,50,.10);
+    }
+    .kbdRow{
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
     }
     .key{
-      border:0;
-      border-radius:14px;
-      background:#ffffff;
-      border:1px solid rgba(16,24,38,.10);
-      box-shadow: 0 10px 18px rgba(10,20,40,.06);
-      height:52px;
-      font-size:18px;
+      min-width:44px;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(20,30,50,.12);
+      background:#fff;
       font-weight:900;
       cursor:pointer;
       user-select:none;
-      transition: transform .06s ease, filter .18s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
+      transition: transform .08s ease;
     }
-    .key:active{ transform: translateY(1px) scale(.99); }
-    .key.wide{ grid-column: span 2; font-size:14px; font-weight:900; }
-    .key.space{ grid-column: span 4; font-size:14px; font-weight:900; }
-    .key.primary{
-      background:#101826;
-      color:#fff;
-      border-color: transparent;
-      box-shadow: 0 12px 22px rgba(16,24,38,.18);
-    }
+    .key:active{transform: translateY(1px) scale(.99)}
+    .key.wide{min-width:92px}
+    .key.green{background: linear-gradient(135deg, rgba(0,255,179,.22), rgba(0,212,255,.18))}
+    .key.red{background: linear-gradient(135deg, rgba(255,87,200,.18), rgba(255,122,47,.16))}
 
-    /* celebration sparkle overlay (only when correct) */
+    /* celebration */
     .celebrate{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      display:none;
-      z-index:9999;
+      animation: popGlow .65s ease;
     }
-    .celebrate.on{ display:block; }
-    .confetti{
-      position:absolute;
-      width:10px; height:10px;
-      border-radius:3px;
-      opacity:0;
-      animation: pop 900ms ease-out forwards;
-    }
-    @keyframes pop{
-      0%{ transform: translate(0,0) scale(.2) rotate(0deg); opacity:0; }
-      15%{ opacity:1; }
-      100%{ transform: translate(var(--dx), var(--dy)) scale(1) rotate(220deg); opacity:0; }
+    @keyframes popGlow{
+      0%{ transform: scale(1); }
+      50%{ transform: scale(1.01); }
+      100%{ transform: scale(1); }
     }
 
-    /* Make embeds feel more “full screen” */
-    .frame, .game{ width:100%; }
+    footer{
+      padding: 0 18px 18px;
+      display:flex;
+      justify-content:center;
+      color:var(--muted);
+      font-size:12px;
+    }
   </style>
 </head>
 
 <body>
-<div class="frame" aria-label="Spell & Sparkle game frame">
-  <div class="borderGlow"></div>
-  <div class="sparkle" id="sparkle"></div>
-    <div class="game">
+  <div class="frame">
+    <div class="glow"></div>
+    <div class="bevel"></div>
+
+    <div class="panel" id="panel">
+      <div class="sparkle" id="sparkle"></div>
+
       <header>
         <div class="titleWrap">
-          <h1>Spell &amp; Sparkle</h1>
-          <p>Tap <b>Say it</b>, then use the keyboard to spell the word. When you get it right, the border sparkles — not the game, so colours stay perfect.</p>
+          <h1>Spell & Sparkle</h1>
+          <p class="sub">Press <b>Say the word</b>, then type it. Get it right to see the frame sparkle ✨</p>
         </div>
 
-        <div class="topControls">
-          <button class="btn" id="sayBtn">🔊 Say it</button>
-          <button class="btn secondary" id="newBtn">✨ New word</button>
+        <div class="topBtns">
+          <button class="btn" id="sayBtn">🔊 Say the word</button>
+          <button class="btn secondary" id="newBtn">🎲 New word</button>
 
           <label class="toggle" title="Turn voice on/off">
-            <input type="checkbox" id="soundToggle" checked />
+            <input type="checkbox" id="soundToggle" checked>
             Sound on
           </label>
         </div>
       </header>
 
-      <div class="main">
-        <!-- LEFT: word + image + input -->
-        <section class="card">
-          <div class="promptRow">
-            <h2 id="promptTitle">What word is this?</h2>
-            <div class="score">
-              <span class="pill"><span>✅</span> <span id="correct">0</span> <small>correct</small></span>
-              <span class="pill"><span>🔁</span> <span id="tries">0</span> <small>tries</small></span>
-              <span class="pill"><span>⭐</span> <span id="streak">0</span> <small>streak</small></span>
+      <div class="content">
+        <div class="card wordArea">
+          <div class="imgWrap">
+            <img id="wordImg" alt="Word picture" src="" />
+          </div>
+
+          <div class="prompt" id="prompt">What word is this?</div>
+          <div class="hint" id="hint">Tap “Say the word”, then spell it below.</div>
+
+          <div class="inputRow">
+            <div class="inputBox">
+              <input id="answer" type="text" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type here…" />
+              <button class="btn" id="checkBtn">✅ Check</button>
+            </div>
+
+            <!-- Keyboard UNDER the input -->
+            <div class="kbd" aria-label="On-screen keyboard">
+              <div class="kbdRow" id="row1"></div>
+              <div class="kbdRow" id="row2"></div>
+              <div class="kbdRow" id="row3"></div>
+              <div class="kbdRow">
+                <button class="key wide red" data-action="clear">Clear</button>
+                <button class="key wide" data-action="back">⌫</button>
+                <button class="key wide green" data-action="check">Check</button>
+              </div>
+            </div>
+
+            <div class="status">
+              <span class="badge">✅ Correct: <span id="correctCount">0</span></span>
+              <span class="badge">🔁 Tries: <span id="tryCount">0</span></span>
+              <span id="statusText">Ready.</span>
             </div>
           </div>
-
-          <div class="pictureBox">
-            <img id="pic" alt="Word picture" />
-          </div>
-          <div class="wordHint" id="hint">Tap “Say it”, then spell the word below.</div>
-
-          <div class="answerRow">
-            <input class="answer" id="answer" inputmode="none" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type here…" />
-            <button class="btn primary" id="checkBtn">✅ Check</button>
-          </div>
-
-          <div class="msg" id="msg"></div>
-        </section>
-
-        <!-- RIGHT: keyboard -->
-        <aside class="card">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
-            <h2 style="margin:0; font-size:18px;">Tap the letters</h2>
-            <button class="btn secondary" id="clearBtn" title="Clear what you typed">⌫ Clear</button>
-          </div>
-
-          <div class="kbd" aria-label="On-screen keyboard">
-            <div class="kbdRow">
-              <button class="key" data-k="q">Q</button><button class="key" data-k="w">W</button><button class="key" data-k="e">E</button><button class="key" data-k="r">R</button><button class="key" data-k="t">T</button>
-              <button class="key" data-k="y">Y</button><button class="key" data-k="u">U</button><button class="key" data-k="i">I</button><button class="key" data-k="o">O</button><button class="key" data-k="p">P</button>
-            </div>
-            <div class="kbdRow">
-              <button class="key" data-k="a">A</button><button class="key" data-k="s">S</button><button class="key" data-k="d">D</button><button class="key" data-k="f">F</button><button class="key" data-k="g">G</button>
-              <button class="key" data-k="h">H</button><button class="key" data-k="j">J</button><button class="key" data-k="k">K</button><button class="key" data-k="l">L</button>
-              <button class="key wide" data-k="back">⌫ Back</button>
-            </div>
-            <div class="kbdRow">
-              <button class="key" data-k="z">Z</button><button class="key" data-k="x">X</button><button class="key" data-k="c">C</button><button class="key" data-k="v">V</button><button class="key" data-k="b">B</button>
-              <button class="key" data-k="n">N</button><button class="key" data-k="m">M</button>
-              <button class="key space" data-k="space">Space</button>
-              <button class="key primary wide" data-k="enter">Enter</button>
-            </div>
-          </div>
-
-          <p style="margin:12px 0 0; color:var(--muted); font-size:13px; line-height:1.35;">
-            Tip: lower-case is fine. Press <b>Enter</b> to check. You can also tap <b>Say it</b> again anytime.
-          </p>
-        </aside>
+        </div>
       </div>
+
+      <footer>Made for little learners — simple, safe, and fun.</footer>
     </div>
   </div>
 
-  <div class="celebrate" id="celebrate" aria-hidden="true"></div>
-
   <script>
-    // =========================
-    // SETTINGS (YOUR PNG FOLDER)
-    // =========================
-    const IMG_DIR = "spell-images/"; // keep exactly this
+    // --------------------------
+    // Sparkles on border (only)
+    // --------------------------
+    const sparkle = document.getElementById("sparkle");
+    function makeSparkles(){
+      sparkle.innerHTML = "";
+      const n = 26;
+      for(let i=0;i<n;i++){
+        const dot = document.createElement("i");
+        dot.style.left = (Math.random()*100) + "%";
+        dot.style.top  = (Math.random()*100) + "%";
+        dot.style.animationDelay = (Math.random()*1.9) + "s";
+        dot.style.opacity = 0;
+        sparkle.appendChild(dot);
+      }
+    }
+    makeSparkles();
 
-    // This list matches your uploaded files exactly:
-    const ITEMS = [
-      { word:"ball", file:"ball.png" },
-      { word:"book", file:"book.png" },
-      { word:"bus",  file:"bus.png" },
-      { word:"cake", file:"cake.png" },
-      { word:"cat",  file:"cat.png" },
-      { word:"dog",  file:"dog.png" },
-      { word:"fish", file:"fish.png" },
-      { word:"hat",  file:"hat.png" },
-      { word:"moon", file:"moon.png" },
-      { word:"star", file:"star1.png" }, // your star is star1.png
-      { word:"sun",  file:"sun.png" },
-      { word:"tree", file:"tree.png" },
+    // --------------------------
+    // Words + your PNGs folder
+    // --------------------------
+    const words = [
+      { w:"cat",  img:"spell-images/cat.png"  },
+      { w:"dog",  img:"spell-images/dog.png"  },
+      { w:"moon", img:"spell-images/moon.png" },
+      { w:"sun",  img:"spell-images/sun.png"  },
+      { w:"hat",  img:"spell-images/hat.png"  },
+      { w:"fish", img:"spell-images/fish.png" },
+      { w:"ball", img:"spell-images/ball.png" },
+      { w:"book", img:"spell-images/book.png" },
+      { w:"cake", img:"spell-images/cake.png" },
+      { w:"tree", img:"spell-images/tree.png" },
+      { w:"bus",  img:"spell-images/bus.png"  }
     ];
 
-    // =========================
-    // ELEMENTS
-    // =========================
-    const pic = document.getElementById("pic");
-    const answer = document.getElementById("answer");
-    const msg = document.getElementById("msg");
-    const hint = document.getElementById("hint");
+    let current = null;
+    let correct = 0;
+    let tries = 0;
 
+    const imgEl = document.getElementById("wordImg");
+    const ansEl = document.getElementById("answer");
     const sayBtn = document.getElementById("sayBtn");
     const newBtn = document.getElementById("newBtn");
     const checkBtn = document.getElementById("checkBtn");
-    const clearBtn = document.getElementById("clearBtn");
     const soundToggle = document.getElementById("soundToggle");
+    const correctCount = document.getElementById("correctCount");
+    const tryCount = document.getElementById("tryCount");
+    const statusText = document.getElementById("statusText");
+    const panel = document.getElementById("panel");
 
-    const correctEl = document.getElementById("correct");
-    const triesEl = document.getElementById("tries");
-    const streakEl = document.getElementById("streak");
-
-    const celebrate = document.getElementById("celebrate");
-
-    // =========================
-    // GAME STATE
-    // =========================
-    let current = null;
-    let tries = 0;
-    let correct = 0;
-    let streak = 0;
-
-    // =========================
-    // SAFE SPEECH (more natural voice if available)
-    // =========================
+    // --------------------------
+    // Voice (more natural where possible)
+    // --------------------------
     let voices = [];
     function loadVoices(){
-      voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+      voices = speechSynthesis.getVoices() || [];
     }
-    if ("speechSynthesis" in window){
-      loadVoices();
-      speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
 
     function pickNiceVoice(){
-      if (!voices || !voices.length) return null;
-
-      // Prefer female/child-friendly English voices (best effort, varies by device)
-      const preferred = voices.filter(v => {
-        const n = (v.name || "").toLowerCase();
-        const l = (v.lang || "").toLowerCase();
-        const isEn = l.startsWith("en");
-        const good = /female|woman|susan|zoe|hazel|serena|siri|aria|jenny|emma|amy|linda|karen|moira|rishi|google uk english female|google us english|microsoft/.test(n);
-        return isEn && good;
-      });
-
-      // If we found any, pick the first
+      // Prefer English natural voices if available
+      const preferred = voices.filter(v =>
+        /en/i.test(v.lang) && (
+          /Google|Microsoft|Natural|Neural|Samantha|Serena|Aria|Jenny|Guy|Ryan/i.test(v.name)
+        )
+      );
       if (preferred.length) return preferred[0];
 
-      // Otherwise any English voice
-      const anyEn = voices.find(v => (v.lang || "").toLowerCase().startsWith("en"));
-      return anyEn || voices[0];
+      const anyEnglish = voices.find(v => /en/i.test(v.lang));
+      return anyEnglish || null;
     }
 
-    function say(text){
-      if (!soundToggle.checked) return;
-      if (!("speechSynthesis" in window)) return;
-
-      // stop any previous speech
-      speechSynthesis.cancel();
-
-      const u = new SpeechSynthesisUtterance(text);
-      const v = pickNiceVoice();
-      if (v) u.voice = v;
-
-      // gentle + clear
-      u.rate = 0.92;
-      u.pitch = 1.08;
-      u.volume = 1;
-
-      speechSynthesis.speak(u);
-    }
-
-    // =========================
-    // HELPERS
-    // =========================
-    function shuffle(arr){
-      const a = arr.slice();
-      for (let i=a.length-1; i>0; i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [a[i], a[j]] = [a[j], a[i]];
+    function speak(text){
+      if(!soundToggle.checked) return;
+      try{
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        const v = pickNiceVoice();
+        if(v) u.voice = v;
+        u.rate = 0.95;
+        u.pitch = 1.05;
+        u.volume = 1;
+        speechSynthesis.speak(u);
+      }catch(e){
+        // if speech blocked, just ignore
       }
-      return a;
     }
 
-    function setMessage(text, type){
-      msg.textContent = text || "";
-      msg.className = "msg" + (type ? " " + type : "");
+    // --------------------------
+    // Game logic
+    // --------------------------
+    function newWord(){
+      const pick = words[Math.floor(Math.random()*words.length)];
+      current = pick;
+      imgEl.src = pick.img;
+      imgEl.alt = pick.w;
+      ansEl.value = "";
+      statusText.textContent = "Ready.";
+      ansEl.focus();
+      // speak automatically once (optional)
+      speak(pick.w);
     }
 
     function normalize(s){
       return (s || "").toLowerCase().replace(/\s+/g,"").trim();
     }
 
-    function setScore(){
-      triesEl.textContent = String(tries);
-      correctEl.textContent = String(correct);
-      streakEl.textContent = String(streak);
+    function celebrate(){
+      panel.classList.remove("celebrate");
+      void panel.offsetWidth; // restart anim
+      panel.classList.add("celebrate");
     }
 
-    function pickNewWord(){
-      const list = shuffle(ITEMS);
-      current = list[0];
-
-      // Set image
-      pic.src = IMG_DIR + current.file;
-      pic.alt = current.word;
-
-      // Reset input + message
-      answer.value = "";
-      setMessage("", "");
-      hint.textContent = "Tap “Say it”, then spell the word below.";
-
-      // auto say (gentle)
-      setTimeout(() => say(current.word), 250);
-      answer.focus({ preventScroll:true });
-    }
-
-    function celebrateNow(){
-      celebrate.classList.add("on");
-      celebrate.innerHTML = "";
-
-      const count = 40;
-      for (let i=0; i<count; i++){
-        const d = document.createElement("div");
-        d.className = "confetti";
-
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight * 0.7 + window.innerHeight * 0.15;
-
-        const dx = (Math.random() * 360 - 180) + "px";
-        const dy = (Math.random() * -260 - 80) + "px";
-
-        d.style.left = x + "px";
-        d.style.top = y + "px";
-        d.style.setProperty("--dx", dx);
-        d.style.setProperty("--dy", dy);
-
-        // random bright colour without changing game colours
-        const hues = [330, 270, 200, 150, 55, 25];
-        const h = hues[Math.floor(Math.random()*hues.length)];
-        d.style.background = `hsl(${h} 95% 60%)`;
-        d.style.animationDelay = (Math.random()*140) + "ms";
-
-        celebrate.appendChild(d);
-      }
-
-      setTimeout(() => {
-        celebrate.classList.remove("on");
-        celebrate.innerHTML = "";
-      }, 950);
-    }
-
-    function check(){
-      if (!current) return;
+    function checkAnswer(){
+      if(!current) return;
       tries++;
+      tryCount.textContent = String(tries);
 
-      const typed = normalize(answer.value);
-      const target = normalize(current.word);
+      const user = normalize(ansEl.value);
+      const target = normalize(current.w);
 
-      if (!typed){
-        setMessage("Type the word first 😊", "bad");
-        setScore();
-        return;
-      }
-
-      if (typed === target){
+      if(user === target){
         correct++;
-        streak++;
-        setScore();
-        setMessage("Yes! Correct 🎉", "good");
-        say("Yes! " + current.word);
-
-        celebrateNow();
-
-        // new word after a moment
-        setTimeout(pickNewWord, 900);
-      } else {
-        streak = 0;
-        setScore();
-        setMessage("Try again 💛", "bad");
-        say("Try again");
+        correctCount.textContent = String(correct);
+        statusText.textContent = "✅ Correct! Great spelling!";
+        celebrate();
+        speak("Yes! Correct!");
+        setTimeout(newWord, 750);
+      }else{
+        statusText.textContent = "❌ Try again. You’ve got this!";
+        speak("Try again.");
+        ansEl.focus();
+        ansEl.select();
       }
     }
 
-    // =========================
-    // KEYBOARD INPUT
-    // =========================
-    function addChar(ch){
-      // keep it simple
-      answer.value = (answer.value + ch).slice(0, 24);
-      answer.focus({ preventScroll:true });
-    }
-    function backspace(){
-      answer.value = answer.value.slice(0, -1);
-      answer.focus({ preventScroll:true });
-    }
-    function clearAll(){
-      answer.value = "";
-      setMessage("", "");
-      answer.focus({ preventScroll:true });
+    // --------------------------
+    // Keyboard (under input)
+    // --------------------------
+    const row1 = "qwertyuiop".split("");
+    const row2 = "asdfghjkl".split("");
+    const row3 = "zxcvbnm".split("");
+
+    function buildRow(containerId, letters){
+      const el = document.getElementById(containerId);
+      letters.forEach(ch=>{
+        const b = document.createElement("button");
+        b.className = "key";
+        b.textContent = ch.toUpperCase();
+        b.dataset.key = ch;
+        b.addEventListener("click", ()=>{
+          ansEl.value += ch;
+          ansEl.focus();
+        });
+        el.appendChild(b);
+      });
     }
 
-    document.querySelectorAll(".key").forEach(btn=>{
+    buildRow("row1", row1);
+    buildRow("row2", row2);
+    buildRow("row3", row3);
+
+    document.querySelectorAll(".key[data-action]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const k = btn.getAttribute("data-k");
-        if (k === "back") return backspace();
-        if (k === "enter") return check();
-        if (k === "space") return addChar(" ");
-        addChar(k);
+        const act = btn.dataset.action;
+        if(act === "back"){
+          ansEl.value = ansEl.value.slice(0,-1);
+          ansEl.focus();
+        }
+        if(act === "clear"){
+          ansEl.value = "";
+          ansEl.focus();
+        }
+        if(act === "check"){
+          checkAnswer();
+        }
       });
     });
 
-    // also allow physical keyboard (nice on laptop)
-    window.addEventListener("keydown", (e)=>{
-      if (e.key === "Enter"){ e.preventDefault(); check(); }
+    // Buttons + Enter key
+    sayBtn.addEventListener("click", ()=> current && speak(current.w));
+    newBtn.addEventListener("click", newWord);
+    checkBtn.addEventListener("click", checkAnswer);
+    ansEl.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") checkAnswer();
     });
 
-    // =========================
-    // TOP BUTTONS
-    // =========================
-    sayBtn.addEventListener("click", ()=> current && say(current.word));
-    newBtn.addEventListener("click", pickNewWord);
-    checkBtn.addEventListener("click", check);
-    clearBtn.addEventListener("click", clearAll);
-
-    // =========================
-    // SPARKLE DOTS ON BORDER
-    // =========================
-    (function buildBorderSparkles(){
-      const wrap = document.getElementById("sparkle");
-      const n = 34;
-      for (let i=0; i<n; i++){
-        const s = document.createElement("i");
-        const x = Math.random()*100;
-        const y = Math.random()*100;
-        s.style.left = x + "%";
-        s.style.top  = y + "%";
-        s.style.animationDelay = (Math.random()*2.8) + "s";
-        s.style.animationDuration = (2.2 + Math.random()*2.2) + "s";
-        wrap.appendChild(s);
-      }
-    })();
-
-    // =========================
-    // START
-    // =========================
-    setScore();
-    pickNewWord();
+    // Start
+    newWord();
   </script>
 </body>
 </html>
-
-
