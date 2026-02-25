@@ -1,627 +1,282 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Salam Adventures: Picture Puzzle Play</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Jigsaw Puzzle</title>
   <style>
     :root{
-      --bg1:#fff1f7;
-      --bg2:#eefcff;
-      --ink:#101828;
-      --muted:#667085;
-      --radius:26px;
-      --shadow: 0 26px 70px rgba(16,24,40,.16);
-      --shadow2: 0 12px 26px rgba(16,24,40,.12);
-      --ok:#12b76a;
-      --bad:#f04438;
-      --gap:10px;
-      --tileR:16px;
+      --board-max: 720px;
+      --gap: 8px;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.12);
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
     body{
-      margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--ink);
-      background:
-        radial-gradient(900px 650px at 12% 20%, rgba(255,92,210,.20), transparent 55%),
-        radial-gradient(850px 650px at 86% 28%, rgba(0,209,255,.16), transparent 55%),
-        linear-gradient(135deg,var(--bg1),var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:14px;
+      background: #f6f7fb;
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      color: #111;
     }
 
-    /* Static 3D frame (NO flashing / NO spinning) */
-    .frame{
-      width:min(980px, 100%);
-      border-radius: calc(var(--radius) + 10px);
-      padding:12px;
-      position:relative;
-      filter: drop-shadow(var(--shadow));
-      isolation:isolate;
-    }
-    .frame::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius: calc(var(--radius) + 10px);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55)),
-        linear-gradient(135deg, rgba(255,92,210,.14), rgba(0,209,255,.12));
-      box-shadow:
-        inset 0 3px 0 rgba(255,255,255,.85),
-        inset 0 -10px 18px rgba(16,24,40,.10),
-        0 18px 45px rgba(16,24,40,.14);
-      z-index:-2;
-    }
-    .frame::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius: calc(var(--radius) + 10px);
-      padding:4px;
-      background: conic-gradient(
-        from 0deg,
-        #ff4fd8, #7c4dff, #00d1ff, #00ff95, #ffe66d, #ff9b4a, #ff4fd8
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity:.20; /* static glow */
-      pointer-events:none;
-      z-index:-1;
-    }
-
-    .card{
-      background: rgba(255,255,255,.90);
-      border:1px solid rgba(16,24,40,.10);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      backdrop-filter: blur(8px);
-    }
-
-    header{
-      padding:14px 14px 8px;
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      justify-content:space-between;
-      flex-wrap:wrap;
-    }
-    h1{
-      margin:0;
-      font-size: clamp(20px, 2.2vw, 30px);
-      line-height:1.1;
-      letter-spacing:-.02em;
-    }
-    .sub{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size: 13px;
-      max-width: 60ch;
-      font-weight:700;
+    .wrap{
+      width: min(var(--board-max), 92vw);
+      display: grid;
+      gap: 14px;
     }
 
     .controls{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
     }
-    .btn{
-      border:0;
+
+    .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
+
+    button{
+      border: 0;
+      padding: 10px 14px;
       border-radius: 999px;
-      padding:9px 12px;
-      background:#101828;
-      color:#fff;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow: 0 10px 20px rgba(16,24,40,.14);
-      font-size:13px;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
     }
-    .btn:active{ transform: translateY(1px) scale(.99); }
-    .btn.secondary{
-      background:#ffffff;
-      color:var(--ink);
-      border:1px solid rgba(16,24,40,.12);
-      box-shadow: 0 10px 20px rgba(16,24,40,.10);
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
+    button.secondary{
       background:#fff;
-      border:1px solid rgba(16,24,40,.10);
-      box-shadow: 0 8px 14px rgba(16,24,40,.08);
-      color:var(--ink);
-      font-weight:900;
-      font-size:13px;
-      min-width: 132px;
-      justify-content:center;
+      color:#111;
+      box-shadow: inset 0 0 0 2px #111;
     }
 
-    .content{
-      padding: 10px 14px 14px;
-      display:grid;
-      gap: 14px;
-      justify-items:center;
+    .status{
+      font-size: 14px;
+      opacity: .85;
     }
 
-    /* chooser */
-    .chooser{
-      width:min(920px, 100%);
-      display:grid;
-      gap:12px;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-    }
-    .thumb{
+    /* BOARD: fixed ratio to prevent warping */
+    .board{
+      width: 100%;
+      aspect-ratio: 3 / 2; /* default for 3x2; JS will adjust for 2x2 */
+      background: #fff;
       border-radius: 18px;
-      background: rgba(255,255,255,.92);
-      border:1px solid rgba(16,24,40,.12);
-      box-shadow: 0 12px 26px rgba(16,24,40,.10);
-      padding:10px;
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .thumb:active{ transform: translateY(1px); }
-    .thumb img{
-      width:100%;
-      height: 150px;
-      object-fit: contain;
-      display:block;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(255,92,210,.10), rgba(0,209,255,.10));
-      border:1px solid rgba(16,24,40,.10);
-    }
-    .thumb .label{
-      margin-top:10px;
-      font-weight:900;
-      text-align:center;
-      font-size:13px;
-    }
+      box-shadow: var(--shadow);
+      padding: var(--gap);
+      box-sizing: border-box;
 
-    /* puzzle area */
-    .panel{
-      width:min(920px, 100%);
-      background: rgba(255,255,255,.92);
-      border:1px solid rgba(16,24,40,.10);
-      border-radius: 22px;
-      box-shadow: 0 16px 40px rgba(16,24,40,.12);
-      padding: 12px;
-      position:relative;
-      overflow:hidden;
-      display:none;
-    }
-    .panel.show{ display:block; }
-
-    .panel::before{
-      content:"";
-      position:absolute;
-      inset:-50% -50%;
-      background:
-        radial-gradient(circle at 25% 20%, rgba(255,255,255,.85), transparent 40%),
-        radial-gradient(circle at 80% 35%, rgba(0,209,255,.10), transparent 45%),
-        radial-gradient(circle at 45% 90%, rgba(255,92,210,.08), transparent 45%);
-      pointer-events:none;
-    }
-    .panelInner{ position:relative; }
-
-    .topRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom: 10px;
-    }
-
-    .boards{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 12px;
-      align-items:start;
-    }
-
-    .box{
-      background: rgba(255,255,255,.75);
-      border:1px solid rgba(16,24,40,.10);
-      border-radius: 20px;
-      padding: 12px;
-      box-shadow: 0 12px 28px rgba(16,24,40,.10);
-      position:relative;
-      overflow:hidden;
-    }
-    .box h2{
-      margin:0 0 6px;
-      font-size:15px;
-      letter-spacing:-.01em;
-    }
-    .hint{
-      margin:0 0 10px;
-      color:var(--muted);
-      font-size:12.5px;
-      font-weight:700;
-    }
-
-    .grid{
-      width:100%;
-      display:grid;
+      display: grid;
       gap: var(--gap);
-      touch-action: manipulation;
-      user-select:none;
-      position:relative;
+      user-select: none;
+      touch-action: none;
     }
 
-    /* target gets fixed aspect by mode */
-    .targetGrid.square{ aspect-ratio: 1 / 1; }
-    .targetGrid.rect{ aspect-ratio: 3 / 2; } /* for 2x3 */
-
-    .cell{
-      border-radius: var(--tileR);
-      border: 2px dashed rgba(16,24,40,.18);
-      background: rgba(255,255,255,.70);
-      position:relative;
-      overflow:hidden;
-      display:grid;
-      place-items:center;
-      min-height: 70px;
-    }
-    .cell.filled{
-      border: 2px solid rgba(18,183,106,.45);
-      background: rgba(18,183,106,.06);
-    }
-    .cell.badFlash{
-      animation: badPulse 220ms ease-in-out 1;
-    }
-    @keyframes badPulse{ 50%{ transform: scale(.985); } }
-
+    /* Each tile is a fixed-size grid item */
     .tile{
-      width:100%;
-      height:100%;
-      border-radius: var(--tileR);
-      background-repeat:no-repeat;
-      border:1px solid rgba(16,24,40,.10);
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.70),
-        0 10px 18px rgba(16,24,40,.12);
-      cursor:grab;
-      -webkit-tap-highlight-color: transparent;
-      position:relative;
-      overflow:hidden;
+      border-radius: var(--radius);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+      background-repeat: no-repeat;
+      background-size: 100% 100%; /* important: no stretching beyond its own box */
+      cursor: grab;
+      position: relative;
+
+      /* CRITICAL: prevent any flex/grid shrink oddities */
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      transform: translateZ(0);
     }
-    .tile:active{ cursor:grabbing; }
+
+    .tile:active{ cursor: grabbing; }
+
+    /* while dragging */
+    .dragging{
+      opacity: .92;
+      outline: 3px solid rgba(17,17,17,.20);
+      z-index: 9999;
+    }
+
     .tile::after{
       content:"";
       position:absolute;
-      inset:-40% -40%;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.55), transparent 45%);
+      inset:0;
+      border-radius: var(--radius);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
       pointer-events:none;
     }
-    .tile.locked{
-      cursor: default !important;
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.70),
-        0 14px 22px rgba(16,24,40,.14);
-    }
 
-    .msg{
-      text-align:center;
-      font-weight:900;
-      margin-top: 8px;
-      min-height: 20px;
-      font-size:14px;
-    }
-    .msg.ok{ color: var(--ok); }
-    .msg.bad{ color: var(--bad); }
-
-    @media (max-width: 860px){
-      .chooser{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .boards{ grid-template-columns: 1fr; }
-    }
-    @media (max-width: 520px){
-      header{ padding:12px 12px 8px; }
-      .content{ padding: 8px 12px 12px; }
-      .chooser{ grid-template-columns: 1fr; }
-      .thumb img{ height: 160px; }
-      .cell{ min-height: 62px; }
+    .good{
+      color: #0a7a2f;
+      font-weight: 700;
     }
   </style>
 </head>
-
 <body>
-  <div class="frame">
-    <div class="card">
-      <header>
-        <div>
-          <h1>Picture Puzzle Play</h1>
-          <p class="sub">This is a real puzzle: drag pieces into the correct spots. Modes: <b>2×2</b> and <b>2×3</b>. No popping tiles.</p>
-        </div>
-        <div class="controls">
-          <button class="btn secondary" id="backBtn">⬅️ Back</button>
-          <button class="btn secondary" id="resetBtn">🔄 Reset</button>
-          <button class="btn" id="modeBtn">🧩 <span id="modeLabel">2×2</span></button>
-          <div class="pill">✅ Solved: <span id="solved">0</span></div>
-        </div>
-      </header>
-
-      <div class="content">
-        <div class="chooser" id="chooser"></div>
-
-        <div class="panel" id="panel">
-          <div class="panelInner">
-            <div class="topRow">
-              <div class="pill">⭐ Correct: <span id="correct">0</span></div>
-              <div class="pill">🎯 Total: <span id="total">0</span></div>
-            </div>
-
-            <div class="boards">
-              <div class="box">
-                <h2>🧩 Puzzle</h2>
-                <p class="hint">Drag a piece into its matching square. Wrong pieces snap back.</p>
-                <div class="grid targetGrid square" id="targetGrid"></div>
-                <div class="msg" id="msg"></div>
-              </div>
-
-              <div class="box">
-                <h2>🧩 Pieces</h2>
-                <p class="hint">Drag from here. (On tablets: tap a piece, then tap a square.)</p>
-                <div class="grid" id="piecesGrid"></div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
+  <div class="wrap">
+    <div class="controls">
+      <div class="btnrow">
+        <button id="mode3x2">3×2</button>
+        <button id="mode2x2" class="secondary">2×2</button>
+        <button id="shuffle" class="secondary">Shuffle</button>
       </div>
+      <div class="status" id="status">Drag tiles to swap.</div>
     </div>
+
+    <div id="board" class="board" aria-label="Puzzle board"></div>
   </div>
 
 <script>
-  // Put this HTML in SAME folder as:
-  // salam.png, star.png, balloon.png
-  const IMAGES = [
-    { name:"Salam", file:"salam.png" },
-    { name:"Star", file:"star.png" },
-    { name:"Balloon", file:"balloon.png" }
-  ];
+(() => {
+  // ✅ Put your image path here
+  const IMAGE_URL = "puzzle-image.jpg";
 
-  // modes requested
-  const MODES = [
-    { r:2, c:2, label:"2×2" },
-    { r:2, c:3, label:"2×3" }
-  ];
+  const board = document.getElementById("board");
+  const statusEl = document.getElementById("status");
+  const btn3x2 = document.getElementById("mode3x2");
+  const btn2x2 = document.getElementById("mode2x2");
+  const btnShuffle = document.getElementById("shuffle");
 
-  const chooser = document.getElementById("chooser");
-  const panel = document.getElementById("panel");
-  const backBtn = document.getElementById("backBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const modeBtn = document.getElementById("modeBtn");
-  const modeLabel = document.getElementById("modeLabel");
-  const targetGrid = document.getElementById("targetGrid");
-  const piecesGrid = document.getElementById("piecesGrid");
-  const solvedEl = document.getElementById("solved");
-  const correctEl = document.getElementById("correct");
-  const totalEl = document.getElementById("total");
-  const msgEl = document.getElementById("msg");
+  let cols = 3, rows = 2;          // default
+  let order = [];                  // current order by tile id
+  let solved = [];                 // solved order [0..n-1]
+  let draggingIndex = null;        // index in board children being dragged
 
-  let modeIndex = 0;
-  let R = 2, C = 2;
-  let selected = IMAGES[0];
+  function setMode(c, r){
+    cols = c; rows = r;
+    board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    board.style.aspectRatio = `${cols} / ${rows}`; // keeps pieces correct
 
-  let solved = 0;
-  let pickedPiece = null; // for tap mode
-  let targetSlots = [];   // length R*C, value pieceIndex or null
-  let trayPieces = [];    // array of pieceIndex remaining in tray
+    btn3x2.classList.toggle("secondary", !(cols===3 && rows===2));
+    btn2x2.classList.toggle("secondary", !(cols===2 && rows===2));
 
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]] = [arr[j],arr[i]];
-    }
-    return arr;
+    buildTiles();
+    shuffleTiles();
+    render();
   }
 
-  // crop math for rectangle grids (2x3 works)
-  function cropFor(pieceIndex){
-    const pr = Math.floor(pieceIndex / C);
-    const pc = pieceIndex % C;
+  function buildTiles(){
+    const n = cols * rows;
+    solved = Array.from({length:n}, (_,i)=>i);
+    order = solved.slice();
 
-    const bgSizeX = `${C * 100}%`;
-    const bgSizeY = `${R * 100}%`;
+    board.innerHTML = "";
+    for(let i=0;i<n;i++){
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      tile.draggable = true;
+      tile.dataset.id = String(i);
 
-    const x = (C === 1) ? 0 : (pc * 100) / (C - 1);
-    const y = (R === 1) ? 0 : (pr * 100) / (R - 1);
+      // correct crop for each tile
+      const x = i % cols;
+      const y = Math.floor(i / cols);
+      tile.style.backgroundImage = `url('${IMAGE_URL}')`;
+      tile.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
+      tile.style.backgroundPosition = `${(x * 100)/(cols-1 || 1)}% ${(y * 100)/(rows-1 || 1)}%`;
 
-    return { bgSizeX, bgSizeY, x, y };
-  }
+      tile.addEventListener("dragstart", onDragStart);
+      tile.addEventListener("dragend", onDragEnd);
+      tile.addEventListener("dragover", onDragOver);
+      tile.addEventListener("drop", onDrop);
 
-  function setMsg(text, type){
-    msgEl.textContent = text || "";
-    msgEl.className = "msg" + (type ? (" " + type) : "");
-  }
-
-  function renderChooser(){
-    chooser.innerHTML = "";
-    IMAGES.forEach(img=>{
-      const t = document.createElement("div");
-      t.className="thumb";
-      t.innerHTML = `
-        <img src="${img.file}" alt="${img.name}">
-        <div class="label">Play: ${img.name}</div>
-      `;
-      t.addEventListener("click", ()=>{
-        selected = img;
-        startGame();
-      });
-      chooser.appendChild(t);
-    });
-  }
-
-  function startGame(){
-    chooser.style.display="none";
-    panel.classList.add("show");
-    applyMode();
-    newPuzzle();
-  }
-
-  function applyMode(){
-    const m = MODES[modeIndex];
-    R = m.r; C = m.c;
-    modeLabel.textContent = m.label;
-
-    targetGrid.style.gridTemplateColumns = `repeat(${C}, 1fr)`;
-    piecesGrid.style.gridTemplateColumns = `repeat(${C}, 1fr)`;
-
-    targetGrid.classList.toggle("square", (R===C));
-    targetGrid.classList.toggle("rect", (R===2 && C===3));
-  }
-
-  function newPuzzle(){
-    pickedPiece = null;
-    setMsg("", "");
-
-    const total = R * C;
-    totalEl.textContent = total;
-
-    targetSlots = Array(total).fill(null);
-    trayPieces = Array.from({length: total}, (_,i)=>i);
-    shuffle(trayPieces);
-
-    renderBoards();
-  }
-
-  function renderBoards(){
-    targetGrid.innerHTML = "";
-    piecesGrid.innerHTML = "";
-
-    const total = R*C;
-    let correctCount = 0;
-
-    // target slots
-    for(let slot=0; slot<total; slot++){
-      const cell = document.createElement("div");
-      cell.className = "cell";
-      cell.dataset.slot = slot;
-
-      const placed = targetSlots[slot];
-
-      if(placed !== null){
-        const tile = makeTile(placed, true);
-        cell.classList.add("filled");
-        cell.appendChild(tile);
-        correctCount++;
-      }else{
-        cell.addEventListener("dragover", (e)=> e.preventDefault());
-        cell.addEventListener("drop", (e)=>{
-          e.preventDefault();
-          const data = e.dataTransfer.getData("text/plain");
-          if(!data) return;
-          const pieceIndex = Number(data);
-          handlePlace(pieceIndex, slot, cell);
-        });
-
-        // tap-to-place (tablet)
-        cell.addEventListener("click", ()=>{
-          if(pickedPiece === null) return;
-          handlePlace(pickedPiece, slot, cell);
-        });
-      }
-
-      targetGrid.appendChild(cell);
-    }
-
-    // tray pieces
-    for(const pieceIndex of trayPieces){
-      const cell = document.createElement("div");
-      cell.className = "cell";
-
-      const tile = makeTile(pieceIndex, false);
-
-      tile.addEventListener("dragstart", (e)=>{
-        e.dataTransfer.setData("text/plain", String(pieceIndex));
-        e.dataTransfer.effectAllowed = "move";
-      });
-
-      // tap-to-pick
-      tile.addEventListener("click", ()=>{
-        pickedPiece = pieceIndex;
-        setMsg("Tap the matching square in the puzzle ✨", "");
-      });
-
-      cell.appendChild(tile);
-      piecesGrid.appendChild(cell);
-    }
-
-    correctEl.textContent = correctCount;
-
-    if(correctCount === total){
-      solved++;
-      solvedEl.textContent = String(solved);
-      setMsg("✅ Perfect! You finished the puzzle!", "ok");
-      setTimeout(()=>{ setMsg("", ""); newPuzzle(); }, 900);
+      board.appendChild(tile);
     }
   }
 
-  function makeTile(pieceIndex, locked){
-    const tile = document.createElement("div");
-    tile.className = "tile" + (locked ? " locked" : "");
-    tile.draggable = !locked;
-
-    const crop = cropFor(pieceIndex);
-    tile.style.backgroundImage = `url('${selected.file}')`;
-    tile.style.backgroundSize = `${crop.bgSizeX} ${crop.bgSizeY}`;
-    tile.style.backgroundPosition = `${crop.x}% ${crop.y}%`;
-
-    return tile;
+  function shuffleTiles(){
+    // Fisher-Yates shuffle
+    for(let i=order.length-1; i>0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
   }
 
-  function handlePlace(pieceIndex, slotIndex, slotEl){
-    const correctPiece = slotIndex; // slot expects piece with same index
+  function render(){
+    // reorder DOM children to match `order`
+    const tilesById = new Map();
+    [...board.children].forEach(t => tilesById.set(Number(t.dataset.id), t));
 
-    if(pieceIndex === correctPiece){
-      targetSlots[slotIndex] = pieceIndex;
-      trayPieces = trayPieces.filter(p => p !== pieceIndex);
-      pickedPiece = null;
-      setMsg("✅ Nice! Keep going!", "ok");
-      renderBoards();
+    order.forEach(id => board.appendChild(tilesById.get(id)));
+
+    checkSolved();
+  }
+
+  function onDragStart(e){
+    const tile = e.currentTarget;
+    draggingIndex = [...board.children].indexOf(tile);
+
+    // CRITICAL: keep dragged element size fixed (prevents shape change)
+    const rect = tile.getBoundingClientRect();
+    tile.style.width = rect.width + "px";
+    tile.style.height = rect.height + "px";
+
+    tile.classList.add("dragging");
+
+    // make drag image match the tile (prevents browser default tiny ghost)
+    const dragImg = tile.cloneNode(true);
+    dragImg.style.position = "absolute";
+    dragImg.style.top = "-1000px";
+    dragImg.style.left = "-1000px";
+    dragImg.style.width = rect.width + "px";
+    dragImg.style.height = rect.height + "px";
+    document.body.appendChild(dragImg);
+    e.dataTransfer.setDragImage(dragImg, rect.width/2, rect.height/2);
+
+    // cleanup drag image later
+    setTimeout(() => dragImg.remove(), 0);
+
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  function onDragEnd(e){
+    const tile = e.currentTarget;
+    tile.classList.remove("dragging");
+
+    // release the forced px sizing back to grid sizing
+    tile.style.width = "";
+    tile.style.height = "";
+
+    draggingIndex = null;
+  }
+
+  function onDragOver(e){
+    e.preventDefault(); // allow drop
+    e.dataTransfer.dropEffect = "move";
+  }
+
+  function onDrop(e){
+    e.preventDefault();
+    if (draggingIndex === null) return;
+
+    const dropTile = e.currentTarget;
+    const dropIndex = [...board.children].indexOf(dropTile);
+    if (dropIndex === draggingIndex) return;
+
+    // swap in `order`
+    [order[draggingIndex], order[dropIndex]] = [order[dropIndex], order[draggingIndex]];
+    render();
+  }
+
+  function checkSolved(){
+    const ok = order.every((id, idx) => id === solved[idx]);
+    if(ok){
+      statusEl.innerHTML = `✅ <span class="good">Solved!</span> Nice one.`;
     }else{
-      slotEl.classList.add("badFlash");
-      setTimeout(()=> slotEl.classList.remove("badFlash"), 240);
-      pickedPiece = null;
-      setMsg("❌ Try again!", "bad");
+      statusEl.textContent = "Drag tiles to swap.";
     }
   }
 
-  function backToChooser(){
-    panel.classList.remove("show");
-    chooser.style.display="grid";
-    setMsg("", "");
-    pickedPiece = null;
-  }
-
-  backBtn.addEventListener("click", backToChooser);
-  resetBtn.addEventListener("click", newPuzzle);
-  modeBtn.addEventListener("click", ()=>{
-    modeIndex = (modeIndex + 1) % MODES.length;
-    applyMode();
-    newPuzzle();
-  });
+  // buttons
+  btn3x2.addEventListener("click", () => setMode(3,2));
+  btn2x2.addEventListener("click", () => setMode(2,2));
+  btnShuffle.addEventListener("click", () => { shuffleTiles(); render(); });
 
   // init
-  modeLabel.textContent = MODES[modeIndex].label;
-  renderChooser();
+  setMode(3,2);
+})();
 </script>
 </body>
 </html>
