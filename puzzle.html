@@ -18,15 +18,15 @@
       --gap:10px;
       --tileR:16px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--ink);
       background:
-        radial-gradient(900px 650px at 12% 20%, rgba(255,92,210,.22), transparent 55%),
-        radial-gradient(850px 650px at 86% 28%, rgba(0,209,255,.18), transparent 55%),
+        radial-gradient(900px 650px at 12% 20%, rgba(255,92,210,.20), transparent 55%),
+        radial-gradient(850px 650px at 86% 28%, rgba(0,209,255,.16), transparent 55%),
         linear-gradient(135deg,var(--bg1),var(--bg2));
       display:flex;
       align-items:center;
@@ -34,7 +34,7 @@
       padding:14px;
     }
 
-    /* 3D flashing edge only (NO spinning) */
+    /* Static 3D frame (NO FLASHING / NO ANIMATION) */
     .frame{
       width:min(980px, 100%);
       border-radius: calc(var(--radius) + 10px);
@@ -54,7 +54,7 @@
       box-shadow:
         inset 0 3px 0 rgba(255,255,255,.85),
         inset 0 -10px 18px rgba(16,24,40,.10),
-        0 18px 45px rgba(16,24,40,.18);
+        0 18px 45px rgba(16,24,40,.14);
       z-index:-2;
     }
     .frame::after{
@@ -72,14 +72,9 @@
         linear-gradient(#000 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
-      opacity:.55;
-      animation: edgePulse 1.8s ease-in-out infinite;
+      opacity:.28;            /* static glow */
       pointer-events:none;
       z-index:-1;
-    }
-    @keyframes edgePulse{
-      0%,100%{ opacity:.45; filter:saturate(1.05) brightness(1.00); }
-      50%{ opacity:.80; filter:saturate(1.20) brightness(1.08); }
     }
 
     .card{
@@ -128,8 +123,7 @@
       color:#fff;
       font-weight:900;
       cursor:pointer;
-      box-shadow: 0 10px 20px rgba(16,24,40,.16);
-      transition: transform .08s ease, box-shadow .15s ease;
+      box-shadow: 0 10px 20px rgba(16,24,40,.14);
       font-size:13px;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
@@ -232,10 +226,10 @@
       margin-bottom: 10px;
     }
 
-    /* Fit nicely: side-by-side on desktop, stacked on mobile */
+    /* This is the “original” style layout: two boards side-by-side */
     .boards{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.15fr .85fr;
       gap: 12px;
       align-items:start;
     }
@@ -271,19 +265,6 @@
       position:relative;
     }
 
-    /* faint reference behind target */
-    .targetWrap{ position:relative; }
-    .ref{
-      position:absolute;
-      inset:0;
-      border-radius: 16px;
-      opacity:.12;
-      background-size: cover;
-      background-position: center;
-      pointer-events:none;
-      border:1px solid rgba(16,24,40,.06);
-    }
-
     .cell{
       border-radius: var(--tileR);
       border: 2px dashed rgba(16,24,40,.18);
@@ -294,14 +275,8 @@
       place-items:center;
       min-height: 70px;
     }
-    .cell.good{
-      border: 2px solid rgba(18,183,106,.55);
-      background: rgba(18,183,106,.08);
-    }
-    .cell.badFlash{ animation: badPulse 220ms ease-in-out 1; }
-    @keyframes badPulse{ 50%{ transform: scale(.985); } }
 
-    /* REAL PUZZLE PIECES (cropped segments) */
+    /* REAL puzzle tiles (cropped segments) */
     .tile{
       width:100%;
       height:100%;
@@ -325,41 +300,7 @@
       pointer-events:none;
     }
 
-    /* lock + tiny jigsaw nib look */
-    .tile.locked{
-      cursor: default !important;
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.70),
-        0 14px 22px rgba(16,24,40,.14);
-      outline: 2px solid rgba(255,255,255,.6);
-      outline-offset: -3px;
-    }
-
-    /* sparkle burst */
-    .sparkle{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      opacity:0;
-      transition: opacity .12s ease;
-      z-index:2;
-    }
-    .sparkle.on{ opacity:1; }
-    .spark{
-      position:absolute;
-      width:10px;height:10px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0) 60%),
-                  radial-gradient(circle at 50% 50%, rgba(255,92,210,.95), rgba(0,209,255,.0) 65%);
-      filter: drop-shadow(0 0 10px rgba(255,255,255,.8));
-      animation: pop 700ms ease-out forwards;
-    }
-    @keyframes pop{
-      0%{ transform: translate(0,0) scale(.6); opacity:0; }
-      20%{ opacity:1; }
-      100%{ transform: translate(var(--dx), var(--dy)) scale(1.05); opacity:0; }
-    }
-
+    /* solved message */
     .msg{
       text-align:center;
       font-weight:900;
@@ -368,7 +309,6 @@
       font-size:14px;
     }
     .msg.ok{ color: var(--ok); }
-    .msg.bad{ color: var(--bad); }
 
     @media (max-width: 860px){
       .chooser{ grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -390,11 +330,11 @@
       <header>
         <div>
           <h1>Picture Puzzle Play</h1>
-          <p class="sub">Pick a picture, then drag the pieces into place. Choose <b>2×2</b> or <b>3×3</b>. Real puzzle pieces — not whole pictures.</p>
+          <p class="sub">Choose a picture, then drag the pieces into place. Toggle <b>2×2</b> or <b>3×3</b>. (No flashing lights.)</p>
         </div>
         <div class="controls">
           <button class="btn secondary" id="backBtn">⬅️ Back</button>
-          <button class="btn secondary" id="resetBtn">🔄 Reset</button>
+          <button class="btn secondary" id="shuffleBtn">🔀 Shuffle</button>
           <button class="btn" id="toggleBtn">🧩 <span id="sizeLabel">2×2</span></button>
           <div class="pill">✅ Solved: <span id="solved">0</span></div>
         </div>
@@ -404,30 +344,23 @@
         <div class="chooser" id="chooser"></div>
 
         <div class="panel" id="panel">
-          <div class="sparkle" id="sparkleLayer"></div>
-
           <div class="panelInner">
             <div class="topRow">
-              <div class="pill">⭐ Correct: <span id="correct">0</span></div>
-              <div class="pill">🎯 Total: <span id="total">0</span></div>
+              <div class="pill">⭐ Moves: <span id="moves">0</span></div>
+              <div class="pill">🎯 Mode: Drag &amp; Drop</div>
             </div>
 
             <div class="boards">
               <div class="box">
                 <h2>🧩 Puzzle</h2>
-                <p class="hint">Drop the piece onto its matching square.</p>
-
-                <div class="targetWrap">
-                  <div class="ref" id="refImg"></div>
-                  <div class="grid" id="targetGrid"></div>
-                </div>
-
+                <p class="hint">Drag a piece into a square. Pieces can swap like a real puzzle board.</p>
+                <div class="grid" id="targetGrid"></div>
                 <div class="msg" id="msg"></div>
               </div>
 
               <div class="box">
                 <h2>🧩 Pieces</h2>
-                <p class="hint">Drag from here into the puzzle.</p>
+                <p class="hint">Drag pieces from here into the puzzle (or swap with another piece).</p>
                 <div class="grid" id="piecesGrid"></div>
               </div>
             </div>
@@ -440,7 +373,7 @@
   </div>
 
 <script>
-  // Files must exist in the SAME folder as this HTML:
+  // Must exist in the SAME folder as this HTML:
   // star.png, balloon.png, salam.png
   const IMAGES = [
     { name: "Salam",   file: "salam.png" },
@@ -451,25 +384,27 @@
   const chooser = document.getElementById("chooser");
   const panel = document.getElementById("panel");
   const backBtn = document.getElementById("backBtn");
-  const resetBtn = document.getElementById("resetBtn");
+  const shuffleBtn = document.getElementById("shuffleBtn");
   const toggleBtn = document.getElementById("toggleBtn");
   const sizeLabel = document.getElementById("sizeLabel");
   const targetGrid = document.getElementById("targetGrid");
   const piecesGrid = document.getElementById("piecesGrid");
   const solvedEl = document.getElementById("solved");
-  const correctEl = document.getElementById("correct");
-  const totalEl = document.getElementById("total");
+  const movesEl = document.getElementById("moves");
   const msg = document.getElementById("msg");
-  const sparkleLayer = document.getElementById("sparkleLayer");
-  const refImg = document.getElementById("refImg");
 
   let N = 2;
   let selected = IMAGES[0];
+  let moves = 0;
   let solved = 0;
 
-  let targetSlots = []; // slotIndex -> pieceIndex (locked) or null
-  let piecesList = [];  // remaining pieceIndexes in tray
-  let draggingPiece = null;
+  // Board state (this is the “original” behaviour: pieces can move/swap anywhere)
+  // targetSlots[i] is pieceIndex (0..N*N-1) or null
+  // pieceSlots[i] is pieceIndex (0..N*N-1) or null
+  let targetSlots = [];
+  let pieceSlots = [];
+
+  let dragFrom = null; // { board:"pieces"|"target", index, pieceIndex }
 
   function shuffle(arr){
     for(let i=arr.length-1;i>0;i--){
@@ -484,40 +419,25 @@
     piecesGrid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
   }
 
-  // Cropped segment positioning for a REAL puzzle piece
+  // Cropped segment positioning = REAL puzzle pieces (not whole images)
   function tileStyleFor(pieceIndex){
     const row = Math.floor(pieceIndex / N);
     const col = pieceIndex % N;
-
     const bgSize = `${N*100}% ${N*100}%`;
     const x = (col * 100) / (N - 1);
     const y = (row * 100) / (N - 1);
-
     return { bgSize, x, y };
   }
 
-  function setMsg(text, type){
-    msg.textContent = text || "";
-    msg.className = "msg" + (type ? (" " + type) : "");
+  function setMoves(v){
+    moves = v;
+    movesEl.textContent = String(moves);
   }
+  function incMove(){ setMoves(moves + 1); }
 
-  function sparkleBurst(){
-    sparkleLayer.innerHTML = "";
-    sparkleLayer.classList.add("on");
-    const rect = sparkleLayer.getBoundingClientRect();
-    const cx = rect.width/2, cy = rect.height/2;
-    for(let i=0;i<24;i++){
-      const s = document.createElement("div");
-      s.className = "spark";
-      const ang = Math.random()*Math.PI*2;
-      const dist = 50 + Math.random()*170;
-      s.style.left = (cx + (Math.random()*40-20)) + "px";
-      s.style.top  = (cy + (Math.random()*40-20)) + "px";
-      s.style.setProperty("--dx", (Math.cos(ang)*dist) + "px");
-      s.style.setProperty("--dy", (Math.sin(ang)*dist) + "px");
-      sparkleLayer.appendChild(s);
-    }
-    setTimeout(()=> sparkleLayer.classList.remove("on"), 740);
+  function setMsg(text, ok=false){
+    msg.textContent = text || "";
+    msg.className = "msg" + (ok ? " ok" : "");
   }
 
   function renderChooser(){
@@ -540,136 +460,200 @@
   function startPuzzle(){
     chooser.style.display = "none";
     panel.classList.add("show");
-    draggingPiece = null;
-    setMsg("", "");
+    setMoves(0);
+    setMsg("");
 
     const total = N*N;
-    totalEl.textContent = total;
 
     targetSlots = Array(total).fill(null);
-    piecesList = Array.from({length: total}, (_,i)=>i);
-    shuffle(piecesList);
+    pieceSlots = Array.from({length: total}, (_,i)=>i);
+    shuffle(pieceSlots);
 
     setGridStyles();
-
-    refImg.style.backgroundImage = `url('${selected.file}')`;
-    refImg.style.backgroundSize = "cover";
-    refImg.style.backgroundPosition = "center";
-
     renderBoards();
   }
 
   function backToChooser(){
     panel.classList.remove("show");
     chooser.style.display = "grid";
-    setMsg("", "");
-    draggingPiece = null;
+    setMsg("");
+    dragFrom = null;
   }
 
-  function makeTile(pieceIndex, locked){
+  function makeTile(pieceIndex, board, slotIndex){
     const tile = document.createElement("div");
-    tile.className = "tile" + (locked ? " locked" : "");
-    tile.draggable = !locked;
+    tile.className = "tile";
+    tile.draggable = true;
     tile.dataset.piece = pieceIndex;
+    tile.dataset.board = board;
+    tile.dataset.slot = slotIndex;
 
     const s = tileStyleFor(pieceIndex);
     tile.style.backgroundImage = `url('${selected.file}')`;
     tile.style.backgroundSize = s.bgSize;
     tile.style.backgroundPosition = `${s.x}% ${s.y}%`;
 
-    if(!locked){
-      tile.addEventListener("dragstart", ()=> draggingPiece = pieceIndex);
-      tile.addEventListener("dragend", ()=> draggingPiece = null);
+    tile.addEventListener("dragstart", (e)=>{
+      dragFrom = { board, index: slotIndex, pieceIndex };
+      e.dataTransfer.setData("text/plain", JSON.stringify(dragFrom));
+      e.dataTransfer.effectAllowed = "move";
+    });
 
-      // tap-to-pick for tablets
-      tile.addEventListener("click", ()=>{
-        draggingPiece = pieceIndex;
-        setMsg("Now tap the matching square in the puzzle ✨", "");
-      });
-    }
+    // tap support: pick piece, then tap destination
+    tile.addEventListener("click", ()=>{
+      dragFrom = { board, index: slotIndex, pieceIndex };
+      setMsg("Tap a square to place this piece.");
+    });
+
     return tile;
+  }
+
+  function wireDrop(cell, board, slotIndex){
+    cell.addEventListener("dragover", (e)=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    });
+
+    cell.addEventListener("drop", (e)=>{
+      e.preventDefault();
+      let data = null;
+      try{
+        data = JSON.parse(e.dataTransfer.getData("text/plain"));
+      }catch(_){
+        data = dragFrom;
+      }
+      if(!data) return;
+      placePiece(data, { board, index: slotIndex });
+    });
+
+    // tap-to-place
+    cell.addEventListener("click", ()=>{
+      if(!dragFrom) return;
+      placePiece(dragFrom, { board, index: slotIndex });
+    });
+  }
+
+  function getArr(board){
+    return board === "target" ? targetSlots : pieceSlots;
+  }
+
+  function placePiece(from, to){
+    const fromArr = getArr(from.board);
+    const toArr = getArr(to.board);
+
+    const movingPiece = fromArr[from.index];
+    if(movingPiece === null || movingPiece === undefined){
+      dragFrom = null;
+      return;
+    }
+
+    if(from.board === to.board && from.index === to.index){
+      dragFrom = null;
+      return;
+    }
+
+    const targetPiece = toArr[to.index];
+
+    // move into empty
+    if(targetPiece === null){
+      fromArr[from.index] = null;
+      toArr[to.index] = movingPiece;
+      incMove();
+      dragFrom = null;
+      setMsg("");
+      renderBoards();
+      return;
+    }
+
+    // swap
+    fromArr[from.index] = targetPiece;
+    toArr[to.index] = movingPiece;
+    incMove();
+    dragFrom = null;
+    setMsg("");
+    renderBoards();
   }
 
   function renderBoards(){
     targetGrid.innerHTML = "";
     piecesGrid.innerHTML = "";
-
     const total = N*N;
-    let correctCount = 0;
 
-    // TARGET GRID
-    for(let slot=0; slot<total; slot++){
+    for(let i=0;i<total;i++){
       const cell = document.createElement("div");
       cell.className = "cell";
-      cell.dataset.slot = slot;
-
-      if(targetSlots[slot] !== null){
-        cell.classList.add("good");
-        const t = makeTile(targetSlots[slot], true);
-        t.classList.add("locked");
-        cell.appendChild(t);
-        correctCount++;
-      }else{
-        cell.addEventListener("dragover", (e)=> e.preventDefault());
-        cell.addEventListener("drop", (e)=>{
-          e.preventDefault();
-          if(draggingPiece === null) return;
-          handleDrop(slot, cell);
-        });
-        cell.addEventListener("click", ()=>{
-          if(draggingPiece === null) return;
-          handleDrop(slot, cell);
-        });
+      const pieceIndex = targetSlots[i];
+      if(pieceIndex !== null){
+        cell.appendChild(makeTile(pieceIndex, "target", i));
       }
-
+      wireDrop(cell, "target", i);
       targetGrid.appendChild(cell);
     }
 
-    // PIECES GRID
-    for(const pieceIndex of piecesList){
+    for(let i=0;i<total;i++){
       const cell = document.createElement("div");
       cell.className = "cell";
-      cell.appendChild(makeTile(pieceIndex, false));
+      const pieceIndex = pieceSlots[i];
+      if(pieceIndex !== null){
+        cell.appendChild(makeTile(pieceIndex, "pieces", i));
+      }
+      wireDrop(cell, "pieces", i);
       piecesGrid.appendChild(cell);
     }
 
-    correctEl.textContent = correctCount;
-
-    if(correctCount === total){
-      solved++;
-      solvedEl.textContent = solved;
-      setMsg("✅ Perfect! You finished the puzzle!", "ok");
-      sparkleBurst();
-      setTimeout(()=> startPuzzle(), 900);
-    }
+    checkSolved();
   }
 
-  function handleDrop(slotIndex, cellEl){
-    const wantPiece = slotIndex; // correct piece for this slot
-    const gotPiece = draggingPiece;
+  function checkSolved(){
+    const total = N*N;
 
-    if(gotPiece === wantPiece){
-      targetSlots[slotIndex] = gotPiece;
-      piecesList = piecesList.filter(p => p !== gotPiece);
-      draggingPiece = null;
-      setMsg("✅ Nice! Keep going!", "ok");
-      renderBoards();
-    }else{
-      cellEl.classList.add("badFlash");
-      setTimeout(()=> cellEl.classList.remove("badFlash"), 240);
-      setMsg("❌ Try again!", "bad");
-      draggingPiece = null;
+    // solved when targetSlots are exactly 0..total-1
+    for(let i=0;i<total;i++){
+      if(targetSlots[i] !== i) {
+        return false;
+      }
     }
+    // must be full
+    if(targetSlots.includes(null)) return false;
+
+    solved++;
+    solvedEl.textContent = String(solved);
+    setMsg("✅ Perfect! You finished the puzzle!", true);
+
+    // auto restart after a moment (same picture)
+    setTimeout(()=> startPuzzle(), 900);
+    return true;
   }
 
+  // controls
   backBtn.addEventListener("click", backToChooser);
-  resetBtn.addEventListener("click", ()=> startPuzzle());
+
+  shuffleBtn.addEventListener("click", ()=>{
+    if(!panel.classList.contains("show")) return;
+
+    // pull all pieces back, shuffle, clear target
+    const total = N*N;
+    const all = [];
+    for(let i=0;i<total;i++){
+      if(targetSlots[i] !== null) all.push(targetSlots[i]);
+      if(pieceSlots[i] !== null) all.push(pieceSlots[i]);
+    }
+    targetSlots = Array(total).fill(null);
+    pieceSlots = Array(total).fill(null);
+    shuffle(all);
+    for(let i=0;i<total;i++) pieceSlots[i] = all[i];
+    setMoves(0);
+    setMsg("");
+    renderBoards();
+  });
+
   toggleBtn.addEventListener("click", ()=>{
     N = (N === 2) ? 3 : 2;
-    sizeLabel.textContent = (N===2) ? "2×2" : "3×3";
+    sizeLabel.textContent = (N === 2) ? "2×2" : "3×3";
     if(panel.classList.contains("show")) startPuzzle();
   });
 
+  // init
   sizeLabel.textContent = "2×2";
   renderChooser();
 </script>
