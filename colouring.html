@@ -3,120 +3,85 @@
 <head>
     <style>
         body { font-family: 'Comic Sans MS', cursive, sans-serif; text-align: center; background: transparent; padding: 10px; }
-        
         .container { 
-            max-width: 600px; 
-            margin: auto; 
-            border: 8px solid #ff69b4; 
-            padding: 25px; 
-            border-radius: 30px; 
-            background: white;
-            /* Heavy 3D Shadow */
+            max-width: 600px; margin: auto; border: 8px solid #ff69b4; 
+            padding: 25px; border-radius: 30px; background: white;
             box-shadow: 15px 15px 0px #ffd1dc; 
         }
-
-        #coloring-img { 
-            max-width: 100%; 
-            height: auto; 
-            border: 3px solid #f0f0f0; 
-            border-radius: 15px; 
-            margin-top: 20px; 
-            display: none; 
-            background-color: #fdfdfd;
-        }
-
+        #image-area { min-height: 300px; margin-top: 20px; display: flex; justify-content: center; align-items: center; border: 2px dashed #eee; border-radius: 15px; }
+        #coloring-img { max-width: 100%; height: auto; display: none; }
         button { 
-            background-color: #4CAF50; 
-            color: white; 
-            padding: 15px 25px; 
-            border: none; 
-            border-radius: 15px; 
-            cursor: pointer; 
-            font-size: 18px; 
-            margin: 10px; 
-            box-shadow: 0 6px #2e7d32; 
-            transition: 0.1s;
-            font-weight: bold;
+            background-color: #4CAF50; color: white; padding: 15px 25px; 
+            border: none; border-radius: 15px; cursor: pointer; 
+            font-size: 18px; margin: 10px; box-shadow: 0 6px #2e7d32; 
+            font-weight: bold; transition: 0.1s;
         }
-
-        button:active {
-            box-shadow: 0 2px #2e7d32;
-            transform: translateY(4px);
-        }
-
+        button:active { box-shadow: 0 2px #2e7d32; transform: translateY(4px); }
         .print-btn { background-color: #008CBA; box-shadow: 0 6px #005f7a; }
+        #status-msg { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="color: #ff1493; margin-top: 0;">🎨 Colouring Expedition</h2>
-    <p>Choose your adventure below!</p>
+    <h2 style="color: #ff1493; margin: 0 0 10px 0;">🎨 Colouring Expedition</h2>
+    <p id="status-msg">Click '✨ Get New Image' to start!</p>
     
     <button onclick="generateImage()">✨ Get New Image</button>
     <button class="print-btn" onclick="printImage()">🖨️ Print</button>
     
-    <div id="image-area" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-        <p id="loading-text" style="display:none; color: #888;">Searching the gallery...</p>
+    <div id="image-area">
         <img id="coloring-img" src="" alt="Coloring Page">
     </div>
 </div>
 
 <script>
-    // CAREFUL: Ensure this matches your GitHub exactly. 
-    // Based on your screenshot: "alam-adventures-games" (no 's' at the start)
-    const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
-    
+    // 1. BASE URL (Using the "alam" spelling from your screenshot)
+    const username = "salamtruthfulltd-alt";
+    const repo = "alam-adventures-games";
+    const folder = "colouring images"; // No need to manually add %20 here
+    const branch = "main";
+
+    // 2. EXACT FILENAMES (Case sensitive!)
     const images = [
-        "butterfly.png.jpg", 
-        "car.png.jpg", 
-        "dinosaur.png", 
-        "dog1.png", 
-        "dolly.png", 
-        "flower%20design.png", 
-        "fruit%20and%20veg.png", 
-        "garden.png", 
-        "horse.png", 
-        "house.png", 
-        "mobile%20phone.png", 
-        "moon%20(2).png", 
-        "planes.png", 
-        "prince%20and%20princess.png", 
-        "swans.png.jpg", 
-        "tresure%20chest.png"
+        "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
+        "dolly.png", "flower design.png", "fruit and veg.png", 
+        "garden.png", "horse.png", "house.png", "mobile phone.png", 
+        "moon (2).png", "planes.png", "prince and princess.png", 
+        "swans.png.jpg", "tresure chest.png"
     ];
 
     function generateImage() {
         const imgElement = document.getElementById('coloring-img');
-        const loadText = document.getElementById('loading-text');
+        const status = document.getElementById('status-msg');
         const randomIndex = Math.floor(Math.random() * images.length);
-        const selectedImage = images[randomIndex];
+        const selectedFile = images[randomIndex];
         
-        loadText.style.display = "block";
+        // This creates a clean, encoded URL that GitHub understands
+        const cleanFolder = encodeURIComponent(folder);
+        const cleanFile = encodeURIComponent(selectedFile);
+        const finalUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${cleanFolder}/${cleanFile}`;
+        
+        status.innerText = "Loading " + selectedFile + "...";
         imgElement.style.display = "none";
-        
-        // Construct the full Raw GitHub URL
-        imgElement.src = repoBase + selectedImage;
+        imgElement.src = finalUrl;
 
         imgElement.onload = function() {
-            loadText.style.display = "none";
+            status.innerText = "Ready to Color! ✨";
             imgElement.style.display = "block";
         };
         
         imgElement.onerror = function() {
-            loadText.style.display = "none";
-            alert("Error: Link broken for " + selectedImage + ". Check if the file is still in the GitHub folder!");
+            status.innerText = "❌ Error: Could not load " + selectedFile;
+            console.error("Failed URL:", finalUrl);
         };
     }
 
     function printImage() {
         const img = document.getElementById('coloring-img');
-        if (!img.src || img.style.display === "none") {
-            alert("Please pick an image first! ✨");
-            return;
-        }
+        if (!img.src || img.style.display === "none") return;
         const win = window.open('', '_blank');
-        win.document.write('<html><body style="margin:0; padding:20px; text-align:center;"><img src="' + img.src + '" style="max-width:100%; border:1px solid #000;"></body></html>');
+        win.document.write('<html><body style="margin:0; text-align:center;"><img src="' + img.src + '" style="max-width:100%;"></body></html>');
         win.document.close();
         setTimeout(() => { win.print(); win.close(); }, 800);
     }
