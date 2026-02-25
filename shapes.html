@@ -2,53 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | Geometry Master</title>
+    <title>Salam Adventures | Worksheet Master</title>
     <style>
-        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
+        :root { --primary: #34d399; --secondary: #38bdf8; --ink: #111827; }
+        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 10px; font-size: 14px; }
         
-        .controls { 
-            background: white; padding: 10px; border-radius: 12px; 
-            max-width: 900px; margin: 0 auto 10px; display: flex; 
-            gap: 15px; align-items: center; justify-content: center; border: 1px solid var(--primary);
+        /* Compact Menu */
+        .menu { 
+            background: white; padding: 10px; border-radius: 12px; border: 1px solid var(--primary);
+            max-width: 800px; margin: 0 auto 10px; display: flex; gap: 10px; justify-content: center;
+        }
+        button { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; background: var(--primary); color: white; }
+
+        /* A4 Page */
+        .page { 
+            background: white; width: 210mm; min-height: 297mm; padding: 10mm; 
+            margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
-        button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: var(--secondary); color: white; }
-
-        .worksheet { 
-            background: white; width: 210mm; min-height: 297mm; 
-            padding: 10mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .logo-img { width: 60px; height: auto; }
         
-        .header { 
-            border-bottom: 2px dashed var(--primary); 
-            padding-bottom: 10px; margin-bottom: 15px; display: flex; 
-            justify-content: space-between; align-items: center; 
-        }
-        .logo-img { width: 70px; height: auto; }
+        /* Grid Layouts */
+        .section-title { background: #f0fdf4; padding: 5px; color: var(--primary); font-weight: bold; margin: 10px 0; border-radius: 4px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         
-        .section-title { 
-            background: #f0fdf4; padding: 5px 10px; 
-            border-radius: 5px; color: var(--primary); font-weight: bold; margin: 15px 0 10px;
-        }
+        .math-item { font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: flex-end; gap: 5px; }
+        .box { width: 40px; height: 28px; border: 1px solid #ccc; border-radius: 4px; }
 
-        .match-container { display: flex; justify-content: space-around; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
-        .match-column { display: flex; flex-direction: column; gap: 20px; }
-        .dot { width: 10px; height: 10px; background: #ddd; border-radius: 50%; display: inline-block; margin: 0 10px; }
+        .shape-item { border: 1px solid #eee; padding: 5px; border-radius: 8px; text-align: center; font-size: 12px; }
+        .shape-box { height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .shape-card { border: 1px solid #eee; border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 15px; }
-        .shape-draw { width: 80px; height: 80px; }
-        
-        .blank { border-bottom: 1px solid #000; width: 35px; display: inline-block; margin-left: 5px; }
-
-        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; width: 100%; } }
+        @media print { .menu { display: none; } .page { box-shadow: none; margin: 0; width: 100%; } }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <button class="btn-gen" onclick="generate()">✨ New Shape Hunt</button>
+<div class="menu">
+    <select id="type">
+        <option value="math">Addition & Subtraction</option>
+        <option value="shapes">Geometry (2D & 3D)</option>
+    </select>
+    <button onclick="generate()">✨ Generate</button>
+    <button style="background:var(--secondary)" onclick="window.print()">🖨️ Print</button>
+</div>
+
+<div class="page" id="ws">
+    </div>
+
+<script>
+function generate() {
+    const ws = document.getElementById('ws');
+    const type = document.getElementById('type').value;
+    
+    // Header setup (Safe for missing images)
+    let content = `
+        <div class="header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                <div>
+                    <h2 style="margin:0; color:var(--primary)">Salam Adventures</h2>
+                    <p style="margin:0; font-size:12px;">Worksheet Expedition 🦎</p>
+                </div>
+            </div>
+            <div style="text-align:right; font-size:12px;">
+                Name: ___________________<br>Date: ____________________
+            </div>
+        </div>
+    `;
+
+    if (type === 'math') {
+        content += `<div class="section-title">Addition & Subtraction Expedition</div><div class="grid">`;
+        for (let i = 0; i < 48; i++) {
+            let a = Math.floor(Math.random() * 20) + 1;
+            let b = Math.floor(Math.random() * 10) + 1;
+            let op = Math.random() > 0.5 ? '+' : '-';
+            if (op === '-' && a < b) [a, b] = [b, a]; // No negatives
+            content += `<div class="math-item">${a} ${op} ${b} = <div class="box"></div></div>`;
+        }
+        content += `</div>`;
+    } else {
+        content += `<div class="section-title">2D Shape Explorer (Sides & Corners)</div><div class="grid">`;
+        const shapes2d = [
+            {n:'Triangle', s:'<polygon points="25,5 45,40 5,40" stroke="black" fill="none"/>'},
+            {n:'Square', s:'<rect x="10" y="10" width="30" height="30" stroke="black" fill="none"/>'},
+            {n:'Pentagon', s:'<polygon points="25,5 45,20 38,45 12,45 5,20" stroke="black" fill="none"/>'},
+            {n:'Circle', s:'<circle cx="25" cy="25" r="20" stroke="black" fill="none"/>'}
+        ];
+        shapes2d.forEach(sh => {
+            content += `
+                <div class="shape-item">
+                    <div class="shape-box"><svg width="50" height="50">${sh.s}</svg>
