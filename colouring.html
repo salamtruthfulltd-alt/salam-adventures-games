@@ -8,7 +8,7 @@
             padding: 25px; border-radius: 30px; background: white;
             box-shadow: 15px 15px 0px #ffd1dc; 
         }
-        #image-area { min-height: 300px; margin-top: 20px; display: flex; justify-content: center; align-items: center; border: 2px dashed #eee; border-radius: 15px; }
+        #image-area { min-height: 350px; margin-top: 20px; display: flex; justify-content: center; align-items: center; border: 2px dashed #eee; border-radius: 15px; }
         #coloring-img { max-width: 100%; height: auto; display: none; }
         button { 
             background-color: #4CAF50; color: white; padding: 15px 25px; 
@@ -18,14 +18,14 @@
         }
         button:active { box-shadow: 0 2px #2e7d32; transform: translateY(4px); }
         .print-btn { background-color: #008CBA; box-shadow: 0 6px #005f7a; }
-        #status-msg { color: #888; font-style: italic; }
+        #status-msg { color: #ff1493; font-weight: bold; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="color: #ff1493; margin: 0 0 10px 0;">🎨 Colouring Expedition</h2>
-    <p id="status-msg">Click '✨ Get New Image' to start!</p>
+    <h2 style="color: #ff1493; margin: 0;">🎨 Colouring Expedition</h2>
+    <p id="status-msg">Click to find a picture!</p>
     
     <button onclick="generateImage()">✨ Get New Image</button>
     <button class="print-btn" onclick="printImage()">🖨️ Print</button>
@@ -36,44 +36,40 @@
 </div>
 
 <script>
-    // 1. BASE URL (Using the "alam" spelling from your screenshot)
-    const username = "salamtruthfulltd-alt";
-    const repo = "alam-adventures-games";
-    const folder = "colouring images"; // No need to manually add %20 here
-    const branch = "main";
+    // 1. Double-check: Is your branch 'main' or 'master'? 
+    const branch = "main"; 
+    
+    // 2. Base URL structure
+    const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/" + branch + "/colouring%20images/";
 
-    // 2. EXACT FILENAMES (Case sensitive!)
+    // 3. Filenames - matched to your screenshot
     const images = [
         "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
-        "dolly.png", "flower design.png", "fruit and veg.png", 
-        "garden.png", "horse.png", "house.png", "mobile phone.png", 
-        "moon (2).png", "planes.png", "prince and princess.png", 
-        "swans.png.jpg", "tresure chest.png"
+        "dolly.png", "flower%20design.png", "fruit%20and%20veg.png", 
+        "garden.png", "horse.png", "house.png", "mobile%20phone.png", 
+        "moon%20(2).png", "planes.png", "prince%20and%20princess.png", 
+        "swans.png.jpg", "tresure%20chest.png"
     ];
 
     function generateImage() {
         const imgElement = document.getElementById('coloring-img');
         const status = document.getElementById('status-msg');
         const randomIndex = Math.floor(Math.random() * images.length);
-        const selectedFile = images[randomIndex];
+        const selectedImage = images[randomIndex];
         
-        // This creates a clean, encoded URL that GitHub understands
-        const cleanFolder = encodeURIComponent(folder);
-        const cleanFile = encodeURIComponent(selectedFile);
-        const finalUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${cleanFolder}/${cleanFile}`;
-        
-        status.innerText = "Loading " + selectedFile + "...";
+        status.innerText = "Searching for: " + selectedImage;
         imgElement.style.display = "none";
-        imgElement.src = finalUrl;
+        
+        // Build the final link
+        imgElement.src = repoBase + selectedImage;
 
         imgElement.onload = function() {
-            status.innerText = "Ready to Color! ✨";
+            status.innerText = "✨ Found it! Ready to Color ✨";
             imgElement.style.display = "block";
         };
         
         imgElement.onerror = function() {
-            status.innerText = "❌ Error: Could not load " + selectedFile;
-            console.error("Failed URL:", finalUrl);
+            status.innerText = "❌ Could not load: " + selectedImage;
         };
     }
 
@@ -81,7 +77,7 @@
         const img = document.getElementById('coloring-img');
         if (!img.src || img.style.display === "none") return;
         const win = window.open('', '_blank');
-        win.document.write('<html><body style="margin:0; text-align:center;"><img src="' + img.src + '" style="max-width:100%;"></body></html>');
+        win.document.write('<html><body style="margin:0; text-align:center;"><img src="' + img.src + '" style="max-width:90%;"></body></html>');
         win.document.close();
         setTimeout(() => { win.print(); win.close(); }, 800);
     }
