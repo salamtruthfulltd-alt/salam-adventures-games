@@ -1,177 +1,146 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Puzzle</title>
-  <style>
-    :root{ --gap:8px; --radius:14px; --shadow: 0 10px 30px rgba(0,0,0,.12); }
-    body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f7fb; margin:0; padding:24px; display:grid; place-items:center; }
-    .wrap{ width:min(780px, 94vw); display:grid; gap:14px; }
-    .controls{ display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; }
-    .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
-    button{ border:0; padding:10px 14px; border-radius:999px; background:#111; color:#fff; cursor:pointer; font-weight:700; }
-    button.secondary{ background:#fff; color:#111; box-shadow: inset 0 0 0 2px #111; }
-    .status{ font-size:14px; opacity:.9; }
-
-    /* Board is stable and never collapses */
-    .board{
-      width:100%;
-      aspect-ratio: 3 / 2; /* JS will change for mode */
-      background:#fff;
-      border-radius:18px;
-      box-shadow: var(--shadow);
-      padding: var(--gap);
-      box-sizing:border-box;
-      display:grid;
-      gap: var(--gap);
-      user-select:none;
-      touch-action:none;
-    }
-
-    .tile{
-      border-radius: var(--radius);
-      box-shadow: 0 6px 14px rgba(0,0,0,.10);
-      background-repeat:no-repeat;
-      background-size:100% 100%;
-      background-position:center;
-      border: 1px solid rgba(0,0,0,.08);
-      cursor: grab;
-      width:100%;
-      height:100%;
-      overflow:hidden;
-      position:relative;
-      transform: translateZ(0);
-    }
-    .tile:active{ cursor:grabbing; }
-    .dragging{ opacity:.92; outline: 3px solid rgba(17,17,17,.20); z-index:9999; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="controls">
-      <div class="btnrow">
-        <button id="mode3x2">3×2</button>
-        <button id="mode2x2" class="secondary">2×2</button>
-        <button id="shuffle" class="secondary">Shuffle</button>
-      </div>
-      <div class="status" id="status">Loading…</div>
+<div class="puzzleWrap">
+  <div class="puzzleControls">
+    <div class="btnrow">
+      <button id="p3x2">3×2</button>
+      <button id="p2x2" class="secondary">2×2</button>
+      <button id="pshuffle" class="secondary">Shuffle</button>
     </div>
-
-    <div id="board" class="board"></div>
+    <div id="pstatus" class="pstatus">Drag a tile onto another to swap.</div>
   </div>
+
+  <div id="pboard" class="pboard"></div>
+</div>
+
+<style>
+  .puzzleWrap{ width:min(780px, 94vw); display:grid; gap:14px; margin:0 auto; }
+  .puzzleControls{ display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; }
+  .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btnrow button{ border:0; padding:10px 14px; border-radius:999px; background:#111; color:#fff; cursor:pointer; font-weight:700; }
+  .btnrow button.secondary{ background:#fff; color:#111; box-shadow: inset 0 0 0 2px #111; }
+
+  .pstatus{ font-size:14px; opacity:.9; }
+
+  .pboard{
+    width:100%;
+    background:#fff;
+    border-radius:18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    padding:8px;
+    box-sizing:border-box;
+    display:grid;
+    gap:8px;
+    user-select:none;
+    touch-action:none;
+    min-height:240px;
+  }
+
+  .ptile{
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    border: 1px solid rgba(0,0,0,.08);
+    background:#eef1f8;
+    cursor: grab;
+    width:100%;
+    height:100%;
+    position:relative;
+  }
+  .ptile:active{ cursor:grabbing; }
+  .ptile.dragging{ opacity:.92; outline: 3px solid rgba(17,17,17,.20); z-index:9999; }
+
+  .ptile img{
+    width:100%;
+    height:100%;
+    object-fit: cover;       /* ✅ never distorts */
+    display:block;
+    pointer-events:none;     /* ✅ dragging the tile, not the image */
+    user-drag:none;
+    -webkit-user-drag:none;
+  }
+</style>
 
 <script>
 (() => {
-  // ✅ CHANGE THIS to your real image path
-  const IMAGE_URL = "puzzle-image.jpg";
+  const board = document.getElementById("pboard");
+  const statusEl = document.getElementById("pstatus");
 
-  const board = document.getElementById("board");
-  const statusEl = document.getElementById("status");
-  const btn3x2 = document.getElementById("mode3x2");
-  const btn2x2 = document.getElementById("mode2x2");
-  const btnShuffle = document.getElementById("shuffle");
+  const btn3x2 = document.getElementById("p3x2");
+  const btn2x2 = document.getElementById("p2x2");
+  const btnShuffle = document.getElementById("pshuffle");
 
+  // ✅ PUT YOUR REAL PIECE FILENAMES HERE (these are examples)
+  // 3×2 = 6 pieces in correct solved order (left→right, top→bottom)
+  const PIECES_3x2 = [
+    "images/puzzle/3x2_1.jpg",
+    "images/puzzle/3x2_2.jpg",
+    "images/puzzle/3x2_3.jpg",
+    "images/puzzle/3x2_4.jpg",
+    "images/puzzle/3x2_5.jpg",
+    "images/puzzle/3x2_6.jpg"
+  ];
+
+  // 2×2 = 4 pieces in correct solved order
+  const PIECES_2x2 = [
+    "images/puzzle/2x2_1.jpg",
+    "images/puzzle/2x2_2.jpg",
+    "images/puzzle/2x2_3.jpg",
+    "images/puzzle/2x2_4.jpg"
+  ];
+
+  let pieces = PIECES_3x2;
   let cols = 3, rows = 2;
-  let tiles = [];            // array of dataURLs in SOLVED order
-  let order = [];            // current order of indices
+  let order = [];
   let draggingIndex = null;
-  let img = null;
 
-  function loadImage(url){
-    return new Promise((resolve, reject) => {
-      const im = new Image();
-      im.onload = () => resolve(im);
-      im.onerror = () => reject(new Error("Image failed to load"));
-      im.src = url;
-    });
-  }
+  function setMode(c, r, arr){
+    cols = c; rows = r; pieces = arr;
 
-  // Crop-to-cover helper: draws image to fill (W,H) without distortion
-  function drawCover(ctx, im, W, H){
-    const iw = im.naturalWidth, ih = im.naturalHeight;
-    const scale = Math.max(W / iw, H / ih);
-    const sw = W / scale;
-    const sh = H / scale;
-    const sx = (iw - sw) / 2;
-    const sy = (ih - sh) / 2;
-    ctx.drawImage(im, sx, sy, sw, sh, 0, 0, W, H);
-  }
+    board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    board.style.aspectRatio = `${cols}/${rows}`;
 
-  // Slice the source image into EXACT tiles for the current mode
-  function buildSlices(){
-    const n = cols * rows;
+    btn3x2.classList.toggle("secondary", !(cols===3 && rows===2));
+    btn2x2.classList.toggle("secondary", !(cols===2 && rows===2));
 
-    // Work at a decent resolution so it looks sharp
-    const BASE_W = 1200;
-    const BASE_H = Math.round(BASE_W * (rows / cols)); // match board ratio
-
-    const canvas = document.createElement("canvas");
-    canvas.width = BASE_W;
-    canvas.height = BASE_H;
-    const ctx = canvas.getContext("2d");
-
-    // draw the full board image (cropped to board ratio)
-    ctx.clearRect(0,0,BASE_W,BASE_H);
-    drawCover(ctx, img, BASE_W, BASE_H);
-
-    // slice into tiles
-    tiles = [];
-    const tw = Math.floor(BASE_W / cols);
-    const th = Math.floor(BASE_H / rows);
-
-    for(let y=0; y<rows; y++){
-      for(let x=0; x<cols; x++){
-        const tileCanvas = document.createElement("canvas");
-        tileCanvas.width = tw;
-        tileCanvas.height = th;
-        const tctx = tileCanvas.getContext("2d");
-        tctx.drawImage(canvas, x*tw, y*th, tw, th, 0, 0, tw, th);
-        tiles.push(tileCanvas.toDataURL("image/png"));
-      }
-    }
-
-    order = Array.from({length:n}, (_,i)=>i);
+    order = Array.from({length: pieces.length}, (_,i)=>i);
+    shuffle();
+    render();
   }
 
   function shuffle(){
-    for(let i=order.length-1; i>0; i--){
-      const j = Math.floor(Math.random() * (i+1));
+    for(let i=order.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
       [order[i], order[j]] = [order[j], order[i]];
     }
   }
 
   function render(){
     board.innerHTML = "";
-    board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-    board.style.aspectRatio = `${cols} / ${rows}`;
+    for(let i=0;i<order.length;i++){
+      const idx = order[i];
 
-    // buttons look
-    btn3x2.classList.toggle("secondary", !(cols===3 && rows===2));
-    btn2x2.classList.toggle("secondary", !(cols===2 && rows===2));
-
-    for(let i=0; i<order.length; i++){
       const tile = document.createElement("div");
-      tile.className = "tile";
+      tile.className = "ptile";
       tile.draggable = true;
       tile.dataset.pos = String(i);
-      tile.dataset.id = String(order[i]);
-      tile.style.backgroundImage = `url('${tiles[order[i]]}')`;
+
+      const img = document.createElement("img");
+      img.src = pieces[idx];
+      img.alt = "Puzzle piece";
+      tile.appendChild(img);
 
       tile.addEventListener("dragstart", onDragStart);
       tile.addEventListener("dragend", onDragEnd);
-      tile.addEventListener("dragover", e => { e.preventDefault(); });
+      tile.addEventListener("dragover", e => e.preventDefault());
       tile.addEventListener("drop", onDrop);
 
       board.appendChild(tile);
     }
-
     checkSolved();
   }
 
   function checkSolved(){
-    const ok = order.every((id, idx) => id === idx);
+    const ok = order.every((id, i) => id === i);
     statusEl.textContent = ok ? "✅ Solved!" : "Drag a tile onto another to swap.";
   }
 
@@ -179,12 +148,12 @@
     const tile = e.currentTarget;
     draggingIndex = [...board.children].indexOf(tile);
 
-    // lock size (prevents shape changes)
+    // ✅ lock size so it can’t stretch
     const rect = tile.getBoundingClientRect();
     tile.style.width = rect.width + "px";
     tile.style.height = rect.height + "px";
-    tile.classList.add("dragging");
 
+    tile.classList.add("dragging");
     e.dataTransfer.effectAllowed = "move";
   }
 
@@ -206,30 +175,11 @@
     render();
   }
 
-  function setMode(c,r){
-    cols = c; rows = r;
-    buildSlices();
-    shuffle();
-    render();
-  }
-
-  // UI
-  btn3x2.addEventListener("click", () => setMode(3,2));
-  btn2x2.addEventListener("click", () => setMode(2,2));
+  btn3x2.addEventListener("click", () => setMode(3,2,PIECES_3x2));
+  btn2x2.addEventListener("click", () => setMode(2,2,PIECES_2x2));
   btnShuffle.addEventListener("click", () => { shuffle(); render(); });
 
-  // init
-  statusEl.textContent = "Loading image…";
-  loadImage(IMAGE_URL)
-    .then(im => {
-      img = im;
-      statusEl.textContent = "Drag a tile onto another to swap.";
-      setMode(3,2);
-    })
-    .catch(() => {
-      statusEl.textContent = "❌ Image not found. Fix IMAGE_URL to your real file path.";
-    });
+  // start
+  setMode(3,2,PIECES_3x2);
 })();
 </script>
-</body>
-</html>
