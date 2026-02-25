@@ -11,45 +11,51 @@
             background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
             max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
         }
-        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button { padding: 8px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
-            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative;
+            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; box-sizing: border-box;
         }
         
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .logo-img { width: 80px; height: auto; }
         
-        /* Handwriting Practice Area */
-        .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: flex; align-items: center; background: #fffcf0; }
-        .practice-lines-container { flex-grow: 1; margin-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+        /* Handwriting Guides */
+        .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 15px; margin-bottom: 20px; background: #fffcf0; }
         
         .handwriting-line {
-            border-bottom: 1px solid #000;
-            border-top: 1px solid #000;
-            height: 30px;
+            border-bottom: 1px solid #333;
+            border-top: 1px solid #333;
+            height: 45px;
             position: relative;
-            margin-bottom: 5px;
+            margin: 10px 0;
             width: 100%;
-            background-image: linear-gradient(to bottom, transparent 48%, #cbd5e1 49%, #cbd5e1 51%, transparent 52%);
-            background-size: 100% 100%;
+            background-image: linear-gradient(to bottom, transparent 48%, #94a3b8 49%, #94a3b8 51%, transparent 52%);
             display: flex;
             align-items: center;
             padding-left: 10px;
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        .trace-text { font-size: 20px; color: #e2e8f0; letter-spacing: 40px; font-family: monospace; }
+        /* The Dotted Tracing Effect */
+        .dot-trace { 
+            color: #cbd5e1; 
+            text-decoration: underline dotted #94a3b8;
+            font-weight: 400;
+            font-size: 28px;
+            letter-spacing: 5px;
+        }
+        
+        .bold-start { font-size: 28px; font-weight: 900; color: var(--ink); letter-spacing: 5px; margin-right: 30px; }
 
         .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 20px 0 10px; border-radius: 5px; text-transform: uppercase; font-size: 13px; border-left: 4px solid var(--primary); }
 
         .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .cvc-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; text-align: center; }
-        .box { width: 35px; height: 35px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
-
-        .blank-line { border-bottom: 1px solid #000; width: 150px; display: inline-block; }
+        .cvc-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; text-align: center; background: #fff; }
+        .box { width: 30px; height: 30px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
 
         @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
     </style>
@@ -58,7 +64,7 @@
 
 <div class="controls">
     <button class="btn-gen" onclick="generate()">✨ New Sight Word</button>
-    <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
+    <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
 </div>
 
 <div class="page" id="main-ws"></div>
@@ -67,75 +73,10 @@
     const cvcWords = [
         {h: "A furry pet", w: "CAT", hint: "AT"}, {h: "Hot yellow ball", w: "SUN", hint: "UN"},
         {h: "A friendly pet", w: "DOG", hint: "OG"}, {h: "Wear on head", w: "HAT", hint: "AT"},
-        {h: "Used to write", w: "PEN", hint: "EN"}, {h: "To fly in sky", w: "JET", hint: "ET"},
-        {h: "A big car", w: "BUS", hint: "US"}, {h: "Where we sleep", w: "BED", hint: "ED"}
+        {h: "Used to write", w: "PEN", hint: "EN"}, {h: "A big car", w: "BUS", hint: "US"}
     ];
-    const sights = ["THE", "AND", "YOU", "FOR", "WAS", "HIS", "THEY", "ARE"];
+    const sights = ["THE", "AND", "YOU", "FOR", "WAS", "ARE", "LIKE", "SEE"];
 
     function generate() {
         const ws = document.getElementById('main-ws');
-        const sw = sights[Math.floor(Math.random() * sights.length)];
-        const shuffled = [...cvcWords].sort(() => 0.5 - Math.random()).slice(0, 6);
-
-        ws.innerHTML = `
-            <div class="header">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
-                    <div>
-                        <h1 style="margin:0; color:var(--primary); font-size:22px;">Salam Adventures</h1>
-                        <p style="margin:0; font-size:12px; font-weight:bold; color:#64748b;">English Expedition: Level 1</p>
-                    </div>
-                </div>
-                <div style="text-align:right; font-size:11px;">Name: <span class="blank-line"></span><br>Date: <span class="blank-line" style="margin-top:5px;"></span></div>
-            </div>
-
-            <div class="sight-word-area">
-                <div style="text-align:center; min-width: 120px;">
-                    <small style="color:var(--accent); font-weight:bold;">SIGHT WORD</small><br>
-                    <span style="font-size:36px; font-weight:900;">${sw}</span>
-                </div>
-                <div class="practice-lines-container">
-                    <div style="font-size:11px; font-weight:bold; color:#64748b;">Practice Writing:</div>
-                    <div class="handwriting-line"><span class="trace-text">${sw}</span></div>
-                    <div class="handwriting-line"></div>
-                </div>
-            </div>
-
-            <div class="section-title">Part 1: Missing First Sounds</div>
-            <p style="font-size:13px; margin-bottom:10px;">Read the hint and write the missing first letter in the box.</p>
-            <div class="phonics-grid">
-                ${shuffled.map(item => `
-                    <div class="cvc-card">
-                        <small style="color:#64748b;">${item.h}</small><br><br>
-                        <div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">${item.hint}</span>
-                    </div>
-                `).join('')}
-            </div>
-
-            <div class="section-title">Part 2: Handwriting Tracing</div>
-            <p style="font-size:13px; margin-bottom:10px;">Trace the sentence carefully.</p>
-            <div style="padding:10px;">
-                <div class="handwriting-line" style="height:40px; border-top:none;"><span style="font-size:18px; color:#e2e8f0; letter-spacing:2px;">The big cat is on the mat.</span></div>
-                <div class="handwriting-line" style="height:40px; border-top:none; margin-top:10px;"><span style="font-size:18px; color:#e2e8f0; letter-spacing:2px;">I can see the yellow sun.</span></div>
-            </div>
-
-            <div class="section-title">Part 3: Word Family Match</div>
-            <div style="display:flex; gap:20px;">
-                <div style="flex:1; border:1px dashed var(--primary); padding:10px; border-radius:8px; text-align:center;">
-                    <b>-AT Family</b><br><br>1. __________<br>2. __________
-                </div>
-                <div style="flex:1; border:1px dashed var(--secondary); padding:10px; border-radius:8px; text-align:center;">
-                    <b>-OG Family</b><br><br>1. __________<br>2. __________
-                </div>
-            </div>
-
-            <div style="text-align:center; margin-top:20px; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
-                © Salam Adventures • Literacy Expedition • Level 1
-            </div>
-        `;
-    }
-
-    generate();
-</script>
-</body>
-</html>
+        const sw = sights[Math
