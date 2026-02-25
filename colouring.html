@@ -15,7 +15,7 @@
     .panel{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
     .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
     select,button,label,input{font-size:14px}
-    select{padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff;min-width:260px}
+    select{padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff;min-width:240px}
     button{padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:#111;color:#fff;cursor:pointer}
     button.secondary{background:#fff;color:#111}
     button:disabled{opacity:.5;cursor:not-allowed}
@@ -45,6 +45,12 @@
       <button id="btnLoad">Load</button>
       <button id="btnRandom" class="secondary">Random</button>
 
+      <select id="sizeMode" aria-label="Size mode">
+        <option value="standard" selected>Size: Standard (recommended)</option>
+        <option value="fit">Size: Fit (no upscale)</option>
+        <option value="fill">Size: Fill (bigger)</option>
+      </select>
+
       <span class="chip" title="Draw on top of the page">
         🖌️ Brush
         <input id="brushSize" type="range" min="2" max="40" value="10" />
@@ -65,11 +71,10 @@
 
     <div class="stage">
       <div class="canvasWrap">
-        <!-- A4 portrait-ish canvas -->
         <canvas id="c" width="1240" height="1754" aria-label="Colouring canvas"></canvas>
       </div>
       <div class="hint">
-        Tip: Use “Tap to Fill” for big areas. Use “Print” for a clean sheet.
+        Tip: “Standard” makes all pages feel the same size.
         <div class="small" id="status"></div>
       </div>
     </div>
@@ -77,7 +82,6 @@
 </main>
 
 <script>
-  // ✅ Repo image folder (raw)
   const BASE_RAW =
     "https://raw.githubusercontent.com/salamtruthfulltd-alt/salam-adventures-games/main/colouring%20images/";
 
@@ -112,13 +116,14 @@
   const paletteEl = document.getElementById("palette");
   const modeLabel = document.getElementById("modeLabel");
   const statusEl = document.getElementById("status");
+  const sizeMode = document.getElementById("sizeMode");
 
   const canvas = document.getElementById("c");
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
   let baseImageData = null;
   let drawing = false;
-  let mode = "brush"; // brush | eraser | fill
+  let mode = "brush";
   let color = "#ff3b30";
 
   const COLORS = [
@@ -130,7 +135,6 @@
   function niceName(file){ return file.replace(/\.(png|jpg|jpeg)$/i, ""); }
   function fileUrl(file){ return BASE_RAW + encodeURIComponent(file); }
 
-  // Dropdown
   FILES.forEach((f) => {
     const opt = document.createElement("option");
     opt.value = f;
@@ -139,7 +143,6 @@
   });
   picker.value = FILES[0];
 
-  // Palette
   function renderPalette(){
     paletteEl.innerHTML = "";
     COLORS.forEach((c) => {
@@ -178,6 +181,44 @@
     return margin;
   }
 
+  function computeScale(imgW, imgH, innerW, innerH){
+    const mode = sizeMode.value;
+
+    // Base "fit" scale (always inside the box)
+    const fitScale = Math.min(innerW / imgW, innerH / imgH);
+
+    if (mode === "fit"){
+      // no upscaling
+      return Math.min(1, fitScale);
+    }
+
+    if (mode === "fill"){
+      // bigger look: aim to occupy more space (still keep inside)
+      const TARGET = 0.92;
+      const longSide = Math.max(imgW, imgH);
+      const boxLong = Math.max(innerW, innerH);
+      let s = (boxLong * TARGET) / longSide;
+      // ensure it still fits inside
+      s = Math.min(s, fitScale);
+      // allow some upscale but cap it
+      return Math.min(s, 2.2);
+    }
+
+    // STANDARD (recommended): make all images feel same size
+    // Target the longest side to be ~82% of the inner box longest side.
+    const TARGET = 0.82;
+    const longSide = Math.max(imgW, imgH);
+    const boxLong = Math.max(innerW, innerH);
+    let s = (boxLong * TARGET) / longSide;
+
+    // ensure it stays inside the inner area
+    s = Math.min(s, fitScale);
+
+    // allow moderate upscale so small images don't look tiny (but cap it)
+    const MAX_UPSCALE = 2.0;
+    return Math.min(s, MAX_UPSCALE);
+  }
+
   async function loadAndFit(file){
     btnDownload.disabled = true;
     btnPrint.disabled = true;
@@ -193,31 +234,28 @@
     });
 
     clearWhite();
-
     const margin = drawBorder();
 
-    // ✅ More breathing room + prevents images from feeling too big
     const PAD = 70;
     const innerX = margin + PAD;
     const innerY = margin + PAD;
     const innerW = canvas.width - (margin + PAD) * 2;
     const innerH = canvas.height - (margin + PAD) * 2;
 
-    // ✅ FIX: NEVER upscale (caps at 1). Only shrink if needed.
-    const scale = Math.min(
-      1,
-      innerW / img.naturalWidth,
-      innerH / img.naturalHeight
-    );
+    const imgW = img.naturalWidth || img.width;
+    const imgH = img.naturalHeight || img.height;
 
-    const drawW = Math.round(img.naturalWidth * scale);
-    const drawH = Math.round(img.naturalHeight * scale);
+    const scale = computeScale(imgW, imgH, innerW, innerH);
+
+    const drawW = Math.round(imgW * scale);
+    const drawH = Math.round(imgH * scale);
     const dx = Math.round(innerX + (innerW - drawW) / 2);
     const dy = Math.round(innerY + (innerH - drawH) / 2);
 
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.drawImage(img, dx, dy, drawW, drawH);
 
-    // Save base layer (for reset)
     baseImageData = ctx.getImageData(0,0,canvas.width,canvas.height);
 
     btnDownload.disabled = false;
@@ -232,6 +270,10 @@
     const r = FILES[Math.floor(Math.random() * FILES.length)];
     picker.value = r;
     loadAndFit(r).catch(e => setStatus("Error: " + e.message));
+  });
+
+  sizeMode.addEventListener("change", () => {
+    loadAndFit(picker.value).catch(e => setStatus("Error: " + e.message));
   });
 
   btnReset.addEventListener("click", () => {
@@ -299,7 +341,6 @@
   canvas.addEventListener("touchmove", moveDraw, { passive:false });
   window.addEventListener("touchend", endDraw);
 
-  // Flood fill
   function hexToRgba(hex){
     const h = hex.replace("#","").trim();
     const bigint = parseInt(h, 16);
@@ -354,7 +395,6 @@
       if (!matchColor(data, idx, target, 22)) continue;
 
       setColor(data, idx, fill);
-
       stack.push([cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]);
     }
 
@@ -386,7 +426,6 @@
     w.document.close();
   });
 
-  // Auto-load first page
   loadAndFit(picker.value).catch(e => setStatus("Error: " + e.message));
 </script>
 </body>
