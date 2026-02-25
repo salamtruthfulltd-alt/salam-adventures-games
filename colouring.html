@@ -1,244 +1,62 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-  <title>Magic Tap: Professional Studio</title>
-  <style>
-    :root {
-      --rb: linear-gradient(90deg, #ff0000, #ffea00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-    }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-    
-    body { 
-      margin: 0; padding: 10px; background: #0f172a; 
-      font-family: 'Segoe UI', sans-serif;
-      display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
-    }
-
-    /* THE CHUNKY 3D RAINBOW CASE */
-    .toy-body {
-      width: 100%; max-width: 1000px; height: 96vh;
-      background: #f8fafc; border-radius: 60px;
-      position: relative; padding: 18px;
-      box-shadow: 
-        0 20px 0 #334155, 
-        0 40px 60px rgba(0,0,0,0.6),
-        inset 0 4px 10px rgba(255,255,255,0.8);
-      display: flex; flex-direction: column;
-    }
-
-    .neon-border {
-      position: absolute; inset: 8px; border-radius: 55px;
-      padding: 6px; background: var(--rb); background-size: 300% 300%;
-      animation: neonFlow 6s linear infinite;
-      z-index: 0;
-    }
-    @keyframes neonFlow { 0%{background-position:0% 50%} 100%{background-position:300% 50%} }
-
-    .screen {
-      background: white; border-radius: 40px; flex: 1;
-      position: relative; z-index: 1; display: flex; flex-direction: column;
-      box-shadow: inset 0 15px 35px rgba(0,0,0,0.25);
-      overflow: hidden; border: 4px solid #f1f5f9;
-    }
-
-    header {
-      padding: 12px 30px; background: #fff; border-bottom: 2px solid #f1f5f9;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-
-    /* ART VIEWPORT */
-    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; background: #fff; position: relative; }
-    svg { width: 100%; height: 100%; max-height: 52vh; touch-action: none; }
-    
-    /* INTERACTIVE ZONES */
-    .p { fill: #fff; stroke: #1e293b; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; transition: fill 0.2s; }
-    .p:hover { stroke: #3b82f6; stroke-width: 5; }
-    
-    /* SPARKLES */
-    .sparkle {
-      position: absolute; pointer-events: none; width: 20px; height: 20px;
-      background: gold; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      animation: flyUp 0.7s ease-out forwards; z-index: 100;
-    }
-    @keyframes flyUp { 0% { transform: scale(0) rotate(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-80px) rotate(180deg); opacity: 0; } }
-
-    /* CONTROLS TRAY */
-    .tray {
-      background: #f1f5f9; padding: 15px; border-top: 4px solid #e2e8f0;
-      display: flex; flex-direction: column; align-items: center; gap: 15px;
-    }
-    .swatches { display: flex; gap: 10px; overflow-x: auto; width: 100%; justify-content: center; padding: 5px; }
-    .swatch {
-      min-width: 55px; height: 55px; border-radius: 18px; border: 4px solid white;
-      cursor: pointer; box-shadow: 0 6px 0 #cbd5e1; transition: 0.1s;
-    }
-    .swatch.active { transform: translateY(4px); box-shadow: 0 2px 0 #cbd5e1; border-color: #000; scale: 1.1; }
-
-    .btn {
-      padding: 12px 24px; border: none; border-radius: 20px; font-weight: 900; 
-      font-size: 14px; cursor: pointer; background: white; 
-      box-shadow: 0 5px 0 #cbd5e1; color: #334155; display: flex; align-items: center; gap: 8px;
-    }
-    .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #cbd5e1; }
-    .btn-blue { background: #3b82f6; color: white; box-shadow: 0 5px 0 #1d4ed8; }
-
-    #gal { position: absolute; inset: 0; background: white; z-index: 200; padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; overflow-y: auto; }
-    .hidden { display: none !important; }
-  </style>
+    <style>
+        body { font-family: 'Comic Sans MS', cursive, sans-serif; text-align: center; background: transparent; padding: 20px; }
+        .container { max-width: 600px; margin: auto; border: 3px dashed #ff69b4; padding: 20px; border-radius: 20px; background: white; }
+        img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 10px; margin-top: 15px; display: none; }
+        button { background-color: #4CAF50; color: white; padding: 15px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 18px; margin: 10px; transition: 0.3s; }
+        button:hover { background-color: #45a049; transform: scale(1.05); }
+        .print-btn { background-color: #008CBA; }
+    </style>
 </head>
 <body>
 
-<div class="toy-body">
-  <div class="neon-border" id="neon"></div>
-  <div class="screen">
-    <header>
-      <div style="font-size:24px; font-weight:900;">MAGIC<span style="color:#3b82f6">TAP</span></div>
-      <button class="btn btn-blue" onclick="openGal()">🖼️ GALLERY</button>
-    </header>
-
-    <div id="gal" class="hidden"></div>
-    <div class="viewport" id="viewport"></div>
-
-    <div class="tray">
-      <div class="swatches" id="palette"></div>
-      <div style="display:flex; gap:12px">
-        <button class="btn" onclick="toggleMusic()" id="mu-btn">🎵 Music: Off</button>
-        <button class="btn" onclick="toggleSparkle()" id="sp-btn">✨ Sparkle: On</button>
-        <button class="btn" onclick="clearArt()">🧼 Reset</button>
-      </div>
+<div class="container">
+    <h2>🎨 Colouring Page Generator</h2>
+    <p>Click the button to find a new adventure to color!</p>
+    
+    <button onclick="generateImage()">✨ Get New Image</button>
+    <button class="print-btn" onclick="printImage()">🖨️ Print This Page</button>
+    
+    <div id="image-display">
+        <img id="coloring-img" src="" alt="Coloring Page">
     </div>
-  </div>
 </div>
 
 <script>
-  const COLS = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55', '#1e293b', '#FFFFFF'];
-  let pen = COLS[0], aCtx = null, mus = false, spk = true;
+    // These are your specific files from GitHub
+    const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
+    
+    const images = [
+        "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
+        "dolly.png", "flower%20design.png", "fruit%20and%20veg.png", 
+        "garden.png", "horse.png", "house.png", "mobile%20phone.png", 
+        "moon%20(2).png", "planes.png", "prince%20and%20princess.png", 
+        "swans.png.jpg", "tresure%20chest.png"
+    ];
 
-  const SCENES = [
-    { name: "Magic Garden", svg: `
-      <rect class="p" width="800" height="600" /> <path class="p" d="M0 450 q400-80 800 0 v150 h-800 z" /> <path class="p" d="M380 320 v180 h40 v-180 z" /> <circle class="p" cx="400" cy="220" r="55" /> <path class="p" d="M400 165 c50-80 120-40 120 0 s-70 110-120 55" />
-      <path class="p" d="M400 165 c-50-80-120-40-120 0 s70 110 120 55" />
-      <path class="p" d="M455 220 c80-50 120 40 120 100 s-110 70-175 20" />
-      <path class="p" d="M345 220 c-80-50-120 40-120 100 s110 70 175 20" />
-      <circle class="p" cx="120" cy="100" r="45" /> <path class="p" d="M600 80 q40-40 80 0 t80 0 v50 h-160 z" /> `},
-    { name: "Ocean Kingdom", svg: `
-      <rect class="p" width="800" height="600" /> <path class="p" d="M150 350 q150-250 450 0 t-450 200 t450-200 v180 l-180-180 z" /> <circle class="p" cx="280" cy="320" r="22" /> <circle cx="290" cy="315" r="8" fill="#000" />
-      <circle class="p" cx="100" cy="150" r="25" /> <circle class="p" cx="160" cy="100" r="15" /> <path class="p" d="M600 500 q20-80 60-80 t60 80 t-60 80 t-60-80 z" /> <path class="p" d="M50 500 q100-30 200 0 v100 h-200 z" /> `},
-    { name: "Kingdom Castle", svg: `
-      <rect class="p" width="800" height="600" /> <path class="p" d="M0 520 h800 v80 h-800 z" /> <path class="p" d="M180 520 h440 v-250 h-440 z" /> <path class="p" d="M180 300 v-180 h120 v180 z" /> <path class="p" d="M500 300 v-180 h120 v180 z" /> <path class="p" d="M165 120 l75-100 l75 100 z" /> <path class="p" d="M485 120 l75-100 l75 100 z" /> <path class="p" d="M350 520 v-140 q50-80 100 0 v140 z" /> <rect class="p" x="215" y="320" width="50" height="50" rx="8" /> <circle class="p" cx="720" cy="100" r="45" />
-    `},
-    { name: "Rocket Space", svg: `
-      <rect class="p" width="800" height="600" /> <path class="p" d="M400 40 q150 150 150 500 h-300 q0-350 150-500" /> <circle class="p" cx="400" cy="220" r="60" /> <circle class="p" cx="400" cy="220" r="35" /> <path class="p" d="M280 480 l-140 140 h140 z" /> <path class="p" d="M520 480 l140 140 h-140 z" /> <path class="p" d="M100 100 l20-20 l20 20 l-20 20 z" /> <path class="p" d="M700 300 l35-35 l35 35 l-35 35 z" /> <circle class="p" cx="150" cy="400" r="50" /> <path class="p" d="M400 540 q0 60-40 60 t-40-60 t40-60 t40 60 z" /> `},
-    { name: "Forest Bunny", svg: `
-      <rect class="p" width="800" height="600" /> <circle class="p" cx="400" cy="400" r="150" /> <path class="p" d="M330 280 q-60-220 50-220 t50 220 z" /> <path class="p" d="M410 280 q60-220-50-220 t-50 220 z" /> <circle class="p" cx="350" cy="380" r="15" /> <circle class="p" cx="450" cy="380" r="15" /> <path class="p" d="M380 430 q20 30 40 0" /> <path class="p" d="M280 520 q-40 40 40 40 h40" /> <path class="p" d="M520 520 q40 40-40 40 h-40" /> `},
-    { name: "Super Robot", svg: `
-      <rect class="p" width="800" height="600" /> <rect class="p" x="280" y="240" width="240" height="250" rx="30" /> <rect class="p" x="320" y="280" width="160" height="100" rx="10" /> <rect class="p" x="340" y="100" width="120" height="120" rx="20" /> <circle class="p" cx="370" cy="160" r="15" /> <circle class="p" cx="430" cy="160" r="15" /> <path class="p" d="M280 300 h-60 v100 h60" /> <path class="p" d="M520 300 h60 v100 h-60" /> <path class="p" d="M330 490 v80 h50 v-80" /> <path class="p" d="M420 490 v80 h50 v-80" /> `}
-  ];
-
-  function init() {
-    const pal = document.getElementById('palette');
-    COLS.forEach(c => {
-      const s = document.createElement('div');
-      s.className = 'swatch' + (c === pen ? ' active' : '');
-      s.style.backgroundColor = c;
-      s.onclick = () => {
-        document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
-        s.classList.add('active');
-        pen = c;
-        playPop(600, 0.05);
-      };
-      pal.appendChild(s);
-    });
-
-    const gal = document.getElementById('gal');
-    SCENES.forEach((s, i) => {
-      const c = document.createElement('div');
-      c.className = "btn"; c.style.height = "160px"; c.style.display = "block";
-      c.innerHTML = `<svg viewBox="0 0 800 600">${s.svg}</svg><p>${s.name}</p>`;
-      c.onclick = () => loadScene(i);
-      gal.appendChild(c);
-    });
-    loadScene(0);
-  }
-
-  function loadScene(idx) {
-    const stage = document.getElementById('viewport');
-    stage.innerHTML = `<svg viewBox="0 0 800 600" id="current-art">${SCENES[idx].svg}</svg>`;
-    document.getElementById('gal').classList.add('hidden');
-    stage.querySelectorAll('.p').forEach(part => {
-      part.onclick = (e) => {
-        e.stopPropagation();
-        part.style.fill = pen;
-        if(spk) makeSparkle(e.clientX, e.clientY);
-        playHiss();
-        triggerFlash();
-      };
-    });
-  }
-
-  function triggerFlash() {
-    const n = document.getElementById('neon');
-    n.style.filter = "brightness(2)";
-    setTimeout(() => n.style.filter = "none", 150);
-  }
-
-  function makeSparkle(x, y) {
-    for(let i=0; i<6; i++) {
-      const s = document.createElement('div');
-      s.className = 'sparkle';
-      s.style.left = (x + (Math.random()-0.5)*80) + 'px';
-      s.style.top = (y + (Math.random()-0.5)*80) + 'px';
-      document.body.appendChild(s);
-      setTimeout(() => s.remove(), 700);
+    function generateImage() {
+        const imgElement = document.getElementById('coloring-img');
+        const randomIndex = Math.floor(Math.random() * images.length);
+        const selectedImage = images[randomIndex];
+        
+        imgElement.src = repoBase + selectedImage;
+        imgElement.style.display = "block";
     }
-  }
 
-  function openGal() { document.getElementById('gal').classList.remove('hidden'); }
-  function clearArt() { document.querySelectorAll('#current-art .p').forEach(p => p.style.fill = "#fff"); }
-  function toggleSparkle() { spk = !spk; document.getElementById('sp-btn').innerText = spk ? "✨ Sparkle: On" : "✨ Sparkle: Off"; }
-
-  function getA() {
-    if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (aCtx.state === 'suspended') aCtx.resume();
-    return aCtx;
-  }
-
-  function playPop(f, d) {
-    const c = getA();
-    const o = c.createOscillator(); const g = c.createGain();
-    o.frequency.value = f; g.gain.setValueAtTime(0.1, c.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + d);
-    o.connect(g); g.connect(c.destination);
-    o.start(); o.stop(c.currentTime + d);
-  }
-
-  function playHiss() {
-    const c = getA();
-    const b = c.createBuffer(1, c.sampleRate * 0.1, c.sampleRate);
-    const d = b.getChannelData(0);
-    for (let i = 0; i < b.length; i++) d[i] = Math.random() * 2 - 1;
-    const s = c.createBufferSource(); s.buffer = b;
-    const g = c.createGain(); g.gain.setValueAtTime(0.05, c.currentTime);
-    g.gain.linearRampToValueAtTime(0, c.currentTime + 0.1);
-    s.connect(g); g.connect(c.destination);
-    s.start();
-  }
-
-  function toggleMusic() {
-    getA(); mus = !mus;
-    document.getElementById('mu-btn').innerText = mus ? "🎵 Music: On" : "🎵 Music: Off";
-    if (mus) loopMusic();
-  }
-
-  function loopMusic() {
-    if (!mus) return;
-    playPop([261, 329, 392, 523][Math.floor(Math.random()*4)], 1);
-    setTimeout(loopMusic, 800);
-  }
-
-  init();
+    function printImage() {
+        const img = document.getElementById('coloring-img');
+        if (img.src === "" || img.style.display === "none") {
+            alert("Please generate an image first!");
+            return;
+        }
+        const win = window.open('', '_blank');
+        win.document.write('<html><body style="text-align:center;"><img src="' + img.src + '" style="max-width:100%;"></body></html>');
+        win.document.close();
+        setTimeout(() => { win.print(); win.close(); }, 500);
+    }
 </script>
+
 </body>
 </html>
