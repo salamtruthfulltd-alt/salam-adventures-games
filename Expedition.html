@@ -4,68 +4,111 @@
     <meta charset="UTF-8">
     <title>Salam Adventures | Level 1</title>
     <style>
-        :root { --primary: #10b981; --accent: #f59e0b; }
-        body { font-family: 'Courier New', Courier, monospace; background: #f0fdf4; margin: 0; padding: 20px; }
-        
+        /* General Page Setup */
+        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 20px; }
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
-            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; box-sizing: border-box;
+            margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); box-sizing: border-box; 
         }
-
-        .controls { 
-            background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
-            max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
-        }
-        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-family: sans-serif; }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: #3b82f6; color: white; }
-
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; font-family: sans-serif; }
-        .logo-img { width: 80px; height: auto; }
-
-        /* The Handwriting Rows */
-        .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #fffcf0; }
         
+        /* The Handwriting System */
         .handwriting-row {
-            border-bottom: 2px solid #000; /* Solid Baseline */
+            border-bottom: 2px solid #000; /* SOLID BLACK BASELINE */
             height: 70px;
-            margin-bottom: 20px;
+            margin: 10px 0 25px 0;
             display: flex;
-            align-items: flex-end; 
+            align-items: flex-end; /* LOCKS LETTERS ONTO THE LINE */
             position: relative;
             padding-left: 10px;
         }
-
-        .mid-line {
-            position: absolute;
-            bottom: 35px;
-            left: 0;
-            width: 100%;
-            border-top: 1px dashed #cbd5e1;
+        
+        /* Dashed Helper Line */
+        .mid-line { 
+            position: absolute; 
+            bottom: 35px; 
+            left: 0; 
+            width: 100%; 
+            border-top: 1px dashed #cbd5e1; 
         }
 
-        /* Bold and Traceable must be identical size */
+        /* Font Styling */
         .word-bold, .word-trace {
+            font-family: 'Courier New', Courier, monospace;
             font-size: 55px;
             line-height: 0.8;
-            margin-right: 60px;
+            margin-right: 50px;
             white-space: nowrap;
         }
-
         .word-bold { font-weight: 900; color: #000; }
-
-        /* This creates the tracing effect: Light grey outlines of the letters */
+        
+        /* Traceable letters: Light grey and spaced */
         .word-trace { 
-            font-weight: 900;
-            color: white; /* Interior of letter is white */
-            -webkit-text-stroke: 1.5px #cbd5e1; /* The outline to trace */
+            font-weight: 900; 
+            color: #e2e8f0; 
             letter-spacing: 2px;
         }
 
-        .section-title { background: #ecfdf5; padding: 8px 12px; color: var(--primary); font-weight: 800; margin: 25px 0 12px; border-radius: 5px; text-transform: uppercase; font-size: 14px; border-left: 5px solid var(--primary); font-family: sans-serif; }
+        .header { display: flex; justify-content: space-between; border-bottom: 3px solid #10b981; padding-bottom: 10px; margin-bottom: 20px; }
+        .section-title { background: #ecfdf5; padding: 8px; color: #10b981; font-weight: 800; margin: 20px 0 10px; border-left: 5px solid #10b981; text-transform: uppercase; font-size: 14px; }
+        
+        /* Grid for Phonics */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; }
+        .box { width: 30px; height: 30px; border: 2px solid #000; display: inline-block; vertical-align: middle; }
 
-        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; font-family: sans-serif; }
-        .cvc-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: #fff; }
-        .box { width: 35px; height: 35px; border: 2px solid #000; display: inline-block; vertical-align: middle; }
+        @media print { .no-print { display: none; } .page { box-shadow: none; margin: 0; width: 100%; } }
+    </style>
+</head>
+<body>
 
-        @media print { .controls { display: none; } body
+<div class="no-print" style="text-align:center; margin-bottom: 20px;">
+    <button style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" onclick="window.print()">🖨️ Print Worksheet</button>
+    <p style="font-size: 12px; color: #666;">(To change the word, open this file in Notepad and replace "like" with your new word.)</p>
+</div>
+
+<div class="page">
+    <div class="header">
+        <div>
+            <h1 style="margin:0; color:#10b981;">Salam Adventures</h1>
+            <p style="margin:0; font-weight:bold; color:#64748b;">English Expedition: Level 1</p>
+        </div>
+        <div style="text-align:right; font-size:12px;">Name: ____________ Date: ____________</div>
+    </div>
+
+    <div style="border: 2px solid #f59e0b; border-radius: 10px; padding: 20px; background: #fffcf0;">
+        <span style="font-weight:900; color:#f59e0b; font-size:12px;">SIGHT WORD PRACTICE</span>
+        
+        <div class="handwriting-row">
+            <div class="mid-line"></div>
+            <span class="word-bold">like</span>
+            <span class="word-trace">like</span>
+            <span class="word-trace">like</span>
+            <span class="word-trace">like</span>
+        </div>
+
+        <div class="handwriting-row">
+            <div class="mid-line"></div>
+            <span class="word-bold">like</span>
+            <span class="word-trace">like</span>
+            <span class="word-trace">like</span>
+            <span class="word-trace">like</span>
+        </div>
+    </div>
+
+    <div class="section-title">Part 1: Phonics (Missing First Letter)</div>
+    <div class="grid">
+        <div class="card"><small>Furry pet</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">at</span></div>
+        <div class="card"><small>Yellow sun</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">un</span></div>
+        <div class="card"><small>Friendly dog</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">og</span></div>
+        <div class="card"><small>Hat on head</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">at</span></div>
+        <div class="card"><small>Ink pen</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">en</span></div>
+        <div class="card"><small>School bus</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">us</span></div>
+    </div>
+
+    <div class="section-title">Part 2: Sentence Tracing</div>
+    <div class="handwriting-row" style="height:50px;"><div class="mid-line" style="bottom:22px;"></div><span class="word-trace" style="font-size:28px;">the cat sat on the mat.</span></div>
+    <div class="handwriting-row" style="height:50px;"><div class="mid-line" style="bottom:22px;"></div><span class="word-trace" style="font-size:28px;">i can see the big sun.</span></div>
+</div>
+
+</body>
+</html>
