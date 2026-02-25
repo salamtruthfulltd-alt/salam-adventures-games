@@ -1,84 +1,279 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <style>
-        body { font-family: 'Comic Sans MS', cursive, sans-serif; text-align: center; background: transparent; padding: 10px; }
-        .container { 
-            max-width: 600px; margin: auto; border: 8px solid #ff69b4; 
-            padding: 25px; border-radius: 30px; background: white;
-            box-shadow: 15px 15px 0px #ffd1dc; 
-        }
-        #image-area { min-height: 300px; margin-top: 20px; border: 2px dashed #eee; border-radius: 15px; display: flex; justify-content: center; align-items: center; }
-        #coloring-img { max-width: 100%; height: auto; display: none; }
-        button { 
-            background-color: #4CAF50; color: white; padding: 15px 25px; 
-            border: none; border-radius: 15px; cursor: pointer; 
-            font-size: 18px; margin: 10px; box-shadow: 0 6px #2e7d32; 
-            font-weight: bold; transition: 0.1s;
-        }
-        button:active { box-shadow: 0 2px #2e7d32; transform: translateY(4px); }
-        #status-msg { color: #ff1493; font-weight: bold; font-size: 14px; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Colouring Page Generator | Salam Adventures</title>
+  <style>
+    :root { --maxw: 980px; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#fafafa; color:#111; }
+    header { padding: 18px 16px; background: #fff; border-bottom: 1px solid #eee; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; }
+    h1 { margin: 0; font-size: 20px; }
+    p { margin: 6px 0 0; color:#444; font-size: 14px; }
+
+    main { padding: 16px; }
+    .panel { background:#fff; border:1px solid #eee; border-radius: 14px; padding: 14px; box-shadow: 0 4px 18px rgba(0,0,0,.04); }
+    .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom: 12px; }
+    select, button, label { font-size:14px; }
+    select { padding: 10px; border-radius: 10px; border:1px solid #ddd; background:#fff; min-width: 260px; }
+    button { padding: 10px 12px; border-radius: 10px; border:1px solid #ddd; background:#111; color:#fff; cursor:pointer; }
+    button.secondary { background:#fff; color:#111; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    label { display:flex; gap:8px; align-items:center; padding: 10px 12px; border:1px solid #ddd; border-radius: 10px; background:#fff; }
+
+    .stage { display:grid; grid-template-columns: 1fr; gap: 12px; }
+    .canvasWrap { border: 1px dashed #ddd; border-radius: 14px; padding: 12px; background: #fcfcfc; overflow:auto; }
+    canvas { display:block; margin: 0 auto; background:#fff; }
+
+    .hint { font-size: 12px; color:#555; margin-top: 10px; }
+    .small { font-size: 12px; color:#666; }
+    footer { padding: 18px 16px; color:#777; font-size: 12px; }
+    a { color: inherit; }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <h2 style="color: #ff1493; margin: 0;">🎨 Colouring Expedition</h2>
-    <p id="status-msg">Click to find a picture!</p>
-    
-    <button onclick="generateImage()">✨ Get New Image</button>
-    <button style="background-color: #008CBA; box-shadow: 0 6px #005f7a;" onclick="printImage()">🖨️ Print</button>
-    
-    <div id="image-area">
-        <img id="coloring-img" src="" alt="Coloring Page">
+  <header>
+    <div class="wrap">
+      <h1>Colouring Page Generator</h1>
+      <p>Pick a page, generate, then print or download.</p>
     </div>
-</div>
+  </header>
+
+  <main class="wrap">
+    <div class="panel">
+      <div class="controls">
+        <select id="picker" aria-label="Choose a colouring page"></select>
+
+        <button id="btnLoad">Load</button>
+        <button id="btnRandom" class="secondary">Random</button>
+
+        <label title="If an image isn’t already line-art, this tries to convert it into a colouring outline.">
+          <input id="outlineMode" type="checkbox" />
+          Make outline
+        </label>
+
+        <button id="btnDownload" class="secondary" disabled>Download PNG</button>
+        <button id="btnPrint" class="secondary" disabled>Print</button>
+      </div>
+
+      <div class="stage">
+        <div class="canvasWrap">
+          <canvas id="c" width="800" height="1100" aria-label="Colouring preview canvas"></canvas>
+        </div>
+        <div class="hint">
+          Tip: For best printing, use “Print” (it removes extra UI and prints the page clean).
+          <div class="small" id="status"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="wrap">
+    © Salam Adventures
+  </footer>
 
 <script>
-    const images = [
-        "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
-        "dolly.png", "flower design.png", "fruit and veg.png", 
-        "garden.png", "horse.png", "house.png", "mobile phone.png", 
-        "moon (2).png", "planes.png", "prince and princess.png", 
-        "swans.png.jpg", "tresure chest.png"
-    ];
+  // 1) CHANGE THIS to match your repo:
+  // Your screenshot shows: github.com/salamtruthfulltd-alt/salam-adventures-games/tree/main/colouring%20images
+  const BASE_RAW =
+    "https://raw.githubusercontent.com/salamtruthfulltd-alt/salam-adventures-games/main/colouring%20images/";
 
-    function generateImage() {
-        const imgElement = document.getElementById('coloring-img');
-        const status = document.getElementById('status-msg');
-        const randomIndex = Math.floor(Math.random() * images.length);
-        const selected = images[randomIndex];
-        
-        // This is the structure GitHub uses for Raw files. 
-        // NOTE: If your folder is 'Colouring Images', change the text below to match exactly.
-        const folderName = "colouring images"; 
-        const url = `https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/${folderName}/${selected}`;
-        
-        imgElement.style.display = "none";
-        status.innerText = "🔍 Checking the gallery...";
-        
-        // We use encodeURI to safely handle the spaces in the folder/filename
-        imgElement.src = encodeURI(url);
+  // 2) Your current file list (from your screenshot)
+  const FILES = [
+    "butterfly.png.jpg",
+    "car.png.jpg",
+    "dinosaur.png",
+    "dog1.png",
+    "dolly.png",
+    "flower design.png",
+    "fruit and veg.png",
+    "garden.png",
+    "horse.png",
+    "house.png",
+    "mobile phone.png",
+    "moon (2).png",
+    "planes.png",
+    "prince and princess.png",
+    "swans.png.jpg",
+    "tresure chest.png"
+  ];
 
-        imgElement.onload = function() {
-            status.innerText = "✨ Success! Ready to color ✨";
-            imgElement.style.display = "block";
-        };
-        
-        imgElement.onerror = function() {
-             status.innerHTML = "❌ Fail! Make sure the folder name <br> matches GitHub exactly (Capitals matter!)";
-        };
+  const picker = document.getElementById("picker");
+  const btnLoad = document.getElementById("btnLoad");
+  const btnRandom = document.getElementById("btnRandom");
+  const btnDownload = document.getElementById("btnDownload");
+  const btnPrint = document.getElementById("btnPrint");
+  const outlineMode = document.getElementById("outlineMode");
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const statusEl = document.getElementById("status");
+
+  function niceName(file) {
+    return file.replace(/\.(png|jpg|jpeg)$/i, "").replace(/\.(png|jpg|jpeg)$/i, "");
+  }
+
+  function fileUrl(file) {
+    // Encode spaces + parentheses etc properly
+    return BASE_RAW + encodeURIComponent(file);
+  }
+
+  function setStatus(msg) { statusEl.textContent = msg || ""; }
+
+  // Populate dropdown
+  for (const f of FILES) {
+    const opt = document.createElement("option");
+    opt.value = f;
+    opt.textContent = niceName(f);
+    picker.appendChild(opt);
+  }
+
+  // Default selection
+  picker.value = FILES[0];
+
+  function clearCanvasToWhite() {
+    ctx.save();
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
+  }
+
+  async function loadAndDraw(file) {
+    btnDownload.disabled = true;
+    btnPrint.disabled = true;
+
+    const url = fileUrl(file);
+    setStatus("Loading: " + file + " …");
+
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // allows download
+    img.src = url;
+
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error("Could not load image. Check file name + BASE_RAW."));
+    });
+
+    // Set canvas to image size (keeps maximum print quality)
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+
+    clearCanvasToWhite();
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    if (outlineMode.checked) {
+      setStatus("Converting to outline …");
+      makeOutline();
     }
 
-    function printImage() {
-        const img = document.getElementById('coloring-img');
-        if (!img.src || img.style.display === "none") return;
-        const win = window.open('', '_blank');
-        win.document.write('<html><body style="margin:0; text-align:center;"><img src="' + img.src + '" style="max-width:95%;"></body></html>');
-        win.document.close();
-        setTimeout(() => { win.print(); win.close(); }, 800);
+    setStatus("Ready: " + niceName(file));
+    btnDownload.disabled = false;
+    btnPrint.disabled = false;
+  }
+
+  function makeOutline() {
+    // Simple edge/threshold outline:
+    // 1) grayscale
+    // 2) sobel edges
+    // 3) threshold -> black lines on white
+    const w = canvas.width, h = canvas.height;
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const d = imgData.data;
+
+    // grayscale buffer
+    const g = new Float32Array(w * h);
+    for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+      g[p] = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
     }
+
+    // sobel
+    const out = new Uint8ClampedArray(w * h);
+    const gxK = [-1,0,1,-2,0,2,-1,0,1];
+    const gyK = [-1,-2,-1,0,0,0,1,2,1];
+
+    // skip borders for simplicity
+    for (let y = 1; y < h - 1; y++) {
+      for (let x = 1; x < w - 1; x++) {
+        let gx = 0, gy = 0;
+        let k = 0;
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const v = g[(y + ky) * w + (x + kx)];
+            gx += v * gxK[k];
+            gy += v * gyK[k];
+            k++;
+          }
+        }
+        const mag = Math.sqrt(gx*gx + gy*gy);
+        out[y * w + x] = mag;
+      }
+    }
+
+    // threshold (tweakable)
+    const TH = 55; // higher = fewer lines
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const p = y*w + x;
+        const edge = out[p] > TH ? 0 : 255; // black edges, white elsewhere
+        const i = p * 4;
+        d[i] = d[i+1] = d[i+2] = edge;
+        d[i+3] = 255;
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  btnLoad.addEventListener("click", () => loadAndDraw(picker.value));
+
+  btnRandom.addEventListener("click", () => {
+    const r = FILES[Math.floor(Math.random() * FILES.length)];
+    picker.value = r;
+    loadAndDraw(r);
+  });
+
+  outlineMode.addEventListener("change", () => {
+    // reload current selection with/without outline
+    loadAndDraw(picker.value);
+  });
+
+  btnDownload.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.download = `colouring-${picker.value.replace(/\s+/g, "-")}.png`;
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  });
+
+  btnPrint.addEventListener("click", () => {
+    const dataUrl = canvas.toDataURL("image/png");
+    const w = window.open("", "_blank");
+    w.document.write(`
+      <!doctype html>
+      <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Print Colouring Page</title>
+        <style>
+          @page { margin: 0.5in; }
+          body { margin: 0; font-family: system-ui, Arial; }
+          img { width: 100%; height: auto; }
+        </style>
+      </head>
+      <body>
+        <img src="${dataUrl}" alt="Colouring Page"/>
+        <script>window.onload = () => { window.print(); }<\/script>
+      </body>
+      </html>
+    `);
+    w.document.close();
+  });
+
+  // Auto-load first page
+  loadAndDraw(picker.value).catch(err => {
+    console.error(err);
+    setStatus("Error: " + err.message);
+  });
 </script>
-
 </body>
 </html>
