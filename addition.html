@@ -3,60 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam's Number Worksheet Generator</title>
+    <title>Salam Adventures | Math Worksheet Generator</title>
     <style>
-        :root { --primary: #ff4fa3; --secondary: #38bdf8; --ink: #111827; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f9fafb; margin: 0; padding: 20px; color: var(--ink); }
+        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
         
-        /* Dashboard Controls - Hidden when printing */
         .controls { 
-            background: white; padding: 20px; border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; 
-            margin: 0 auto 30px; display: flex; gap: 15px; flex-wrap: wrap; 
-            align-items: center; justify-content: center;
+            background: white; padding: 20px; border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 900px; 
+            margin: 0 auto 30px; display: flex; gap: 20px; flex-wrap: wrap; 
+            align-items: center; justify-content: center; border: 2px solid var(--primary);
         }
         
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
         button { 
-            padding: 10px 20px; border-radius: 10px; border: none; 
-            cursor: pointer; font-weight: bold; transition: 0.2s; 
+            padding: 12px 24px; border-radius: 12px; border: none; 
+            cursor: pointer; font-weight: 1000; transition: 0.2s; text-transform: uppercase;
         }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: var(--secondary); color: white; }
-        button:hover { opacity: 0.8; transform: translateY(-2px); }
+        .btn-gen { background: var(--primary); color: white; box-shadow: 0 4px 0 #059669; }
+        .btn-print { background: var(--secondary); color: white; box-shadow: 0 4px 0 #0284c7; }
 
-        /* Worksheet Styles */
         .worksheet { 
             background: white; width: 210mm; min-height: 297mm; 
-            padding: 20mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
-            position: relative; border: 2px solid #eee;
+            padding: 15mm 20mm; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;
+            position: relative;
         }
-        .header { grid-column: span 3; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .header h1 { margin: 0; color: var(--primary); }
-        .name-line { border-bottom: 1px solid #000; width: 200px; height: 20px; }
+        
+        /* PNG LOGO: Optimized for transparency */
+        .header { 
+            grid-column: span 3; border-bottom: 4px dashed var(--primary); 
+            padding-bottom: 15px; margin-bottom: 20px; display: flex; 
+            justify-content: space-between; align-items: center; 
+        }
+        .logo-area { display: flex; align-items: center; gap: 20px; }
+        
+        .logo-img {
+            width: 110px;
+            height: auto;
+            /* This makes the transparent PNG look great on white */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        
+        .header h1 { margin: 0; color: var(--primary); font-size: 32px; letter-spacing: -1px; }
+        .info-box { font-weight: bold; font-size: 14px; text-align: right; }
+        .name-line { border-bottom: 2px solid #000; width: 150px; display: inline-block; margin-left: 5px; margin-bottom: 8px; }
 
-        .problem { font-size: 24px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 10px; }
-        .answer-box { width: 60px; height: 40px; border: 2px solid #ccc; border-radius: 5px; }
+        .problem { 
+            font-size: 28px; font-weight: 600; display: flex; 
+            align-items: center; justify-content: flex-end; gap: 12px; 
+            padding: 15px 5px; border-bottom: 1px solid #f3f4f6;
+        }
+        .answer-box { width: 70px; height: 50px; border: 2px solid #e5e7eb; border-radius: 10px; background: #fff; }
+
+        .reward-section {
+            grid-column: span 3; text-align: center; margin-top: 30px;
+            padding: 20px; border: 3px dashed var(--accent); border-radius: 20px; background: #fffcf0;
+        }
 
         @media print {
-            body { background: white; padding: 0; }
             .controls { display: none; }
             .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; }
+            body { background: white; }
         }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <div>
-            <label>Max Number:</label>
+        <div class="control-group">
+            <label>Difficulty</label>
             <select id="maxNum">
-                <option value="10">10 (Easy)</option>
-                <option value="20" selected>20 (Medium)</option>
-                <option value="100">100 (Hard)</option>
+                <option value="10">1-10 (Beginner)</option>
+                <option value="20" selected>1-20 (Explorer)</option>
+                <option value="100">1-100 (Expert)</option>
             </select>
         </div>
-        <button class="btn-gen" onclick="generate()">✨ Generate New</button>
+        <button class="btn-gen" onclick="generate()">✨ Refresh Problems</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
     </div>
 
@@ -67,41 +90,39 @@
         function generate() {
             const ws = document.getElementById('ws');
             const max = parseInt(document.getElementById('maxNum').value);
+            
             ws.innerHTML = `
                 <div class="header">
-                    <div>
-                        <h1>Salam's Math Adventure</h1>
-                        <span>Solve the problems below! 🦎✨</span>
+                    <div class="logo-area">
+                        <img src="./images/logo.png" class="logo-img" alt="Salam Adventures">
+                        <div>
+                            <h1>Salam Adventures</h1>
+                            <p style="margin:2px 0; color:#6b7280; font-weight:600;">Math Expedition 🦎</p>
+                        </div>
                     </div>
-                    <div>Name: <div class="name-line"></div></div>
+                    <div class="info-box">
+                        <div>Name: <span class="name-line"></span></div>
+                        <div>Date: <span class="name-line"></span></div>
+                    </div>
                 </div>
             `;
 
-            for (let i = 0; i < 30; i++) {
-                const isAddition = Math.random() > 0.5;
-                let a, b, symbol;
-
-                if (isAddition) {
-                    a = Math.floor(Math.random() * max);
-                    b = Math.floor(Math.random() * (max - a));
-                    symbol = "+";
-                } else {
-                    a = Math.floor(Math.random() * max) + 1;
-                    b = Math.floor(Math.random() * a);
-                    symbol = "-";
-                }
-
+            for (let i = 0; i < 21; i++) {
+                let a = Math.floor(Math.random() * (max - 1)) + 1;
+                let b = Math.floor(Math.random() * (max - a)) + 1;
                 const div = document.createElement('div');
                 div.className = 'problem';
-                div.innerHTML = `
-                    <span>${a} ${symbol} ${b} = </span>
-                    <div class="answer-box"></div>
-                `;
+                div.innerHTML = `<span>${a} + ${b} = </span><div class="answer-box"></div>`;
                 ws.appendChild(div);
             }
-        }
 
-        // Run on load
+            ws.innerHTML += `
+                <div class="reward-section">
+                    <span style="font-weight:bold; color: #b45309; font-size: 18px;">🌟 You did it! Color your reward star:</span>
+                    <span style="font-size: 40px; color: #e5e7eb; margin-left:15px; vertical-align: middle;">★</span>
+                </div>
+            `;
+        }
         generate();
     </script>
 </body>
