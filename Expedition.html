@@ -2,70 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Salam Adventures | Phonics Level 1</title>
+    <title>Salam Adventures | Level 1</title>
     <style>
-        :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
-        body { font-family: 'Courier New', Courier, monospace; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
+        :root { --primary: #10b981; --accent: #f59e0b; }
+        body { font-family: 'Courier New', Courier, monospace; background: #f0fdf4; margin: 0; padding: 20px; }
         
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
-            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); box-sizing: border-box;
-            position: relative;
+            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; box-sizing: border-box;
         }
 
         .controls { 
             background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
             max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
         }
-        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-family: sans-serif; }
         .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: var(--secondary); color: white; }
+        .btn-print { background: #3b82f6; color: white; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; font-family: sans-serif; }
         .logo-img { width: 80px; height: auto; }
 
-        /* Handwriting Logic */
+        /* The Handwriting Rows */
         .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #fffcf0; }
         
         .handwriting-row {
-            border-bottom: 2px solid #000; /* Solid baseline */
+            border-bottom: 2px solid #000; /* Solid Baseline */
             height: 70px;
-            margin: 5px 0 15px 0;
+            margin-bottom: 20px;
             display: flex;
             align-items: flex-end; 
-            padding-left: 10px;
             position: relative;
+            padding-left: 10px;
         }
 
         .mid-line {
             position: absolute;
-            bottom: 34px; /* Perfectly centered for Courier font */
+            bottom: 35px;
             left: 0;
             width: 100%;
-            border-top: 1px dashed #94a3b8;
-            z-index: 1;
+            border-top: 1px dashed #cbd5e1;
         }
 
-        /* Bold Word - Matching Size to SVG */
-        .word-bold { 
-            font-size: 55px; 
-            font-weight: 900; 
-            color: #000; 
-            margin-right: 50px; 
-            line-height: 0.8; 
-            z-index: 2;
-            display: inline-block;
-        }
-
-        /* SVG Dotted Letter Logic */
-        .dotted-svg { height: 60px; margin-right: 50px; z-index: 2; overflow: visible; display: inline-block;}
-        .dotted-text {
-            fill: none;
-            stroke: #cbd5e1; 
-            stroke-width: 2.5;
-            stroke-dasharray: 2, 4; 
+        /* Bold and Traceable must be identical size */
+        .word-bold, .word-trace {
             font-size: 55px;
-            font-weight: bold;
+            line-height: 0.8;
+            margin-right: 60px;
+            white-space: nowrap;
         }
 
-        .section-title { background: #ecfdf5; padding
+        .word-bold { font-weight: 900; color: #000; }
+
+        /* This creates the tracing effect: Light grey outlines of the letters */
+        .word-trace { 
+            font-weight: 900;
+            color: white; /* Interior of letter is white */
+            -webkit-text-stroke: 1.5px #cbd5e1; /* The outline to trace */
+            letter-spacing: 2px;
+        }
+
+        .section-title { background: #ecfdf5; padding: 8px 12px; color: var(--primary); font-weight: 800; margin: 25px 0 12px; border-radius: 5px; text-transform: uppercase; font-size: 14px; border-left: 5px solid var(--primary); font-family: sans-serif; }
+
+        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; font-family: sans-serif; }
+        .cvc-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: #fff; }
+        .box { width: 35px; height: 35px; border: 2px solid #000; display: inline-block; vertical-align: middle; }
+
+        @media print { .controls { display: none; } body
