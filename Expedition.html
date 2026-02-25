@@ -2,56 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | Literacy Expedition</title>
+    <title>Salam Adventures | English Master</title>
     <style>
-        :root { --primary: #34d399; --secondary: #38bdf8; --ink: #111827; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
+        :root { --primary: #10b981; --secondary: #3b82f6; --ink: #1f2937; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
         
+        /* Interactive Controls */
         .controls { 
-            background: white; padding: 10px; border-radius: 12px; border: 1px solid var(--primary);
-            max-width: 800px; margin: 0 auto 15px; display: flex; gap: 10px; justify-content: center;
+            background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
+            max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-print { background: var(--secondary); color: white; }
+        button:hover { opacity: 0.8; transform: translateY(-1px); }
+
+        /* A4 Page Styling */
+        .page { 
+            background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
+            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative;
         }
         
-        button { padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--primary); color: white; }
-
-        .worksheet { 
-            background: white; width: 210mm; min-height: 297mm; padding: 15mm; margin: 0 auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .logo-img { width: 80px; height: auto; }
         
-        .header { border-bottom: 2px dashed var(--primary); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .logo-img { width: 75px; height: auto; }
-        
-        .section-title { background: #f0fdf4; padding: 8px; color: var(--primary); font-weight: bold; margin: 20px 0 10px; border-left: 5px solid var(--primary); font-size: 16px; }
+        .section-title { background: #ecfdf5; padding: 8px 15px; color: var(--primary); font-weight: 800; margin: 20px 0 10px; border-radius: 5px; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
 
-        .scramble-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .scramble-item { border-bottom: 1px solid #eee; padding: 10px; font-size: 18px; display: flex; justify-content: space-between; }
-        
-        .odd-one-row { padding: 10px; border: 1px solid #f1f5f9; border-radius: 8px; margin-bottom: 10px; font-size: 16px; letter-spacing: 1px; }
-        .blank-line { border-bottom: 1px solid #000; width: 200px; display: inline-block; margin-left: 10px; }
+        /* Activity 1: Word Search */
+        .ws-grid { display: grid; grid-template-columns: repeat(8, 35px); gap: 5px; justify-content: center; margin: 15px 0; font-family: monospace; }
+        .ws-cell { width: 35px; height: 35px; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; text-transform: uppercase; }
 
-        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; } }
+        /* Activity 2: Scramble */
+        .scramble-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .scramble-box { border-bottom: 1px dashed #cbd5e1; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .line { border-bottom: 1px solid #000; width: 120px; height: 20px; }
+
+        /* Activity 3: Sentence Fixer */
+        .fix-box { line-height: 2.5; font-size: 16px; padding-left: 10px; }
+        .full-line { border-bottom: 1px solid #000; width: 100%; height: 30px; display: block; margin-top: 5px; }
+
+        @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
     </style>
 </head>
 <body>
 
 <div class="controls">
-    <button onclick="generate()">✨ New English Expedition</button>
-    <button style="background:var(--secondary)" onclick="window.print()">🖨️ Print Worksheet</button>
+    <button class="btn-gen" onclick="generate()">✨ Generate New Lesson</button>
+    <button class="btn-print" onclick="window.print()">🖨️ Print to PDF</button>
 </div>
 
-<div class="worksheet" id="ws"></div>
+<div class="page" id="main-page">
+    </div>
 
 <script>
-    const scrambles = [
-        { scrambled: "A T C", real: "CAT" }, { scrambled: "G O D", real: "DOG" },
-        { scrambled: "N U S", real: "SUN" }, { scrambled: "T A H", real: "HAT" },
-        { scrambled: "N E P", real: "PEN" }, { scrambled: "P U C", real: "CUP" },
-        { scrambled: "B O X", real: "BOX" }, { scrambled: "G U B", real: "BUG" }
-    ];
+    const wordBank = ["SUN", "CAT", "DOG", "HAT", "PEN", "BOX", "BED", "BAT"];
 
-    const rhymeGroups = [
-        "Cat, Bat, Mat, <span style='color:#34d399'>Dog</span>",
-        "Sun, Run, Fun, <span style='color:#34d399'>Bed</span>",
-        "Pig, Dig
+    function generate() {
+        const page = document.getElementById('main-page');
+        const shuffledWords = [...wordBank].sort(() => 0.5 - Math.random());
+        
+        // Generate Header
+        let html = `
+            <div class="header">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                    <div>
+                        <h1 style="margin:0; color:var(--primary); font-size:26px;">Salam Adventures</h1>
+                        <p style="margin:0; font-size:14px; font-weight:bold; color:#64748b;">Literacy Expedition: Level 1 🦎</p>
+                    </div>
+                </div>
+                <div style="text-align:right; font-size:12px;">
+                    <b>NAME:</b> ____________________ <br>
+                    <b>DATE:</b> ____________________
+                </div>
+            </div>
+
+            <div class="section-title">Part 1: The Word Search</div>
+            <p style="font-size:13px; margin:5px 0;">Find these words: <b>${shuffledWords.slice(0,4).join(", ")}</b></p>
+            <div class="ws-grid">
+                ${generateGrid(shuffledWords.slice(0,4))}
+            </div>
+
+            <div class="section-title">Part 2: Word Scramble</div>
+            <p style="font-size:13px; margin:5px 0;">Unscramble the letters to find the hidden word!</p>
+            <div class="scramble-container">
+                ${shuffledWords.slice(4,8).map(w => `
+                    <div class="scramble-box">
+                        <span style="letter-spacing:5px; font-weight:bold;">${scrambleWord(w)}</span>
+                        <div class="line"></div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="section-title">Part 3: Sentence Explorer</div>
+            <p style="font-size:13px; margin:5px 0;">Rewrite the sentences correctly (Capitals & Full Stops).</p>
+            <div class="fix-box">
+                1. the cat is on the mat <span class="full-line"></span>
+                2. i can see the big sun <span class="full-line"></span>
+                3. my red pen is here <span class="full-line"></span>
+            </div>
+
+            <div class="section-title">Part 4: Adventure Story</div>
+            <p style="font-size:13px; margin:5px 0;">Write one sentence about a lizard in the sun!</p>
+            <div style="border: 1px solid #e5e7eb; height: 100px; border-radius: 8px; margin-top:10px; padding:10px; color:#cbd5e1;">Start writing here...</div>
+
+            <div style="position:absolute; bottom:15mm; left:15mm; right:15mm; text-align:center; font-size:11px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
+                © Salam Adventures Learning Material • Master Your Literacy!
+            </div>
+        `;
+        page.innerHTML = html;
+    }
+
+    function scrambleWord(word) {
+        return word.split('').sort(() => 0.5 - Math.random()).join(' ');
+    }
+
+    function generateGrid(words) {
+        let size = 8;
+        let grid = Array(size).fill().map(() => Array(size).fill(''));
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        // Simple placement for demo (horizontal)
+        words.forEach((word, idx) => {
+            for(let i=0; i<word.length; i++) {
+                grid[idx][i] = word[i];
+            }
+        });
+
+        // Fill remaining
+        let gridHtml = "";
+        for(let r=0; r<size; r++) {
+            for(let c=0; c<size; c++) {
+                let char = grid[r][c] || letters[Math.floor(Math.random()*26)];
+                gridHtml += `<div class="ws-cell">${char}</div>`;
+            }
+        }
+        return gridHtml;
+    }
+
+    generate();
+</script>
+</body>
+</html>
