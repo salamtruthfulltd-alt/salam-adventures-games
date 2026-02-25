@@ -1,136 +1,74 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Jigsaw Puzzle</title>
-  <style>
-    :root{
-      --board-max: 720px;
-      --gap: 8px;
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(0,0,0,.12);
-    }
-
-    body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: #f6f7fb;
-      margin: 0;
-      padding: 24px;
-      display: grid;
-      place-items: center;
-      color: #111;
-    }
-
-    .wrap{
-      width: min(var(--board-max), 92vw);
-      display: grid;
-      gap: 14px;
-    }
-
-    .controls{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
-
-    button{
-      border: 0;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: #111;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button.secondary{
-      background:#fff;
-      color:#111;
-      box-shadow: inset 0 0 0 2px #111;
-    }
-
-    .status{
-      font-size: 14px;
-      opacity: .85;
-    }
-
-    /* BOARD: fixed ratio to prevent warping */
-    .board{
-      width: 100%;
-      aspect-ratio: 3 / 2; /* default for 3x2; JS will adjust for 2x2 */
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: var(--gap);
-      box-sizing: border-box;
-
-      display: grid;
-      gap: var(--gap);
-      user-select: none;
-      touch-action: none;
-    }
-
-    /* Each tile is a fixed-size grid item */
-    .tile{
-      border-radius: var(--radius);
-      box-shadow: 0 6px 14px rgba(0,0,0,.10);
-      background-repeat: no-repeat;
-      background-size: 100% 100%; /* important: no stretching beyond its own box */
-      cursor: grab;
-      position: relative;
-
-      /* CRITICAL: prevent any flex/grid shrink oddities */
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      transform: translateZ(0);
-    }
-
-    .tile:active{ cursor: grabbing; }
-
-    /* while dragging */
-    .dragging{
-      opacity: .92;
-      outline: 3px solid rgba(17,17,17,.20);
-      z-index: 9999;
-    }
-
-    .tile::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius: var(--radius);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
-      pointer-events:none;
-    }
-
-    .good{
-      color: #0a7a2f;
-      font-weight: 700;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="controls">
-      <div class="btnrow">
-        <button id="mode3x2">3×2</button>
-        <button id="mode2x2" class="secondary">2×2</button>
-        <button id="shuffle" class="secondary">Shuffle</button>
-      </div>
-      <div class="status" id="status">Drag tiles to swap.</div>
+<div class="wrap">
+  <div class="controls">
+    <div class="btnrow">
+      <button id="mode3x2">3×2</button>
+      <button id="mode2x2" class="secondary">2×2</button>
+      <button id="shuffle" class="secondary">Shuffle</button>
     </div>
-
-    <div id="board" class="board" aria-label="Puzzle board"></div>
+    <div class="status" id="status">Loading puzzle…</div>
   </div>
+
+  <div id="board" class="board" aria-label="Puzzle board"></div>
+</div>
+
+<style>
+  :root{ --gap:8px; --radius:14px; --shadow: 0 10px 30px rgba(0,0,0,.12); }
+
+  .wrap{ width: min(720px, 92vw); display:grid; gap:14px; }
+  .controls{ display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; }
+  .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
+  button{ border:0; padding:10px 14px; border-radius:999px; background:#111; color:#fff; cursor:pointer; font-weight:700; }
+  button.secondary{ background:#fff; color:#111; box-shadow: inset 0 0 0 2px #111; }
+  .status{ font-size:14px; opacity:.9; }
+
+  .board{
+    width:100%;
+    aspect-ratio: 3 / 2;
+    background:#fff;
+    border-radius:18px;
+    box-shadow: var(--shadow);
+    padding: var(--gap);
+    box-sizing:border-box;
+    display:grid;
+    gap: var(--gap);
+    user-select:none;
+    touch-action:none;
+    border: 2px solid rgba(0,0,0,.08);
+    min-height: 240px; /* so it can’t collapse */
+  }
+
+  .tile{
+    border-radius: var(--radius);
+    border: 2px solid rgba(0,0,0,.15);       /* ✅ makes tiles visible */
+    background-color: #e9ecf5;               /* ✅ visible even without image */
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    background-repeat:no-repeat;
+    cursor: grab;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    position:relative;
+  }
+
+  .tile span{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+    font-size: clamp(22px, 4vw, 40px);
+    color: rgba(0,0,0,.35);
+    text-shadow: 0 1px 0 rgba(255,255,255,.6);
+    pointer-events:none;
+  }
+
+  .dragging{ opacity:.92; outline: 3px solid rgba(17,17,17,.20); z-index:9999; }
+</style>
 
 <script>
 (() => {
-  // ✅ Put your image path here
+  // ✅ IMPORTANT: set this to your real image path
+  // If your image is in /images/ folder, use "images/puzzle.jpg"
   const IMAGE_URL = "puzzle-image.jpg";
 
   const board = document.getElementById("board");
@@ -139,16 +77,26 @@
   const btn2x2 = document.getElementById("mode2x2");
   const btnShuffle = document.getElementById("shuffle");
 
-  let cols = 3, rows = 2;          // default
-  let order = [];                  // current order by tile id
-  let solved = [];                 // solved order [0..n-1]
-  let draggingIndex = null;        // index in board children being dragged
+  let cols = 3, rows = 2;
+  let order = [];
+  let solved = [];
+  let draggingIndex = null;
+  let imageOk = false;
 
-  function setMode(c, r){
+  function preloadImage(url){
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  function setMode(c,r){
     cols = c; rows = r;
     board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-    board.style.aspectRatio = `${cols} / ${rows}`; // keeps pieces correct
+    board.style.aspectRatio = `${cols} / ${rows}`;
 
     btn3x2.classList.toggle("secondary", !(cols===3 && rows===2));
     btn2x2.classList.toggle("secondary", !(cols===2 && rows===2));
@@ -162,24 +110,32 @@
     const n = cols * rows;
     solved = Array.from({length:n}, (_,i)=>i);
     order = solved.slice();
-
     board.innerHTML = "";
+
     for(let i=0;i<n;i++){
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.draggable = true;
       tile.dataset.id = String(i);
 
-      // correct crop for each tile
-      const x = i % cols;
-      const y = Math.floor(i / cols);
-      tile.style.backgroundImage = `url('${IMAGE_URL}')`;
-      tile.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
-      tile.style.backgroundPosition = `${(x * 100)/(cols-1 || 1)}% ${(y * 100)/(rows-1 || 1)}%`;
+      // visible label so it's never "empty"
+      const label = document.createElement("span");
+      label.textContent = i + 1;
+      tile.appendChild(label);
+
+      if(imageOk){
+        const x = i % cols;
+        const y = Math.floor(i / cols);
+        tile.style.backgroundImage = `url('${IMAGE_URL}')`;
+        tile.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
+        tile.style.backgroundPosition = `${(x * 100)/(cols-1 || 1)}% ${(y * 100)/(rows-1 || 1)}%`;
+      }else{
+        tile.style.backgroundImage = "none";
+      }
 
       tile.addEventListener("dragstart", onDragStart);
       tile.addEventListener("dragend", onDragEnd);
-      tile.addEventListener("dragover", onDragOver);
+      tile.addEventListener("dragover", e => { e.preventDefault(); });
       tile.addEventListener("drop", onDrop);
 
       board.appendChild(tile);
@@ -187,7 +143,6 @@
   }
 
   function shuffleTiles(){
-    // Fisher-Yates shuffle
     for(let i=order.length-1; i>0; i--){
       const j = Math.floor(Math.random() * (i+1));
       [order[i], order[j]] = [order[j], order[i]];
@@ -195,12 +150,9 @@
   }
 
   function render(){
-    // reorder DOM children to match `order`
     const tilesById = new Map();
     [...board.children].forEach(t => tilesById.set(Number(t.dataset.id), t));
-
     order.forEach(id => board.appendChild(tilesById.get(id)));
-
     checkSolved();
   }
 
@@ -208,65 +160,35 @@
     const tile = e.currentTarget;
     draggingIndex = [...board.children].indexOf(tile);
 
-    // CRITICAL: keep dragged element size fixed (prevents shape change)
+    // lock size so it doesn't change shape
     const rect = tile.getBoundingClientRect();
     tile.style.width = rect.width + "px";
     tile.style.height = rect.height + "px";
 
     tile.classList.add("dragging");
-
-    // make drag image match the tile (prevents browser default tiny ghost)
-    const dragImg = tile.cloneNode(true);
-    dragImg.style.position = "absolute";
-    dragImg.style.top = "-1000px";
-    dragImg.style.left = "-1000px";
-    dragImg.style.width = rect.width + "px";
-    dragImg.style.height = rect.height + "px";
-    document.body.appendChild(dragImg);
-    e.dataTransfer.setDragImage(dragImg, rect.width/2, rect.height/2);
-
-    // cleanup drag image later
-    setTimeout(() => dragImg.remove(), 0);
-
     e.dataTransfer.effectAllowed = "move";
   }
 
   function onDragEnd(e){
     const tile = e.currentTarget;
     tile.classList.remove("dragging");
-
-    // release the forced px sizing back to grid sizing
     tile.style.width = "";
     tile.style.height = "";
-
     draggingIndex = null;
-  }
-
-  function onDragOver(e){
-    e.preventDefault(); // allow drop
-    e.dataTransfer.dropEffect = "move";
   }
 
   function onDrop(e){
     e.preventDefault();
-    if (draggingIndex === null) return;
-
-    const dropTile = e.currentTarget;
-    const dropIndex = [...board.children].indexOf(dropTile);
-    if (dropIndex === draggingIndex) return;
-
-    // swap in `order`
+    if(draggingIndex === null) return;
+    const dropIndex = [...board.children].indexOf(e.currentTarget);
+    if(dropIndex === draggingIndex) return;
     [order[draggingIndex], order[dropIndex]] = [order[dropIndex], order[draggingIndex]];
     render();
   }
 
   function checkSolved(){
     const ok = order.every((id, idx) => id === solved[idx]);
-    if(ok){
-      statusEl.innerHTML = `✅ <span class="good">Solved!</span> Nice one.`;
-    }else{
-      statusEl.textContent = "Drag tiles to swap.";
-    }
+    statusEl.textContent = ok ? "✅ Solved!" : "Drag tiles to swap.";
   }
 
   // buttons
@@ -274,9 +196,13 @@
   btn2x2.addEventListener("click", () => setMode(2,2));
   btnShuffle.addEventListener("click", () => { shuffleTiles(); render(); });
 
-  // init
-  setMode(3,2);
+  // init with image check
+  preloadImage(IMAGE_URL).then(ok => {
+    imageOk = ok;
+    statusEl.textContent = ok
+      ? "Drag tiles to swap."
+      : "Tiles loaded — but your image path is wrong (showing numbered tiles). Fix IMAGE_URL.";
+    setMode(3,2);
+  });
 })();
 </script>
-</body>
-</html>
