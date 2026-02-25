@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Salam Adventures | Mixed Literacy Master</title>
+    <title>Salam Adventures | Phonics Level 1</title>
     <style>
         :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
@@ -16,29 +16,23 @@
         .btn-print { background: var(--secondary); color: white; }
 
         .page { 
-            background: white; width: 210mm; min-height: 297mm; padding: 12mm; 
+            background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
             margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative;
-            box-sizing: border-box;
         }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .logo-img { width: 80px; height: auto; }
         
-        /* Sight Word Feature */
-        .sight-word-box { 
-            margin: 15px 0; padding: 10px; border: 2px solid var(--accent); border-radius: 10px;
-            display: flex; align-items: center; justify-content: space-between; background: #fffcf0;
-        }
+        .sight-word-area { border: 2px dashed var(--accent); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; background: #fffcf0; }
 
-        .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 15px 0 8px; border-radius: 5px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; border-left: 4px solid var(--primary); }
+        .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 20px 0 10px; border-radius: 5px; text-transform: uppercase; font-size: 13px; border-left: 4px solid var(--primary); }
 
-        .flex-row { display: flex; justify-content: space-between; gap: 20px; }
-        .column { flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
-        
-        .word-tag { display: inline-block; padding: 4px 10px; background: #f3f4f6; border-radius: 15px; margin: 3px; font-size: 13px; font-weight: 600; }
-        .blank-line { border-bottom: 1px solid #000; width: 100%; height: 25px; display: block; margin: 5px 0; }
-        
-        .abc-item { margin-bottom: 8px; font-size: 14px; }
+        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .cvc-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; text-align: center; }
+        .box { width: 35px; height: 35px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
+
+        .tracing-space { font-size: 24px; color: #e2e8f0; border-bottom: 1px dashed #cbd5e1; display: block; margin: 15px 0; letter-spacing: 2px; }
+        .blank-line { border-bottom: 1px solid #000; width: 150px; display: inline-block; }
 
         @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
     </style>
@@ -46,97 +40,85 @@
 <body>
 
 <div class="controls">
-    <button class="btn-gen" onclick="generate()">✨ Generate New Expedition</button>
+    <button class="btn-gen" onclick="generate()">✨ Generate New Worksheet</button>
     <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
 </div>
 
-<div class="page" id="main-page"></div>
+<div class="page" id="main-ws"></div>
 
 <script>
-    const sightWords = ["THE", "SAID", "WENT", "THEY", "WITH", "HAVE", "LIKE", "COME"];
-    const nouns = ["Apple", "Forest", "Friend", "Robot", "Table", "Ocean"];
-    const verbs = ["Jump", "Sing", "Dance", "Climb", "Write", "Smile"];
-    const opposites = [
-        {a: "Hot", b: "Cold"}, {a: "Happy", b: "Sad"}, 
-        {a: "Fast", b: "Slow"}, {a: "Big", b: "Small"}
+    const cvcWords = [
+        {h: "A furry pet", w: "CAT", hint: "AT"}, {h: "Hot yellow ball", w: "SUN", hint: "UN"},
+        {h: "A friendly pet", w: "DOG", hint: "OG"}, {h: "Wear on head", w: "HAT", hint: "AT"},
+        {h: "Used to write", w: "PEN", hint: "EN"}, {h: "To fly in sky", w: "JET", hint: "ET"},
+        {h: "A big car", w: "BUS", hint: "US"}, {h: "Where we sleep", w: "BED", hint: "ED"}
     ];
-    const abcWords = ["Zebra", "Apple", "Mango", "Bear", "Kite", "Frog", "Yellow", "Queen"];
+    const sights = ["THE", "AND", "YOU", "FOR", "WAS", "HIS"];
 
     function generate() {
-        const page = document.getElementById('main-page');
-        
-        // Randomization Logic
-        const sightWord = sightWords[Math.floor(Math.random() * sightWords.length)];
-        const mixedGrammar = [...nouns.slice(0,3), ...verbs.slice(0,3)].sort(() => 0.5 - Math.random());
-        const shuffledABC = [...abcWords].sort(() => 0.5 - Math.random()).slice(0, 5);
-        const shuffledOpposites = [...opposites].sort(() => 0.5 - Math.random());
+        const ws = document.getElementById('main-ws');
+        const sw = sights[Math.floor(Math.random() * sights.length)];
+        const shuffled = [...cvcWords].sort(() => 0.5 - Math.random()).slice(0, 6);
 
-        page.innerHTML = `
+        ws.innerHTML = `
             <div class="header">
-                <div style="display:flex; align-items:center; gap:15px;">
+                <div style="display:flex; align-items:center; gap:12px;">
                     <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
                     <div>
-                        <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
-                        <p style="margin:0; font-size:13px; font-weight:bold; color:#64748b;">Mixed Literacy Expedition: Level 2</p>
+                        <h1 style="margin:0; color:var(--primary); font-size:22px;">Salam Adventures</h1>
+                        <p style="margin:0; font-size:12px; font-weight:bold; color:#64748b;">English Expedition: Level 1</p>
                     </div>
                 </div>
-                <div style="text-align:right; font-size:11px;">
-                    <b>NAME:</b> ____________________ <br>
-                    <b>DATE:</b> ____________________
-                </div>
+                <div style="text-align:right; font-size:11px;">Name: <span class="blank-line"></span><br>Date: <span class="blank-line" style="margin-top:5px;"></span></div>
             </div>
 
-            <div class="sight-word-box">
+            <div class="sight-word-area">
                 <div>
-                    <span style="font-size: 12px; font-weight: bold; color: var(--accent);">SIGHT WORD OF THE DAY</span><br>
-                    <span style="font-size: 32px; font-weight: 900; letter-spacing: 4px; color: var(--ink);">${sightWord}</span>
+                    <small style="color:var(--accent); font-weight:bold;">SIGHT WORD OF THE DAY</small><br>
+                    <span style="font-size:32px; font-weight:900; letter-spacing:4px;">${sw}</span>
                 </div>
-                <div style="flex-grow: 1; margin-left: 30px; border-left: 1px dashed #ccc; padding-left: 20px;">
-                    <span style="font-size: 12px; color: #666;">Trace it and write it:</span>
-                    <div style="font-size: 20px; color: #e5e7eb; letter-spacing: 3px; border-bottom: 1px solid #eee;">${sightWord} _________________</div>
-                </div>
-            </div>
-
-            <div class="section-title">Part 1: Grammar Sort (Noun vs. Verb)</div>
-            <div style="text-align:center; margin-bottom:10px;">
-                ${mixedGrammar.map(w => `<span class="word-tag">${w}</span>`).join('')}
-            </div>
-            <div class="flex-row">
-                <div class="column">
-                    <b style="color:var(--secondary); font-size: 13px;">NOUNS (Naming Words)</b>
-                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
-                </div>
-                <div class="column">
-                    <b style="color:var(--primary); font-size: 13px;">VERBS (Action Words)</b>
-                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
+                <div style="flex-grow:1; text-align:right;">
+                    <span style="color:#94a3b8; font-size:12px;">Practice Writing:</span><br>
+                    <span style="font-size:24px; color:#e2e8f0;">${sw} ${sw} ${sw}</span>
                 </div>
             </div>
 
-            <div class="section-title">Part 2: Opposite Connection</div>
-            <div style="display:flex; justify-content:space-around; font-size:15px; font-weight:bold; padding: 5px 40px;">
-                <div style="line-height:2.4;">
-                    ${shuffledOpposites.map(o => `<div>${o.a} <span style="color:#ccc">•</span></div>`).join('')}
+            <div class="section-title">Part 1: Missing First Sounds</div>
+            <p style="font-size:13px; margin-bottom:10px;">Read the hint and write the missing first letter in the box.</p>
+            <div class="phonics-grid">
+                ${shuffled.map(item => `
+                    <div class="cvc-card">
+                        <small style="color:#64748b;">${item.h}</small><br><br>
+                        <div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">${item.hint}</span>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="section-title">Part 2: Handwriting Tracing</div>
+            <p style="font-size:13px; margin-bottom:10px;">Trace the sentence carefully.</p>
+            <div style="padding:10px; border:1px solid #f1f5f9; border-radius:8px;">
+                <span class="tracing-space">The big cat is on the mat.</span>
+                <span class="tracing-space">I can see the yellow sun.</span>
+            </div>
+
+            <div class="section-title">Part 3: Word Family Match</div>
+            <p style="font-size:13px; margin-bottom:10px;">Write two words for each family.</p>
+            <div style="display:flex; gap:20px;">
+                <div style="flex:1; border:1px dashed var(--primary); padding:10px; border-radius:8px; text-align:center;">
+                    <b>-AT Family</b><br><br>1. __________<br>2. __________
                 </div>
-                <div style="line-height:2.4;">
-                    ${[...shuffledOpposites].reverse().map(o => `<div><span style="color:#ccc">•</span> ${o.b}</div>`).join('')}
+                <div style="flex:1; border:1px dashed var(--secondary); padding:10px; border-radius:8px; text-align:center;">
+                    <b>-OG Family</b><br><br>1. __________<br>2. __________
                 </div>
             </div>
 
-            <div class="section-title">Part 3: ABC Order Challenge</div>
-            <p style="font-size:12px; margin:0 0 10px;">Sort: <b>${shuffledABC.join(", ")}</b></p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                ${shuffledABC.map((w, i) => `<div class="abc-item">${i+1}. ____________________</div>`).join('')}
+            <div style="text-align:center; margin-top:30px; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
+                © Salam Adventures • Literacy Expedition • Master Your Sounds!
             </div>
+        `;
+    }
 
-            <div class="section-title">Part 4: Compound Words</div>
-            <div style="font-size:14px; line-height:2.2;">
-                1. Star + Fish = ____________________ <br>
-                2. Back + Pack = ____________________ <br>
-                3. Snow + Man = ____________________
-            </div>
-
-            <div class="section-title">Part 5: Sentence Builder</div>
-            <p style="font-size:12px; margin:0;">Write a short sentence about an adventure!</p>
-            <div style="border: 1px solid #e5e7eb; height: 50px; border-radius: 8px; margin-top:5px; padding:10px; color:#cbd5e1;">__________________________________________________________________</div>
-
-            <div style="text-align:center; margin-top:20px; font-size:10px; color:#
+    generate();
+</script>
+</body>
+</html>
