@@ -1,393 +1,219 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Colouring Generator | Salam Adventures</title>
-  <style>
-    :root{--maxw:1100px;}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#fafafa;color:#111}
-    header{padding:18px 16px;background:#fff;border-bottom:1px solid #eee}
-    .wrap{max-width:var(--maxw);margin:0 auto}
-    h1{margin:0;font-size:20px}
-    p{margin:6px 0 0;color:#444;font-size:14px}
-    main{padding:16px}
-    .panel{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
-    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
-    select,button,label,input{font-size:14px}
-    select{padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff;min-width:240px}
-    button{padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:#111;color:#fff;cursor:pointer}
-    button.secondary{background:#fff;color:#111}
-    button:disabled{opacity:.5;cursor:not-allowed}
-    .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#fff}
-    .palette{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .swatch{width:26px;height:26px;border-radius:999px;border:2px solid #ddd;cursor:pointer}
-    .swatch.active{border-color:#111}
-    .stage{display:grid;grid-template-columns:1fr;gap:12px}
-    .canvasWrap{border:1px dashed #ddd;border-radius:14px;padding:12px;background:#fcfcfc;overflow:auto}
-    canvas{display:block;margin:0 auto;background:#fff;touch-action:none}
-    .hint{font-size:12px;color:#555;margin-top:10px}
-    .small{font-size:12px;color:#666}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Colouring Generator | Salam Adventures</title>
+
+<style>
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  margin:0;
+  background:#f4f4f4;
+}
+header{
+  padding:20px;
+  background:#fff;
+  border-bottom:1px solid #eee;
+}
+main{
+  padding:20px;
+  max-width:1100px;
+  margin:auto;
+}
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:15px;
+}
+button,select{
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  cursor:pointer;
+}
+button{
+  background:#111;
+  color:#fff;
+}
+button.secondary{
+  background:#fff;
+  color:#111;
+}
+.canvasWrap{
+  background:#fff;
+  padding:15px;
+  border-radius:14px;
+  border:1px solid #ddd;
+}
+canvas{
+  display:block;
+  margin:auto;
+  background:#fff;
+}
+</style>
 </head>
+
 <body>
+
 <header>
-  <div class="wrap">
-    <h1>Colouring Page Generator</h1>
-    <p>Pick a page → colour it → print or download.</p>
-  </div>
+<h2>Colouring Page Generator</h2>
 </header>
 
-<main class="wrap">
-  <div class="panel">
-    <div class="controls">
-      <select id="picker" aria-label="Choose a colouring page"></select>
-      <button id="btnLoad">Load</button>
-      <button id="btnRandom" class="secondary">Random</button>
+<main>
 
-      <span class="chip" title="Draw on top of the page">
-        🖌️ Brush
-        <input id="brushSize" type="range" min="2" max="40" value="10" />
-      </span>
+<div class="controls">
+<select id="picker"></select>
+<button id="btnLoad">Load</button>
+<button id="btnRandom" class="secondary">Random</button>
+<button id="btnDownload" class="secondary">Download</button>
+<button id="btnPrint" class="secondary">Print</button>
+</div>
 
-      <button id="btnEraser" class="secondary" title="Erase your colouring">Eraser</button>
-      <button id="btnFill" class="secondary" title="Tap/click to fill an area">Tap to Fill</button>
+<div class="canvasWrap">
+<canvas id="c" width="1240" height="1754"></canvas>
+</div>
 
-      <button id="btnReset" class="secondary" title="Clear colouring and reload page">Reset</button>
-      <button id="btnDownload" class="secondary" disabled>Download PNG</button>
-      <button id="btnPrint" class="secondary" disabled>Print</button>
-    </div>
-
-    <div class="controls">
-      <div class="palette" id="palette"></div>
-      <span class="small" id="modeLabel">Mode: Brush</span>
-    </div>
-
-    <div class="stage">
-      <div class="canvasWrap">
-        <canvas id="c" width="1240" height="1754" aria-label="Colouring canvas"></canvas>
-      </div>
-      <div class="hint">
-        Tip: Use “Tap to Fill” for big areas. Use “Print” for a clean sheet.
-        <div class="small" id="status"></div>
-      </div>
-    </div>
-  </div>
 </main>
 
 <script>
-  // ✅ New repo folder + filenames (from your screenshot)
-  const BASE_RAW =
-    "https://raw.githubusercontent.com/salamtruthfulltd-alt/salam-adventures-games/main/colouring%20images/";
+const BASE_RAW =
+"https://raw.githubusercontent.com/salamtruthfulltd-alt/salam-adventures-games/main/colouring%20images/";
 
-  const FILES = [
-    "butterfly.png",
-    "car.png",
-    "chest.png",
-    "dino.png",
-    "dog.png",
-    "doll.png",
-    "house.png",
-    "kids.png",
-    "plane.png",
-    "prince.png",
-    "swan.png",
-    "veg.png"
-  ];
+const FILES = [
+"butterfly.png",
+"car.png",
+"chest.png",
+"dino.png",
+"dog.png",
+"doll.png",
+"house.png",
+"kids.png",
+"plane.png",
+"prince.png",
+"swan.png",
+"veg.png"
+];
 
-  const picker = document.getElementById("picker");
-  const btnLoad = document.getElementById("btnLoad");
-  const btnRandom = document.getElementById("btnRandom");
-  const btnDownload = document.getElementById("btnDownload");
-  const btnPrint = document.getElementById("btnPrint");
-  const btnReset = document.getElementById("btnReset");
-  const btnEraser = document.getElementById("btnEraser");
-  const btnFill = document.getElementById("btnFill");
-  const brushSize = document.getElementById("brushSize");
-  const paletteEl = document.getElementById("palette");
-  const modeLabel = document.getElementById("modeLabel");
-  const statusEl = document.getElementById("status");
+const picker=document.getElementById("picker");
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
 
-  const canvas = document.getElementById("c");
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+const off=document.createElement("canvas");
+const offCtx=off.getContext("2d");
 
-  let baseImageData = null;
-  let drawing = false;
-  let mode = "brush"; // brush | eraser | fill
-  let color = "#ff3b30";
+FILES.forEach(f=>{
+  const opt=document.createElement("option");
+  opt.value=f;
+  opt.textContent=f.replace(".png","");
+  picker.appendChild(opt);
+});
+picker.value=FILES[0];
 
-  const COLORS = [
-    "#ff3b30","#ff9500","#ffcc00","#34c759","#00c7be","#007aff",
-    "#5856d6","#af52de","#ff2d55","#8e8e93","#000000","#ffffff"
-  ];
+function clearWhite(){
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+}
 
-  function setStatus(msg){ statusEl.textContent = msg || ""; }
+function drawBorder(){
+  const margin=80;
+  ctx.lineWidth=14;
+  ctx.strokeStyle="#000";
+  ctx.strokeRect(margin,margin,canvas.width-margin*2,canvas.height-margin*2);
+}
 
-  function niceName(file){
-    return file.replace(/\.(png|jpg|jpeg)$/i,"").replace(/[-_]+/g," ").trim();
-  }
-  function fileUrl(file){
-    return BASE_RAW + encodeURIComponent(file);
-  }
+function findBounds(imageData,w,h){
+  const d=imageData.data;
+  let top=h, left=w, right=0, bottom=0;
 
-  // Dropdown
-  FILES.forEach((f) => {
-    const opt = document.createElement("option");
-    opt.value = f;
-    opt.textContent = niceName(f);
-    picker.appendChild(opt);
-  });
-  picker.value = FILES[0];
-
-  // Palette
-  function renderPalette(){
-    paletteEl.innerHTML = "";
-    COLORS.forEach((c) => {
-      const b = document.createElement("button");
-      b.className = "swatch" + (c === color ? " active" : "");
-      b.style.background = c;
-      b.title = c;
-      b.addEventListener("click", () => { color = c; renderPalette(); });
-      paletteEl.appendChild(b);
-    });
-  }
-  renderPalette();
-
-  function setMode(m){
-    mode = m;
-    modeLabel.textContent = "Mode: " + (m === "brush" ? "Brush" : m === "eraser" ? "Eraser" : "Tap to Fill");
-  }
-  btnEraser.addEventListener("click", () => setMode("eraser"));
-  btnFill.addEventListener("click", () => setMode("fill"));
-
-  function clearWhite(){
-    ctx.save();
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.restore();
-  }
-
-  function drawBorder(){
-    const margin = Math.round(canvas.width * 0.04);
-    ctx.save();
-    ctx.lineWidth = Math.max(10, Math.round(canvas.width * 0.008));
-    ctx.strokeStyle = "#000";
-    ctx.strokeRect(margin, margin, canvas.width - margin*2, canvas.height - margin*2);
-    ctx.restore();
-    return margin;
-  }
-
-  async function loadAndUniformBox(file){
-    btnDownload.disabled = true;
-    btnPrint.disabled = true;
-    setStatus("Loading: " + file + " …");
-
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = fileUrl(file);
-
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = () => reject(new Error("Could not load image. Check file name + folder path."));
-    });
-
-    clearWhite();
-    drawBorder();
-
-    // ✅ ALL IMAGES RENDER INTO THE SAME BOX SIZE (uniform look)
-    const BOX_W = 900;
-    const BOX_H = 1300;
-    const boxX = Math.round((canvas.width - BOX_W) / 2);
-    const boxY = Math.round((canvas.height - BOX_H) / 2);
-
-    // COVER MODE: always fills the box, crops evenly so everything looks same size
-    const iw = img.naturalWidth || img.width;
-    const ih = img.naturalHeight || img.height;
-    const scale = Math.max(BOX_W / iw, BOX_H / ih);
-    const drawW = Math.round(iw * scale);
-    const drawH = Math.round(ih * scale);
-    const dx = Math.round(boxX + (BOX_W - drawW) / 2);
-    const dy = Math.round(boxY + (BOX_H - drawH) / 2);
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(boxX, boxY, BOX_W, BOX_H);
-    ctx.clip(); // crop overflow
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(img, dx, dy, drawW, drawH);
-    ctx.restore();
-
-    baseImageData = ctx.getImageData(0,0,canvas.width,canvas.height);
-
-    btnDownload.disabled = false;
-    btnPrint.disabled = false;
-
-    setMode("brush");
-    setStatus("Ready: " + niceName(file));
-  }
-
-  btnLoad.addEventListener("click", () => loadAndUniformBox(picker.value).catch(e => setStatus("Error: " + e.message)));
-  btnRandom.addEventListener("click", () => {
-    const r = FILES[Math.floor(Math.random() * FILES.length)];
-    picker.value = r;
-    loadAndUniformBox(r).catch(e => setStatus("Error: " + e.message));
-  });
-
-  btnReset.addEventListener("click", () => {
-    if (!baseImageData) return;
-    ctx.putImageData(baseImageData, 0, 0);
-    setMode("brush");
-  });
-
-  function getPos(e){
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    const x = (clientX - rect.left) * (canvas.width / rect.width);
-    const y = (clientY - rect.top) * (canvas.height / rect.height);
-    return { x: Math.max(0, Math.min(canvas.width-1, x)), y: Math.max(0, Math.min(canvas.height-1, y)) };
-  }
-
-  function startDraw(e){
-    if (!baseImageData) return;
-    const p = getPos(e);
-
-    if (mode === "fill"){
-      floodFill(Math.floor(p.x), Math.floor(p.y), color);
-      e.preventDefault();
-      return;
+  for(let y=0;y<h;y++){
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4;
+      const r=d[i], g=d[i+1], b=d[i+2];
+      if(!(r>240 && g>240 && b>240)){
+        if(x<left) left=x;
+        if(x>right) right=x;
+        if(y<top) top=y;
+        if(y>bottom) bottom=y;
+      }
     }
-
-    drawing = true;
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
-    e.preventDefault();
   }
 
-  function moveDraw(e){
-    if (!drawing) return;
-    const p = getPos(e);
+  return {top,left,right,bottom};
+}
 
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = Number(brushSize.value);
+async function loadImage(file){
+  const img=new Image();
+  img.crossOrigin="anonymous";
+  img.src=BASE_RAW + encodeURIComponent(file);
 
-    if (mode === "eraser"){
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.strokeStyle = "rgba(0,0,0,1)";
-    } else {
-      ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = color;
-    }
-
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    e.preventDefault();
-  }
-
-  function endDraw(){
-    drawing = false;
-    ctx.globalCompositeOperation = "source-over";
-  }
-
-  canvas.addEventListener("mousedown", startDraw);
-  canvas.addEventListener("mousemove", moveDraw);
-  window.addEventListener("mouseup", endDraw);
-
-  canvas.addEventListener("touchstart", startDraw, { passive:false });
-  canvas.addEventListener("touchmove", moveDraw, { passive:false });
-  window.addEventListener("touchend", endDraw);
-
-  // Flood fill
-  function hexToRgba(hex){
-    const h = hex.replace("#","").trim();
-    const bigint = parseInt(h, 16);
-    if (h.length === 6){
-      return [(bigint>>16)&255, (bigint>>8)&255, bigint&255, 255];
-    }
-    return [0,0,0,255];
-  }
-
-  function matchColor(data, idx, target, tol=18){
-    return (
-      Math.abs(data[idx]   - target[0]) <= tol &&
-      Math.abs(data[idx+1] - target[1]) <= tol &&
-      Math.abs(data[idx+2] - target[2]) <= tol &&
-      Math.abs(data[idx+3] - target[3]) <= tol
-    );
-  }
-
-  function setColor(data, idx, col){
-    data[idx] = col[0]; data[idx+1]=col[1]; data[idx+2]=col[2]; data[idx+3]=255;
-  }
-
-  function floodFill(x, y, fillHex){
-    const img = ctx.getImageData(0,0,canvas.width,canvas.height);
-    const data = img.data;
-    const w = canvas.width;
-    const h = canvas.height;
-
-    const startIdx = (y*w + x) * 4;
-    const target = [data[startIdx], data[startIdx+1], data[startIdx+2], data[startIdx+3]];
-    const fill = hexToRgba(fillHex);
-
-    const isBlackish = (target[0] < 40 && target[1] < 40 && target[2] < 40);
-    const sameAsFill = (target[0]===fill[0] && target[1]===fill[1] && target[2]===fill[2] && target[3]===fill[3]);
-    if (isBlackish || sameAsFill) return;
-
-    const stack = [[x,y]];
-    const visited = new Uint8Array(w*h);
-
-    while (stack.length){
-      const [cx, cy] = stack.pop();
-      if (cx<0 || cy<0 || cx>=w || cy>=h) continue;
-      const p = cy*w + cx;
-      if (visited[p]) continue;
-      visited[p] = 1;
-
-      const idx = p*4;
-
-      const r=data[idx], g=data[idx+1], b=data[idx+2], a=data[idx+3];
-      if (r < 40 && g < 40 && b < 40 && a > 50) continue;
-
-      if (!matchColor(data, idx, target, 22)) continue;
-
-      setColor(data, idx, fill);
-      stack.push([cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]);
-    }
-
-    ctx.putImageData(img, 0, 0);
-  }
-
-  btnDownload.addEventListener("click", () => {
-    const a = document.createElement("a");
-    a.download = `colouring-${picker.value.replace(/\s+/g,"-")}.png`;
-    a.href = canvas.toDataURL("image/png");
-    a.click();
+  await new Promise((res,rej)=>{
+    img.onload=res;
+    img.onerror=rej;
   });
 
-  btnPrint.addEventListener("click", () => {
-    const dataUrl = canvas.toDataURL("image/png");
-    const w = window.open("", "_blank");
-    w.document.write(`
-      <!doctype html><html><head><meta charset="utf-8" />
-      <title>Print</title>
-      <style>
-        @page { size: A4 portrait; margin: 0.4in; }
-        body { margin: 0; }
-        img { width: 100%; height: auto; display:block; }
-      </style></head><body>
-      <img src="${dataUrl}" alt="Colouring Page"/>
-      <script>window.onload=()=>{window.print();};<\/script>
-      </body></html>
-    `);
-    w.document.close();
-  });
+  off.width=img.naturalWidth;
+  off.height=img.naturalHeight;
+  offCtx.clearRect(0,0,off.width,off.height);
+  offCtx.drawImage(img,0,0);
 
-  // Auto-load first page
-  loadAndUniformBox(picker.value).catch(e => setStatus("Error: " + e.message));
+  const imageData=offCtx.getImageData(0,0,off.width,off.height);
+  const b=findBounds(imageData,off.width,off.height);
+
+  const cropW=b.right-b.left;
+  const cropH=b.bottom-b.top;
+
+  clearWhite();
+  drawBorder();
+
+  // 🔥 ALL DRAWINGS FORCED TO SAME VISUAL HEIGHT
+  const TARGET_HEIGHT=1200;
+  const scale=TARGET_HEIGHT/cropH;
+
+  const drawW=cropW*scale;
+  const drawH=cropH*scale;
+
+  const dx=(canvas.width-drawW)/2;
+  const dy=(canvas.height-drawH)/2;
+
+  ctx.drawImage(
+    off,
+    b.left,b.top,cropW,cropH,
+    dx,dy,drawW,drawH
+  );
+}
+
+document.getElementById("btnLoad")
+.addEventListener("click",()=>loadImage(picker.value));
+
+document.getElementById("btnRandom")
+.addEventListener("click",()=>{
+  const r=FILES[Math.floor(Math.random()*FILES.length)];
+  picker.value=r;
+  loadImage(r);
+});
+
+document.getElementById("btnDownload")
+.addEventListener("click",()=>{
+  const a=document.createElement("a");
+  a.download="colouring.png";
+  a.href=canvas.toDataURL("image/png");
+  a.click();
+});
+
+document.getElementById("btnPrint")
+.addEventListener("click",()=>{
+  const w=window.open("");
+  w.document.write(`
+    <img src="${canvas.toDataURL("image/png")}" style="width:100%">
+    <script>window.onload=()=>window.print()<\/script>
+  `);
+  w.document.close();
+});
+
+loadImage(picker.value);
 </script>
+
 </body>
 </html>
