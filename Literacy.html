@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salam Adventures | Mixed Literacy Master</title>
+    <style>
+        :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
+        
+        .controls { 
+            background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
+            max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
+        }
+        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-print { background: var(--secondary); color: white; }
+
+        .page { 
+            background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
+            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative;
+        }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        .logo-img { width: 80px; height: auto; }
+        
+        .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 18px 0 8px; border-radius: 5px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; border-left: 4px solid var(--primary); }
+
+        /* Grid Layouts */
+        .flex-row { display: flex; justify-content: space-between; gap: 20px; }
+        .column { flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
+        
+        .word-tag { display: inline-block; padding: 4px 10px; background: #f3f4f6; border-radius: 15px; margin: 3px; font-size: 13px; font-weight: 600; }
+        .blank-line { border-bottom: 1px solid #000; width: 100%; height: 25px; display: block; margin: 5px 0; }
+        
+        .abc-item { margin-bottom: 8px; font-size: 15px; }
+        .dot-line { border-bottom: 1px dotted #cbd5e1; flex-grow: 1; margin: 0 10px; }
+
+        @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button class="btn-gen" onclick="generate()">✨ Randomize All Tasks</button>
+    <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
+</div>
+
+<div class="page" id="main-page"></div>
+
+<script>
+    const nouns = ["Apple", "Teacher", "London", "Cat", "Table"];
+    const verbs = ["Jump", "Sing", "Read", "Run", "Sleep"];
+    const opposites = [
+        {a: "Hot", b: "Cold"}, {a: "Fast", b: "Slow"}, 
+        {a: "Big", b: "Small"}, {a: "Up", b: "Down"}
+    ];
+    const abcWords = ["Zebra", "Apple", "Monkey", "Glass", "Bird", "Yarn", "Ocean", "Kite"];
+
+    function generate() {
+        const page = document.getElementById('main-page');
+        
+        // Randomize word lists
+        const mixedGrammar = [...nouns.slice(0,3), ...verbs.slice(0,3)].sort(() => 0.5 - Math.random());
+        const shuffledABC = [...abcWords].sort(() => 0.5 - Math.random()).slice(0, 5);
+        const shuffledOpposites = [...opposites].sort(() => 0.5 - Math.random());
+
+        page.innerHTML = `
+            <div class="header">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                    <div>
+                        <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
+                        <p style="margin:0; font-size:13px; font-weight:bold; color:#64748b;">Mixed Literacy Expedition: Level 2</p>
+                    </div>
+                </div>
+                <div style="text-align:right; font-size:11px;">
+                    <b>NAME:</b> ____________________ <br>
+                    <b>DATE:</b> ____________________
+                </div>
+            </div>
+
+            <div class="section-title">Part 1: Grammar Sort (Noun vs. Verb)</div>
+            <div style="text-align:center; margin-bottom:10px;">
+                ${mixedGrammar.map(w => `<span class="word-tag">${w}</span>`).join('')}
+            </div>
+            <div class="flex-row">
+                <div class="column">
+                    <b style="color:var(--secondary)">NOUNS (Naming)</b>
+                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
+                </div>
+                <div class="column">
+                    <b style="color:var(--primary)">VERBS (Action)</b>
+                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
+                </div>
+            </div>
+
+            <div class="section-title">Part 2: Opposites Match</div>
+            <p style="font-size:12px; margin:0 0 10px;">Draw a line to connect the words with opposite meanings.</p>
+            <div style="display:flex; justify-content:space-around; font-size:15px; font-weight:bold; padding:0 40px;">
+                <div style="line-height:2.5;">
+                    ${shuffledOpposites.map(o => `<div>${o.a} •</div>`).join('')}
+                </div>
+                <div style="line-height:2.5;">
+                    ${[...shuffledOpposites].reverse().map(o => `<div>• ${o.b}</div>`).join('')}
+                </div>
+            </div>
+
+            <div class="section-title">Part 3: Alphabetical Order</div>
+            <p style="font-size:12px; margin:0 0 10px;">Rewrite these words in ABC order: <b>${shuffledABC.join(", ")}</b></p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                ${shuffledABC.map((w, i) => `<div class="abc-item">${i+1}. ____________________</div>`).join('')}
+            </div>
+
+            <div class="section-title">Part 4: Compound Word Bridge</div>
+            <p style="font-size:12px; margin:0 0 10px;">Join two words to make one new word!</p>
+            <div style="font-size:15px; line-height:2;">
+                1. Rain + Bow = ____________________ <br>
+                2. Foot + Ball = ____________________ <br>
+                3. Sun + Flower = ____________________
+            </div>
+
+            <div class="section-title">Part 5: Sentence Builder</div>
+            <p style="font-size:12px; margin:0 0 10px;">Write a sentence using one <b>Noun</b> and one <b>Verb</b> from Part 1.</p>
+            <div style="border: 1px solid #e5e7eb; height: 60px; border-radius: 8px; margin-top:5px; padding:10px; color:#cbd5e1;">__________________________________________________________________</div>
+
+            <div style="position:absolute; bottom:10mm; left:15mm; right:15mm; text-align:center; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
+                © Salam Adventures • Mixed Literacy Skills • Master the Journey!
+            </div>
+        `;
+    }
+
+    generate();
+</script>
+</body>
+</html>
