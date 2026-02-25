@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salam Adventures | English Expedition</title>
     <style>
-        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
+        :root { --primary: #34d399; --secondary: #38bdf8; --ink: #111827; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
         .controls { 
@@ -14,7 +14,7 @@
             margin: 0 auto 15px; display: flex; gap: 15px; align-items: center; justify-content: center; border: 1px solid var(--primary);
         }
         
-        button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; }
+        button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
@@ -24,104 +24,32 @@
         }
         
         .header { 
-            border-bottom: 2px dashed var(--primary); 
-            padding-bottom: 10px; margin-bottom: 15px; display: flex; 
-            justify-content: space-between; align-items: center; 
+            border-bottom: 2px dashed var(--primary); padding-bottom: 10px; margin-bottom: 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
         }
-        .logo-img { width: 80px; height: auto; }
+        .logo-img { width: 70px; height: auto; }
         
         .section-title { 
             background: #f0fdf4; padding: 6px; border-radius: 6px; 
             color: var(--primary); font-weight: bold; margin: 15px 0 10px; border-left: 5px solid var(--primary);
         }
 
-        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .word-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; text-align: center; }
+        /* Phonics Grid */
+        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .word-card { 
+            border: 2px solid #f1f5f9; border-radius: 12px; padding: 15px; 
+            text-align: center; background: #fff;
+        }
         
-        .letter-box { 
-            font-size: 32px; font-weight: bold; border: 2px dashed #cbd5e1; 
-            width: 60px; height: 60px; margin: 10px auto; display: flex; 
-            align-items: center; justify-content: center; color: #94a3b8;
+        .image-box { 
+            font-size: 50px; height: 80px; display: flex; 
+            align-items: center; justify-content: center; background: #f8fafc;
+            border-radius: 8px; margin-bottom: 10px;
         }
 
-        .tracing-line { font-size: 24px; color: #e2e8f0; letter-spacing: 4px; border-bottom: 1px dashed #cbd5e1; display: block; margin: 10px 0; }
-        .blank { border-bottom: 1px solid #000; width: 45px; display: inline-block; }
+        .word-display { font-size: 24px; font-weight: bold; letter-spacing: 2px; margin-top: 10px; }
+        .letter-input { width: 40px; height: 40px; border: 2px solid #34d399; border-radius: 5px; display: inline-block; vertical-align: middle; }
+
+        .blank { border-bottom: 1px solid #000; width: 150px; display: inline-block; }
 
         @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; } }
-    </style>
-</head>
-<body>
-
-    <div class="controls">
-        <button class="btn-gen" onclick="generate()">✨ New Phonics Hunt</button>
-        <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
-    </div>
-
-    <div class="worksheet" id="ws"></div>
-
-    <script>
-        const wordBank = [
-            { word: "Cat", start: "C", hint: "_ a t" },
-            { word: "Sun", start: "S", hint: "_ u n" },
-            { word: "Dog", start: "D", hint: "_ o g" },
-            { word: "Hat", start: "H", hint: "_ a t" },
-            { word: "Map", start: "M", hint: "_ a p" },
-            { word: "Pen", start: "P", hint: "_ e n" },
-            { word: "Bat", start: "B", hint: "_ a t" },
-            { word: "Log", start: "L", hint: "_ o g" },
-            { word: "Bug", start: "B", hint: "_ u g" }
-        ];
-
-        function generate() {
-            const ws = document.getElementById('ws');
-            const shuffled = [...wordBank].sort(() => 0.5 - Math.random()).slice(0, 6);
-
-            ws.innerHTML = `
-                <div class="header">
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
-                        <div>
-                            <h1 style="margin:0; font-size:24px; color:var(--primary);">Salam Adventures</h1>
-                            <p style="margin:0; font-size:14px; font-weight:600; color:#6b7280;">English Expedition: Phonics Fun 🦎</p>
-                        </div>
-                    </div>
-                    <div style="font-size: 13px; text-align:right;">
-                        Name: <span class="blank" style="width:140px"></span><br>
-                        Date: <span class="blank" style="width:140px; margin-top:8px;"></span>
-                    </div>
-                </div>
-
-                <div class="section-title">Part 1: Beginning Sounds</div>
-                <p style="font-size:14px; margin-bottom:15px;">Write the missing first letter for each word!</p>
-                <div class="phonics-grid">
-                    ${shuffled.map(item => `
-                        <div class="word-card">
-                            <div style="font-size:20px; font-weight:bold; color:var(--secondary);">${item.hint}</div>
-                            <div class="letter-box">?</div>
-                            <div style="font-size:12px; color:#94a3b8;">What is the first sound?</div>
-                        </div>
-                    `).join('')}
-                </div>
-
-                <div class="section-title">Part 2: Handwriting Practice</div>
-                <div style="padding:10px; border:1px solid #eee; border-radius:10px;">
-                    <p style="font-size:14px;">Trace the sentence carefully:</p>
-                    <div class="tracing-line">The quick brown fox jumps...</div>
-                    <div class="tracing-line">I love learning English!</div>
-                </div>
-
-                <div class="section-title">Part 3: Word Family Match</div>
-                <div style="display:flex; justify-content:space-around; font-size:16px; font-weight:bold; padding:15px; border:1px solid #eee; border-radius:10px;">
-                    <div>Words that end in <b>-at</b><br><br>1. ___________<br>2. ___________</div>
-                    <div style="border-left:1px solid #eee; padding-left:20px;">Words that end in <b>-og</b><br><br>1. ___________<br>2. ___________</div>
-                </div>
-
-                <div style="margin-top:30px; text-align:center; font-size:12px; color:#9ca3af;">
-                    © Salam Adventures Learning Material • Let's Read Together! 🌟
-                </div>
-            `;
-        }
-        generate();
-    </script>
-</body>
-</html>
