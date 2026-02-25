@@ -1,121 +1,720 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | Math Worksheet</title>
-    <style>
-        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
-        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
-        
-        /* UI Controls */
-        .controls { 
-            background: white; padding: 10px; border-radius: 12px; 
-            max-width: 800px; margin: 0 auto 15px; display: flex; 
-            gap: 10px; align-items: center; justify-content: center;
-            border: 1px solid var(--primary);
-        }
-        
-        button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: var(--secondary); color: white; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Picture Puzzle Play | Salam Adventures</title>
+  <style>
+    :root{
+      --bg1:#fff1f7;
+      --bg2:#eefcff;
+      --card:#ffffff;
+      --ink:#101828;
+      --muted:#667085;
+      --radius:28px;
+      --shadow: 0 30px 90px rgba(16,24,40,.18);
+      --shadow2: 0 12px 30px rgba(16,24,40,.12);
+      --ok:#12b76a;
+      --bad:#f04438;
+      --btn:#101828;
+      --btnText:#fff;
+      --tileRadius:16px;
+      --gap:10px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1000px 700px at 12% 18%, rgba(255,92,210,.26), transparent 55%),
+        radial-gradient(900px 700px at 86% 30%, rgba(0,209,255,.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
 
-        /* Compact Layout */
-        .worksheet { 
-            background: white; width: 210mm; min-height: 297mm; 
-            padding: 10mm; margin: 0 auto; display: grid; 
-            grid-template-columns: repeat(4, 1fr); gap: 10px;
-        }
-        
-        .header { 
-            grid-column: span 4; border-bottom: 2px dashed var(--primary); 
-            padding-bottom: 10px; margin-bottom: 10px; display: flex; 
-            justify-content: space-between; align-items: center; 
-        }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-img { width: 60px; height: auto; }
-        
-        .header h1 { margin: 0; color: var(--primary); font-size: 20px; }
-        .name-line { border-bottom: 1px solid #000; width: 100px; display: inline-block; margin-left: 5px; }
+    /* 3D flashing edge only (no spinning) */
+    .frame{
+      width:min(980px, 100%);
+      border-radius: calc(var(--radius) + 10px);
+      padding:12px;
+      position:relative;
+      filter: drop-shadow(var(--shadow));
+      isolation:isolate;
+    }
+    .frame::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: calc(var(--radius) + 10px);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55)),
+        linear-gradient(135deg, rgba(255,92,210,.22), rgba(0,209,255,.16));
+      box-shadow:
+        inset 0 3px 0 rgba(255,255,255,.85),
+        inset 0 -10px 18px rgba(16,24,40,.10),
+        0 18px 45px rgba(16,24,40,.18);
+      z-index:-2;
+    }
+    .frame::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: calc(var(--radius) + 10px);
+      padding:4px;
+      background: conic-gradient(
+        from 0deg,
+        #ff4fd8, #7c4dff, #00d1ff, #00ff95, #ffe66d, #ff9b4a, #ff4fd8
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity:.65;
+      animation: edgePulse 1.8s ease-in-out infinite;
+      pointer-events:none;
+      z-index:-1;
+    }
+    @keyframes edgePulse{
+      0%,100%{ opacity:.45; filter:saturate(1.05) brightness(1.00); }
+      50%{ opacity:.85; filter:saturate(1.25) brightness(1.12); }
+    }
 
-        .problem { 
-            font-size: 18px; font-weight: 600; display: flex; 
-            align-items: center; justify-content: flex-end; gap: 5px; 
-            padding: 5px; border-bottom: 1px solid #f9fafb;
-        }
-        .answer-box { width: 40px; height: 30px; border: 1px solid #ccc; border-radius: 4px; }
+    .card{
+      background: rgba(255,255,255,.90);
+      border:1px solid rgba(16,24,40,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      backdrop-filter: blur(8px);
+    }
 
-        @media print { .controls { display: none; } .worksheet { margin: 0; width: 100%; } }
-    </style>
+    header{
+      padding:16px 16px 10px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(22px, 2.4vw, 32px);
+      line-height:1.1;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size: 14px;
+      max-width: 60ch;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      border:0;
+      border-radius: 999px;
+      padding:10px 14px;
+      background: var(--btn);
+      color: var(--btnText);
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(16,24,40,.18);
+      transition: transform .08s ease, box-shadow .15s ease;
+      -webkit-tap-highlight-color: transparent;
+      font-size:14px;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); box-shadow: 0 8px 18px rgba(16,24,40,.15); }
+    .btn.secondary{
+      background:#ffffff;
+      color:var(--ink);
+      border:1px solid rgba(16,24,40,.12);
+      box-shadow: 0 10px 22px rgba(16,24,40,.10);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background:#fff;
+      border:1px solid rgba(16,24,40,.10);
+      box-shadow: 0 8px 14px rgba(16,24,40,.08);
+      color:var(--ink);
+      font-weight:900;
+      min-width: 132px;
+      justify-content:center;
+      font-size:14px;
+    }
+
+    .content{
+      padding: 10px 16px 16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      justify-items:center;
+    }
+
+    /* chooser grid */
+    .chooser{
+      width:min(920px, 100%);
+      display:grid;
+      gap:12px;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+    .thumb{
+      border-radius: 18px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(16,24,40,.12);
+      box-shadow: 0 12px 28px rgba(16,24,40,.10);
+      padding:10px;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .thumb:active{ transform: translateY(1px); }
+    .thumb img{
+      width:100%;
+      height: 160px;
+      object-fit: contain;
+      display:block;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,92,210,.10), rgba(0,209,255,.10));
+      border:1px solid rgba(16,24,40,.10);
+    }
+    .thumb .label{
+      margin-top:10px;
+      font-weight:900;
+      text-align:center;
+      font-size:14px;
+    }
+
+    /* puzzle panel */
+    .panel{
+      width:min(920px, 100%);
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(16,24,40,.10);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(16,24,40,.12);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+      display:none;
+    }
+    .panel.show{ display:block; }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-40% -40%;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,.85), transparent 40%),
+        radial-gradient(circle at 80% 35%, rgba(0,209,255,.12), transparent 45%),
+        radial-gradient(circle at 45% 90%, rgba(255,92,210,.10), transparent 45%);
+      pointer-events:none;
+    }
+    .panelInner{ position:relative; }
+
+    .topRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom: 12px;
+    }
+
+    .boards{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 14px;
+      align-items:start;
+    }
+
+    .board{
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(16,24,40,.10);
+      border-radius: 22px;
+      padding: 12px;
+      box-shadow: 0 12px 28px rgba(16,24,40,.10);
+      position:relative;
+      overflow:hidden;
+    }
+    .board h2{
+      margin:0 0 8px;
+      font-size:16px;
+      letter-spacing:-.01em;
+    }
+    .hint{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .grid{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      display:grid;
+      gap: var(--gap);
+      touch-action: manipulation;
+      user-select:none;
+      position:relative;
+    }
+
+    /* faint reference image behind target slots */
+    .targetWrap{
+      position:relative;
+    }
+    .ref{
+      position:absolute;
+      inset:0;
+      border-radius: 18px;
+      opacity:.12;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.1);
+      pointer-events:none;
+    }
+
+    .cell{
+      border-radius: var(--tileRadius);
+      border: 2px dashed rgba(16,24,40,.18);
+      background: rgba(255,255,255,.70);
+      position:relative;
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+      min-height: 74px;
+    }
+    .cell.good{
+      border: 2px solid rgba(18,183,106,.55);
+      background: rgba(18,183,106,.08);
+    }
+    .cell.badFlash{
+      animation: badPulse 220ms ease-in-out 1;
+    }
+    @keyframes badPulse{
+      0%{ transform: scale(1); }
+      50%{ transform: scale(.98); }
+      100%{ transform: scale(1); }
+    }
+
+    .tile{
+      width:100%;
+      height:100%;
+      border-radius: var(--tileRadius);
+      background-repeat:no-repeat;
+      border:1px solid rgba(16,24,40,.10);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.70),
+        0 10px 18px rgba(16,24,40,.12);
+      cursor:grab;
+      -webkit-tap-highlight-color: transparent;
+      position:relative;
+      overflow:hidden;
+    }
+    .tile:active{ cursor:grabbing; }
+
+    .tile::after{
+      content:"";
+      position:absolute;
+      inset:-40% -40%;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.65), transparent 45%);
+      pointer-events:none;
+    }
+
+    .locked{
+      cursor: default !important;
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.70),
+        0 14px 22px rgba(16,24,40,.14);
+    }
+
+    /* sparkles when finished */
+    .sparkle{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity .15s ease;
+      z-index:2;
+    }
+    .sparkle.on{ opacity:1; }
+    .spark{
+      position:absolute;
+      width:10px;height:10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0) 60%),
+                  radial-gradient(circle at 50% 50%, rgba(255,92,210,.95), rgba(0,209,255,.0) 65%);
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.8));
+      animation: pop 700ms ease-out forwards;
+    }
+    @keyframes pop{
+      0%{ transform: translate(0,0) scale(.6); opacity:0; }
+      20%{ opacity:1; }
+      100%{ transform: translate(var(--dx), var(--dy)) scale(1.05); opacity:0; }
+    }
+
+    .msg{
+      text-align:center;
+      font-weight:900;
+      margin-top: 10px;
+      min-height: 22px;
+    }
+    .msg.ok{ color: var(--ok); }
+    .msg.bad{ color: var(--bad); }
+
+    @media (max-width: 860px){
+      .boards{ grid-template-columns: 1fr; }
+      .chooser{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .thumb img{ height: 150px; }
+    }
+    @media (max-width: 520px){
+      header{ padding:14px 12px 8px; }
+      .content{ padding: 8px 12px 12px; }
+      .chooser{ grid-template-columns: 1fr; }
+      .thumb img{ height: 160px; }
+      .cell{ min-height: 64px; }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="frame">
+    <div class="card">
+      <header>
+        <div>
+          <h1>Picture Puzzle Play</h1>
+          <p class="sub">
+            Choose a picture, then drag pieces into the <b>correct</b> spot.
+            If it’s wrong, it pops back. When it’s right, it locks ✅
+          </p>
+        </div>
+        <div class="controls">
+          <button class="btn secondary" id="backBtn">⬅️ Back to pictures</button>
+          <button class="btn secondary" id="resetBtn">🔄 Reset</button>
+          <button class="btn" id="toggleBtn">🧩 Size: <span id="sizeLabel">2×2</span></button>
+          <div class="pill">✅ Solved: <span id="solved">0</span></div>
+        </div>
+      </header>
 
-    <div class="controls">
-        <select id="maxNum">
-            <option value="10">Max 10</option>
-            <option value="20" selected>Max 20</option>
-            <option value="100">Max 100</option>
-        </select>
-        <button class="btn-gen" onclick="generate()">New Problems</button>
-        <button class="btn-print" onclick="window.print()">Print</button>
+      <div class="content">
+        <!-- CHOOSER -->
+        <div class="chooser" id="chooser"></div>
+
+        <!-- PUZZLE -->
+        <div class="panel" id="panel">
+          <div class="sparkle" id="sparkleLayer"></div>
+          <div class="panelInner">
+            <div class="topRow">
+              <div class="pill">⭐ Correct: <span id="correct">0</span></div>
+              <div class="pill">🎯 Total: <span id="total">0</span></div>
+            </div>
+
+            <div class="boards">
+              <div class="board">
+                <h2>🧩 Puzzle</h2>
+                <p class="hint">Drop the piece onto its matching square.</p>
+
+                <div class="targetWrap">
+                  <div class="ref" id="refImg"></div>
+                  <div class="grid" id="targetGrid"></div>
+                </div>
+
+                <div class="msg" id="msg"></div>
+              </div>
+
+              <div class="board">
+                <h2>🧩 Pieces</h2>
+                <p class="hint">Drag a piece from here into the puzzle.</p>
+                <div class="grid" id="piecesGrid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 
-    <div class="worksheet" id="ws"></div>
+<script>
+  // Put this HTML in the same folder as these files:
+  // 1.png, 2.png, balloon.png
+  const IMAGES = [
+    { name: "Salam Adventures", file: "1.png" },
+    { name: "Star Friend",      file: "2.png" },
+    { name: "Balloon Pop",      file: "balloon.png" }
+  ];
 
-    <script>
-        function generate() {
-            try {
-                const ws = document.getElementById('ws');
-                const max = parseInt(document.getElementById('maxNum').value) || 20;
-                
-                // Clear existing content
-                ws.innerHTML = "";
+  const chooser = document.getElementById("chooser");
+  const panel = document.getElementById("panel");
+  const backBtn = document.getElementById("backBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const sizeLabel = document.getElementById("sizeLabel");
+  const targetGrid = document.getElementById("targetGrid");
+  const piecesGrid = document.getElementById("piecesGrid");
+  const solvedEl = document.getElementById("solved");
+  const correctEl = document.getElementById("correct");
+  const totalEl = document.getElementById("total");
+  const msg = document.getElementById("msg");
+  const sparkleLayer = document.getElementById("sparkleLayer");
+  const refImg = document.getElementById("refImg");
 
-                // 1. Add Header
-                const header = document.createElement('div');
-                header.className = 'header';
-                header.innerHTML = `
-                    <div class="logo-area">
-                        <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'" alt="Salam Adventures">
-                        <div>
-                            <h1>Salam Adventures</h1>
-                            <p style="margin:0; font-size:12px;">Math Expedition 🦎</p>
-                        </div>
-                    </div>
-                    <div style="font-size:12px;">
-                        Name: <span class="name-line"></span><br>
-                        Date: <span class="name-line"></span>
-                    </div>
-                `;
-                ws.appendChild(header);
+  let N = 2;
+  let selected = IMAGES[0];
+  let solved = 0;
 
-                // 2. Add 40 Problems
-                for (let i = 0; i < 40; i++) {
-                    const a = Math.floor(Math.random() * (max - 1)) + 1;
-                    const b = Math.floor(Math.random() * (max - a)) + 1;
-                    
-                    const p = document.createElement('div');
-                    p.className = 'problem';
-                    p.innerHTML = `<span>${a} + ${b} = </span><div class="answer-box"></div>`;
-                    ws.appendChild(p);
-                }
+  // targetSlots: pieceIndex if correct placed, else null
+  let targetSlots = [];
+  // piecesList: pieces still available in tray (pieceIndex array)
+  let piecesList = [];
+  // drag pieceIndex
+  let draggingPiece = null;
 
-                // 3. Add Footer
-                const footer = document.createElement('div');
-                footer.style.gridColumn = "span 4";
-                footer.style.textAlign = "center";
-                footer.style.fontSize = "12px";
-                footer.innerHTML = "<hr>🌟 Great job! Keep exploring with Salam Adventures!";
-                ws.appendChild(footer);
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
 
-            } catch (err) {
-                console.error(err);
-                alert("Generator Error: Check the browser console.");
-            }
-        }
+  function setGridStyles(){
+    targetGrid.style.setProperty("--n", N);
+    piecesGrid.style.setProperty("--n", N);
+    targetGrid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+    piecesGrid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+  }
 
-        // Run immediately
-        generate();
-    </script>
+  function tileStyleFor(pieceIndex){
+    // Each piece shows a different part of the SAME picture (true puzzle)
+    const row = Math.floor(pieceIndex / N);
+    const col = pieceIndex % N;
+
+    // background-size makes the image "N times bigger", then we move it to show the correct segment
+    const bgSize = `${N * 100}% ${N * 100}%`;
+
+    // position must be 0%, 50%, 100% etc to line up segments
+    const x = (col * 100) / (N - 1);
+    const y = (row * 100) / (N - 1);
+
+    return { bgSize, x, y };
+  }
+
+  function sparkleBurst(){
+    sparkleLayer.innerHTML = "";
+    sparkleLayer.classList.add("on");
+    const rect = sparkleLayer.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+
+    for(let i=0;i<26;i++){
+      const s = document.createElement("div");
+      s.className = "spark";
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 180;
+      const dx = Math.cos(ang) * dist;
+      const dy = Math.sin(ang) * dist;
+      s.style.left = (cx + (Math.random()*50-25)) + "px";
+      s.style.top  = (cy + (Math.random()*50-25)) + "px";
+      s.style.setProperty("--dx", dx + "px");
+      s.style.setProperty("--dy", dy + "px");
+      sparkleLayer.appendChild(s);
+    }
+    setTimeout(()=> sparkleLayer.classList.remove("on"), 750);
+  }
+
+  function setMsg(text, type){
+    msg.textContent = text || "";
+    msg.className = "msg" + (type ? (" " + type) : "");
+  }
+
+  function renderChooser(){
+    chooser.innerHTML = "";
+    IMAGES.forEach(img => {
+      const t = document.createElement("div");
+      t.className = "thumb";
+      t.innerHTML = `
+        <img src="${img.file}" alt="${img.name}">
+        <div class="label">Play: ${img.name}</div>
+      `;
+      t.addEventListener("click", () => {
+        selected = img;
+        startPuzzle();
+      });
+      chooser.appendChild(t);
+    });
+  }
+
+  function startPuzzle(){
+    chooser.style.display = "none";
+    panel.classList.add("show");
+    setMsg("", "");
+
+    const total = N * N;
+    totalEl.textContent = total;
+    correctEl.textContent = 0;
+
+    targetSlots = Array(total).fill(null);
+    piecesList = Array.from({length: total}, (_,i)=>i);
+    shuffle(piecesList);
+
+    setGridStyles();
+
+    // faint reference image behind target grid
+    refImg.style.backgroundImage = `url('${selected.file}')`;
+    refImg.style.backgroundSize = "cover";
+    refImg.style.backgroundPosition = "center";
+
+    renderBoards();
+  }
+
+  function backToChooser(){
+    panel.classList.remove("show");
+    chooser.style.display = "grid";
+    setMsg("", "");
+  }
+
+  function renderBoards(){
+    targetGrid.innerHTML = "";
+    piecesGrid.innerHTML = "";
+
+    const total = N * N;
+    let correctCount = 0;
+
+    // TARGET
+    for(let i=0;i<total;i++){
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.dataset.slot = i;
+
+      if(targetSlots[i] !== null){
+        // correct piece is locked here
+        const tile = makeTile(targetSlots[i], true);
+        tile.classList.add("locked");
+        tile.draggable = false;
+        cell.classList.add("good");
+        cell.appendChild(tile);
+        correctCount++;
+      }else{
+        // droppable empty slot
+        cell.addEventListener("dragover", (e)=>{ e.preventDefault(); });
+        cell.addEventListener("drop", (e)=>{
+          e.preventDefault();
+          if(draggingPiece === null) return;
+          handleDrop(i, cell);
+        });
+
+        // tap-to-place for tablets
+        cell.addEventListener("click", ()=>{
+          if(draggingPiece === null) return;
+          handleDrop(i, cell);
+        });
+      }
+
+      targetGrid.appendChild(cell);
+    }
+
+    // PIECES TRAY
+    for(let p=0; p<piecesList.length; p++){
+      const pieceIndex = piecesList[p];
+      const cell = document.createElement("div");
+      cell.className = "cell";
+
+      const tile = makeTile(pieceIndex, false);
+      tile.addEventListener("dragstart", ()=>{
+        draggingPiece = pieceIndex;
+      });
+      tile.addEventListener("dragend", ()=>{
+        draggingPiece = null;
+      });
+
+      // tap-to-pick for tablets
+      tile.addEventListener("click", ()=>{
+        draggingPiece = pieceIndex;
+        setMsg("Now tap the matching square in the puzzle ✨", "");
+      });
+
+      cell.appendChild(tile);
+      piecesGrid.appendChild(cell);
+    }
+
+    correctEl.textContent = correctCount;
+
+    if(correctCount === total){
+      solved++;
+      solvedEl.textContent = solved;
+      setMsg("✅ Perfect! Puzzle completed!", "ok");
+      sparkleBurst();
+      setTimeout(()=> startPuzzle(), 900);
+    }
+  }
+
+  function makeTile(pieceIndex, isLocked){
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.draggable = !isLocked;
+    tile.dataset.piece = pieceIndex;
+
+    const s = tileStyleFor(pieceIndex);
+    tile.style.backgroundImage = `url('${selected.file}')`;
+    tile.style.backgroundSize = s.bgSize;
+    tile.style.backgroundPosition = `${s.x}% ${s.y}%`;
+
+    return tile;
+  }
+
+  function handleDrop(slotIndex, cellEl){
+    const wantPiece = slotIndex;       // the correct piece for this slot
+    const gotPiece = draggingPiece;
+
+    if(gotPiece === wantPiece){
+      // correct -> lock it
+      targetSlots[slotIndex] = gotPiece;
+      piecesList = piecesList.filter(x => x !== gotPiece);
+      draggingPiece = null;
+      setMsg("✅ Nice! Keep going!", "ok");
+      renderBoards();
+    }else{
+      // wrong -> bounce back
+      cellEl.classList.add("badFlash");
+      setTimeout(()=> cellEl.classList.remove("badFlash"), 240);
+      setMsg("❌ Try again!", "bad");
+      draggingPiece = null;
+    }
+  }
+
+  // buttons
+  backBtn.addEventListener("click", backToChooser);
+  resetBtn.addEventListener("click", ()=> startPuzzle());
+  toggleBtn.addEventListener("click", ()=>{
+    N = (N === 2) ? 3 : 2;
+    sizeLabel.textContent = (N === 2) ? "2×2" : "3×3";
+    if(panel.classList.contains("show")) startPuzzle();
+  });
+
+  // init
+  sizeLabel.textContent = "2×2";
+  renderChooser();
+</script>
 </body>
 </html>
