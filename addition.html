@@ -1,38 +1,130 @@
-function generate() {
-    const ws = document.getElementById('ws');
-    const max = parseInt(document.getElementById('maxNum').value);
-    
-    ws.innerHTML = `
-        <div class="header">
-            <div class="logo-area">
-                <img src="./addition images/logo.png" class="logo-img" alt="Salam Adventures">
-                <div>
-                    <h1>Salam Adventures</h1>
-                    <p style="margin:2px 0; color:#6b7280; font-weight:600;">Math Expedition 🦎</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Math Worksheet Generator</title>
+    <style>
+        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
+        
+        /* Controls Section */
+        .controls { 
+            background: white; padding: 20px; border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 900px; 
+            margin: 0 auto 30px; display: flex; gap: 20px; flex-wrap: wrap; 
+            align-items: center; justify-content: center; border: 2px solid var(--primary);
+        }
+        
+        button { 
+            padding: 12px 24px; border-radius: 12px; border: none; 
+            cursor: pointer; font-weight: 1000; transition: 0.2s; text-transform: uppercase;
+        }
+        .btn-gen { background: var(--primary); color: white; box-shadow: 0 4px 0 #059669; }
+        .btn-print { background: var(--secondary); color: white; box-shadow: 0 4px 0 #0284c7; }
+
+        /* Worksheet Layout */
+        .worksheet { 
+            background: white; width: 210mm; min-height: 297mm; 
+            padding: 15mm 20mm; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;
+            position: relative;
+        }
+        
+        .header { 
+            grid-column: span 3; border-bottom: 4px dashed var(--primary); 
+            padding-bottom: 15px; margin-bottom: 20px; display: flex; 
+            justify-content: space-between; align-items: center; 
+        }
+        .logo-area { display: flex; align-items: center; gap: 20px; }
+        .logo-img { width: 110px; height: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        
+        .header h1 { margin: 0; color: var(--primary); font-size: 32px; letter-spacing: -1px; }
+        .name-line { border-bottom: 2px solid #000; width: 150px; display: inline-block; margin-left: 5px; margin-bottom: 8px; }
+
+        /* The Problems */
+        .problem { 
+            font-size: 28px; font-weight: 600; display: flex; 
+            align-items: center; justify-content: flex-end; gap: 12px; 
+            padding: 15px 5px; border-bottom: 1px solid #f3f4f6;
+        }
+        .answer-box { width: 70px; height: 50px; border: 2px solid #e5e7eb; border-radius: 10px; background: #fff; }
+
+        .reward-section {
+            grid-column: span 3; text-align: center; margin-top: 30px;
+            padding: 20px; border: 3px dashed var(--accent); border-radius: 20px; background: #fffcf0;
+        }
+
+        @media print {
+            .controls { display: none; }
+            .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <label>Difficulty:</label>
+        <select id="maxNum">
+            <option value="10">1-10</option>
+            <option value="20" selected>1-20</option>
+            <option value="100">1-100</option>
+        </select>
+        <button class="btn-gen" onclick="generate()">✨ Generate Problems</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
+    </div>
+
+    <div class="worksheet" id="ws">
+        </div>
+
+    <script>
+        function generate() {
+            const ws = document.getElementById('ws');
+            const max = parseInt(document.getElementById('maxNum').value);
+            
+            // 1. Create the Header
+            let htmlContent = `
+                <div class="header">
+                    <div class="logo-area">
+                        <img src="./addition images/logo.png" class="logo-img" alt="Salam Adventures">
+                        <div>
+                            <h1>Salam Adventures</h1>
+                            <p style="margin:2px 0; color:#6b7280; font-weight:600;">Math Expedition 🦎</p>
+                        </div>
+                    </div>
+                    <div class="info-box" style="font-weight:bold;">
+                        <div>Name: <span class="name-line"></span></div>
+                        <div>Date: <span class="name-line"></span></div>
+                    </div>
                 </div>
-            </div>
-            <div class="info-box">
-                <div>Name: <span class="name-line"></span></div>
-                <div>Date: <span class="name-line"></span></div>
-            </div>
-        </div>
-    `;
+            `;
 
-    // Problem generation logic remains the same
-    for (let i = 0; i < 21; i++) {
-        let a = Math.floor(Math.random() * (max - 1)) + 1;
-        let b = Math.floor(Math.random() * (max - a)) + 1;
-        const div = document.createElement('div');
-        div.className = 'problem';
-        div.innerHTML = `<span>${a} + ${b} = </span><div class="answer-box"></div>`;
-        ws.appendChild(div);
-    }
+            // 2. Generate the Addition Problems
+            for (let i = 0; i < 21; i++) {
+                let a = Math.floor(Math.random() * (max - 1)) + 1;
+                let b = Math.floor(Math.random() * (max - a)) + 1;
+                htmlContent += `
+                    <div class="problem">
+                        <span>${a} + ${b} = </span>
+                        <div class="answer-box"></div>
+                    </div>
+                `;
+            }
 
-    ws.innerHTML += `
-        <div class="reward-section">
-            <span style="font-weight:bold; color: #b45309; font-size: 18px;">🌟 You did it! Color your reward star:</span>
-            <span style="font-size: 40px; color: #e5e7eb; margin-left:15px; vertical-align: middle;">★</span>
-        </div>
-    `;
-}
-generate();
+            // 3. Add the Footer
+            htmlContent += `
+                <div class="reward-section">
+                    <span style="font-weight:bold; color: #b45309; font-size: 18px;">🌟 You did it! Color your reward star:</span>
+                    <span style="font-size: 40px; color: #e5e7eb; margin-left:15px; vertical-align: middle;">★</span>
+                </div>
+            `;
+
+            // 4. Push all the content into the worksheet at once
+            ws.innerHTML = htmlContent;
+        }
+
+        // Run once on start
+        generate();
+    </script>
+</body>
+</html>
