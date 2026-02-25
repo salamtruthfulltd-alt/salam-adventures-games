@@ -5,7 +5,7 @@
     <title>Salam Adventures | Phonics Level 1</title>
     <style>
         :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
+        body { font-family: 'Courier New', Courier, monospace; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
         
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
@@ -21,143 +21,51 @@
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; }
         .logo-img { width: 80px; height: auto; }
 
         /* Handwriting Logic */
         .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #fffcf0; }
         
         .handwriting-row {
-            border-bottom: 2px solid #000; /* The solid baseline */
+            border-bottom: 2px solid #000; /* Solid baseline */
             height: 70px;
-            margin: 10px 0;
+            margin: 5px 0 15px 0;
             display: flex;
-            align-items: flex-end; /* Sits words on the line */
+            align-items: flex-end; 
             padding-left: 10px;
             position: relative;
         }
 
-        /* Dashed middle line helper */
         .mid-line {
             position: absolute;
-            bottom: 30px;
+            bottom: 34px; /* Perfectly centered for Courier font */
             left: 0;
             width: 100%;
             border-top: 1px dashed #94a3b8;
             z-index: 1;
         }
 
-        .word-bold { font-size: 48px; font-weight: 900; color: #000; margin-right: 60px; line-height: 1; z-index: 2; }
+        /* Bold Word - Matching Size to SVG */
+        .word-bold { 
+            font-size: 55px; 
+            font-weight: 900; 
+            color: #000; 
+            margin-right: 50px; 
+            line-height: 0.8; 
+            z-index: 2;
+            display: inline-block;
+        }
 
-        /* SVG Dotted Text Logic */
-        .dotted-svg { height: 50px; margin-right: 60px; z-index: 2; }
+        /* SVG Dotted Letter Logic */
+        .dotted-svg { height: 60px; margin-right: 50px; z-index: 2; overflow: visible; display: inline-block;}
         .dotted-text {
             fill: none;
-            stroke: #cbd5e1;
-            stroke-width: 1.5;
-            stroke-dasharray: 3, 3;
-            font-size: 48px;
-            font-family: 'Courier New', Courier, monospace;
+            stroke: #cbd5e1; 
+            stroke-width: 2.5;
+            stroke-dasharray: 2, 4; 
+            font-size: 55px;
             font-weight: bold;
         }
 
-        .section-title { background: #ecfdf5; padding: 8px 12px; color: var(--primary); font-weight: 800; margin: 25px 0 12px; border-radius: 5px; text-transform: uppercase; font-size: 14px; border-left: 5px solid var(--primary); }
-
-        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .cvc-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: #fff; }
-        .box { width: 35px; height: 35px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
-
-        @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
-    </style>
-</head>
-<body>
-
-<div class="controls">
-    <button class="btn-gen" onclick="generate()">✨ Shuffle Worksheet</button>
-    <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
-</div>
-
-<div class="page" id="ws-content"></div>
-
-<script>
-    const cvcOptions = [
-        {h: "Furry pet", hint: "at"}, {h: "Yellow sun", hint: "un"},
-        {h: "Friendly dog", hint: "og"}, {h: "Hat on head", hint: "at"},
-        {h: "Ink pen", hint: "en"}, {h: "Big bus", hint: "us"}
-    ];
-    
-    const wordBank = ["like", "said", "went", "come", "have", "they", "with", "this"];
-
-    function generate() {
-        const target = document.getElementById('ws-content');
-        const sw = wordBank[Math.floor(Math.random() * wordBank.length)];
-        const shuffled = [...cvcOptions].sort(() => 0.5 - Math.random());
-
-        // Create SVG Dotted Word
-        const svgWord = `
-            <svg class="dotted-svg" width="${sw.length * 30}" viewBox="0 0 ${sw.length * 30} 50">
-                <text x="0" y="45" class="dotted-text">${sw}</text>
-            </svg>`;
-
-        target.innerHTML = `
-            <div class="header">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
-                    <div>
-                        <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
-                        <p style="margin:0; font-size:13px; font-weight:bold; color:#64748b;">Literacy Expedition: Level 1</p>
-                    </div>
-                </div>
-                <div style="text-align:right; font-size:11px;">Name: ________________<br>Date: ________________</div>
-            </div>
-
-            <div class="sight-word-area">
-                <small style="color:var(--accent); font-weight:900;">SIGHT WORD PRACTICE</small>
-                <div class="handwriting-row">
-                    <div class="mid-line"></div>
-                    <span class="word-bold">${sw}</span>
-                    ${svgWord}
-                    ${svgWord}
-                    ${svgWord}
-                </div>
-                <div class="handwriting-row">
-                    <div class="mid-line"></div>
-                    <span class="word-bold" style="color:transparent">${sw}</span>
-                </div>
-            </div>
-
-            <div class="section-title">Part 1: Missing First Letters</div>
-            <div class="phonics-grid">
-                ${shuffled.map(item => `
-                    <div class="cvc-card">
-                        <small style="color:#666">${item.h}</small><br><br>
-                        <div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">${item.hint}</span>
-                    </div>
-                `).join('')}
-            </div>
-
-            <div class="section-title">Part 2: Sentence Tracing</div>
-            <div class="handwriting-row" style="height:50px;">
-                <div class="mid-line" style="bottom:20px;"></div>
-                <svg width="400" height="40" viewBox="0 0 400 40">
-                    <text x="0" y="35" class="dotted-text" style="font-size:28px;">the cat sat on the mat.</text>
-                </svg>
-            </div>
-            <div class="handwriting-row" style="height:50px;">
-                <div class="mid-line" style="bottom:20px;"></div>
-                <svg width="400" height="40" viewBox="0 0 400 40">
-                    <text x="0" y="35" class="dotted-text" style="font-size:28px;">i can see the big sun.</text>
-                </svg>
-            </div>
-
-            <div style="text-align:center; margin-top:35px; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
-                © Salam Adventures • Handwriting & Phonics Master
-            </div>
-        `;
-    }
-
-    window.onload = generate;
-</script>
-
-</body>
-</html>
+        .section-title { background: #ecfdf5; padding
