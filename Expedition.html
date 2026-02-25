@@ -5,56 +5,146 @@
     <title>Salam Adventures | Phonics Level 1</title>
     <style>
         :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
+        /* Reset and Page Setup */
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
+        .page { 
+            background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
+            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Controls */
         .controls { 
             background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
             max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
         }
-        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; }
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
-        .page { 
-            background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
-            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); box-sizing: border-box;
-        }
-        
+        /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
         .logo-img { width: 80px; height: auto; }
-        
-        /* Handwriting Section */
+
+        /* Handwriting Styling */
         .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #fffcf0; }
         
         .handwriting-line {
-            border-bottom: 1.5px solid #333; /* Bottom Line */
-            border-top: 1.5px solid #333;    /* Top Line */
-            height: 55px;
-            position: relative;
+            border-bottom: 1.5px solid #000;
+            border-top: 1.5px solid #000;
+            height: 60px;
             margin: 15px 0;
             width: 100%;
-            /* The Dashed Middle Line */
-            background-image: linear-gradient(to bottom, transparent 48%, #94a3b8 49%, #94a3b8 51%, transparent 52%);
+            background-image: linear-gradient(to bottom, transparent 49%, #94a3b8 50%, transparent 51%);
             display: flex;
             align-items: center;
             padding-left: 15px;
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        .word-bold { font-size: 32px; font-weight: 900; color: #000; margin-right: 50px; text-transform: lowercase; }
+        .word-bold { font-size: 36px; font-weight: 900; color: #000; margin-right: 45px; }
         
-        /* Specialized Dotted Tracing Font Effect */
+        /* Creating a true "Dotted" look for tracing */
         .word-dotted { 
-            font-size: 32px; 
+            font-size: 36px; 
             font-weight: 400; 
             color: #d1d5db; 
             letter-spacing: 2px;
-            text-transform: lowercase;
-            margin-right: 50px;
-            border-bottom: 2px dashed #e2e8f0; /* Adds extra tracing guide */
+            margin-right: 45px;
+            border-bottom: 2px dotted #d1d5db;
         }
 
         .section-title { background: #ecfdf5; padding: 8px 12px; color: var(--primary); font-weight: 800; margin: 25px 0 12px; border-radius: 5px; text-transform: uppercase; font-size: 14px; border-left: 5px solid var(--primary); }
 
-        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .cvc-card { border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; text-align: center; background: #fff; }
-        .box { width:
+        /* Phonics Grid */
+        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .cvc-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: #fff; }
+        .box { width: 35px; height: 35px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
+
+        @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button class="btn-gen" onclick="generateWorksheet()">✨ New Sight Word</button>
+    <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
+</div>
+
+<div class="page" id="output">
+    </div>
+
+<script>
+    const cvcData = [
+        {h: "Furry pet", hint: "at"}, {h: "Yellow sun", hint: "un"},
+        {h: "Friendly pet", hint: "og"}, {h: "Head hat", hint: "at"},
+        {h: "Ink pen", hint: "en"}, {h: "School bus", hint: "us"}
+    ];
+    
+    const words = ["like", "went", "said", "have", "come", "they", "this", "with"];
+
+    function generateWorksheet() {
+        const target = document.getElementById('output');
+        const randomWord = words[Math.floor(Math.random() * words.length)];
+        const shuffledCVC = [...cvcData].sort(() => 0.5 - Math.random());
+
+        target.innerHTML = `
+            <div class="header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                    <div>
+                        <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
+                        <p style="margin:0; font-size:13px; font-weight:bold; color:#64748b;">Literacy Expedition: Level 1</p>
+                    </div>
+                </div>
+                <div style="text-align:right; font-size:11px;">
+                    Name: ____________________<br>
+                    Date: ____________________
+                </div>
+            </div>
+
+            <div class="sight-word-area">
+                <small style="color:var(--accent); font-weight:900;">SIGHT WORD OF THE DAY</small>
+                <div class="handwriting-line">
+                    <span class="word-bold">${randomWord}</span>
+                    <span class="word-dotted">${randomWord}</span>
+                    <span class="word-dotted">${randomWord}</span>
+                    <span class="word-dotted">${randomWord}</span>
+                </div>
+                <div class="handwriting-line">
+                    <span class="word-bold" style="visibility:hidden">${randomWord}</span>
+                    </div>
+            </div>
+
+            <div class="section-title">Part 1: Phonics Fun</div>
+            <p style="font-size:12px; margin-bottom:10px;">Fill in the missing first letter.</p>
+            <div class="phonics-grid">
+                ${shuffledCVC.map(item => `
+                    <div class="cvc-card">
+                        <small>${item.h}</small><br><br>
+                        <div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">${item.hint}</span>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="section-title">Part 2: Sentence Tracing</div>
+            <div class="handwriting-line" style="border-top:none; height:50px;">
+                <span class="word-dotted" style="font-size:20px; border:none;">the cat sat on the mat.</span>
+            </div>
+            <div class="handwriting-line" style="border-top:none; height:50px;">
+                <span class="word-dotted" style="font-size:20px; border:none;">i can see the big sun.</span>
+            </div>
+
+            <div style="position:absolute; bottom:15mm; left:15mm; right:15mm; text-align:center; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
+                © Salam Adventures Learning Material • Let's Explore English!
+            </div>
+        `;
+    }
+
+    // Run immediately on load
+    window.onload = generateWorksheet;
+</script>
+
+</body>
+</html>
