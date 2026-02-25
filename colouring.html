@@ -8,7 +8,7 @@
             padding: 25px; border-radius: 30px; background: white;
             box-shadow: 15px 15px 0px #ffd1dc; 
         }
-        #image-area { min-height: 350px; margin-top: 20px; border: 2px dashed #eee; border-radius: 15px; display: flex; justify-content: center; align-items: center; }
+        #image-area { min-height: 300px; margin-top: 20px; border: 2px dashed #eee; border-radius: 15px; display: flex; justify-content: center; align-items: center; }
         #coloring-img { max-width: 100%; height: auto; display: none; }
         button { 
             background-color: #4CAF50; color: white; padding: 15px 25px; 
@@ -35,9 +35,7 @@
 </div>
 
 <script>
-    // Version A: Using %20 (Most common)
-    const pathA = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
-    
+    // I am using the EXACT path from your error, but with a "Fallback" trick
     const images = [
         "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
         "dolly.png", "flower design.png", "fruit and veg.png", 
@@ -52,20 +50,27 @@
         const randomIndex = Math.floor(Math.random() * images.length);
         const selectedImage = images[randomIndex];
         
-        // encodeURI handles the spaces in filenames automatically
-        const finalUrl = pathA + encodeURIComponent(selectedImage);
+        // This is the path that failed. Let's try it with a standard space first
+        // GitHub sometimes likes the raw space in the code more than the %20
+        const testUrl = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring images/" + selectedImage;
         
         imgElement.style.display = "none";
-        status.innerText = "Trying to load image...";
-        imgElement.src = finalUrl;
+        status.innerText = "Searching...";
+        imgElement.src = testUrl;
 
         imgElement.onload = function() {
-            status.innerText = "✨ Success! Ready to color ✨";
+            status.innerText = "✨ Found it! Ready to color ✨";
             imgElement.style.display = "block";
         };
         
         imgElement.onerror = function() {
-            status.innerHTML = "❌ Fail! Link tried: <br><small>" + finalUrl + "</small>";
+            // FALLBACK: If 'main' fails, it might actually be 'master'
+            const masterUrl = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/master/colouring images/" + selectedImage;
+            imgElement.src = masterUrl;
+            
+            imgElement.onerror = function() {
+                 status.innerHTML = "❌ Still failing. <br> Tried: " + selectedImage;
+            };
         };
     }
 
