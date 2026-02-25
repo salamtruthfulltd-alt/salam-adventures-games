@@ -2,38 +2,96 @@
 <html>
 <head>
     <style>
-        body { font-family: 'Comic Sans MS', cursive, sans-serif; text-align: center; background: transparent; padding: 20px; }
-        .container { max-width: 600px; margin: auto; border: 3px dashed #ff69b4; padding: 20px; border-radius: 20px; background: white; }
-        img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 10px; margin-top: 15px; display: none; }
-        button { background-color: #4CAF50; color: white; padding: 15px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 18px; margin: 10px; transition: 0.3s; }
-        button:hover { background-color: #45a049; transform: scale(1.05); }
-        .print-btn { background-color: #008CBA; }
+        body { 
+            font-family: 'Comic Sans MS', cursive, sans-serif; 
+            text-align: center; 
+            background: transparent; 
+            padding: 20px; 
+        }
+        
+        /* The 3D Container */
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+            border: 5px solid #ff69b4; /* Bright Pink Border */
+            padding: 25px; 
+            border-radius: 30px; 
+            background: white;
+            /* This creates the 3D depth effect */
+            box-shadow: 12px 12px 0px #ffd1dc, 20px 20px 50px rgba(0,0,0,0.1);
+        }
+
+        h2 { color: #ff1493; text-shadow: 2px 2px #ffe4e1; }
+
+        /* Image Styling */
+        #coloring-img { 
+            max-width: 100%; 
+            height: auto; 
+            border: 2px solid #eee; 
+            border-radius: 15px; 
+            margin-top: 20px; 
+            display: none; /* Hidden until button is clicked */
+        }
+
+        /* 3D Buttons */
+        button { 
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 15px 25px; 
+            border: none; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            font-size: 18px; 
+            margin: 10px; 
+            box-shadow: 0 6px #2e7d32; /* Button depth */
+            transition: 0.2s;
+        }
+
+        button:active {
+            box-shadow: 0 2px #2e7d32;
+            transform: translateY(4px);
+        }
+
+        .print-btn { background-color: #008CBA; box-shadow: 0 6px #005f7a; }
+        .print-btn:active { box-shadow: 0 2px #005f7a; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🎨 Colouring Page Generator</h2>
-    <p>Click the button to find a new adventure to color!</p>
+    <h2>🎨 Colouring Expedition</h2>
+    <p>Click to find a secret picture to color!</p>
     
     <button onclick="generateImage()">✨ Get New Image</button>
-    <button class="print-btn" onclick="printImage()">🖨️ Print This Page</button>
+    <button class="print-btn" onclick="printImage()">🖨️ Print Page</button>
     
-    <div id="image-display">
+    <div id="image-area">
         <img id="coloring-img" src="" alt="Coloring Page">
     </div>
 </div>
 
 <script>
-    // These are your specific files from GitHub
+    // Link to your specific GitHub "Raw" folder
     const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
     
+    // Exact filenames from your screenshot
     const images = [
-        "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
-        "dolly.png", "flower%20design.png", "fruit%20and%20veg.png", 
-        "garden.png", "horse.png", "house.png", "mobile%20phone.png", 
-        "moon%20(2).png", "planes.png", "prince%20and%20princess.png", 
-        "swans.png.jpg", "tresure%20chest.png"
+        "butterfly.png.jpg", 
+        "car.png.jpg", 
+        "dinosaur.png", 
+        "dog1.png", 
+        "dolly.png", 
+        "flower%20design.png", 
+        "fruit%20and%20veg.png", 
+        "garden.png", 
+        "horse.png", 
+        "house.png", 
+        "mobile%20phone.png", 
+        "moon%20(2).png", 
+        "planes.png", 
+        "prince%20and%20princess.png", 
+        "swans.png.jpg", 
+        "tresure%20chest.png"
     ];
 
     function generateImage() {
@@ -41,6 +99,7 @@
         const randomIndex = Math.floor(Math.random() * images.length);
         const selectedImage = images[randomIndex];
         
+        // Combine base URL with image filename
         imgElement.src = repoBase + selectedImage;
         imgElement.style.display = "block";
     }
@@ -48,13 +107,18 @@
     function printImage() {
         const img = document.getElementById('coloring-img');
         if (img.src === "" || img.style.display === "none") {
-            alert("Please generate an image first!");
+            alert("Pick an image first! ✨");
             return;
         }
         const win = window.open('', '_blank');
-        win.document.write('<html><body style="text-align:center;"><img src="' + img.src + '" style="max-width:100%;"></body></html>');
+        win.document.write('<html><body style="text-align:center;"><img src="' + img.src + '" style="max-width:95%;"></body></html>');
         win.document.close();
-        setTimeout(() => { win.print(); win.close(); }, 500);
+        
+        // Wait for image to load then open print dialog
+        setTimeout(() => { 
+            win.print(); 
+            win.close(); 
+        }, 800);
     }
 </script>
 
