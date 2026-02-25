@@ -5,78 +5,56 @@
     <title>Salam Adventures | Phonics Level 1</title>
     <style>
         :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 20px; color: var(--ink); }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
         .controls { 
             background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
             max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
         }
-        button { padding: 8px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
-            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; box-sizing: border-box;
+            margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); box-sizing: border-box;
         }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
         .logo-img { width: 80px; height: auto; }
         
-        /* Handwriting Guides */
-        .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 15px; margin-bottom: 20px; background: #fffcf0; }
+        /* Handwriting Section */
+        .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 20px; margin-bottom: 25px; background: #fffcf0; }
         
         .handwriting-line {
-            border-bottom: 1px solid #333;
-            border-top: 1px solid #333;
-            height: 45px;
+            border-bottom: 1.5px solid #333; /* Bottom Line */
+            border-top: 1.5px solid #333;    /* Top Line */
+            height: 55px;
             position: relative;
-            margin: 10px 0;
+            margin: 15px 0;
             width: 100%;
+            /* The Dashed Middle Line */
             background-image: linear-gradient(to bottom, transparent 48%, #94a3b8 49%, #94a3b8 51%, transparent 52%);
             display: flex;
             align-items: center;
-            padding-left: 10px;
-            font-family: 'Courier New', Courier, monospace;
+            padding-left: 15px;
         }
 
-        /* The Dotted Tracing Effect */
-        .dot-trace { 
-            color: #cbd5e1; 
-            text-decoration: underline dotted #94a3b8;
-            font-weight: 400;
-            font-size: 28px;
-            letter-spacing: 5px;
-        }
+        .word-bold { font-size: 32px; font-weight: 900; color: #000; margin-right: 50px; text-transform: lowercase; }
         
-        .bold-start { font-size: 28px; font-weight: 900; color: var(--ink); letter-spacing: 5px; margin-right: 30px; }
+        /* Specialized Dotted Tracing Font Effect */
+        .word-dotted { 
+            font-size: 32px; 
+            font-weight: 400; 
+            color: #d1d5db; 
+            letter-spacing: 2px;
+            text-transform: lowercase;
+            margin-right: 50px;
+            border-bottom: 2px dashed #e2e8f0; /* Adds extra tracing guide */
+        }
 
-        .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 20px 0 10px; border-radius: 5px; text-transform: uppercase; font-size: 13px; border-left: 4px solid var(--primary); }
+        .section-title { background: #ecfdf5; padding: 8px 12px; color: var(--primary); font-weight: 800; margin: 25px 0 12px; border-radius: 5px; text-transform: uppercase; font-size: 14px; border-left: 5px solid var(--primary); }
 
-        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .cvc-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; text-align: center; background: #fff; }
-        .box { width: 30px; height: 30px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
-
-        @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
-    </style>
-</head>
-<body>
-
-<div class="controls">
-    <button class="btn-gen" onclick="generate()">✨ New Sight Word</button>
-    <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
-</div>
-
-<div class="page" id="main-ws"></div>
-
-<script>
-    const cvcWords = [
-        {h: "A furry pet", w: "CAT", hint: "AT"}, {h: "Hot yellow ball", w: "SUN", hint: "UN"},
-        {h: "A friendly pet", w: "DOG", hint: "OG"}, {h: "Wear on head", w: "HAT", hint: "AT"},
-        {h: "Used to write", w: "PEN", hint: "EN"}, {h: "A big car", w: "BUS", hint: "US"}
-    ];
-    const sights = ["THE", "AND", "YOU", "FOR", "WAS", "ARE", "LIKE", "SEE"];
-
-    function generate() {
-        const ws = document.getElementById('main-ws');
-        const sw = sights[Math
+        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .cvc-card { border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 20px; text-align: center; background: #fff; }
+        .box { width:
