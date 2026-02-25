@@ -3,118 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | Math Worksheet</title>
+    <title>Salam Adventures | Math Master</title>
     <style>
         :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
-        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
-        /* UI Controls */
+        /* Compact UI Bar */
         .controls { 
-            background: white; padding: 10px; border-radius: 12px; 
-            max-width: 800px; margin: 0 auto 15px; display: flex; 
-            gap: 10px; align-items: center; justify-content: center;
-            border: 1px solid var(--primary);
+            background: white; padding: 8px 15px; border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 950px; 
+            margin: 0 auto 10px; display: flex; gap: 12px; flex-wrap: wrap; 
+            align-items: center; justify-content: center; border: 1px solid var(--primary);
         }
         
-        button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: var(--secondary); color: white; }
+        select, button { padding: 6px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .btn-gen { background: var(--primary); color: white; border: none; }
+        .btn-print { background: var(--secondary); color: white; border: none; }
 
-        /* Compact Layout */
+        /* Compact A4 Worksheet */
         .worksheet { 
             background: white; width: 210mm; min-height: 297mm; 
-            padding: 10mm; margin: 0 auto; display: grid; 
-            grid-template-columns: repeat(4, 1fr); gap: 10px;
+            padding: 8mm 12mm; margin: 0 auto; display: grid; 
+            grid-template-columns: repeat(4, 1fr); gap: 6px 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
         
         .header { 
             grid-column: span 4; border-bottom: 2px dashed var(--primary); 
-            padding-bottom: 10px; margin-bottom: 10px; display: flex; 
+            padding-bottom: 8px; margin-bottom: 10px; display: flex; 
             justify-content: space-between; align-items: center; 
         }
         .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-img { width: 60px; height: auto; }
+        .logo-img { width: 65px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         
         .header h1 { margin: 0; color: var(--primary); font-size: 20px; }
-        .name-line { border-bottom: 1px solid #000; width: 100px; display: inline-block; margin-left: 5px; }
+        .header p { margin: 0; font-size: 12px; color: #6b7280; font-weight: 600; }
+        .name-line { border-bottom: 1px solid #000; width: 110px; display: inline-block; margin-left: 5px; }
 
+        /* Problem Styling */
         .problem { 
-            font-size: 18px; font-weight: 600; display: flex; 
-            align-items: center; justify-content: flex-end; gap: 5px; 
-            padding: 5px; border-bottom: 1px solid #f9fafb;
+            font-size: 17px; font-weight: 700; display: flex; 
+            align-items: center; justify-content: flex-end; gap: 6px; 
+            padding: 4px 0; border-bottom: 1px solid #f9fafb;
         }
-        .answer-box { width: 40px; height: 30px; border: 1px solid #ccc; border-radius: 4px; }
+        .answer-box { width: 42px; height: 28px; border: 1px solid #ccc; border-radius: 4px; }
 
-        @media print { .controls { display: none; } .worksheet { margin: 0; width: 100%; } }
+        .footer { grid-column: span 4; text-align: center; margin-top: 10px; padding-top: 5px; border-top: 1px solid #eee; font-size: 11px; color: #9ca3af; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .controls { display: none; }
+            .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; padding: 5mm; }
+        }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <select id="maxNum">
-            <option value="10">Max 10</option>
-            <option value="20" selected>Max 20</option>
-            <option value="100">Max 100</option>
+        <label style="font-size: 12px;">Operation:</label>
+        <select id="opMode">
+            <option value="add">Addition (+)</option>
+            <option value="sub">Subtraction (-)</option>
+            <option value="mul">Multiplication (×)</option>
+            <option value="div">Division (÷)</option>
         </select>
-        <button class="btn-gen" onclick="generate()">New Problems</button>
-        <button class="btn-print" onclick="window.print()">Print</button>
+        
+        <label style="font-size: 12px;">Max Num:</label>
+        <select id="maxNum">
+            <option value="12">12 (Easy)</option>
+            <option value="20" selected>20 (Medium)</option>
+            <option value="100">100 (Hard)</option>
+        </select>
+        
+        <button class="btn-gen" onclick="generate()">✨ Refresh</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
     </div>
 
     <div class="worksheet" id="ws"></div>
 
     <script>
         function generate() {
-            try {
-                const ws = document.getElementById('ws');
-                const max = parseInt(document.getElementById('maxNum').value) || 20;
-                
-                // Clear existing content
-                ws.innerHTML = "";
+            const ws = document.getElementById('ws');
+            const max = parseInt(document.getElementById('maxNum').value);
+            const mode = document.getElementById('opMode').value;
+            
+            let title = "Math Expedition";
+            if(mode === 'add') title = "Addition Adventure";
+            if(mode === 'sub') title = "Subtraction Safari";
+            if(mode === 'mul') title = "Multiplication Mission";
+            if(mode === 'div') title = "Division Discovery";
 
-                // 1. Add Header
-                const header = document.createElement('div');
-                header.className = 'header';
-                header.innerHTML = `
+            let html = `
+                <div class="header">
                     <div class="logo-area">
                         <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'" alt="Salam Adventures">
                         <div>
                             <h1>Salam Adventures</h1>
-                            <p style="margin:0; font-size:12px;">Math Expedition 🦎</p>
+                            <p>${title} 🦎</p>
                         </div>
                     </div>
-                    <div style="font-size:12px;">
+                    <div style="font-size: 11px; font-weight: bold;">
                         Name: <span class="name-line"></span><br>
-                        Date: <span class="name-line"></span>
+                        Date: <span class="name-line" style="margin-top:4px;"></span>
                     </div>
-                `;
-                ws.appendChild(header);
+                </div>
+            `;
 
-                // 2. Add 40 Problems
-                for (let i = 0; i < 40; i++) {
-                    const a = Math.floor(Math.random() * (max - 1)) + 1;
-                    const b = Math.floor(Math.random() * (max - a)) + 1;
-                    
-                    const p = document.createElement('div');
-                    p.className = 'problem';
-                    p.innerHTML = `<span>${a} + ${b} = </span><div class="answer-box"></div>`;
-                    ws.appendChild(p);
+            // Generating 48 problems (12 rows of 4)
+            for (let i = 0; i < 48; i++) {
+                let a, b, sym;
+                
+                if (mode === 'add') {
+                    a = rand(1, max); b = rand(1, max); sym = "+";
+                } else if (mode === 'sub') {
+                    a = rand(5, max); b = rand(1, a); sym = "-";
+                } else if (mode === 'mul') {
+                    a = rand(1, Math.min(max, 12)); b = rand(1, 10); sym = "×";
+                } else if (mode === 'div') {
+                    b = rand(1, 10); a = b * rand(1, 10); sym = "÷";
                 }
 
-                // 3. Add Footer
-                const footer = document.createElement('div');
-                footer.style.gridColumn = "span 4";
-                footer.style.textAlign = "center";
-                footer.style.fontSize = "12px";
-                footer.innerHTML = "<hr>🌟 Great job! Keep exploring with Salam Adventures!";
-                ws.appendChild(footer);
-
-            } catch (err) {
-                console.error(err);
-                alert("Generator Error: Check the browser console.");
+                html += `
+                    <div class="problem">
+                        <span>${a} ${sym} ${b} = </span>
+                        <div class="answer-box"></div>
+                    </div>
+                `;
             }
+
+            html += `<div class="footer">© Salam Adventures Learning Material • Master your math skills! 🌟</div>`;
+            ws.innerHTML = html;
         }
 
-        // Run immediately
+        function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
         generate();
     </script>
 </body>
