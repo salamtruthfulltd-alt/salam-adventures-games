@@ -2,94 +2,158 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Salam Adventures | Worksheet Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Geometry Generator</title>
     <style>
-        :root { --primary: #34d399; --secondary: #38bdf8; --ink: #111827; }
-        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 10px; font-size: 14px; }
+        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
-        /* Compact Menu */
-        .menu { 
-            background: white; padding: 10px; border-radius: 12px; border: 1px solid var(--primary);
-            max-width: 800px; margin: 0 auto 10px; display: flex; gap: 10px; justify-content: center;
-        }
-        button { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; background: var(--primary); color: white; }
-
-        /* A4 Page */
-        .page { 
-            background: white; width: 210mm; min-height: 297mm; padding: 10mm; 
-            margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        .controls { 
+            background: white; padding: 10px; border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; 
+            margin: 0 auto 15px; display: flex; gap: 15px; align-items: center; justify-content: center; border: 1px solid var(--primary);
         }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
-        .logo-img { width: 60px; height: auto; }
-        
-        /* Grid Layouts */
-        .section-title { background: #f0fdf4; padding: 5px; color: var(--primary); font-weight: bold; margin: 10px 0; border-radius: 4px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        
-        .math-item { font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: flex-end; gap: 5px; }
-        .box { width: 40px; height: 28px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 14px; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-print { background: var(--secondary); color: white; }
 
-        .shape-item { border: 1px solid #eee; padding: 5px; border-radius: 8px; text-align: center; font-size: 12px; }
-        .shape-box { height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; }
+        .worksheet { 
+            background: white; width: 210mm; min-height: 297mm; 
+            padding: 10mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative; display: flex; flex-direction: column;
+        }
+        
+        .header { 
+            border-bottom: 2px dashed var(--primary); 
+            padding-bottom: 10px; margin-bottom: 15px; display: flex; 
+            justify-content: space-between; align-items: center; 
+        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-img { width: 75px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        
+        .header h1 { margin: 0; color: var(--primary); font-size: 24px; }
+        .header p { margin: 0; font-size: 13px; color: #6b7280; font-weight: 600; }
+        .name-line { border-bottom: 1px solid #000; width: 130px; display: inline-block; margin-left: 5px; }
 
-        @media print { .menu { display: none; } .page { box-shadow: none; margin: 0; width: 100%; } }
+        .section-title { 
+            background: #f0fdf4; padding: 6px 12px; border-radius: 6px; 
+            color: var(--primary); font-weight: bold; margin: 15px 0 10px; border-left: 4px solid var(--primary);
+        }
+
+        /* Matching Section Styles */
+        .match-container { display: flex; justify-content: space-around; padding: 15px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; }
+        .match-column { display: flex; flex-direction: column; gap: 15px; }
+        .match-item { display: flex; align-items: center; font-weight: 600; font-size: 15px; }
+        .dot { width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; display: inline-block; margin: 0 15px; }
+
+        /* Grid Styles */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 15px; }
+        .shape-display { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 8px; }
+        
+        .prop-label { font-size: 14px; font-weight: 600; }
+        .blank { border-bottom: 1px solid #000; width: 40px; display: inline-block; text-align: center; margin-left: 5px; }
+
+        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; } body { background: white; } }
     </style>
 </head>
 <body>
 
-<div class="menu">
-    <select id="type">
-        <option value="math">Addition & Subtraction</option>
-        <option value="shapes">Geometry (2D & 3D)</option>
-    </select>
-    <button onclick="generate()">✨ Generate</button>
-    <button style="background:var(--secondary)" onclick="window.print()">🖨️ Print</button>
-</div>
-
-<div class="page" id="ws">
+    <div class="controls">
+        <button class="btn-gen" onclick="generate()">✨ Randomize Shapes</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
     </div>
 
-<script>
-function generate() {
-    const ws = document.getElementById('ws');
-    const type = document.getElementById('type').value;
-    
-    // Header setup (Safe for missing images)
-    let content = `
-        <div class="header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
-                <div>
-                    <h2 style="margin:0; color:var(--primary)">Salam Adventures</h2>
-                    <p style="margin:0; font-size:12px;">Worksheet Expedition 🦎</p>
-                </div>
-            </div>
-            <div style="text-align:right; font-size:12px;">
-                Name: ___________________<br>Date: ____________________
-            </div>
+    <div class="worksheet" id="ws">
         </div>
-    `;
 
-    if (type === 'math') {
-        content += `<div class="section-title">Addition & Subtraction Expedition</div><div class="grid">`;
-        for (let i = 0; i < 48; i++) {
-            let a = Math.floor(Math.random() * 20) + 1;
-            let b = Math.floor(Math.random() * 10) + 1;
-            let op = Math.random() > 0.5 ? '+' : '-';
-            if (op === '-' && a < b) [a, b] = [b, a]; // No negatives
-            content += `<div class="math-item">${a} ${op} ${b} = <div class="box"></div></div>`;
-        }
-        content += `</div>`;
-    } else {
-        content += `<div class="section-title">2D Shape Explorer (Sides & Corners)</div><div class="grid">`;
-        const shapes2d = [
-            {n:'Triangle', s:'<polygon points="25,5 45,40 5,40" stroke="black" fill="none"/>'},
-            {n:'Square', s:'<rect x="10" y="10" width="30" height="30" stroke="black" fill="none"/>'},
-            {n:'Pentagon', s:'<polygon points="25,5 45,20 38,45 12,45 5,20" stroke="black" fill="none"/>'},
-            {n:'Circle', s:'<circle cx="25" cy="25" r="20" stroke="black" fill="none"/>'}
+    <script>
+        const shapes2D = [
+            { name: "Triangle", svg: '<polygon points="35,10 60,60 10,60" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Square", svg: '<rect x="15" y="15" width="40" height="40" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Pentagon", svg: '<polygon points="35,10 60,30 50,60 20,60 10,30" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Hexagon", svg: '<polygon points="35,5 60,20 60,50 35,65 10,50 10,20" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Circle", svg: '<circle cx="35" cy="35" r="25" fill="none" stroke="black" stroke-width="2"/>' }
         ];
-        shapes2d.forEach(sh => {
-            content += `
-                <div class="shape-item">
-                    <div class="shape-box"><svg width="50" height="50">${sh.s}</svg>
+
+        const shapes3D = ["Cube", "Cylinder", "Cone", "Sphere", "Pyramid"];
+
+        function generate() {
+            const ws = document.getElementById('ws');
+            
+            // Randomize lists for matching
+            const matchNames = [...shapes2D].sort(() => 0.5 - Math.random()).slice(0, 4);
+            const matchSVGs = [...matchNames].sort(() => 0.5 - Math.random());
+
+            let html = `
+                <div class="header">
+                    <div class="logo-area">
+                        <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                        <div>
+                            <h1>Salam Adventures</h1>
+                            <p>Geometry Expedition: Shapes & Solids 🦎</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; font-weight: bold;">
+                        Name: <span class="name-line"></span><br>
+                        Date: <span class="name-line" style="margin-top:8px;"></span>
+                    </div>
+                </div>
+
+                <div class="section-title">🔗 Part 1: The Matching Challenge</div>
+                <div class="match-container">
+                    <div class="match-column">
+                        ${matchNames.map(s => `<div class="match-item">${s.name} <span class="dot"></span></div>`).join('')}
+                    </div>
+                    <div class="match-column">
+                        ${matchSVGs.map(s => `<div class="match-item"><span class="dot"></span> <svg width="40" height="40" style="vertical-align:middle">${s.svg}</svg></div>`).join('')}
+                    </div>
+                </div>
+
+                <div class="section-title">📏 Part 2: 2D Shape Properties</div>
+                <div class="grid">
+                    ${shapes2D.slice(0,4).map(s => `
+                        <div class="card">
+                            <div class="shape-display"><svg width="70" height="70">${s.svg}</svg></div>
+                            <div>
+                                <span class="prop-label">${s.name}</span><br>
+                                <small>Sides: <span class="blank"></span></small><br>
+                                <small>Corners: <span class="blank"></span></small>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="section-title">🧊 Part 3: 3D Solid Expedition</div>
+                <div class="grid">
+                    ${shapes3D.sort(() => 0.5 - Math.random()).slice(0,4).map(s => `
+                        <div class="card">
+                            <div class="shape-display" style="font-size:9px; color:#94a3b8; text-align:center;">DRAW ${s.toUpperCase()} HERE</div>
+                            <div>
+                                <span class="prop-label">${s}</span><br>
+                                <small>Faces: <span class="blank"></span></small><br>
+                                <small>Vertices: <span class="blank"></span></small>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="section-title">🔍 Explorer Bonus</div>
+                <div style="font-size:14px; padding: 10px; border: 1px solid #eee; border-radius: 8px;">
+                    1. Which 2D shape above has the most sides? ________________<br><br>
+                    2. Find a 3D shape in nature and draw it on the back! 🌲
+                </div>
+
+                <div style="flex-grow:1"></div>
+                <div style="text-align:center; font-size:11px; color:#9ca3af; padding-top:10px;">
+                    © Salam Adventures Learning Material
+                </div>
+            `;
+            ws.innerHTML = html;
+        }
+
+        generate();
+    </script>
+</body>
+</html>
