@@ -35,7 +35,6 @@
 </div>
 
 <script>
-    // I am using the EXACT path from your error, but with a "Fallback" trick
     const images = [
         "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
         "dolly.png", "flower design.png", "fruit and veg.png", 
@@ -48,29 +47,26 @@
         const imgElement = document.getElementById('coloring-img');
         const status = document.getElementById('status-msg');
         const randomIndex = Math.floor(Math.random() * images.length);
-        const selectedImage = images[randomIndex];
+        const selected = images[randomIndex];
         
-        // This is the path that failed. Let's try it with a standard space first
-        // GitHub sometimes likes the raw space in the code more than the %20
-        const testUrl = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring images/" + selectedImage;
+        // This is the structure GitHub uses for Raw files. 
+        // NOTE: If your folder is 'Colouring Images', change the text below to match exactly.
+        const folderName = "colouring images"; 
+        const url = `https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/${folderName}/${selected}`;
         
         imgElement.style.display = "none";
-        status.innerText = "Searching...";
-        imgElement.src = testUrl;
+        status.innerText = "🔍 Checking the gallery...";
+        
+        // We use encodeURI to safely handle the spaces in the folder/filename
+        imgElement.src = encodeURI(url);
 
         imgElement.onload = function() {
-            status.innerText = "✨ Found it! Ready to color ✨";
+            status.innerText = "✨ Success! Ready to color ✨";
             imgElement.style.display = "block";
         };
         
         imgElement.onerror = function() {
-            // FALLBACK: If 'main' fails, it might actually be 'master'
-            const masterUrl = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/master/colouring images/" + selectedImage;
-            imgElement.src = masterUrl;
-            
-            imgElement.onerror = function() {
-                 status.innerHTML = "❌ Still failing. <br> Tried: " + selectedImage;
-            };
+             status.innerHTML = "❌ Fail! Make sure the folder name <br> matches GitHub exactly (Capitals matter!)";
         };
     }
 
