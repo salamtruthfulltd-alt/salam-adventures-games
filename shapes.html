@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | Geometry Generator</title>
+    <title>Salam Adventures | Shape Master</title>
     <style>
-        :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
+        :root { --primary: #34d399; --secondary: #38bdf8; --ink: #111827; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
         .controls { 
             background: white; padding: 10px; border-radius: 12px; 
@@ -14,145 +14,115 @@
             margin: 0 auto 15px; display: flex; gap: 15px; align-items: center; justify-content: center; border: 1px solid var(--primary);
         }
         
-        button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 14px; }
+        button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; }
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
         .worksheet { 
             background: white; width: 210mm; min-height: 297mm; 
-            padding: 10mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative; display: flex; flex-direction: column;
+            padding: 12mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
         .header { 
             border-bottom: 2px dashed var(--primary); 
-            padding-bottom: 10px; margin-bottom: 15px; display: flex; 
+            padding-bottom: 10px; margin-bottom: 20px; display: flex; 
             justify-content: space-between; align-items: center; 
         }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-img { width: 75px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .logo-img { width: 80px; height: auto; }
         
-        .header h1 { margin: 0; color: var(--primary); font-size: 24px; }
-        .header p { margin: 0; font-size: 13px; color: #6b7280; font-weight: 600; }
-        .name-line { border-bottom: 1px solid #000; width: 130px; display: inline-block; margin-left: 5px; }
-
         .section-title { 
-            background: #f0fdf4; padding: 6px 12px; border-radius: 6px; 
-            color: var(--primary); font-weight: bold; margin: 15px 0 10px; border-left: 4px solid var(--primary);
+            background: #f0fdf4; padding: 8px; border-radius: 6px; 
+            color: var(--primary); font-weight: bold; margin: 20px 0 10px; border-left: 5px solid var(--primary);
         }
 
-        /* Matching Section Styles */
-        .match-container { display: flex; justify-content: space-around; padding: 15px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; }
-        .match-column { display: flex; flex-direction: column; gap: 15px; }
-        .match-item { display: flex; align-items: center; font-weight: 600; font-size: 15px; }
-        .dot { width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; display: inline-block; margin: 0 15px; }
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 1px solid #eee; padding: 15px; border-radius: 10px; }
+        .match-row { display: flex; align-items: center; justify-content: space-between; height: 50px; }
+        .dot { width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; }
 
-        /* Grid Styles */
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 15px; }
-        .shape-display { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 8px; }
+        .property-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .shape-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 15px; }
+        .shape-view { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; }
         
-        .prop-label { font-size: 14px; font-weight: 600; }
-        .blank { border-bottom: 1px solid #000; width: 40px; display: inline-block; text-align: center; margin-left: 5px; }
+        .blank { border-bottom: 1px solid #000; width: 40px; display: inline-block; text-align: center; }
 
-        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; } body { background: white; } }
+        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; } }
     </style>
 </head>
 <body>
 
     <div class="controls">
-        <button class="btn-gen" onclick="generate()">✨ Randomize Shapes</button>
+        <button class="btn-gen" onclick="generate()">✨ Shuffle Shapes</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print PDF</button>
     </div>
 
-    <div class="worksheet" id="ws">
-        </div>
+    <div class="worksheet" id="ws"></div>
 
     <script>
-        const shapes2D = [
-            { name: "Triangle", svg: '<polygon points="35,10 60,60 10,60" fill="none" stroke="black" stroke-width="2"/>' },
-            { name: "Square", svg: '<rect x="15" y="15" width="40" height="40" fill="none" stroke="black" stroke-width="2"/>' },
-            { name: "Pentagon", svg: '<polygon points="35,10 60,30 50,60 20,60 10,30" fill="none" stroke="black" stroke-width="2"/>' },
-            { name: "Hexagon", svg: '<polygon points="35,5 60,20 60,50 35,65 10,50 10,20" fill="none" stroke="black" stroke-width="2"/>' },
-            { name: "Circle", svg: '<circle cx="35" cy="35" r="25" fill="none" stroke="black" stroke-width="2"/>' }
+        const shapes = [
+            { name: "Triangle", svg: '<polygon points="40,10 75,70 5,70" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Square", svg: '<rect x="15" y="15" width="50" height="50" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Pentagon", svg: '<polygon points="40,5 75,30 65,75 15,75 5,30" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Hexagon", svg: '<polygon points="40,5 75,22 75,58 40,75 5,58 5,22" fill="none" stroke="black" stroke-width="2"/>' },
+            { name: "Circle", svg: '<circle cx="40" cy="40" r="35" fill="none" stroke="black" stroke-width="2"/>' }
         ];
-
-        const shapes3D = ["Cube", "Cylinder", "Cone", "Sphere", "Pyramid"];
 
         function generate() {
             const ws = document.getElementById('ws');
-            
-            // Randomize lists for matching
-            const matchNames = [...shapes2D].sort(() => 0.5 - Math.random()).slice(0, 4);
-            const matchSVGs = [...matchNames].sort(() => 0.5 - Math.random());
+            const shuffledNames = [...shapes].sort(() => 0.5 - Math.random()).slice(0, 4);
+            const shuffledSVGs = [...shuffledNames].sort(() => 0.5 - Math.random());
 
-            let html = `
+            ws.innerHTML = `
                 <div class="header">
-                    <div class="logo-area">
+                    <div style="display:flex; align-items:center; gap:15px;">
                         <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
                         <div>
-                            <h1>Salam Adventures</h1>
-                            <p>Geometry Expedition: Shapes & Solids 🦎</p>
+                            <h1 style="margin:0; font-size:24px; color:var(--primary);">Salam Adventures</h1>
+                            <p style="margin:0; font-size:14px; font-weight:600; color:#6b7280;">Geometry Expedition: The Shape Hunt 🦎</p>
                         </div>
                     </div>
-                    <div style="font-size: 12px; font-weight: bold;">
-                        Name: <span class="name-line"></span><br>
-                        Date: <span class="name-line" style="margin-top:8px;"></span>
+                    <div style="font-size: 13px;">
+                        Name: <span class="blank" style="width:150px"></span><br>
+                        Date: <span class="blank" style="width:150px; margin-top:8px;"></span>
                     </div>
                 </div>
 
-                <div class="section-title">🔗 Part 1: The Matching Challenge</div>
-                <div class="match-container">
-                    <div class="match-column">
-                        ${matchNames.map(s => `<div class="match-item">${s.name} <span class="dot"></span></div>`).join('')}
+                <div class="section-title">Part 1: Connect the Name to the Shape</div>
+                <div class="match-grid">
+                    <div style="display:flex; flex-direction:column; gap:15px;">
+                        ${shuffledNames.map(s => `<div class="match-row"><b>${s.name}</b> <div class="dot"></div></div>`).join('')}
                     </div>
-                    <div class="match-column">
-                        ${matchSVGs.map(s => `<div class="match-item"><span class="dot"></span> <svg width="40" height="40" style="vertical-align:middle">${s.svg}</svg></div>`).join('')}
+                    <div style="display:flex; flex-direction:column; gap:15px;">
+                        ${shuffledSVGs.map(s => `<div class="match-row"><div class="dot"></div> <svg width="50" height="50">${s.svg}</svg></div>`).join('')}
                     </div>
                 </div>
 
-                <div class="section-title">📏 Part 2: 2D Shape Properties</div>
-                <div class="grid">
-                    ${shapes2D.slice(0,4).map(s => `
-                        <div class="card">
-                            <div class="shape-display"><svg width="70" height="70">${s.svg}</svg></div>
-                            <div>
-                                <span class="prop-label">${s.name}</span><br>
-                                <small>Sides: <span class="blank"></span></small><br>
-                                <small>Corners: <span class="blank"></span></small>
+                <div class="section-title">Part 2: 2D Shape Properties (Sides & Corners)</div>
+                <div class="property-grid">
+                    ${shapes.slice(0, 4).map(s => `
+                        <div class="shape-card">
+                            <div class="shape-view"><svg width="80" height="80">${s.svg}</svg></div>
+                            <div style="font-size:14px;">
+                                <b>${s.name}</b><br>
+                                Sides: <span class="blank"></span><br>
+                                Corners: <span class="blank"></span>
                             </div>
                         </div>
                     `).join('')}
                 </div>
 
-                <div class="section-title">🧊 Part 3: 3D Solid Expedition</div>
-                <div class="grid">
-                    ${shapes3D.sort(() => 0.5 - Math.random()).slice(0,4).map(s => `
-                        <div class="card">
-                            <div class="shape-display" style="font-size:9px; color:#94a3b8; text-align:center;">DRAW ${s.toUpperCase()} HERE</div>
-                            <div>
-                                <span class="prop-label">${s}</span><br>
-                                <small>Faces: <span class="blank"></span></small><br>
-                                <small>Vertices: <span class="blank"></span></small>
-                            </div>
-                        </div>
-                    `).join('')}
+                <div class="section-title">Part 3: 3D Solid Discovery (Faces & Vertices)</div>
+                <div class="property-grid">
+                    <div class="shape-card"><b>Cube</b><br>Faces: <span class="blank"></span> | Vertices: <span class="blank"></span></div>
+                    <div class="shape-card"><b>Cylinder</b><br>Faces: <span class="blank"></span> | Curved: <span class="blank"></span></div>
+                    <div class="shape-card"><b>Cone</b><br>Faces: <span class="blank"></span> | Vertices: <span class="blank"></span></div>
+                    <div class="shape-card"><b>Sphere</b><br>Faces: <span class="blank"></span> | Edges: <span class="blank"></span></div>
                 </div>
 
-                <div class="section-title">🔍 Explorer Bonus</div>
-                <div style="font-size:14px; padding: 10px; border: 1px solid #eee; border-radius: 8px;">
-                    1. Which 2D shape above has the most sides? ________________<br><br>
-                    2. Find a 3D shape in nature and draw it on the back! 🌲
-                </div>
-
-                <div style="flex-grow:1"></div>
-                <div style="text-align:center; font-size:11px; color:#9ca3af; padding-top:10px;">
-                    © Salam Adventures Learning Material
+                <div style="margin-top:30px; border: 2px dashed var(--primary); padding: 15px; border-radius: 10px; font-size: 14px;">
+                    <b>🌟 Explorer Challenge:</b> Draw a shape with <b>4 equal sides</b> and <b>4 corners</b> in this box!
                 </div>
             `;
-            ws.innerHTML = html;
         }
-
         generate();
     </script>
 </body>
