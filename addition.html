@@ -3,41 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | Math Worksheet Generator</title>
+    <title>Salam Adventures | Math Worksheet</title>
     <style>
         :root { --primary: #34d399; --secondary: #38bdf8; --accent: #fbbf24; --ink: #111827; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
+        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
-        /* Smaller Controls Area */
+        /* UI Controls */
         .controls { 
-            background: white; padding: 10px 20px; border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; 
-            margin: 0 auto 15px; display: flex; gap: 15px; flex-wrap: wrap; 
-            align-items: center; justify-content: center; border: 1px solid var(--primary);
+            background: white; padding: 10px; border-radius: 12px; 
+            max-width: 800px; margin: 0 auto 15px; display: flex; 
+            gap: 10px; align-items: center; justify-content: center;
+            border: 1px solid var(--primary);
         }
         
-        button { 
-            padding: 8px 16px; border-radius: 8px; border: none; 
-            cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 13px;
-        }
+        button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
         .btn-gen { background: var(--primary); color: white; }
         .btn-print { background: var(--secondary); color: white; }
 
-        /* Compact Worksheet Layout */
+        /* Compact Layout */
         .worksheet { 
             background: white; width: 210mm; min-height: 297mm; 
-            padding: 10mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            display: grid; 
-            /* 4 columns instead of 3 to save space */
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 10px 15px;
-            position: relative;
+            padding: 10mm; margin: 0 auto; display: grid; 
+            grid-template-columns: repeat(4, 1fr); gap: 10px;
         }
         
         .header { 
             grid-column: span 4; border-bottom: 2px dashed var(--primary); 
-            padding-bottom: 10px; margin-bottom: 15px; display: flex; 
+            padding-bottom: 10px; margin-bottom: 10px; display: flex; 
             justify-content: space-between; align-items: center; 
         }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-img { width: 70px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-img { width: 60px; height: auto; }
+        
+        .header h1 { margin: 0; color: var(--primary); font-size: 20px; }
+        .name-line { border-bottom: 1px solid #000; width: 100px; display: inline-block; margin-left: 5px; }
+
+        .problem { 
+            font-size: 18px; font-weight: 600; display: flex; 
+            align-items: center; justify-content: flex-end; gap: 5px; 
+            padding: 5px; border-bottom: 1px solid #f9fafb;
+        }
+        .answer-box { width: 40px; height: 30px; border: 1px solid #ccc; border-radius: 4px; }
+
+        @media print { .controls { display: none; } .worksheet { margin: 0; width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <select id="maxNum">
+            <option value="10">Max 10</option>
+            <option value="20" selected>Max 20</option>
+            <option value="100">Max 100</option>
+        </select>
+        <button class="btn-gen" onclick="generate()">New Problems</button>
+        <button class="btn-print" onclick="window.print()">Print</button>
+    </div>
+
+    <div class="worksheet" id="ws"></div>
+
+    <script>
+        function generate() {
+            try {
+                const ws = document.getElementById('ws');
+                const max = parseInt(document.getElementById('maxNum').value) || 20;
+                
+                // Clear existing content
+                ws.innerHTML = "";
+
+                // 1. Add Header
+                const header = document.createElement('div');
+                header.className = 'header';
+                header.innerHTML = `
+                    <div class="logo-area">
+                        <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'" alt="Salam Adventures">
+                        <div>
+                            <h1>Salam Adventures</h1>
+                            <p style="margin:0; font-size:12px;">Math Expedition 🦎</p>
+                        </div>
+                    </div>
+                    <div style="font-size:12px;">
+                        Name: <span class="name-line"></span><br>
+                        Date: <span class="name-line"></span>
+                    </div>
+                `;
+                ws.appendChild(header);
+
+                // 2. Add 40 Problems
+                for (let i = 0; i < 40; i++) {
+                    const a = Math.floor(Math.random() * (max - 1)) + 1;
+                    const b = Math.floor(Math.random() * (max - a)) + 1;
+                    
+                    const p = document.createElement('div');
+                    p.className = 'problem';
+                    p.innerHTML = `<span>${a} + ${b} = </span><div class="answer-box"></div>`;
+                    ws.appendChild(p);
+                }
+
+                // 3. Add Footer
+                const footer = document.createElement('div');
+                footer.style.gridColumn = "span 4";
+                footer.style.textAlign = "center";
+                footer.style.fontSize = "12px";
+                footer.innerHTML = "<hr>🌟 Great job! Keep exploring with Salam Adventures!";
+                ws.appendChild(footer);
+
+            } catch (err) {
+                console.error(err);
+                alert("Generator Error: Check the browser console.");
+            }
+        }
+
+        // Run immediately
+        generate();
+    </script>
+</body>
+</html>
