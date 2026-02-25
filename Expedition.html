@@ -23,7 +23,25 @@
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
         .logo-img { width: 80px; height: auto; }
         
-        .sight-word-area { border: 2px dashed var(--accent); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; background: #fffcf0; }
+        /* Handwriting Practice Area */
+        .sight-word-area { border: 2px solid var(--accent); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: flex; align-items: center; background: #fffcf0; }
+        .practice-lines-container { flex-grow: 1; margin-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .handwriting-line {
+            border-bottom: 1px solid #000;
+            border-top: 1px solid #000;
+            height: 30px;
+            position: relative;
+            margin-bottom: 5px;
+            width: 100%;
+            background-image: linear-gradient(to bottom, transparent 48%, #cbd5e1 49%, #cbd5e1 51%, transparent 52%);
+            background-size: 100% 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+        }
+
+        .trace-text { font-size: 20px; color: #e2e8f0; letter-spacing: 40px; font-family: monospace; }
 
         .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 20px 0 10px; border-radius: 5px; text-transform: uppercase; font-size: 13px; border-left: 4px solid var(--primary); }
 
@@ -31,7 +49,6 @@
         .cvc-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; text-align: center; }
         .box { width: 35px; height: 35px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
 
-        .tracing-space { font-size: 24px; color: #e2e8f0; border-bottom: 1px dashed #cbd5e1; display: block; margin: 15px 0; letter-spacing: 2px; }
         .blank-line { border-bottom: 1px solid #000; width: 150px; display: inline-block; }
 
         @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
@@ -40,7 +57,7 @@
 <body>
 
 <div class="controls">
-    <button class="btn-gen" onclick="generate()">✨ Generate New Worksheet</button>
+    <button class="btn-gen" onclick="generate()">✨ New Sight Word</button>
     <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
 </div>
 
@@ -53,7 +70,7 @@
         {h: "Used to write", w: "PEN", hint: "EN"}, {h: "To fly in sky", w: "JET", hint: "ET"},
         {h: "A big car", w: "BUS", hint: "US"}, {h: "Where we sleep", w: "BED", hint: "ED"}
     ];
-    const sights = ["THE", "AND", "YOU", "FOR", "WAS", "HIS"];
+    const sights = ["THE", "AND", "YOU", "FOR", "WAS", "HIS", "THEY", "ARE"];
 
     function generate() {
         const ws = document.getElementById('main-ws');
@@ -73,13 +90,14 @@
             </div>
 
             <div class="sight-word-area">
-                <div>
-                    <small style="color:var(--accent); font-weight:bold;">SIGHT WORD OF THE DAY</small><br>
-                    <span style="font-size:32px; font-weight:900; letter-spacing:4px;">${sw}</span>
+                <div style="text-align:center; min-width: 120px;">
+                    <small style="color:var(--accent); font-weight:bold;">SIGHT WORD</small><br>
+                    <span style="font-size:36px; font-weight:900;">${sw}</span>
                 </div>
-                <div style="flex-grow:1; text-align:right;">
-                    <span style="color:#94a3b8; font-size:12px;">Practice Writing:</span><br>
-                    <span style="font-size:24px; color:#e2e8f0;">${sw} ${sw} ${sw}</span>
+                <div class="practice-lines-container">
+                    <div style="font-size:11px; font-weight:bold; color:#64748b;">Practice Writing:</div>
+                    <div class="handwriting-line"><span class="trace-text">${sw}</span></div>
+                    <div class="handwriting-line"></div>
                 </div>
             </div>
 
@@ -96,13 +114,12 @@
 
             <div class="section-title">Part 2: Handwriting Tracing</div>
             <p style="font-size:13px; margin-bottom:10px;">Trace the sentence carefully.</p>
-            <div style="padding:10px; border:1px solid #f1f5f9; border-radius:8px;">
-                <span class="tracing-space">The big cat is on the mat.</span>
-                <span class="tracing-space">I can see the yellow sun.</span>
+            <div style="padding:10px;">
+                <div class="handwriting-line" style="height:40px; border-top:none;"><span style="font-size:18px; color:#e2e8f0; letter-spacing:2px;">The big cat is on the mat.</span></div>
+                <div class="handwriting-line" style="height:40px; border-top:none; margin-top:10px;"><span style="font-size:18px; color:#e2e8f0; letter-spacing:2px;">I can see the yellow sun.</span></div>
             </div>
 
             <div class="section-title">Part 3: Word Family Match</div>
-            <p style="font-size:13px; margin-bottom:10px;">Write two words for each family.</p>
             <div style="display:flex; gap:20px;">
                 <div style="flex:1; border:1px dashed var(--primary); padding:10px; border-radius:8px; text-align:center;">
                     <b>-AT Family</b><br><br>1. __________<br>2. __________
@@ -112,8 +129,8 @@
                 </div>
             </div>
 
-            <div style="text-align:center; margin-top:30px; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
-                © Salam Adventures • Literacy Expedition • Master Your Sounds!
+            <div style="text-align:center; margin-top:20px; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
+                © Salam Adventures • Literacy Expedition • Level 1
             </div>
         `;
     }
