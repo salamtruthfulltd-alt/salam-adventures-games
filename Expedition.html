@@ -2,54 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salam Adventures | English Expedition</title>
     <style>
         :root { --primary: #34d399; --secondary: #38bdf8; --ink: #111827; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; margin: 0; padding: 10px; color: var(--ink); }
         
         .controls { 
-            background: white; padding: 10px; border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; 
-            margin: 0 auto 15px; display: flex; gap: 15px; align-items: center; justify-content: center; border: 1px solid var(--primary);
+            background: white; padding: 10px; border-radius: 12px; border: 1px solid var(--primary);
+            max-width: 800px; margin: 0 auto 15px; display: flex; gap: 10px; justify-content: center;
         }
         
-        button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-print { background: var(--secondary); color: white; }
+        button { padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--primary); color: white; }
 
         .worksheet { 
-            background: white; width: 210mm; min-height: 297mm; 
-            padding: 12mm; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: white; width: 210mm; min-height: 297mm; padding: 10mm; margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
-        .header { 
-            border-bottom: 2px dashed var(--primary); padding-bottom: 10px; margin-bottom: 15px; 
-            display: flex; justify-content: space-between; align-items: center; 
-        }
+        .header { border-bottom: 2px dashed var(--primary); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .logo-img { width: 70px; height: auto; }
         
-        .section-title { 
-            background: #f0fdf4; padding: 6px; border-radius: 6px; 
-            color: var(--primary); font-weight: bold; margin: 15px 0 10px; border-left: 5px solid var(--primary);
-        }
+        .section-title { background: #f0fdf4; padding: 5px 10px; color: var(--primary); font-weight: bold; margin: 15px 0 10px; border-left: 4px solid var(--primary); }
 
-        /* Phonics Grid */
-        .phonics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .word-card { 
-            border: 2px solid #f1f5f9; border-radius: 12px; padding: 15px; 
-            text-align: center; background: #fff;
-        }
+        /* The Grid for Images & Words */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .word-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; text-align: center; }
         
-        .image-box { 
-            font-size: 50px; height: 80px; display: flex; 
-            align-items: center; justify-content: center; background: #f8fafc;
-            border-radius: 8px; margin-bottom: 10px;
+        /* Ensures images are centered and fully contained */
+        .img-container { 
+            height: 70px; display: flex; align-items: center; justify-content: center; 
+            background: #f9fafb; border-radius: 6px; margin-bottom: 8px;
         }
 
-        .word-display { font-size: 24px; font-weight: bold; letter-spacing: 2px; margin-top: 10px; }
-        .letter-input { width: 40px; height: 40px; border: 2px solid #34d399; border-radius: 5px; display: inline-block; vertical-align: middle; }
+        .letter-slot { width: 30px; height: 30px; border: 1px solid #333; display: inline-block; vertical-align: middle; margin-right: 2px; }
+        .text-hint { font-size: 20px; font-weight: bold; letter-spacing: 3px; }
 
-        .blank { border-bottom: 1px solid #000; width: 150px; display: inline-block; }
+        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; width: 100%; } }
+    </style>
+</head>
+<body>
 
-        @media print { .controls { display: none; } .worksheet { box-shadow: none; border: none; margin: 0; width: 100%; } }
+<div class="controls">
+    <button onclick="generate()">✨ Shuffle Words & Images</button>
+    <button style="background:var(--secondary)" onclick="window.print()">🖨️ Print PDF</button>
+</div>
+
+<div class="worksheet" id="ws"></div>
+
+<script>
+    // These SVGs are hardcoded to ensure they never break or appear "half-way"
+    const library = [
+        { name: "CAT", hint: "_AT", svg: '<path d="M10 40 Q25 10 40 40 L40 70 L10 70 Z M15 30 L10 10 M35 30 L40 10" stroke="black" fill="none" stroke-width="2"/>' },
+        { name: "SUN", hint: "_UN", svg: '<circle cx="25" cy="25" r="15" stroke="black" fill="none" stroke-width="2"/><path d="M25 5 L25 0 M25 45 L25 50 M5 25 L0 25 M45 25 L50 25" stroke="black" stroke-width="2"/>' },
+        { name: "HAT", hint: "_AT", svg: '<path d="M5 40 L45 40 M10 40 L10 10 L40 10 L40 40" stroke="black" fill="none" stroke-width="2"/>' },
+        { name: "CUP", hint: "_UP", svg: '<path d="M10 10 L40 10 L35 45 L15 45 Z M40 20 Q50 20 50 30 Q50 40 40 40" stroke="black" fill="none" stroke-width="2"/>' },
+        { name: "BOX", hint: "_OX", svg: '<rect x="10" y="10" width="30" height="30" stroke="black" fill="none" stroke-width="2"/><path d="M10 10 L20 0 L50 0 L40 10 M50 0 L50 30 L40 40" stroke="black" fill="none" stroke-width="2"/>' },
+        { name: "BED", hint: "_ED", svg: '<path d="M5 40 L5 10 M45 40 L45 25 M5 30 L45 30 M10 45 L10 30 M40 45 L40 30" stroke="black" fill="none" stroke-width="2"/>' }
+    ];
+
+    function generate() {
+        const ws = document.getElementById('ws');
+        const shuffled = [...library].sort(() => 0.5 - Math.random());
+
+        ws.innerHTML = `
+            <div class="header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                    <div>
+                        <h1 style="margin:0; font-size:22px; color:var(--primary);">Salam Adventures</h1>
+                        <p style="margin:0; font-size:12px;">English Expedition: Phonics First 🦎</p>
+                    </div>
+                </div>
+                <div style="font-size:11px; text-align:right;">Name: ________________<br>Date: ________________</div>
+            </div>
+
+            <div class="section-title">Part 1: Missing First Sounds</div>
+            <p style="font-size:12px; margin-bottom:10px;">Look at the picture. Write the missing letter in the box.</p>
+            <div class="grid">
+                ${shuffled.map(item => `
+                    <div class="word-card">
+                        <div class="img-container">
+                            <svg width="50" height="50" viewBox="0 0 55 55">${item.svg}</svg>
+                        </div>
+                        <div class="text-hint">
+                            <div class="letter-slot"></div>${item.hint.substring(1)}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="section-title">Part 2: Tracing Time</div>
+            <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+                <p style="margin:0; color:#cbd5e1; font-size:22px; letter-spacing:3px;">The sun is big and hot. ________________</p>
+                <p style="margin:15px 0 0; color:#cbd5e1; font-size:22px; letter-spacing:3px;">The cat is on the bed. ________________</p>
+            </div>
+
+            <div class="section-title">Part 3: Word Family Sort</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; text-align:center;">
+                <div style="border:1px dashed #34d399; padding:10px;"><b>-AT Family</b><br><br>1. ________<br>2. ________</div>
+                <div style="border:1px dashed #38bdf8; padding:10px;"><b>-ED Family</b><br><br>1. ________<br>2. ________</div>
+            </div>
+
+            <div style="text-align:center; margin-top:20px; font-size:10px; color:#aaa;">© Salam Adventures Learning Material</div>
+        `;
+    }
+    generate();
+</script>
+</body>
+</html>
