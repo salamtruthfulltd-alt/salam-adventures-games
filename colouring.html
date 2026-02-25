@@ -8,7 +8,7 @@
             padding: 25px; border-radius: 30px; background: white;
             box-shadow: 15px 15px 0px #ffd1dc; 
         }
-        #image-area { min-height: 350px; margin-top: 20px; display: flex; justify-content: center; align-items: center; border: 2px dashed #eee; border-radius: 15px; }
+        #image-area { min-height: 350px; margin-top: 20px; border: 2px dashed #eee; border-radius: 15px; display: flex; justify-content: center; align-items: center; }
         #coloring-img { max-width: 100%; height: auto; display: none; }
         button { 
             background-color: #4CAF50; color: white; padding: 15px 25px; 
@@ -17,18 +17,17 @@
             font-weight: bold; transition: 0.1s;
         }
         button:active { box-shadow: 0 2px #2e7d32; transform: translateY(4px); }
-        .print-btn { background-color: #008CBA; box-shadow: 0 6px #005f7a; }
-        #status-msg { color: #ff1493; font-weight: bold; }
+        #status-msg { color: #ff1493; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2 style="color: #ff1493; margin: 0;">🎨 Colouring Expedition</h2>
-    <p id="status-msg">Click 'Get New Image' to start!</p>
+    <p id="status-msg">Click to find a picture!</p>
     
     <button onclick="generateImage()">✨ Get New Image</button>
-    <button class="print-btn" onclick="printImage()">🖨️ Print</button>
+    <button style="background-color: #008CBA; box-shadow: 0 6px #005f7a;" onclick="printImage()">🖨️ Print</button>
     
     <div id="image-area">
         <img id="coloring-img" src="" alt="Coloring Page">
@@ -36,28 +35,15 @@
 </div>
 
 <script>
-    // MATCHING YOUR ADDITION FOLDER LOGIC:
-    // We use %20 for the space in "colouring images"
-    const repoBase = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
-
-    // Filenames with %20 for spaces to match how GitHub serves "Raw" files
+    // Version A: Using %20 (Most common)
+    const pathA = "https://raw.githubusercontent.com/salamtruthfulltd-alt/alam-adventures-games/main/colouring%20images/";
+    
     const images = [
-        "butterfly.png.jpg", 
-        "car.png.jpg", 
-        "dinosaur.png", 
-        "dog1.png", 
-        "dolly.png", 
-        "flower%20design.png", 
-        "fruit%20and%20veg.png", 
-        "garden.png", 
-        "horse.png", 
-        "house.png", 
-        "mobile%20phone.png", 
-        "moon%20(2).png", 
-        "planes.png", 
-        "prince%20and%20princess.png", 
-        "swans.png.jpg", 
-        "tresure%20chest.png"
+        "butterfly.png.jpg", "car.png.jpg", "dinosaur.png", "dog1.png", 
+        "dolly.png", "flower design.png", "fruit and veg.png", 
+        "garden.png", "horse.png", "house.png", "mobile phone.png", 
+        "moon (2).png", "planes.png", "prince and princess.png", 
+        "swans.png.jpg", "tresure chest.png"
     ];
 
     function generateImage() {
@@ -66,19 +52,20 @@
         const randomIndex = Math.floor(Math.random() * images.length);
         const selectedImage = images[randomIndex];
         
-        status.innerText = "Loading " + selectedImage.replace(/%20/g, " ") + "...";
-        imgElement.style.display = "none";
+        // encodeURI handles the spaces in filenames automatically
+        const finalUrl = pathA + encodeURIComponent(selectedImage);
         
-        // Building the link exactly like the Logo link
-        imgElement.src = repoBase + selectedImage;
+        imgElement.style.display = "none";
+        status.innerText = "Trying to load image...";
+        imgElement.src = finalUrl;
 
         imgElement.onload = function() {
-            status.innerText = "✨ Ready to Color! ✨";
+            status.innerText = "✨ Success! Ready to color ✨";
             imgElement.style.display = "block";
         };
         
         imgElement.onerror = function() {
-            status.innerText = "❌ Image not found: " + selectedImage;
+            status.innerHTML = "❌ Fail! Link tried: <br><small>" + finalUrl + "</small>";
         };
     }
 
@@ -86,7 +73,7 @@
         const img = document.getElementById('coloring-img');
         if (!img.src || img.style.display === "none") return;
         const win = window.open('', '_blank');
-        win.document.write('<html><body style="margin:0; text-align:center;"><img src="' + img.src + '" style="max-width:90%;"></body></html>');
+        win.document.write('<html><body style="margin:0; text-align:center;"><img src="' + img.src + '" style="max-width:95%;"></body></html>');
         win.document.close();
         setTimeout(() => { win.print(); win.close(); }, 800);
     }
