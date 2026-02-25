@@ -3,83 +3,84 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Colouring Page Generator | Salam Adventures</title>
+  <title>Colouring Generator | Salam Adventures</title>
   <style>
-    :root { --maxw: 980px; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#fafafa; color:#111; }
-    header { padding: 18px 16px; background: #fff; border-bottom: 1px solid #eee; }
-    .wrap { max-width: var(--maxw); margin: 0 auto; }
-    h1 { margin: 0; font-size: 20px; }
-    p { margin: 6px 0 0; color:#444; font-size: 14px; }
-
-    main { padding: 16px; }
-    .panel { background:#fff; border:1px solid #eee; border-radius: 14px; padding: 14px; box-shadow: 0 4px 18px rgba(0,0,0,.04); }
-    .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom: 12px; }
-    select, button, label { font-size:14px; }
-    select { padding: 10px; border-radius: 10px; border:1px solid #ddd; background:#fff; min-width: 260px; }
-    button { padding: 10px 12px; border-radius: 10px; border:1px solid #ddd; background:#111; color:#fff; cursor:pointer; }
-    button.secondary { background:#fff; color:#111; }
-    button:disabled { opacity:.5; cursor:not-allowed; }
-    label { display:flex; gap:8px; align-items:center; padding: 10px 12px; border:1px solid #ddd; border-radius: 10px; background:#fff; }
-
-    .stage { display:grid; grid-template-columns: 1fr; gap: 12px; }
-    .canvasWrap { border: 1px dashed #ddd; border-radius: 14px; padding: 12px; background: #fcfcfc; overflow:auto; }
-    canvas { display:block; margin: 0 auto; background:#fff; }
-
-    .hint { font-size: 12px; color:#555; margin-top: 10px; }
-    .small { font-size: 12px; color:#666; }
-    footer { padding: 18px 16px; color:#777; font-size: 12px; }
-    a { color: inherit; }
+    :root{--maxw:1100px;}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#fafafa;color:#111}
+    header{padding:18px 16px;background:#fff;border-bottom:1px solid #eee}
+    .wrap{max-width:var(--maxw);margin:0 auto}
+    h1{margin:0;font-size:20px}
+    p{margin:6px 0 0;color:#444;font-size:14px}
+    main{padding:16px}
+    .panel{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+    select,button,label,input{font-size:14px}
+    select{padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff;min-width:260px}
+    button{padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:#111;color:#fff;cursor:pointer}
+    button.secondary{background:#fff;color:#111}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#fff}
+    .palette{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .swatch{width:26px;height:26px;border-radius:999px;border:2px solid #ddd;cursor:pointer}
+    .swatch.active{border-color:#111}
+    .stage{display:grid;grid-template-columns:1fr;gap:12px}
+    .canvasWrap{border:1px dashed #ddd;border-radius:14px;padding:12px;background:#fcfcfc;overflow:auto}
+    canvas{display:block;margin:0 auto;background:#fff;touch-action:none}
+    .hint{font-size:12px;color:#555;margin-top:10px}
+    .small{font-size:12px;color:#666}
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <h1>Colouring Page Generator</h1>
-      <p>Pick a page, generate, then print or download.</p>
+<header>
+  <div class="wrap">
+    <h1>Colouring Page Generator</h1>
+    <p>Pick a page → colour it → print or download.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="panel">
+    <div class="controls">
+      <select id="picker" aria-label="Choose a colouring page"></select>
+      <button id="btnLoad">Load</button>
+      <button id="btnRandom" class="secondary">Random</button>
+
+      <span class="chip" title="Draw on top of the page">
+        🖌️ Brush
+        <input id="brushSize" type="range" min="2" max="40" value="10" />
+      </span>
+
+      <button id="btnEraser" class="secondary" title="Erase your colouring">Eraser</button>
+      <button id="btnFill" class="secondary" title="Tap/click to fill an area">Tap to Fill</button>
+
+      <button id="btnReset" class="secondary" title="Clear colouring and reload page">Reset</button>
+      <button id="btnDownload" class="secondary" disabled>Download PNG</button>
+      <button id="btnPrint" class="secondary" disabled>Print</button>
     </div>
-  </header>
 
-  <main class="wrap">
-    <div class="panel">
-      <div class="controls">
-        <select id="picker" aria-label="Choose a colouring page"></select>
+    <div class="controls">
+      <div class="palette" id="palette"></div>
+      <span class="small" id="modeLabel">Mode: Brush</span>
+    </div>
 
-        <button id="btnLoad">Load</button>
-        <button id="btnRandom" class="secondary">Random</button>
-
-        <label title="If an image isn’t already line-art, this tries to convert it into a colouring outline.">
-          <input id="outlineMode" type="checkbox" />
-          Make outline
-        </label>
-
-        <button id="btnDownload" class="secondary" disabled>Download PNG</button>
-        <button id="btnPrint" class="secondary" disabled>Print</button>
+    <div class="stage">
+      <div class="canvasWrap">
+        <!-- A4 portrait at 150dpi-ish: 1240x1754 -->
+        <canvas id="c" width="1240" height="1754" aria-label="Colouring canvas"></canvas>
       </div>
-
-      <div class="stage">
-        <div class="canvasWrap">
-          <canvas id="c" width="800" height="1100" aria-label="Colouring preview canvas"></canvas>
-        </div>
-        <div class="hint">
-          Tip: For best printing, use “Print” (it removes extra UI and prints the page clean).
-          <div class="small" id="status"></div>
-        </div>
+      <div class="hint">
+        Tip: Use “Tap to Fill” for big areas. Use “Print” for a clean sheet.
+        <div class="small" id="status"></div>
       </div>
     </div>
-  </main>
-
-  <footer class="wrap">
-    © Salam Adventures
-  </footer>
+  </div>
+</main>
 
 <script>
-  // 1) CHANGE THIS to match your repo:
-  // Your screenshot shows: github.com/salamtruthfulltd-alt/salam-adventures-games/tree/main/colouring%20images
+  // ✅ Change if your repo path changes
   const BASE_RAW =
     "https://raw.githubusercontent.com/salamtruthfulltd-alt/salam-adventures-games/main/colouring%20images/";
 
-  // 2) Your current file list (from your screenshot)
   const FILES = [
     "butterfly.png.jpg",
     "car.png.jpg",
@@ -104,34 +105,81 @@
   const btnRandom = document.getElementById("btnRandom");
   const btnDownload = document.getElementById("btnDownload");
   const btnPrint = document.getElementById("btnPrint");
-  const outlineMode = document.getElementById("outlineMode");
-  const canvas = document.getElementById("c");
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const btnReset = document.getElementById("btnReset");
+  const btnEraser = document.getElementById("btnEraser");
+  const btnFill = document.getElementById("btnFill");
+  const brushSize = document.getElementById("brushSize");
+  const paletteEl = document.getElementById("palette");
+  const modeLabel = document.getElementById("modeLabel");
   const statusEl = document.getElementById("status");
 
-  function niceName(file) {
-    return file.replace(/\.(png|jpg|jpeg)$/i, "").replace(/\.(png|jpg|jpeg)$/i, "");
-  }
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-  function fileUrl(file) {
-    // Encode spaces + parentheses etc properly
+  let baseImageData = null;  // stores the loaded page (with border) to allow reset
+  let drawing = false;
+  let mode = "brush"; // brush | eraser | fill
+  let color = "#ff3b30";
+
+  const COLORS = [
+    "#ff3b30","#ff9500","#ffcc00","#34c759","#00c7be","#007aff",
+    "#5856d6","#af52de","#ff2d55","#8e8e93","#000000","#ffffff"
+  ];
+
+  function setStatus(msg){ statusEl.textContent = msg || ""; }
+
+  function niceName(file){
+    return file.replace(/\.(png|jpg|jpeg)$/i, "");
+  }
+  function fileUrl(file){
     return BASE_RAW + encodeURIComponent(file);
   }
 
-  function setStatus(msg) { statusEl.textContent = msg || ""; }
-
-  // Populate dropdown
-  for (const f of FILES) {
+  // Dropdown
+  FILES.forEach((f) => {
     const opt = document.createElement("option");
     opt.value = f;
     opt.textContent = niceName(f);
     picker.appendChild(opt);
-  }
-
-  // Default selection
+  });
   picker.value = FILES[0];
 
-  function clearCanvasToWhite() {
+  // Palette UI
+  function renderPalette(){
+    paletteEl.innerHTML = "";
+    COLORS.forEach((c) => {
+      const b = document.createElement("button");
+      b.className = "swatch" + (c === color ? " active" : "");
+      b.style.background = c;
+      b.title = c;
+      b.addEventListener("click", () => {
+        color = c;
+        renderPalette();
+      });
+      paletteEl.appendChild(b);
+    });
+  }
+  renderPalette();
+
+  function setMode(m){
+    mode = m;
+    modeLabel.textContent = "Mode: " + (m === "brush" ? "Brush" : m === "eraser" ? "Eraser" : "Tap to Fill");
+  }
+
+  btnEraser.addEventListener("click", () => setMode("eraser"));
+  btnFill.addEventListener("click", () => setMode("fill"));
+
+  function drawBorder(){
+    const margin = Math.round(canvas.width * 0.04); // 4%
+    ctx.save();
+    ctx.lineWidth = Math.max(10, Math.round(canvas.width * 0.008));
+    ctx.strokeStyle = "#000";
+    ctx.strokeRect(margin, margin, canvas.width - margin*2, canvas.height - margin*2);
+    ctx.restore();
+    return margin;
+  }
+
+  function clearWhite(){
     ctx.save();
     ctx.setTransform(1,0,0,1,0,0);
     ctx.fillStyle = "#fff";
@@ -139,108 +187,189 @@
     ctx.restore();
   }
 
-  async function loadAndDraw(file) {
+  async function loadAndFit(file){
     btnDownload.disabled = true;
     btnPrint.disabled = true;
-
-    const url = fileUrl(file);
     setStatus("Loading: " + file + " …");
 
     const img = new Image();
-    img.crossOrigin = "anonymous"; // allows download
-    img.src = url;
+    img.crossOrigin = "anonymous";
+    img.src = fileUrl(file);
 
     await new Promise((resolve, reject) => {
       img.onload = resolve;
-      img.onerror = () => reject(new Error("Could not load image. Check file name + BASE_RAW."));
+      img.onerror = () => reject(new Error("Could not load image. Check file name + folder path."));
     });
 
-    // Set canvas to image size (keeps maximum print quality)
-    canvas.width = img.naturalWidth || img.width;
-    canvas.height = img.naturalHeight || img.height;
+    clearWhite();
 
-    clearCanvasToWhite();
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const margin = drawBorder();
+    const innerX = margin + 30;
+    const innerY = margin + 30;
+    const innerW = canvas.width - (margin + 30) * 2;
+    const innerH = canvas.height - (margin + 30) * 2;
 
-    if (outlineMode.checked) {
-      setStatus("Converting to outline …");
-      makeOutline();
-    }
+    // Fit image fully inside inner area (no cropping)
+    const scale = Math.min(innerW / img.naturalWidth, innerH / img.naturalHeight);
+    const drawW = Math.round(img.naturalWidth * scale);
+    const drawH = Math.round(img.naturalHeight * scale);
+    const dx = Math.round(innerX + (innerW - drawW) / 2);
+    const dy = Math.round(innerY + (innerH - drawH) / 2);
 
-    setStatus("Ready: " + niceName(file));
+    // Draw page image
+    ctx.drawImage(img, dx, dy, drawW, drawH);
+
+    // Save base layer (for reset)
+    baseImageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+
     btnDownload.disabled = false;
     btnPrint.disabled = false;
+
+    setMode("brush");
+    setStatus("Ready: " + niceName(file));
   }
 
-  function makeOutline() {
-    // Simple edge/threshold outline:
-    // 1) grayscale
-    // 2) sobel edges
-    // 3) threshold -> black lines on white
-    const w = canvas.width, h = canvas.height;
-    const imgData = ctx.getImageData(0, 0, w, h);
-    const d = imgData.data;
-
-    // grayscale buffer
-    const g = new Float32Array(w * h);
-    for (let i = 0, p = 0; i < d.length; i += 4, p++) {
-      g[p] = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
-    }
-
-    // sobel
-    const out = new Uint8ClampedArray(w * h);
-    const gxK = [-1,0,1,-2,0,2,-1,0,1];
-    const gyK = [-1,-2,-1,0,0,0,1,2,1];
-
-    // skip borders for simplicity
-    for (let y = 1; y < h - 1; y++) {
-      for (let x = 1; x < w - 1; x++) {
-        let gx = 0, gy = 0;
-        let k = 0;
-        for (let ky = -1; ky <= 1; ky++) {
-          for (let kx = -1; kx <= 1; kx++) {
-            const v = g[(y + ky) * w + (x + kx)];
-            gx += v * gxK[k];
-            gy += v * gyK[k];
-            k++;
-          }
-        }
-        const mag = Math.sqrt(gx*gx + gy*gy);
-        out[y * w + x] = mag;
-      }
-    }
-
-    // threshold (tweakable)
-    const TH = 55; // higher = fewer lines
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const p = y*w + x;
-        const edge = out[p] > TH ? 0 : 255; // black edges, white elsewhere
-        const i = p * 4;
-        d[i] = d[i+1] = d[i+2] = edge;
-        d[i+3] = 255;
-      }
-    }
-
-    ctx.putImageData(imgData, 0, 0);
-  }
-
-  btnLoad.addEventListener("click", () => loadAndDraw(picker.value));
-
+  btnLoad.addEventListener("click", () => loadAndFit(picker.value).catch(e => setStatus("Error: " + e.message)));
   btnRandom.addEventListener("click", () => {
     const r = FILES[Math.floor(Math.random() * FILES.length)];
     picker.value = r;
-    loadAndDraw(r);
+    loadAndFit(r).catch(e => setStatus("Error: " + e.message));
   });
 
-  outlineMode.addEventListener("change", () => {
-    // reload current selection with/without outline
-    loadAndDraw(picker.value);
+  btnReset.addEventListener("click", () => {
+    if (!baseImageData) return;
+    ctx.putImageData(baseImageData, 0, 0);
+    setMode("brush");
   });
+
+  // Drawing helpers
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const x = (clientX - rect.left) * (canvas.width / rect.width);
+    const y = (clientY - rect.top) * (canvas.height / rect.height);
+    return { x: Math.max(0, Math.min(canvas.width-1, x)), y: Math.max(0, Math.min(canvas.height-1, y)) };
+  }
+
+  function startDraw(e){
+    if (!baseImageData) return;
+    const p = getPos(e);
+
+    if (mode === "fill"){
+      floodFill(Math.floor(p.x), Math.floor(p.y), color);
+      e.preventDefault();
+      return;
+    }
+
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    e.preventDefault();
+  }
+
+  function moveDraw(e){
+    if (!drawing) return;
+    const p = getPos(e);
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = Number(brushSize.value);
+
+    if (mode === "eraser"){
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.strokeStyle = "rgba(0,0,0,1)";
+    } else {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = color;
+    }
+
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    e.preventDefault();
+  }
+
+  function endDraw(){
+    drawing = false;
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", moveDraw);
+  window.addEventListener("mouseup", endDraw);
+
+  canvas.addEventListener("touchstart", startDraw, { passive:false });
+  canvas.addEventListener("touchmove", moveDraw, { passive:false });
+  window.addEventListener("touchend", endDraw);
+
+  // Flood fill (simple, works best if your images have closed outlines)
+  function hexToRgba(hex){
+    const h = hex.replace("#","").trim();
+    const bigint = parseInt(h, 16);
+    if (h.length === 6){
+      return [(bigint>>16)&255, (bigint>>8)&255, bigint&255, 255];
+    }
+    return [0,0,0,255];
+  }
+
+  function matchColor(data, idx, target, tol=18){
+    return (
+      Math.abs(data[idx]   - target[0]) <= tol &&
+      Math.abs(data[idx+1] - target[1]) <= tol &&
+      Math.abs(data[idx+2] - target[2]) <= tol &&
+      Math.abs(data[idx+3] - target[3]) <= tol
+    );
+  }
+
+  function setColor(data, idx, col){
+    data[idx] = col[0]; data[idx+1]=col[1]; data[idx+2]=col[2]; data[idx+3]=255;
+  }
+
+  function floodFill(x, y, fillHex){
+    const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+    const data = img.data;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    const startIdx = (y*w + x) * 4;
+    const target = [data[startIdx], data[startIdx+1], data[startIdx+2], data[startIdx+3]];
+    const fill = hexToRgba(fillHex);
+
+    // Don’t fill black outlines or already-filled areas
+    const isBlackish = (target[0] < 40 && target[1] < 40 && target[2] < 40);
+    const sameAsFill = (target[0]===fill[0] && target[1]===fill[1] && target[2]===fill[2] && target[3]===fill[3]);
+    if (isBlackish || sameAsFill) return;
+
+    const stack = [[x,y]];
+    const visited = new Uint8Array(w*h);
+
+    while (stack.length){
+      const [cx, cy] = stack.pop();
+      if (cx<0 || cy<0 || cx>=w || cy>=h) continue;
+      const p = cy*w + cx;
+      if (visited[p]) continue;
+      visited[p] = 1;
+
+      const idx = p*4;
+
+      // Stop at black lines
+      const r=data[idx], g=data[idx+1], b=data[idx+2], a=data[idx+3];
+      if (r < 40 && g < 40 && b < 40 && a > 50) continue;
+
+      // Fill only near the starting colour
+      if (!matchColor(data, idx, target, 22)) continue;
+
+      setColor(data, idx, fill);
+
+      stack.push([cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]);
+    }
+
+    ctx.putImageData(img, 0, 0);
+  }
 
   btnDownload.addEventListener("click", () => {
     const a = document.createElement("a");
-    a.download = `colouring-${picker.value.replace(/\s+/g, "-")}.png`;
+    a.download = `colouring-${picker.value.replace(/\s+/g,"-")}.png`;
     a.href = canvas.toDataURL("image/png");
     a.click();
   });
@@ -249,31 +378,22 @@
     const dataUrl = canvas.toDataURL("image/png");
     const w = window.open("", "_blank");
     w.document.write(`
-      <!doctype html>
-      <html>
-      <head>
-        <meta charset="utf-8" />
-        <title>Print Colouring Page</title>
-        <style>
-          @page { margin: 0.5in; }
-          body { margin: 0; font-family: system-ui, Arial; }
-          img { width: 100%; height: auto; }
-        </style>
-      </head>
-      <body>
-        <img src="${dataUrl}" alt="Colouring Page"/>
-        <script>window.onload = () => { window.print(); }<\/script>
-      </body>
-      </html>
+      <!doctype html><html><head><meta charset="utf-8" />
+      <title>Print</title>
+      <style>
+        @page { size: A4 portrait; margin: 0.4in; }
+        body { margin: 0; }
+        img { width: 100%; height: auto; display:block; }
+      </style></head><body>
+      <img src="${dataUrl}" alt="Colouring Page"/>
+      <script>window.onload=()=>{window.print();};<\/script>
+      </body></html>
     `);
     w.document.close();
   });
 
-  // Auto-load first page
-  loadAndDraw(picker.value).catch(err => {
-    console.error(err);
-    setStatus("Error: " + err.message);
-  });
+  // Auto-load first
+  loadAndFit(picker.value).catch(e => setStatus("Error: " + e.message));
 </script>
 </body>
 </html>
