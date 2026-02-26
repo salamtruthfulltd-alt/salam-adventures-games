@@ -1,227 +1,131 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Puzzle</title>
-  <style>
-    :root{ --gap:10px; --radius:16px; }
-    body{ margin:0; padding:24px 16px; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:#fff; display:grid; place-items:start center; }
-    .wrap{ width:min(900px, 96vw); display:grid; gap:14px; }
-    .controls{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-    .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
-    button{ border:0; padding:9px 14px; border-radius:999px; background:#111; color:#fff; font-weight:700; cursor:pointer; }
-    button.secondary{ background:#fff; color:#111; box-shadow:inset 0 0 0 2px #111; }
-    .status{ font-size:14px; opacity:.85; }
+<style>
+  :root { --neon-color: #00f2ff; }
+  body { background: #0a0a0a; color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+  
+  /* Flashing Border Effect */
+  #game-container {
+    border: 5px solid var(--neon-color);
+    padding: 30px;
+    border-radius: 15px;
+    background: #111;
+    text-align: center;
+    width: 400px;
+    animation: flash 1s infinite alternate;
+    box-shadow: 0 0 20px var(--neon-color);
+  }
+  @keyframes flash {
+    from { border-color: #00f2ff; box-shadow: 0 0 10px #00f2ff; }
+    to { border-color: #ff00de; box-shadow: 0 0 30px #ff00de; }
+  }
 
-    .board{
-      width:100%;
-      background:#fff;
-      border-radius:18px;
-      box-shadow:0 14px 40px rgba(0,0,0,.12);
-      padding:var(--gap);
-      box-sizing:border-box;
-      display:grid;
-      gap:var(--gap);
-      user-select:none;
-      touch-action:none;
-      min-height:320px;
-      aspect-ratio: 3 / 2;
-    }
-
-    .tile{
-      border-radius:var(--radius);
-      overflow:hidden;
-      background:#eef1f8;
-      border:1px solid rgba(0,0,0,.08);
-      box-shadow:0 8px 16px rgba(0,0,0,.10);
-      cursor:grab;
-      width:100%;
-      height:100%;
-      position:relative;
-    }
-    .tile:active{ cursor:grabbing; }
-    .tile.dragging{ opacity:.92; outline:3px solid rgba(17,17,17,.18); z-index:9999; }
-
-    .tile img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      background:#fff;
-      display:block;
-      pointer-events:none;
-      -webkit-user-drag:none;
-      user-drag:none;
-    }
-
-    .badge{
-      position:absolute;
-      right:10px;
-      bottom:10px;
-      background:rgba(0,0,0,.55);
-      color:#fff;
-      font-weight:800;
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      letter-spacing:.2px;
-      pointer-events:none;
-    }
-  </style>
+  .controls { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; }
+  button { cursor: pointer; padding: 10px; border: none; border-radius: 5px; background: #333; color: white; transition: 0.3s; }
+  button:hover { background: #555; }
+  .active { background: #00f2ff; color: black; font-weight: bold; }
+  #bonus-btn { background: #ffcc00; color: black; font-weight: bold; animation: pulse 1s infinite; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+  
+  #puzzle-area { min-height: 150px; margin-top: 20px; border-top: 1px solid #444; padding-top: 20px; }
+  input { padding: 8px; width: 60%; margin-bottom: 10px; background: #222; border: 1px solid #555; color: white; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="controls">
-      <div class="btnrow">
-        <button id="hard3x2">Hard 3×2</button>
-        <button id="easy2x2" class="secondary">Easy 2×2</button>
-        <button id="shuffle" class="secondary">Shuffle</button>
-      </div>
-      <div id="status" class="status">Drag a tile onto another to swap.</div>
-    </div>
 
-    <div id="board" class="board" aria-label="Puzzle board"></div>
+<div id="game-container">
+  <h2>PUZZLE ARCADE</h2>
+  
+  <div class="controls">
+    <button id="sfx-btn" onclick="toggleSFX()">SFX: OFF</button>
+    <button id="music-btn" onclick="toggleMusic()">Music: OFF</button>
+    <button id="bonus-btn" onclick="triggerBonus()">★ BONUS ★</button>
   </div>
 
-  <script>
-    (() => {
-      const board = document.getElementById("board");
-      const statusEl = document.getElementById("status");
-      const btnHard = document.getElementById("hard3x2");
-      const btnEasy = document.getElementById("easy2x2");
-      const btnShuffle = document.getElementById("shuffle");
+  <div class="controls">
+    <button onclick="loadPuzzle('math')">Math</button>
+    <button onclick="loadPuzzle('color')">Memory</button>
+    <button onclick="loadPuzzle('word')">Scramble</button>
+  </div>
 
-      // ✅ Your real files (same folder as puzzle.html)
-      const IMAGES = ["star.png", "balloon.png", "salam.png"];
+  <div id="puzzle-area">
+    <p>Select a puzzle to begin!</p>
+  </div>
+</div>
 
-      let cols = 3, rows = 2;      // Hard level default
-      let tiles = [];              // image filenames filling the grid
-      let order = [];              // indices into tiles[]
-      let draggingIndex = null;
+<script>
+  let sfxOn = false;
+  let musicOn = false;
+  let currentAnswer = "";
 
-      // HARD mode = more unique tiles by mixing + repeating in a pattern (not just 1-2-3)
-      function buildHardTiles(){
-        // 6 tiles for 3x2: uses all 3 images twice but in a shuffled base pattern
-        // (kids see more variety and it’s harder than simple repeats)
-        return ["star.png","balloon.png","salam.png","balloon.png","salam.png","star.png"];
-      }
+  function toggleSFX() {
+    sfxOn = !sfxOn;
+    document.getElementById('sfx-btn').innerText = `SFX: ${sfxOn ? 'ON' : 'OFF'}`;
+    document.getElementById('sfx-btn').classList.toggle('active');
+  }
 
-      // EASY mode = 4 tiles for 2x2: only 2 images repeated (simpler)
-      function buildEasyTiles(){
-        return ["star.png","balloon.png","star.png","balloon.png"];
-      }
+  function toggleMusic() {
+    musicOn = !musicOn;
+    document.getElementById('music-btn').innerText = `Music: ${musicOn ? 'ON' : 'OFF'}`;
+    document.getElementById('music-btn').classList.toggle('active');
+    if(sfxOn) playBeep(200);
+  }
 
-      function setModeHard3x2(){
-        cols = 3; rows = 2;
-        board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-        board.style.aspectRatio = `${cols} / ${rows}`;
+  function triggerBonus() {
+    alert("BONUS ACTIVATED! You earned 500 imaginary points!");
+    if(sfxOn) playBeep(800);
+  }
 
-        btnHard.classList.remove("secondary");
-        btnEasy.classList.add("secondary");
+  function playBeep(freq) {
+    if(!sfxOn) return;
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = context.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, context.currentTime);
+    osc.connect(context.destination);
+    osc.start();
+    osc.stop(context.currentTime + 0.1);
+  }
 
-        tiles = buildHardTiles();
-        order = Array.from({length: tiles.length}, (_,i)=>i);
-        shuffle();
-        render();
-      }
+  function loadPuzzle(type) {
+    const area = document.getElementById('puzzle-area');
+    if(sfxOn) playBeep(440);
+    
+    if (type === 'math') {
+      const a = Math.floor(Math.random() * 12) + 1;
+      const b = Math.floor(Math.random() * 12) + 1;
+      currentAnswer = a * b;
+      area.innerHTML = `<h3>Quick Math</h3><p>What is ${a} x ${b}?</p>
+                        <input type="number" id="ans"><br>
+                        <button onclick="checkAns('math')">Submit</button>`;
+    } else if (type === 'word') {
+      const words = ['GALAXY', 'MATRIX', 'PUZZLE', 'CYBER'];
+      const word = words[Math.floor(Math.random() * words.length)];
+      currentAnswer = word;
+      const scrambled = word.split('').sort(() => 0.5 - Math.random()).join('');
+      area.innerHTML = `<h3>Word Scramble</h3><p>Unscramble: <strong>${scrambled}</strong></p>
+                        <input type="text" id="ans"><br>
+                        <button onclick="checkAns('word')">Submit</button>`;
+    } else if (type === 'color') {
+      area.innerHTML = `<h3>Color Code</h3><p>Which color is often associated with "Stop"?</p>
+                        <input type="text" id="ans"><br>
+                        <button onclick="checkAns('color')">Submit</button>`;
+      currentAnswer = "red";
+    }
+  }
 
-      function setModeEasy2x2(){
-        cols = 2; rows = 2;
-        board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-        board.style.aspectRatio = `${cols} / ${rows}`;
-
-        btnEasy.classList.remove("secondary");
-        btnHard.classList.add("secondary");
-
-        tiles = buildEasyTiles();
-        order = Array.from({length: tiles.length}, (_,i)=>i);
-        shuffle();
-        render();
-      }
-
-      function shuffle(){
-        for(let i=order.length-1; i>0; i--){
-          const j = Math.floor(Math.random()*(i+1));
-          [order[i], order[j]] = [order[j], order[i]];
-        }
-      }
-
-      function render(){
-        board.innerHTML = "";
-        let errors = 0;
-
-        order.forEach((tileIndex, pos) => {
-          const tile = document.createElement("div");
-          tile.className = "tile";
-          tile.draggable = true;
-
-          const img = document.createElement("img");
-          img.alt = "Puzzle image";
-          img.src = tiles[tileIndex];
-
-          img.onerror = () => {
-            errors++;
-            statusEl.textContent = "❌ Images not loading — keep star.png, balloon.png, salam.png in the SAME folder as puzzle.html (case-sensitive).";
-          };
-
-          const badge = document.createElement("div");
-          badge.className = "badge";
-          badge.textContent = (cols === 3 && rows === 2) ? "HARD" : "EASY";
-
-          tile.appendChild(img);
-          tile.appendChild(badge);
-
-          tile.addEventListener("dragstart", onDragStart);
-          tile.addEventListener("dragend", onDragEnd);
-          tile.addEventListener("dragover", e => e.preventDefault());
-          tile.addEventListener("drop", onDrop);
-
-          board.appendChild(tile);
-        });
-
-        if(errors === 0) statusEl.textContent = "Drag a tile onto another to swap.";
-      }
-
-      function onDragStart(e){
-        const tile = e.currentTarget;
-        draggingIndex = [...board.children].indexOf(tile);
-
-        const rect = tile.getBoundingClientRect();
-        tile.style.width = rect.width + "px";
-        tile.style.height = rect.height + "px";
-
-        tile.classList.add("dragging");
-        e.dataTransfer.effectAllowed = "move";
-      }
-
-      function onDragEnd(e){
-        const tile = e.currentTarget;
-        tile.classList.remove("dragging");
-        tile.style.width = "";
-        tile.style.height = "";
-        draggingIndex = null;
-      }
-
-      function onDrop(e){
-        e.preventDefault();
-        if(draggingIndex === null) return;
-
-        const dropIndex = [...board.children].indexOf(e.currentTarget);
-        if(dropIndex === draggingIndex) return;
-
-        [order[draggingIndex], order[dropIndex]] = [order[dropIndex], order[draggingIndex]];
-        render();
-      }
-
-      btnHard.addEventListener("click", setModeHard3x2);
-      btnEasy.addEventListener("click", setModeEasy2x2);
-      btnShuffle.addEventListener("click", () => { shuffle(); render(); });
-
-      // start on harder 3x2
-      setModeHard3x2();
-    })();
-  </script>
+  function checkAns(type) {
+    const val = document.getElementById('ans').value.toLowerCase();
+    if (val == currentAnswer.toString().toLowerCase()) {
+      alert("CORRECT!");
+      if(sfxOn) playBeep(600);
+      loadPuzzle(type);
+    } else {
+      alert("Try again!");
+      if(sfxOn) playBeep(150);
+    }
+  }
+</script>
 </body>
 </html>
