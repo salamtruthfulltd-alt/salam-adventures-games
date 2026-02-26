@@ -1,14 +1,35 @@
 <script>
 /* =========================================================
-   SALAM COLOURING GAME – FULL UPGRADE
-   Paint Mode + Tap Fill Mode + Blank Mode
-   Keeps original framework
+   SALAM COLOURING GAME – STABLE VERSION
+   Paint + Tap Fill + Blank Mode
+   DOES NOT BREAK FRAMEWORK
 ========================================================= */
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-/* ---------------- PAGES ---------------- */
+/* ---------------- CANVAS SAFE SIZE ---------------- */
+
+function setCanvasSizeForDPR() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  const cssW = rect.width;
+  const cssH = rect.width * (2/3);
+
+  canvas.style.height = cssH + "px";
+
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+}
+
+setCanvasSizeForDPR();
+window.addEventListener("resize", () => {
+  setCanvasSizeForDPR();
+  if (gameMode !== "blank") loadPage(currentPage);
+});
+
+/* ---------------- IMAGE PAGES ---------------- */
 
 const pages = [
   "colouring images/butterfly.png",
@@ -28,43 +49,34 @@ const pages = [
 let currentPage = 0;
 let gameMode = "paint"; // paint | fill | blank
 const baseImage = new Image();
+baseImage.crossOrigin = "anonymous";
 
-function setCanvasSize() {
-  const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.width * 0.66 * dpr;
+function drawBaseImage() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const ratio = Math.min(
+    canvas.width / baseImage.naturalWidth,
+    canvas.height / baseImage.naturalHeight
+  );
+
+  const w = baseImage.naturalWidth * ratio;
+  const h = baseImage.naturalHeight * ratio;
+  const x = (canvas.width - w) / 2;
+  const y = (canvas.height - h) / 2;
+
+  ctx.drawImage(baseImage, x, y, w, h);
 }
-setCanvasSize();
-window.addEventListener("resize", () => {
-  setCanvasSize();
-  if (gameMode !== "blank") loadPage(currentPage);
-});
 
 function loadPage(index) {
   currentPage = (index + pages.length) % pages.length;
   baseImage.src = encodeURI(pages[currentPage]);
 }
 
-baseImage.onload = () => {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+baseImage.onload = () => drawBaseImage();
 
-  const ratio = Math.min(
-    canvas.width / baseImage.width,
-    canvas.height / baseImage.height
-  );
-
-  const w = baseImage.width * ratio;
-  const h = baseImage.height * ratio;
-  const x = (canvas.width - w) / 2;
-  const y = (canvas.height - h) / 2;
-
-  ctx.drawImage(baseImage, x, y, w, h);
-};
-
-/* ---------------- MODE BUTTONS ---------------- */
+/* ---------------- MODE BAR ---------------- */
 
 const modeBar = document.createElement("div");
 modeBar.style.display = "flex";
@@ -73,16 +85,16 @@ modeBar.style.justifyContent = "center";
 modeBar.style.marginBottom = "10px";
 
 modeBar.innerHTML = `
-<button class="kidbtn b1" id="paintMode">🖌 Paint Mode</button>
-<button class="kidbtn b2" id="fillMode">🪣 Tap Fill</button>
-<button class="kidbtn b3" id="blankMode">📄 Blank Page</button>
+<button class="kidbtn b1">🖌 Paint</button>
+<button class="kidbtn b2">🪣 Tap Fill</button>
+<button class="kidbtn b3">📄 Blank</button>
 `;
 
 document.querySelector(".wrap").prepend(modeBar);
 
-document.getElementById("paintMode").onclick = () => gameMode = "paint";
-document.getElementById("fillMode").onclick = () => gameMode = "fill";
-document.getElementById("blankMode").onclick = () => {
+modeBar.children[0].onclick = () => gameMode = "paint";
+modeBar.children[1].onclick = () => gameMode = "fill";
+modeBar.children[2].onclick = () => {
   gameMode = "blank";
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.fillStyle = "#ffffff";
@@ -93,8 +105,10 @@ document.getElementById("blankMode").onclick = () => {
 
 const undoStack = [];
 function pushUndo(){
-  undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
-  if (undoStack.length > 20) undoStack.shift();
+  try{
+    undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+    if (undoStack.length > 20) undoStack.shift();
+  }catch(e){}
 }
 function undo(){
   const last = undoStack.pop();
@@ -102,12 +116,13 @@ function undo(){
 }
 document.getElementById("undoBtn").onclick = undo;
 
-/* ---------------- FILL TOOL ---------------- */
+/* ---------------- FLOOD FILL ---------------- */
 
 function floodFill(startX, startY, fillColor) {
   const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
   const data = imgData.data;
   const width = canvas.width;
+  const height = canvas.height;
 
   const stack = [[startX,startY]];
   const index = (startY * width + startX) * 4;
@@ -115,11 +130,10 @@ function floodFill(startX, startY, fillColor) {
   const target = [
     data[index],
     data[index+1],
-    data[index+2],
-    data[index+3]
+    data[index+2]
   ];
 
-  const fill = hexToRgba(fillColor);
+  const fill = hexToRgb(fillColor);
 
   if (matchColor(target, fill)) return;
 
@@ -130,8 +144,7 @@ function floodFill(startX, startY, fillColor) {
     const current = [
       data[i],
       data[i+1],
-      data[i+2],
-      data[i+3]
+      data[i+2]
     ];
 
     if (!matchColor(current, target)) continue;
@@ -144,15 +157,15 @@ function floodFill(startX, startY, fillColor) {
     if (x>0) stack.push([x-1,y]);
     if (x<width-1) stack.push([x+1,y]);
     if (y>0) stack.push([x,y-1]);
-    if (y<canvas.height-1) stack.push([x,y+1]);
+    if (y<height-1) stack.push([x,y+1]);
   }
 
   ctx.putImageData(imgData,0,0);
 }
 
-function hexToRgba(hex){
+function hexToRgb(hex){
   const bigint = parseInt(hex.replace("#",""),16);
-  return [(bigint>>16)&255,(bigint>>8)&255,bigint&255,255];
+  return [(bigint>>16)&255,(bigint>>8)&255,bigint&255];
 }
 
 function matchColor(a,b){
@@ -163,7 +176,7 @@ function matchColor(a,b){
 
 let drawing = false;
 let brushColor = "#2563eb";
-let brushSize = 18;
+let brushSize = 20;
 
 canvas.addEventListener("pointerdown", e => {
   const rect = canvas.getBoundingClientRect();
@@ -178,9 +191,11 @@ canvas.addEventListener("pointerdown", e => {
     return;
   }
 
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(x,y);
+  if (gameMode === "paint") {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+  }
 });
 
 canvas.addEventListener("pointermove", e => {
