@@ -1,795 +1,1086 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Salam Adventures – Colouring Game</title>
-<style>
-  :root{
-    --bg1:#0b1220; --text:#e9f2ff; --muted:#b9c7e6;
-    --shadow:0 12px 30px rgba(0,0,0,.35);
-  }
-  html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
-    background:radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg1) 55%, #070b14 100%);
-  }
-  *{box-sizing:border-box}
-  .wrap{max-width:1100px;margin:18px auto 30px;padding:14px}
-  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin-bottom:12px}
-  .kidbtn{
-    border:none;border-radius:18px;padding:12px 14px;cursor:pointer;font-weight:900;color:#0b1220;
-    box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;user-select:none;
-    transition:transform .08s ease,filter .2s ease;font-size:14px;
-  }
-  .kidbtn:hover{transform:translateY(-1px);filter:brightness(1.05)}
-  .kidbtn:active{transform:translateY(0) scale(.99)}
-  .kidbtn.active{outline:3px solid rgba(98,255,207,.9);outline-offset:2px}
-  .emoji{font-size:18px;line-height:1}
-  .b1{background:linear-gradient(135deg,#60a5fa,#34d399)}
-  .b2{background:linear-gradient(135deg,#fbbf24,#fb7185)}
-  .b3{background:linear-gradient(135deg,#a78bfa,#60a5fa)}
-  .b4{background:linear-gradient(135deg,#34d399,#fbbf24)}
-  .b5{background:linear-gradient(135deg,#fb7185,#a78bfa)}
-  .b6{background:linear-gradient(135deg,#fbbf24,#60a5fa)}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salam Adventures – Colouring Game</title>
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --text:#e9f2ff;
+      --muted:#b9c7e6;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    html,body{height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text);
+      background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg1) 55%, #070b14 100%);
+    }
+    *{box-sizing:border-box;}
+    .wrap{max-width:1100px; margin:18px auto 30px; padding:14px;}
 
-  .toggles{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;width:100%}
-  .pill{
-    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;
-    background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.14);
-    box-shadow:var(--shadow);color:var(--muted);font-size:12px;
-  }
-  .pill input{accent-color:#22c55e}
-  .pill input[type=range]{width:170px}
+    .controls{
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
+      margin-bottom:12px;
+    }
+    .kidbtn{
+      border:none;
+      border-radius:18px;
+      padding:12px 14px;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.2px;
+      color:#0b1220;
+      box-shadow: var(--shadow);
+      display:flex; align-items:center; gap:10px;
+      user-select:none;
+      transition: transform .08s ease, filter .2s ease;
+      font-size:14px;
+    }
+    .kidbtn:hover{transform: translateY(-1px); filter:brightness(1.05);}
+    .kidbtn:active{transform: translateY(0px) scale(.99);}
+    .kidbtn .emoji{font-size:18px; line-height:1;}
+    .kidbtn.active{outline:3px solid rgba(98,255,207,.9); outline-offset:2px;}
 
-  .stage{margin-top:10px;border-radius:24px;padding:12px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-  .stage::before{
-    content:"";position:absolute;inset:-2px;border-radius:26px;z-index:0;
-    background:conic-gradient(from 0deg,#ff3d3d,#ffd93d,#3dff6a,#3ddcff,#7c3dff,#ff3d3d);
-    animation:spin 2.8s linear infinite, pulse 1.1s ease-in-out infinite;
-  }
-  .stage::after{
-    content:"";position:absolute;inset:6px;border-radius:20px;z-index:0;
-    background:linear-gradient(180deg, rgba(10,20,45,.86), rgba(6,10,20,.88));
-  }
-  .stage.noflash::before{animation:none;opacity:.35}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @keyframes pulse{0%,100%{filter:brightness(1)saturate(1.2)}50%{filter:brightness(1.25)saturate(1.8)}}
+    .b1{background: linear-gradient(135deg,#60a5fa,#34d399);}
+    .b2{background: linear-gradient(135deg,#fbbf24,#fb7185);}
+    .b3{background: linear-gradient(135deg,#a78bfa,#60a5fa);}
+    .b4{background: linear-gradient(135deg,#34d399,#fbbf24);}
+    .b5{background: linear-gradient(135deg,#fb7185,#a78bfa);}
+    .b6{background: linear-gradient(135deg,#fbbf24,#60a5fa);}
 
-  .canvasWrap{position:relative;z-index:1;padding:10px;border-radius:18px;background:rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)
-  }
-  canvas{width:100%;height:auto;display:block;border-radius:16px;background:#fff;touch-action:none}
-  .smallstatus{margin:10px 6px 0;font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
-  .dot{width:10px;height:10px;border-radius:999px;background:#22c55e;box-shadow:0 0 18px rgba(34,197,94,.7)}
-  .dot.off{background:#ef4444;box-shadow:0 0 18px rgba(239,68,68,.65)}
-  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;padding:3px 7px;border-radius:8px;
-    border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:#cfe0ff
-  }
+    .toggles{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
+      width:100%;
+    }
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .pill input{accent-color:#22c55e;}
+    .pill input[type="range"]{width:170px;}
 
-  .panel{margin-top:14px;background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:var(--shadow);overflow:hidden
-  }
-  .panelHeader{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;flex-wrap:wrap;
-    background:linear-gradient(90deg, rgba(34,197,94,.18), rgba(59,130,246,.16), rgba(168,85,247,.14));
-    border-bottom:1px solid rgba(255,255,255,.10)
-  }
-  .chip{font-size:12px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.25);
-    border:1px solid rgba(255,255,255,.12);color:var(--muted);display:inline-flex;align-items:center;gap:8px
-  }
-  .panelBody{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;padding:12px}
-  @media (max-width:860px){.panelBody{grid-template-columns:1fr}}
-  .section{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:12px}
-  .section h2{font-size:13px;margin:0 0 10px;color:#dbe8ff}
-  .section p{margin:0 0 10px;font-size:12px;color:var(--muted)}
+    .stage{
+      margin-top:10px;
+      border-radius:24px;
+      padding:12px;
+      position:relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:26px;
+      background: conic-gradient(from 0deg, #ff3d3d, #ffd93d, #3dff6a, #3ddcff, #7c3dff, #ff3d3d);
+      animation: spin 2.8s linear infinite, pulse 1.1s ease-in-out infinite;
+      z-index:0;
+      opacity:1;
+    }
+    .stage::after{
+      content:"";
+      position:absolute;
+      inset:6px;
+      border-radius:20px;
+      background: linear-gradient(180deg, rgba(10,20,45,.86), rgba(6,10,20,.88));
+      z-index:0;
+    }
+    .stage.noflash::before{animation:none; opacity:.35;}
+    @keyframes spin{to{transform: rotate(360deg);}}
+    @keyframes pulse{0%,100%{filter: brightness(1) saturate(1.2);} 50%{filter: brightness(1.25) saturate(1.8);}}
 
-  .swatches{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
-  .swatch{aspect-ratio:1/1;border-radius:12px;border:1px solid rgba(255,255,255,.16);cursor:pointer;
-    box-shadow:inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.25)
-  }
-  .swatch.selected{outline:2px solid rgba(98,255,207,.9);outline-offset:2px}
+    .canvasWrap{
+      position:relative;
+      z-index:1;
+      padding: 10px;
+      border-radius:18px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    }
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:16px;
+      background:#ffffff;
+      touch-action:none;
+    }
+    .smallstatus{
+      margin:10px 6px 0;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background:#22c55e; box-shadow:0 0 18px rgba(34,197,94,.7);
+    }
+    .dot.off{
+      background:#ef4444; box-shadow:0 0 18px rgba(239,68,68,.65);
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:11px; padding:3px 7px; border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color:#cfe0ff;
+    }
 
-  .modeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .modeBtn{
-    padding:10px;border-radius:16px;cursor:pointer;border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.04);color:var(--text);min-height:60px;text-align:left
-  }
-  .modeBtn.active{border-color:rgba(98,255,207,.9);box-shadow:0 0 0 2px rgba(98,255,207,.25) inset}
-  .modeBtn b{display:block;font-size:13px;margin-bottom:4px}
-  .modeBtn span{display:block;font-size:11px;color:var(--muted);line-height:1.2}
+    .panel{
+      margin-top:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      background: linear-gradient(90deg, rgba(34,197,94,.18), rgba(59,130,246,.16), rgba(168,85,247,.14));
+      border-bottom:1px solid rgba(255,255,255,.10);
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .panelBody{
+      display:grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap:12px;
+      padding:12px;
+    }
+    @media (max-width: 860px){ .panelBody{grid-template-columns: 1fr;} }
+    .section{
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:12px;
+    }
+    .section h2{font-size:13px; margin:0 0 10px 0; color:#dbe8ff; display:flex; align-items:center; gap:8px;}
+    .section p{margin:0 0 10px 0; font-size:12px; color:var(--muted);}
 
-  .sliders{display:grid;gap:10px;margin-top:10px}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .row label{font-size:12px;color:var(--muted)}
-  .row input[type=range]{flex:1}
+    .swatches{
+      display:grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap:8px;
+    }
+    .swatch{
+      width:100%;
+      aspect-ratio:1/1;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      cursor:pointer;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.25);
+      transition: transform .08s ease, filter .2s ease, outline .2s ease;
+    }
+    .swatch:hover{transform: translateY(-1px); filter: brightness(1.08);}
+    .swatch.selected{outline:2px solid rgba(98,255,207,.9); outline-offset:2px;}
 
-  .footerRow{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;
-    padding:12px 14px;border-top:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:var(--muted);font-size:12px
-  }
-</style>
+    .modeGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .modeBtn{
+      padding:10px 10px;
+      border-radius:16px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      transition: transform .08s ease, border-color .2s ease, filter .2s ease;
+      text-align:left;
+      min-height:60px;
+    }
+    .modeBtn:hover{transform: translateY(-1px); border-color: rgba(98,255,207,.35); filter: brightness(1.06);}
+    .modeBtn.active{border-color: rgba(98,255,207,.9); box-shadow: 0 0 0 2px rgba(98,255,207,.25) inset;}
+    .modeBtn b{display:block; font-size:13px; margin-bottom:4px;}
+    .modeBtn span{display:block; font-size:11px; color:var(--muted); line-height:1.2;}
+
+    .sliders{display:grid; gap:10px; margin-top:10px;}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .row label{font-size:12px; color:var(--muted);}
+    .row input[type="range"]{flex:1;}
+
+    .footerRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      border-top:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <div class="controls">
-    <button class="kidbtn b1" id="prevBtn"><span class="emoji">⬅️</span> Back</button>
-    <button class="kidbtn b2" id="nextBtn">Next <span class="emoji">➡️</span></button>
-    <button class="kidbtn b3" id="musicBtn"><span class="emoji">🎵</span> <span id="musicText">Music: Off</span></button>
-    <button class="kidbtn b4" id="undoBtn"><span class="emoji">↩️</span> Oops!</button>
-    <button class="kidbtn b5" id="cleanBtn"><span class="emoji">🧼</span> Clean Page</button>
-    <button class="kidbtn b6" id="saveBtn"><span class="emoji">⭐</span> Save My Art</button>
+    <div class="controls">
+      <button class="kidbtn b1" id="prevBtn"><span class="emoji">⬅️</span> Back</button>
+      <button class="kidbtn b2" id="nextBtn">Next <span class="emoji">➡️</span></button>
 
-    <div class="toggles">
-      <div class="pill">
-        <input type="checkbox" id="flashToggle" checked />
-        <label for="flashToggle">Flashing Border</label>
+      <button class="kidbtn b3" id="musicBtn"><span class="emoji">🎵</span> <span id="musicText">Music: Off</span></button>
+
+      <button class="kidbtn b4" id="undoBtn"><span class="emoji">↩️</span> Oops!</button>
+      <button class="kidbtn b5" id="cleanBtn"><span class="emoji">🧼</span> Clean Page</button>
+      <button class="kidbtn b6" id="saveBtn"><span class="emoji">⭐</span> Save My Art</button>
+
+      <div class="toggles">
+        <div class="pill">
+          <input type="checkbox" id="flashToggle" checked />
+          <label for="flashToggle">Flashing Border</label>
+        </div>
+
+        <div class="pill">
+          <label for="size">Brush Size</label>
+          <input id="size" type="range" min="3" max="60" value="16" />
+          <span class="kbd" id="sizeVal">16</span>
+        </div>
       </div>
-      <div class="pill">
-        <label for="size">Brush Size</label>
-        <input id="size" type="range" min="3" max="60" value="16" />
-        <span class="kbd" id="sizeVal">16</span>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="canvasWrap">
+        <canvas id="canvas" width="1200" height="800"></canvas>
+
+        <div class="smallstatus">
+          <div>Tip: Tap Fill = one tap to colour an area · <span class="kbd">Ctrl</span>+<span class="kbd">Z</span> Undo</div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <span class="dot off" id="audioDot"></span>
+            <span id="audioStatus">Audio Locked</span>
+            <span class="kbd" id="pageLabel">Page 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panelHeader">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="chip" id="modeChip">Mode: Normal Paint</span>
+          <span class="chip">Brush Sound: <b id="sfxChip">On</b></span>
+          <span class="chip">Tap Fill: <b id="fillChip">Off</b></span>
+          <span class="chip">Colour: <span class="kbd" id="currentColour">#2563eb</span></span>
+          <span class="chip">Brush: <span class="kbd" id="currentMode">normal</span></span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="kidbtn b2" id="fillBtn" style="padding:10px 12px; font-size:13px;"><span class="emoji">🪣</span> Tap Fill: Off</button>
+          <button class="kidbtn b4" id="sfxBtn" style="padding:10px 12px; font-size:13px;"><span class="emoji">🖌️</span> SFX: On</button>
+          <button class="kidbtn b5" id="eraserBtn" style="padding:10px 12px; font-size:13px;"><span class="emoji">🧽</span> Eraser</button>
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <div class="section">
+          <h2>🎨 Paint Colours</h2>
+          <p>Pick a colour and start colouring!</p>
+          <div class="swatches" id="colourSwatches"></div>
+
+          <div class="sliders">
+            <div class="row">
+              <label for="opacity">Opacity</label>
+              <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
+              <span class="kbd" id="opacityVal">1.00</span>
+            </div>
+            <div class="row">
+              <label for="smooth">Smoothing</label>
+              <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
+              <span class="kbd" id="smoothVal">0.35</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>✨ Brushes & Effects</h2>
+          <p>Glitter and mixed brushes included.</p>
+
+          <div class="modeGrid">
+            <button class="modeBtn active" data-mode="normal"><b>Normal Paint</b><span>Classic smooth brush</span></button>
+            <button class="modeBtn" data-mode="glitter"><b>Glitter Brush</b><span>Sparkles trail behind</span></button>
+            <button class="modeBtn" data-mode="rainbow"><b>Rainbow Mix</b><span>Colour-shifting stroke</span></button>
+            <button class="modeBtn" data-mode="neon"><b>Neon Glow</b><span>Bright glow outline</span></button>
+            <button class="modeBtn" data-mode="watercolor"><b>Watercolour</b><span>Soft layered wash</span></button>
+            <button class="modeBtn" data-mode="confetti"><b>Confetti Mix</b><span>Paint + confetti dots</span></button>
+          </div>
+
+          <div class="sliders">
+            <div class="row">
+              <label for="glitter">Glitter Strength</label>
+              <input id="glitter" type="range" min="0" max="1" value="0.55" step="0.05" />
+              <span class="kbd" id="glitterVal">0.55</span>
+            </div>
+            <div class="row">
+              <label for="scatter">Effect Scatter</label>
+              <input id="scatter" type="range" min="0" max="1" value="0.35" step="0.05" />
+              <span class="kbd" id="scatterVal">0.35</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footerRow">
+        <div>Undo: <span class="kbd">Ctrl</span>+<span class="kbd">Z</span></div>
+        <div>Tap Fill: turn it on, then tap a white area to fill it</div>
       </div>
     </div>
   </div>
 
-  <div class="stage" id="stage">
-    <div class="canvasWrap">
-      <canvas id="canvas" width="1200" height="800"></canvas>
-      <div class="smallstatus">
-        <div>Tip: Tap Fill = one tap to colour an area · <span class="kbd">Ctrl</span>+<span class="kbd">Z</span> Undo</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <span class="dot off" id="audioDot"></span>
-          <span id="audioStatus">Audio Locked</span>
-          <span class="kbd" id="pageLabel">Page 1</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-  <div class="panel">
-    <div class="panelHeader">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <span class="chip" id="modeChip">Mode: Normal Paint</span>
-        <span class="chip">Brush Sound: <b id="sfxChip">On</b></span>
-        <span class="chip">Tap Fill: <b id="fillChip">Off</b></span>
-        <span class="chip">Colour: <span class="kbd" id="currentColour">#2563eb</span></span>
-        <span class="chip">Brush: <span class="kbd" id="currentMode">normal</span></span>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="kidbtn b2" id="fillBtn" style="padding:10px 12px;font-size:13px;"><span class="emoji">🪣</span> Tap Fill: Off</button>
-        <button class="kidbtn b4" id="sfxBtn" style="padding:10px 12px;font-size:13px;"><span class="emoji">🖌️</span> SFX: On</button>
-        <button class="kidbtn b5" id="eraserBtn" style="padding:10px 12px;font-size:13px;"><span class="emoji">🧽</span> Eraser</button>
-      </div>
-    </div>
+    // ---- Pages from your repo folder ----
+    const pages = [
+      "colouring images/butterfly.png",
+      "colouring images/car.png",
+      "colouring images/chest.png",
+      "colouring images/dino.png",
+      "colouring images/dog.png",
+      "colouring images/doll.png",
+      "colouring images/house.png",
+      "colouring images/kids.png",
+      "colouring images/plane.png",
+      "colouring images/prince.png",
+      "colouring images/swan.png",
+      "colouring images/veg.png"
+    ];
+    let currentPage = 0;
 
-    <div class="panelBody">
-      <div class="section">
-        <h2>🎨 Paint Colours</h2>
-        <p>Pick a colour and start colouring!</p>
-        <div class="swatches" id="colourSwatches"></div>
+    // ---- High-DPI helper ----
+    function setCanvasSizeForDPR() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const cssW = rect.width;
+      const cssH = rect.width * (2/3);
 
-        <div class="sliders">
-          <div class="row">
-            <label for="opacity">Opacity</label>
-            <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
-            <span class="kbd" id="opacityVal">1.00</span>
-          </div>
-          <div class="row">
-            <label for="smooth">Smoothing</label>
-            <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
-            <span class="kbd" id="smoothVal">0.35</span>
-          </div>
-        </div>
-      </div>
+      canvas.style.height = cssH + "px";
 
-      <div class="section">
-        <h2>✨ Brushes & Effects</h2>
-        <p>Glitter and mixed brushes included.</p>
+      const newW = Math.max(600, Math.round(cssW * dpr));
+      const newH = Math.max(400, Math.round(cssH * dpr));
 
-        <div class="modeGrid">
-          <button class="modeBtn active" data-mode="normal"><b>Normal Paint</b><span>Classic smooth brush</span></button>
-          <button class="modeBtn" data-mode="glitter"><b>Glitter Brush</b><span>Sparkles trail behind</span></button>
-          <button class="modeBtn" data-mode="rainbow"><b>Rainbow Mix</b><span>Colour-shifting stroke</span></button>
-          <button class="modeBtn" data-mode="neon"><b>Neon Glow</b><span>Bright glow outline</span></button>
-          <button class="modeBtn" data-mode="watercolor"><b>Watercolour</b><span>Soft layered wash</span></button>
-          <button class="modeBtn" data-mode="confetti"><b>Confetti Mix</b><span>Paint + confetti dots</span></button>
-        </div>
+      let snap = null;
+      try { snap = ctx.getImageData(0,0,canvas.width,canvas.height); } catch(e){}
 
-        <div class="sliders">
-          <div class="row">
-            <label for="glitter">Glitter Strength</label>
-            <input id="glitter" type="range" min="0" max="1" value="0.55" step="0.05" />
-            <span class="kbd" id="glitterVal">0.55</span>
-          </div>
-          <div class="row">
-            <label for="scatter">Effect Scatter</label>
-            <input id="scatter" type="range" min="0" max="1" value="0.35" step="0.05" />
-            <span class="kbd" id="scatterVal">0.35</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      canvas.width = newW;
+      canvas.height = newH;
 
-    <div class="footerRow">
-      <div>Undo: <span class="kbd">Ctrl</span>+<span class="kbd">Z</span></div>
-      <div>Tap Fill: turn it on, then tap a white area to fill it</div>
-    </div>
-  </div>
+      if (snap) {
+        const tmp = document.createElement("canvas");
+        tmp.width = snap.width; tmp.height = snap.height;
+        tmp.getContext("2d").putImageData(snap,0,0);
+        ctx.drawImage(tmp, 0,0, tmp.width,tmp.height, 0,0, canvas.width,canvas.height);
+      }
+    }
 
-</div>
+    // ---- Base image drawing ----
+    const baseImage = new Image();
+    baseImage.decoding = "async";
 
-<script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    function drawBaseImage() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  const pages = [
-    "colouring images/butterfly.png",
-    "colouring images/car.png",
-    "colouring images/chest.png",
-    "colouring images/dino.png",
-    "colouring images/dog.png",
-    "colouring images/doll.png",
-    "colouring images/house.png",
-    "colouring images/kids.png",
-    "colouring images/plane.png",
-    "colouring images/prince.png",
-    "colouring images/swan.png",
-    "colouring images/veg.png"
-  ];
-  let currentPage = 0;
+      const ratio = Math.min(
+        canvas.width / baseImage.naturalWidth,
+        canvas.height / baseImage.naturalHeight
+      );
 
-  // ---------- DPR resize ----------
-  function setCanvasSizeForDPR(){
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = rect.width;
-    const cssH = rect.width * (2/3);
-    canvas.style.height = cssH + "px";
-    canvas.width = Math.max(600, Math.round(cssW * dpr));
-    canvas.height = Math.max(400, Math.round(cssH * dpr));
-  }
+      const newW = Math.round(baseImage.naturalWidth * ratio);
+      const newH = Math.round(baseImage.naturalHeight * ratio);
 
-  // ---------- Base image ----------
-  const baseImage = new Image();
-  baseImage.decoding = "async";
+      const x = Math.round((canvas.width - newW) / 2);
+      const y = Math.round((canvas.height - newH) / 2);
 
-  function drawBaseImage(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="#fff";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(baseImage, x, y, newW, newH);
+    }
 
-    const ratio = Math.min(canvas.width/baseImage.naturalWidth, canvas.height/baseImage.naturalHeight);
-    const w = Math.round(baseImage.naturalWidth * ratio);
-    const h = Math.round(baseImage.naturalHeight * ratio);
-    const x = Math.round((canvas.width - w)/2);
-    const y = Math.round((canvas.height - h)/2);
+    // Undo stack
+    const undoStack = [];
+    const MAX_UNDO = 20;
+    function pushUndo() {
+      try {
+        if (undoStack.length >= MAX_UNDO) undoStack.shift();
+        undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+      } catch (e) {}
+    }
+    function undo() {
+      const last = undoStack.pop();
+      if (!last) return;
+      ctx.putImageData(last,0,0);
+    }
 
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(baseImage, x,y,w,h);
-  }
+    // Load selected page and draw it
+    const pageLabel = document.getElementById("pageLabel");
+    function loadPage(index) {
+      currentPage = (index + pages.length) % pages.length;
+      pageLabel.textContent = `Page ${currentPage + 1}`;
+      baseImage.src = encodeURI(pages[currentPage]);
+    }
+    baseImage.onload = () => { drawBaseImage(); undoStack.length = 0; };
 
-  const pageLabel = document.getElementById("pageLabel");
-  function loadPage(i){
-    currentPage = (i + pages.length) % pages.length;
-    pageLabel.textContent = `Page ${currentPage+1}`;
-    baseImage.src = encodeURI(pages[currentPage]);
-  }
-  baseImage.onload = () => { drawBaseImage(); undoStack.length = 0; };
+    // ---------- UI: flashing border toggle ----------
+    const stage = document.getElementById('stage');
+    document.getElementById('flashToggle').addEventListener('change', (e)=>{
+      stage.classList.toggle('noflash', !e.target.checked);
+    });
 
-  // ---------- Flash border ----------
-  const stage = document.getElementById("stage");
-  document.getElementById("flashToggle").addEventListener("change",(e)=>{
-    stage.classList.toggle("noflash", !e.target.checked);
-  });
+    // ---------- Brushes ----------
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const rand = (a,b) => Math.random()*(b-a)+a;
 
-  // ---------- Controls + state ----------
-  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const rand=(a,b)=>Math.random()*(b-a)+a;
+    const sizeEl = document.getElementById('size');
+    const sizeVal = document.getElementById('sizeVal');
+    const opacityEl = document.getElementById('opacity');
+    const opacityVal = document.getElementById('opacityVal');
+    const smoothEl = document.getElementById('smooth');
+    const smoothVal = document.getElementById('smoothVal');
+    const glitterEl = document.getElementById('glitter');
+    const glitterVal = document.getElementById('glitterVal');
+    const scatterEl = document.getElementById('scatter');
+    const scatterVal = document.getElementById('scatterVal');
 
-  let brushColour="#2563eb";
-  let mode="normal";
-  let isEraser=false;
+    const modeChip = document.getElementById('modeChip');
+    const currentColourEl = document.getElementById('currentColour');
+    const currentModeEl = document.getElementById('currentMode');
 
-  const sizeEl=document.getElementById("size");
-  const sizeVal=document.getElementById("sizeVal");
-  const opacityEl=document.getElementById("opacity");
-  const opacityVal=document.getElementById("opacityVal");
-  const smoothEl=document.getElementById("smooth");
-  const smoothVal=document.getElementById("smoothVal");
-  const glitterEl=document.getElementById("glitter");
-  const glitterVal=document.getElementById("glitterVal");
-  const scatterEl=document.getElementById("scatter");
-  const scatterVal=document.getElementById("scatterVal");
+    let brushSize = parseInt(sizeEl.value,10);
+    let brushOpacity = parseFloat(opacityEl.value);
+    let smoothing = parseFloat(smoothEl.value);
+    let glitterStrength = parseFloat(glitterEl.value);
+    let scatter = parseFloat(scatterEl.value);
 
-  const modeChip=document.getElementById("modeChip");
-  const currentColourEl=document.getElementById("currentColour");
-  const currentModeEl=document.getElementById("currentMode");
+    let brushColour = "#2563eb";
+    let mode = "normal";
+    let isEraser = false;
 
-  let brushSize=parseInt(sizeEl.value,10);
-  let brushOpacity=parseFloat(opacityEl.value);
-  let smoothing=parseFloat(smoothEl.value);
-  let glitterStrength=parseFloat(glitterEl.value);
-  let scatter=parseFloat(scatterEl.value);
+    // ---------- TAP FILL TOGGLE ----------
+    let tapFillOn = false;
+    const fillBtn = document.getElementById("fillBtn");
+    const fillChip = document.getElementById("fillChip");
 
-  function syncSliders(){
-    sizeVal.textContent = brushSize;
-    opacityVal.textContent = brushOpacity.toFixed(2);
-    smoothVal.textContent = smoothing.toFixed(2);
-    glitterVal.textContent = glitterStrength.toFixed(2);
-    scatterVal.textContent = scatter.toFixed(2);
-  }
-  sizeEl.addEventListener("input",()=>{brushSize=parseInt(sizeEl.value,10);syncSliders();});
-  opacityEl.addEventListener("input",()=>{brushOpacity=parseFloat(opacityEl.value);syncSliders();});
-  smoothEl.addEventListener("input",()=>{smoothing=parseFloat(smoothEl.value);syncSliders();});
-  glitterEl.addEventListener("input",()=>{glitterStrength=parseFloat(glitterEl.value);syncSliders();});
-  scatterEl.addEventListener("input",()=>{scatter=parseFloat(scatterEl.value);syncSliders();});
-
-  // ---------- Palette ----------
-  const colours=[
-    "#000000","#ffffff","#ef4444","#f97316","#facc15",
-    "#22c55e","#10b981","#06b6d4","#3b82f6","#6366f1",
-    "#a855f7","#ec4899","#f43f5e","#8b5cf6","#14b8a6",
-    "#84cc16","#eab308","#fb7185","#60a5fa","#94a3b8"
-  ];
-  const swatchWrap=document.getElementById("colourSwatches");
-  function buildSwatches(){
-    swatchWrap.innerHTML="";
-    colours.forEach(c=>{
-      const d=document.createElement("div");
-      d.className="swatch"+(c.toLowerCase()===brushColour.toLowerCase()?" selected":"");
-      d.style.background = c==="#ffffff" ? "linear-gradient(135deg,#fff,#dbeafe)" : c;
-      d.addEventListener("click",()=>{
-        brushColour=c;
-        isEraser=false;
+    function updateFillUI(){
+      fillBtn.classList.toggle("active", tapFillOn);
+      fillBtn.innerHTML = tapFillOn
+        ? '<span class="emoji">🪣</span> Tap Fill: On'
+        : '<span class="emoji">🪣</span> Tap Fill: Off';
+      fillChip.textContent = tapFillOn ? "On" : "Off";
+    }
+    fillBtn.addEventListener("click", ()=>{
+      tapFillOn = !tapFillOn;
+      if (tapFillOn){
+        isEraser = false;
         eraserBtn.classList.remove("active");
-        [...document.querySelectorAll(".swatch")].forEach(x=>x.classList.remove("selected"));
-        d.classList.add("selected");
-        currentColourEl.textContent=brushColour;
-        currentModeEl.textContent=isEraser?"eraser":mode;
+        currentModeEl.textContent = mode;
+      }
+      updateFillUI();
+    });
+
+    function syncSliders(){
+      sizeVal.textContent = brushSize;
+      opacityVal.textContent = brushOpacity.toFixed(2);
+      smoothVal.textContent = smoothing.toFixed(2);
+      glitterVal.textContent = glitterStrength.toFixed(2);
+      scatterVal.textContent = scatter.toFixed(2);
+    }
+    sizeEl.addEventListener('input', ()=>{ brushSize = parseInt(sizeEl.value,10); syncSliders(); });
+    opacityEl.addEventListener('input', ()=>{ brushOpacity = parseFloat(opacityEl.value); syncSliders(); });
+    smoothEl.addEventListener('input', ()=>{ smoothing = parseFloat(smoothEl.value); syncSliders(); });
+    glitterEl.addEventListener('input', ()=>{ glitterStrength = parseFloat(glitterEl.value); syncSliders(); });
+    scatterEl.addEventListener('input', ()=>{ scatter = parseFloat(scatterEl.value); syncSliders(); });
+
+    // ---------- Swatches ----------
+    const colours = [
+      "#000000","#ffffff","#ef4444","#f97316","#facc15",
+      "#22c55e","#10b981","#06b6d4","#3b82f6","#6366f1",
+      "#a855f7","#ec4899","#f43f5e","#8b5cf6","#14b8a6",
+      "#84cc16","#eab308","#fb7185","#60a5fa","#94a3b8"
+    ];
+    const swatchWrap = document.getElementById('colourSwatches');
+    function buildSwatches(){
+      swatchWrap.innerHTML = "";
+      colours.forEach((c)=>{
+        const d = document.createElement('div');
+        d.className = "swatch" + (c.toLowerCase() === brushColour.toLowerCase() ? " selected" : "");
+        d.style.background = c === "#ffffff" ? "linear-gradient(135deg,#fff,#dbeafe)" : c;
+        d.title = c;
+        d.addEventListener('click', ()=>{
+          brushColour = c;
+          isEraser = false;
+          eraserBtn.classList.remove('active');
+          [...document.querySelectorAll('.swatch')].forEach(x=>x.classList.remove('selected'));
+          d.classList.add('selected');
+          currentColourEl.textContent = brushColour;
+          currentModeEl.textContent = isEraser ? "eraser" : mode;
+        });
+        swatchWrap.appendChild(d);
       });
-      swatchWrap.appendChild(d);
-    });
-  }
-
-  // ---------- Brush modes ----------
-  const modeButtons=[...document.querySelectorAll(".modeBtn")];
-  function setMode(m){
-    mode=m;
-    modeButtons.forEach(b=>b.classList.toggle("active", b.dataset.mode===m));
-    const names={normal:"Normal Paint",glitter:"Glitter Brush",rainbow:"Rainbow Mix",neon:"Neon Glow",watercolor:"Watercolour",confetti:"Confetti Mix"};
-    modeChip.textContent="Mode: "+(names[m]||m);
-    currentModeEl.textContent=isEraser?"eraser":m;
-  }
-  modeButtons.forEach(btn=>btn.addEventListener("click",()=>{
-    isEraser=false; eraserBtn.classList.remove("active");
-    setMode(btn.dataset.mode);
-  }));
-
-  // ---------- Eraser ----------
-  const eraserBtn=document.getElementById("eraserBtn");
-  eraserBtn.addEventListener("click",()=>{
-    isEraser=!isEraser;
-    eraserBtn.classList.toggle("active", isEraser);
-    if (isEraser) tapFillOn=false;
-    updateFillUI();
-    currentModeEl.textContent=isEraser?"eraser":mode;
-  });
-
-  // ---------- Undo ----------
-  const undoStack=[];
-  const MAX_UNDO=20;
-  function pushUndo(){
-    try{
-      if (undoStack.length>=MAX_UNDO) undoStack.shift();
-      undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
-    }catch(e){}
-  }
-  function undo(){
-    const last=undoStack.pop();
-    if (last) ctx.putImageData(last,0,0);
-  }
-
-  // ---------- Audio (music + brush sfx) ----------
-  const audioDot=document.getElementById("audioDot");
-  const audioStatus=document.getElementById("audioStatus");
-  let audioCtx=null;
-
-  function ensureAudio(){
-    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    if (audioCtx.state==="suspended") audioCtx.resume();
-  }
-  function unlockAudio(){
-    ensureAudio();
-    if (!audioCtx) return;
-    const o=audioCtx.createOscillator();
-    const g=audioCtx.createGain();
-    g.gain.value=0.0001;
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime+0.01);
-    audioDot.classList.remove("off");
-    audioStatus.textContent="Audio Ready";
-  }
-  canvas.addEventListener("pointerdown", ()=>unlockAudio(), { once:true });
-
-  // Music
-  let musicOn=false;
-  let musicNodes=[];
-  function startMusic(){
-    ensureAudio(); if (!audioCtx) return;
-
-    const master=audioCtx.createGain();
-    master.gain.value=0.14;
-    master.connect(audioCtx.destination);
-
-    const mk=(type,freq,gain)=>{
-      const o=audioCtx.createOscillator();
-      const g=audioCtx.createGain();
-      o.type=type; o.frequency.value=freq; g.gain.value=gain;
-      o.connect(g); g.connect(master); o.start();
-      return {o,g};
-    };
-
-    const base=220;
-    const pad1=mk("sine", base, 0.25);
-    const pad2=mk("triangle", base*1.5, 0.10);
-
-    const lfo=audioCtx.createOscillator();
-    const lfoGain=audioCtx.createGain();
-    lfo.type="sine"; lfo.frequency.value=0.15; lfoGain.gain.value=18;
-    lfo.connect(lfoGain); lfoGain.connect(pad2.o.frequency); lfo.start();
-
-    const arp=audioCtx.createOscillator();
-    const arpGain=audioCtx.createGain();
-    arp.type="sine"; arpGain.gain.value=0;
-    arp.connect(arpGain); arpGain.connect(master); arp.start();
-
-    const notes=[0,4,7,12,7,4];
-    let step=0;
-    const interval=setInterval(()=>{
-      if (!musicOn || !audioCtx) return;
-      const t=audioCtx.currentTime;
-      const n=notes[step%notes.length];
-      const f=base*Math.pow(2,n/12);
-      arp.frequency.setValueAtTime(f,t);
-      arpGain.gain.cancelScheduledValues(t);
-      arpGain.gain.setValueAtTime(0,t);
-      arpGain.gain.linearRampToValueAtTime(0.16,t+0.02);
-      arpGain.gain.linearRampToValueAtTime(0,t+0.22);
-      step++;
-    },260);
-
-    musicNodes=[{master},{pad1},{pad2},{lfo},{lfoGain},{arp},{arpGain},{interval}];
-  }
-  function stopMusic(){
-    musicNodes.forEach(n=>{
-      try{
-        if (n.interval) clearInterval(n.interval);
-        if (n.o) n.o.stop();
-        if (n.master) n.master.disconnect();
-      }catch(e){}
-    });
-    musicNodes=[];
-  }
-
-  const musicBtn=document.getElementById("musicBtn");
-  const musicText=document.getElementById("musicText");
-  musicBtn.addEventListener("click",()=>{
-    unlockAudio();
-    musicOn=!musicOn;
-    if (musicOn) startMusic(); else stopMusic();
-    musicText.textContent="Music: "+(musicOn?"On":"Off");
-  });
-
-  // Brush SFX
-  let sfxOn=true;
-  const sfxBtn=document.getElementById("sfxBtn");
-  const sfxChip=document.getElementById("sfxChip");
-  sfxBtn.addEventListener("click",()=>{
-    unlockAudio();
-    sfxOn=!sfxOn;
-    sfxBtn.innerHTML = sfxOn ? '<span class="emoji">🖌️</span> SFX: On' : '<span class="emoji">🖌️</span> SFX: Off';
-    sfxChip.textContent = sfxOn ? "On" : "Off";
-  });
-
-  function playBrushSfx(intensity=1){
-    if (!sfxOn) return;
-    ensureAudio(); if (!audioCtx) return;
-
-    const bufferSize = 2 * audioCtx.sampleRate;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const output = noiseBuffer.getChannelData(0);
-    for (let i=0;i<bufferSize;i++) output[i] = (Math.random()*2-1) * 0.6;
-
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = noiseBuffer;
-
-    const filter = audioCtx.createBiquadFilter();
-    filter.type="bandpass"; filter.frequency.value=1200; filter.Q.value=0.9;
-
-    const gain = audioCtx.createGain();
-    const t=audioCtx.currentTime;
-    const g=0.03*clamp(intensity,0.2,2);
-    gain.gain.setValueAtTime(0,t);
-    gain.gain.linearRampToValueAtTime(g,t+0.01);
-    gain.gain.linearRampToValueAtTime(0,t+0.08);
-
-    noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-    noise.start(); noise.stop(t+0.09);
-  }
-
-  // ---------- Tap Fill + glitter fill ----------
-  let tapFillOn=false;
-  const fillBtn=document.getElementById("fillBtn");
-  const fillChip=document.getElementById("fillChip");
-
-  function updateFillUI(){
-    fillBtn.classList.toggle("active", tapFillOn);
-    fillBtn.innerHTML = tapFillOn
-      ? '<span class="emoji">🪣</span> Tap Fill: On'
-      : '<span class="emoji">🪣</span> Tap Fill: Off';
-    fillChip.textContent = tapFillOn ? "On" : "Off";
-  }
-  fillBtn.addEventListener("click",()=>{
-    tapFillOn=!tapFillOn;
-    if (tapFillOn){ isEraser=false; eraserBtn.classList.remove("active"); }
-    updateFillUI();
-  });
-
-  function hsvToHex(h,s,v){
-    const f=(n,k=(n+h/60)%6)=>v - v*s*Math.max(Math.min(k,4-k,1),0);
-    const r=Math.round(f(5)*255), g=Math.round(f(3)*255), b=Math.round(f(1)*255);
-    return "#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
-  }
-  function hexToRgb(hex){
-    const v=parseInt(hex.replace("#",""),16);
-    return [(v>>16)&255,(v>>8)&255,v&255];
-  }
-  function luminance(r,g,b){ return 0.2126*r + 0.7152*g + 0.0722*b; }
-  function closeRGB(r,g,b,tr,tg,tb,tol){
-    return Math.abs(r-tr)<=tol && Math.abs(g-tg)<=tol && Math.abs(b-tb)<=tol;
-  }
-  function sprinkleGlitter(points){
-    if (!points || points.length===0) return;
-    const strength = glitterStrength;
-    const scat = scatter;
-    const count = Math.min(900, Math.floor(points.length*(0.1 + strength*0.25)));
-
-    ctx.save();
-    for (let i=0;i<count;i++){
-      const p = points[(Math.random()*points.length)|0];
-      const x = p.x + rand(-6,6)*(0.3+scat);
-      const y = p.y + rand(-6,6)*(0.3+scat);
-      const r = rand(0.8,2.6)*(0.7+strength);
-
-      let c="#ffffff";
-      if (mode==="rainbow") c=hsvToHex((Date.now()/10+i*40)%360,0.85,1);
-      else if (mode==="confetti") c=hsvToHex((Date.now()/12+i*55)%360,0.85,1);
-      else c=(i%3===0)?"#ffffff":(i%3===1?"#fde68a":"#a7f3d0");
-
-      ctx.globalAlpha = 0.25 + strength*0.55;
-      ctx.fillStyle=c;
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  function floodFillTap(x,y,fillHex){
-    const w=canvas.width, h=canvas.height;
-    if (x<0||y<0||x>=w||y>=h) return [];
-    const img=ctx.getImageData(0,0,w,h);
-    const d=img.data;
-    const i0=(y*w+x)*4;
-
-    const tr=d[i0], tg=d[i0+1], tb=d[i0+2], ta=d[i0+3];
-    if (ta===0) return [];
-    if (luminance(tr,tg,tb) < 55) return [];
-
-    const [fr,fg,fb]=hexToRgb(fillHex);
-    if (tr===fr && tg===fg && tb===fb) return [];
-
-    const tol=30;
-    const seen=new Uint8Array(w*h);
-    const stack=[[x,y]];
-    const samples=[];
-    const MAX_SAMPLES=900;
-    let filled=0;
-    const MAX_PIXELS=w*h*0.55;
-
-    while(stack.length){
-      const [px,py]=stack.pop();
-      if (px<0||py<0||px>=w||py>=h) continue;
-      const idx=py*w+px;
-      if (seen[idx]) continue;
-      seen[idx]=1;
-
-      const i=idx*4;
-      const r=d[i], g=d[i+1], b=d[i+2], a=d[i+3];
-      if (a===0) continue;
-      if (luminance(r,g,b) < 55) continue;
-      if (!closeRGB(r,g,b,tr,tg,tb,tol)) continue;
-
-      d[i]=fr; d[i+1]=fg; d[i+2]=fb; d[i+3]=255;
-      filled++;
-
-      if (samples.length<MAX_SAMPLES) samples.push({x:px,y:py});
-      if (filled>MAX_PIXELS) break;
-
-      stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
     }
 
-    ctx.putImageData(img,0,0);
-    return samples;
-  }
+    // ---------- Modes ----------
+    const modeButtons = [...document.querySelectorAll('.modeBtn')];
+    function setMode(m){
+      mode = m;
+      modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode === m));
+      const names = { normal:"Normal Paint", glitter:"Glitter Brush", rainbow:"Rainbow Mix", neon:"Neon Glow", watercolor:"Watercolour", confetti:"Confetti Mix" };
+      modeChip.textContent = "Mode: " + (names[m] || m);
+      currentModeEl.textContent = isEraser ? "eraser" : m;
+    }
+    modeButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        isEraser = false;
+        eraserBtn.classList.remove('active');
+        setMode(btn.dataset.mode);
+      });
+    });
 
-  // ---------- Paint engine ----------
-  let drawing=false, last=null, vel=0;
+    // ---------- Eraser ----------
+    const eraserBtn = document.getElementById('eraserBtn');
+    eraserBtn.addEventListener('click', ()=>{
+      isEraser = !isEraser;
+      eraserBtn.classList.toggle('active', isEraser);
+      if (isEraser) tapFillOn = false;
+      updateFillUI();
+      currentModeEl.textContent = isEraser ? "eraser" : mode;
+    });
 
-  function getPos(e){
-    const rect=canvas.getBoundingClientRect();
-    const dpr=window.devicePixelRatio||1;
-    return {x:(e.clientX-rect.left)*dpr, y:(e.clientY-rect.top)*dpr};
-  }
+    // ---------- Audio (nursery rhyme loop + brush SFX) ----------
+    const audioDot = document.getElementById('audioDot');
+    const audioStatus = document.getElementById('audioStatus');
+    let audioCtx = null;
 
-  function drawStroke(p0,p1){
-    const dx=p1.x-p0.x, dy=p1.y-p0.y;
-    const dist=Math.hypot(dx,dy);
-    const steps=Math.max(1,Math.floor(dist/2));
+    function ensureAudio(){
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+    function unlockAudio(){
+      ensureAudio();
+      if (!audioCtx) return;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      g.gain.value = 0.0001;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + 0.01);
+      audioDot.classList.remove('off');
+      audioStatus.textContent = "Audio Ready";
+    }
+    canvas.addEventListener('pointerdown', ()=> unlockAudio(), { once:true });
 
-    for(let i=0;i<=steps;i++){
-      const t=i/steps;
-      const x=p0.x+dx*t, y=p0.y+dy*t;
+    // Music: simple nursery-rhyme style (major key melody + bass + soft drum tick)
+    let musicOn = false;
+    let musicTimer = null;
+    let musicMaster = null;
 
-      if (last){
-        last.x = last.x + (x-last.x)*(1-smoothing);
-        last.y = last.y + (y-last.y)*(1-smoothing);
+    function noteFreq(midi){ return 440 * Math.pow(2,(midi-69)/12); }
+
+    function playTone(type, freq, t, dur, vol){
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g);
+      g.connect(musicMaster);
+      o.start(t);
+      o.stop(t + dur + 0.02);
+    }
+
+    function playDrum(t, vol){
+      const bufferSize = 0.15 * audioCtx.sampleRate;
+      const buf = audioCtx.createBuffer(1, bufferSize|0, audioCtx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i=0;i<data.length;i++){
+        data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 2);
+      }
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1800, t);
+
+      const g = audioCtx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+
+      src.connect(filter);
+      filter.connect(g);
+      g.connect(musicMaster);
+
+      src.start(t);
+      src.stop(t + 0.16);
+    }
+
+    // Melody (C major) — bouncy and loopable
+    // Each item: [midiNote, beats, accentVol]
+    const melody = [
+      [72,1,1],[74,1,1],[76,1,1],[74,1,1],   // C D E D
+      [72,1,1],[72,1,1],[74,2,0.95],         // C C D(hold)
+      [76,1,1],[77,1,1],[79,2,1],            // E F G(hold)
+      [79,1,0.95],[77,1,0.95],[76,2,0.95],   // G F E(hold)
+      [74,1,1],[72,1,1],[74,1,1],[76,1,1],   // D C D E
+      [74,1,1],[72,1,1],[72,2,0.95],         // D C C(hold)
+    ];
+    const bassProg = [
+      [48,4],[53,4],[55,4],[53,4],           // C F G F
+      [48,4],[53,4],[55,4],[48,4]            // C F G C
+    ];
+
+    function startMusic(){
+      ensureAudio();
+      if (!audioCtx) return;
+
+      musicMaster = audioCtx.createGain();
+      musicMaster.gain.value = 0.18;
+      musicMaster.connect(audioCtx.destination);
+
+      const bpm = 120;
+      const beat = 60 / bpm;
+      let mIdx = 0;
+      let bIdx = 0;
+      let beatCount = 0;
+      let nextTime = audioCtx.currentTime + 0.05;
+
+      function tick(){
+        if (!musicOn || !audioCtx) return;
+
+        // schedule ahead a little
+        const scheduleAhead = 0.25;
+        while (nextTime < audioCtx.currentTime + scheduleAhead){
+          // soft drum on beats 1 and 3
+          const inBar = beatCount % 4;
+          if (inBar === 0 || inBar === 2) playDrum(nextTime, 0.10);
+
+          // bass every beat (gentle triangle)
+          const bassRoot = bassProg[bIdx][0];
+          playTone("triangle", noteFreq(bassRoot), nextTime, beat*0.95, 0.09);
+
+          // melody (square lead, slightly rounded)
+          const item = melody[mIdx];
+          const midi = item[0], beats = item[1], acc = item[2];
+          playTone("square", noteFreq(midi), nextTime, beat*0.98, 0.055 * acc);
+
+          // tiny bell sparkle on beat 4 sometimes
+          if (inBar === 3 && (mIdx % 4 === 0)){
+            playTone("sine", noteFreq(84), nextTime + 0.01, 0.08, 0.018);
+          }
+
+          // advance
+          mIdx = (mIdx + 1) % melody.length;
+          beatCount++;
+
+          // bass progression advances every 4 beats
+          if (beatCount % 4 === 0) bIdx = (bIdx + 1) % bassProg.length;
+
+          nextTime += beat;
+        }
+
+        musicTimer = requestAnimationFrame(tick);
       }
 
-      const px=last?last.x:x, py=last?last.y:y;
+      tick();
+    }
 
-      vel = vel*0.85 + dist*0.15;
-      const pressure=clamp(vel/30,0.25,1.2);
-      const r=brushSize*pressure*0.5;
-
-      if (isEraser){
-        ctx.save();
-        ctx.globalCompositeOperation="destination-out";
-        ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2); ctx.fill();
-        ctx.restore();
-        continue;
+    function stopMusic(){
+      if (musicTimer) cancelAnimationFrame(musicTimer);
+      musicTimer = null;
+      if (musicMaster){
+        try{ musicMaster.disconnect(); }catch(e){}
       }
+      musicMaster = null;
+    }
 
-      let color=brushColour;
-      if (mode==="rainbow"){
-        const hue=(Date.now()/18 + px/10) % 360;
-        color=hsvToHex(hue,0.75,1);
+    const musicBtn = document.getElementById('musicBtn');
+    const musicText = document.getElementById('musicText');
+    musicBtn.addEventListener('click', ()=>{
+      unlockAudio();
+      musicOn = !musicOn;
+      if (musicOn) startMusic(); else stopMusic();
+      musicText.textContent = "Music: " + (musicOn ? "On" : "Off");
+    });
+
+    // Brush SFX
+    let sfxOn = true;
+    const sfxBtn = document.getElementById('sfxBtn');
+    const sfxChip = document.getElementById('sfxChip');
+
+    sfxBtn.addEventListener('click', ()=>{
+      unlockAudio();
+      sfxOn = !sfxOn;
+      sfxBtn.innerHTML = sfxOn ? '<span class="emoji">🖌️</span> SFX: On' : '<span class="emoji">🖌️</span> SFX: Off';
+      sfxChip.textContent = sfxOn ? "On" : "Off";
+    });
+
+    function playBrushSfx(intensity=1){
+      if (!sfxOn) return;
+      ensureAudio();
+      if (!audioCtx) return;
+
+      const bufferSize = 2 * audioCtx.sampleRate;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() * 2 - 1) * 0.6;
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = noiseBuffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = 1200;
+      filter.Q.value = 0.9;
+
+      const gain = audioCtx.createGain();
+      const t = audioCtx.currentTime;
+      const g = 0.03 * clamp(intensity, 0.2, 2);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(g, t + 0.01);
+      gain.gain.linearRampToValueAtTime(0, t + 0.08);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      noise.start();
+      noise.stop(t + 0.09);
+    }
+
+    // ---------- TAP FILL (Improved) + glitter fill ----------
+    function hexToRgb(hex){
+      const v = parseInt(hex.replace("#",""),16);
+      return [(v>>16)&255,(v>>8)&255,v&255];
+    }
+    function luminance(r,g,b){
+      return 0.2126*r + 0.7152*g + 0.0722*b;
+    }
+    function colorClose(r,g,b, tr,tg,tb, tol){
+      return Math.abs(r-tr) <= tol && Math.abs(g-tg) <= tol && Math.abs(b-tb) <= tol;
+    }
+    function sprinkleGlitter(samplePoints){
+      if (!samplePoints || samplePoints.length === 0) return;
+      const strength = glitterStrength;
+      const scat = scatter;
+      const count = Math.min(900, Math.floor(samplePoints.length * (0.08 + strength*0.22)));
+      ctx.save();
+      for (let i=0;i<count;i++){
+        const p = samplePoints[(Math.random()*samplePoints.length)|0];
+        const x = p.x + rand(-6, 6) * (0.35 + scat);
+        const y = p.y + rand(-6, 6) * (0.35 + scat);
+        const r = rand(0.8, 2.6) * (0.7 + strength);
+        let c = "#ffffff";
+        if (mode === "rainbow") c = hsvToHex((Date.now()/10 + i*35)%360, 0.85, 1);
+        else if (mode === "confetti") c = hsvToHex((Date.now()/12 + i*55)%360, 0.85, 1);
+        else c = (i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0");
+        ctx.globalAlpha = 0.22 + strength*0.55;
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.fill();
       }
+      ctx.restore();
+    }
+    function floodFillTap(x, y, fillHex){
+      const w = canvas.width, h = canvas.height;
+      if (x<0||y<0||x>=w||y>=h) return [];
+      const img = ctx.getImageData(0,0,w,h);
+      const d = img.data;
+      const i0 = (y*w + x) * 4;
+      const tr = d[i0], tg = d[i0+1], tb = d[i0+2], ta = d[i0+3];
+      if (ta === 0) return [];
+      if (luminance(tr,tg,tb) < 55) return []; // stop on outlines
+      const [fr,fg,fb] = hexToRgb(fillHex);
+      if (tr===fr && tg===fg && tb===fb) return [];
+      const tol = 30;
 
-      if (mode==="watercolor"){
-        ctx.save();
-        ctx.globalAlpha=brushOpacity*0.18;
-        ctx.fillStyle=color;
-        ctx.beginPath(); ctx.arc(px+rand(-r*scatter,r*scatter), py+rand(-r*scatter,r*scatter), r*1.2, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(px,py,r*0.85,0,Math.PI*2); ctx.fill();
-        ctx.restore();
-      } else if (mode==="neon"){
-        ctx.save();
-        ctx.globalAlpha=brushOpacity*0.35;
-        ctx.strokeStyle=color;
-        ctx.lineWidth=r*1.8;
-        ctx.shadowBlur=r*2.4;
-        ctx.shadowColor=color;
-        ctx.beginPath(); ctx.moveTo(p0.x,p0.y); ctx.lineTo(px,py); ctx.stroke();
+      const stack = [[x,y]];
+      const seen = new Uint8Array(w*h);
+      const samples = [];
+      const MAX_SAMPLES = 900;
 
-        ctx.globalAlpha=brushOpacity*0.9;
-        ctx.lineWidth=r*0.9;
-        ctx.shadowBlur=r*1.2;
-        ctx.beginPath(); ctx.moveTo(p0.x,p0.y); ctx.lineTo(px,py); ctx.stroke();
-        ctx.restore();
-      } else {
-        ctx.save();
-        ctx.globalAlpha=brushOpacity;
-        ctx.fillStyle=color;
-        ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2); ctx.fill();
-        ctx.restore();
+      const MAX_PIXELS = w*h*0.55;
+      let filled = 0;
+
+      while(stack.length){
+        const [px,py] = stack.pop();
+        if (px<0||py<0||px>=w||py>=h) continue;
+        const idx = py*w + px;
+        if (seen[idx]) continue;
+        seen[idx] = 1;
+
+        const i = idx*4;
+        const r = d[i], g = d[i+1], b = d[i+2], a = d[i+3];
+        if (a === 0) continue;
+        if (luminance(r,g,b) < 55) continue;
+        if (!colorClose(r,g,b, tr,tg,tb, tol)) continue;
+
+        d[i] = fr; d[i+1] = fg; d[i+2] = fb; d[i+3] = 255;
+        filled++;
+
+        if (samples.length < MAX_SAMPLES) samples.push({x:px, y:py});
+        if (filled > MAX_PIXELS) break;
+
+        stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
       }
+      ctx.putImageData(img,0,0);
+      return samples;
+    }
 
-      // glitter/confetti trail
-      if (mode==="glitter" || mode==="confetti" || (mode==="rainbow" && glitterStrength>0.25)){
-        const count=Math.floor(3 + glitterStrength*10);
-        for(let k=0;k<count;k++){
-          const gx=px + rand(-r*2.2,r*2.2)*(0.3+scatter);
-          const gy=py + rand(-r*2.2,r*2.2)*(0.3+scatter);
-          const gr=rand(0.8,2.6)*(0.7+glitterStrength);
-          const sparkleColor = (mode==="rainbow")
-            ? hsvToHex((Date.now()/10 + k*40)%360,0.8,1)
-            : (k%3===0 ? "#ffffff" : (k%3===1 ? "#fde68a" : "#a7f3d0"));
+    // ---------- Drawing engine (FIXED Neon + FIXED Watercolour) ----------
+    function hsvToHex(h, s, v){
+      let f = (n, k=(n+h/60)%6) => v - v*s*Math.max(Math.min(k,4-k,1),0);
+      const r = Math.round(f(5)*255);
+      const g = Math.round(f(3)*255);
+      const b = Math.round(f(1)*255);
+      return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
 
+    function getPos(e){
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      return { x:(e.clientX - rect.left) * dpr, y:(e.clientY - rect.top) * dpr };
+    }
+
+    function watercolorStamp(x,y,r,color){
+      // soft radial wash
+      const g = ctx.createRadialGradient(x,y,0, x,y, r*2.2);
+      g.addColorStop(0, color + ""); // hex is fine; alpha set by globalAlpha
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x,y, r*2.2, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    function drawSegment(prev, cur){
+      const dx = cur.x - prev.x, dy = cur.y - prev.y;
+      const dist = Math.hypot(dx,dy);
+      const steps = Math.max(1, Math.floor(dist / 2));
+
+      // line caps for nicer look
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      for (let i=0;i<=steps;i++){
+        const t = i/steps;
+        const x = prev.x + dx*t;
+        const y = prev.y + dy*t;
+
+        const pressure = clamp(dist/30, 0.25, 1.2);
+        const r = brushSize * pressure * 0.5;
+
+        if (isEraser){
           ctx.save();
-          ctx.globalAlpha=0.35 + glitterStrength*0.55;
-          ctx.fillStyle=sparkleColor;
-          ctx.beginPath(); ctx.arc(gx,gy,gr,0,Math.PI*2); ctx.fill();
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+          continue;
+        }
+
+        let color = brushColour;
+        if (mode === "rainbow"){
+          const hue = (Date.now()/18 + x/10) % 360;
+          color = hsvToHex(hue, 0.75, 1);
+        }
+
+        if (mode === "watercolor"){
+          ctx.save();
+          ctx.globalCompositeOperation = "multiply";
+          ctx.globalAlpha = Math.min(0.22, brushOpacity*0.22);
+          watercolorStamp(x + rand(-r*scatter, r*scatter), y + rand(-r*scatter, r*scatter), r, color);
+          // a second lighter pass for depth
+          ctx.globalAlpha = Math.min(0.12, brushOpacity*0.12);
+          watercolorStamp(x, y, r*0.85, color);
           ctx.restore();
         }
-      }
-
-      if (mode==="confetti"){
-        const pops=Math.floor(1+scatter*6);
-        for(let j=0;j<pops;j++){
-          const cx=px+rand(-r*2.8,r*2.8);
-          const cy=py+rand(-r*2.8,r*2.8);
-          const cw=rand(1.5,5.5);
-          const ch=rand(1.5,5.5);
-          const cc=hsvToHex((Date.now()/12 + j*50)%360,0.8,1);
+        else if (mode === "neon"){
+          // FIXED: neon now draws real segments (prev->cur) with glow
           ctx.save();
-          ctx.globalAlpha=0.18 + scatter*0.35;
-          ctx.fillStyle=cc;
-          ctx.fillRect(cx,cy,cw,ch);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.strokeStyle = color;
+
+          // outer glow
+          ctx.globalAlpha = 0.28 * brushOpacity;
+          ctx.lineWidth = r*2.4;
+          ctx.shadowBlur = r*3.2;
+          ctx.shadowColor = color;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(cur.x, cur.y);
+          ctx.stroke();
+
+          // inner bright line
+          ctx.globalAlpha = 0.85 * brushOpacity;
+          ctx.lineWidth = r*1.1;
+          ctx.shadowBlur = r*1.4;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(cur.x, cur.y);
+          ctx.stroke();
+
           ctx.restore();
+        }
+        else {
+          // normal paint stamp
+          ctx.save();
+          ctx.globalAlpha = brushOpacity;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // glitter/confetti trail
+        if (mode === "glitter" || mode === "confetti" || (mode === "rainbow" && glitterStrength > 0.25)){
+          const count = Math.floor(3 + glitterStrength*10);
+          for (let k=0;k<count;k++){
+            const gx = x + rand(-r*2.2, r*2.2) * (0.3 + scatter);
+            const gy = y + rand(-r*2.2, r*2.2) * (0.3 + scatter);
+            const gr = rand(0.8, 2.6) * (0.7 + glitterStrength);
+            const sparkleColor = (mode === "rainbow")
+              ? hsvToHex((Date.now()/10 + k*40)%360, 0.8, 1)
+              : (k%3===0 ? "#ffffff" : (k%3===1 ? "#fde68a" : "#a7f3d0"));
+            ctx.save();
+            ctx.globalAlpha = 0.35 + glitterStrength*0.55;
+            ctx.fillStyle = sparkleColor;
+            ctx.beginPath();
+            ctx.arc(gx, gy, gr, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
+        if (mode === "confetti"){
+          const pops = Math.floor(1 + scatter*6);
+          for (let j=0;j<pops;j++){
+            const cx = x + rand(-r*2.8, r*2.8);
+            const cy = y + rand(-r*2.8, r*2.8);
+            const cw = rand(1.5, 5.5);
+            const ch = rand(1.5, 5.5);
+            const cc = hsvToHex((Date.now()/12 + j*50)%360, 0.8, 1);
+            ctx.save();
+            ctx.globalAlpha = 0.18 + scatter*0.35;
+            ctx.fillStyle = cc;
+            ctx.fillRect(cx, cy, cw, ch);
+            ctx.restore();
+          }
         }
       }
     }
-  }
 
-  canvas.addEventListener("pointerdown",(e)=>{
-    if (tapFillOn){
+    // ---------- Pointer events ----------
+    let drawing = false;
+    let lastPoint = null;
+
+    canvas.addEventListener('pointerdown', (e)=>{
+      // Tap Fill
+      if (tapFillOn){
+        pushUndo();
+        const p = getPos(e);
+        const samples = floodFillTap(Math.floor(p.x), Math.floor(p.y), brushColour);
+        if (mode === "glitter" || mode === "confetti" || mode === "rainbow"){
+          sprinkleGlitter(samples);
+        }
+        return;
+      }
+      drawing = true;
       pushUndo();
-      const p=getPos(e);
-      const samples=floodFillTap(Math.floor(p.x),Math.floor(p.y),brushColour);
-      if (mode==="glitter" || mode==="confetti" || mode==="rainbow") sprinkleGlitter(samples);
-      return;
+      lastPoint = getPos(e);
+      canvas.setPointerCapture(e.pointerId);
+      playBrushSfx(1);
+    });
+
+    canvas.addEventListener('pointermove', (e)=>{
+      if (!drawing || !lastPoint) return;
+      const p = getPos(e);
+      // FIXED: draw segments properly between lastPoint and p
+      drawSegment(lastPoint, p);
+      playBrushSfx(clamp(Math.hypot(p.x-lastPoint.x,p.y-lastPoint.y)/18, 0.3, 1.6));
+      lastPoint = p;
+    });
+
+    function endDraw(e){
+      drawing = false;
+      lastPoint = null;
+      try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
+    }
+    canvas.addEventListener('pointerup', endDraw);
+    canvas.addEventListener('pointercancel', endDraw);
+    canvas.addEventListener('pointerleave', ()=>{ drawing=false; lastPoint=null; });
+
+    // ---------- Buttons ----------
+    document.getElementById("nextBtn").addEventListener("click", ()=> loadPage(currentPage + 1));
+    document.getElementById("prevBtn").addEventListener("click", ()=> loadPage(currentPage - 1));
+    document.getElementById("cleanBtn").addEventListener("click", ()=> loadPage(currentPage));
+    document.getElementById("undoBtn").addEventListener("click", ()=> undo());
+
+    document.getElementById("saveBtn").addEventListener("click", ()=>{
+      const link = document.createElement('a');
+      link.download = "my_colouring.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+
+    window.addEventListener('keydown', (e)=>{
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){
+        e.preventDefault();
+        undo();
+      }
+    });
+
+    // ---------- Init ----------
+    function init(){
+      syncSliders();
+      buildSwatches();
+      currentColourEl.textContent = brushColour;
+      setMode("normal");
+      updateFillUI();
+      setCanvasSizeForDPR();
+      loadPage(0);
     }
 
-    drawing=true;
-    pushUndo();
-    last=getPos(e);
-    canvas.setPointerCapture(e.pointerId);
-    playBrushSfx(1);
-  });
+    window.addEventListener("resize", ()=>{
+      setCanvasSizeForDPR();
+      loadPage(currentPage);
+    });
 
-  canvas.addEventListener("pointermove",(e)=>{
-    if (!drawing) return;
-    const p=getPos(e);
-    drawStroke(last,p);
-    playBrushSfx(clamp(Math.hypot(p.x-last.x,p.y-last.y)/18,0.3,1.6));
-    last=p;
-  });
-
-  function endDraw(e){
-    drawing=false; last=null;
-    try{canvas.releasePointerCapture(e.pointerId);}catch(_){}
-  }
-  canvas.addEventListener("pointerup",endDraw);
-  canvas.addEventListener("pointercancel",endDraw);
-  canvas.addEventListener("pointerleave",()=>{drawing=false; last=null;});
-
-  // ---------- Buttons ----------
-  document.getElementById("nextBtn").addEventListener("click",()=>loadPage(currentPage+1));
-  document.getElementById("prevBtn").addEventListener("click",()=>loadPage(currentPage-1));
-  document.getElementById("cleanBtn").addEventListener("click",()=>loadPage(currentPage));
-  document.getElementById("undoBtn").addEventListener("click",undo);
-  document.getElementById("saveBtn").addEventListener("click",()=>{
-    const a=document.createElement("a");
-    a.download="my_colouring.png";
-    a.href=canvas.toDataURL("image/png");
-    a.click();
-  });
-  window.addEventListener("keydown",(e)=>{
-    if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z"){e.preventDefault(); undo();}
-  });
-
-  // ---------- Init ----------
-  syncSliders();
-  buildSwatches();
-  currentColourEl.textContent=brushColour;
-  setMode("normal");
-  updateFillUI();
-
-  setCanvasSizeForDPR();
-  loadPage(0);
-
-  window.addEventListener("resize",()=>{
-    setCanvasSizeForDPR();
-    loadPage(currentPage);
-  });
-</script>
+    init();
+  </script>
 </body>
 </html>
