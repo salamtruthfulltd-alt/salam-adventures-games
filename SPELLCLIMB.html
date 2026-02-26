@@ -1,181 +1,169 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Spell Climb: 20-Rank Edition</title>
+    <title>Spell Climb: Top 20 Edition</title>
     <style>
-        :root { --wood: #5D4037; --sky: #81D4FA; --brick: #A1887F; --gold: #FFD700; }
-        body { background: #1a1a1a; color: white; font-family: 'Arial Rounded MT Bold', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        body { background: #2c3e50; color: white; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
         /* THE TOWER FRAME */
         #tower-frame {
-            width: 320px; height: 420px;
-            background: var(--sky);
-            border: 12px solid var(--wood);
+            width: 300px; height: 400px;
+            background: #ecf0f1;
+            border: 10px solid #8d6e63;
             border-bottom: 20px solid #333;
-            border-radius: 15px;
+            border-radius: 10px;
             position: relative;
-            overflow: hidden;
             display: flex;
-            flex-direction: column-reverse; /* This makes new bricks push old ones up! */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            flex-direction: column;
+            justify-content: flex-end; /* Keeps bricks at the bottom */
+            overflow: hidden;
         }
 
         .brick {
-            width: 90%; height: 38px;
+            width: 90%; height: 35px;
             margin: 2px auto;
-            background: var(--brick);
-            border: 2px solid var(--wood);
-            border-radius: 5px;
+            background: #d35400;
+            border: 2px solid #a04000;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: #fff;
-            font-size: 1rem;
+            color: white;
             flex-shrink: 0;
-            animation: slideUp 0.3s ease-out;
+            animation: bounceIn 0.3s ease;
         }
 
-        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
         /* UI ELEMENTS */
-        .stats { width: 340px; display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; }
-        #word-display { font-size: 2.2rem; color: #4CAF50; margin: 15px 0; text-shadow: 1px 1px 2px #000; }
-        input { font-size: 1.5rem; width: 280px; padding: 12px; border-radius: 10px; border: none; text-align: center; outline: none; box-shadow: 0 0 10px var(--gold); }
+        .header { width: 320px; display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.2rem; font-weight: bold; }
+        #word-to-type { font-size: 2.5rem; color: #2ecc71; margin: 10px 0; text-shadow: 2px 2px #000; }
+        input { font-size: 1.5rem; width: 280px; padding: 10px; border-radius: 8px; border: none; text-align: center; }
         
-        #leaderboard { margin-top: 25px; background: white; color: #333; padding: 15px; border-radius: 15px; width: 320px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .score-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 4px 0; font-size: 0.85rem; }
+        #leaderboard { margin-top: 20px; background: white; color: #333; padding: 15px; border-radius: 10px; width: 300px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .score-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 4px; font-size: 0.9rem; }
         
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; flex-direction:column; align-items:center; justify-content:center; text-align: center; z-index: 10; }
-        .btn { padding: 12px 30px; background: var(--gold); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1rem; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; flex-direction:column; align-items:center; justify-content:center; z-index: 5; }
+        button { padding: 10px 20px; background: #f1c40f; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
-<body onload="init()">
+<body onload="initGame()">
 
-<div class="stats">
-    <span>⏱️ <span id="timer">60</span>s</span>
-    <span style="color:var(--gold)">💰 <span id="score">0</span></span>
-    <span>📍 LVL <span id="lvl">1</span></span>
-</div>
-
-<div id="tower-frame">
-    <div id="win-screen" class="overlay">
-        <h1 style="color:var(--gold); font-size: 3rem; margin: 0;">★ ★ ★</h1>
-        <h2 style="color:white; margin: 0;">LEVEL COMPLETE!</h2>
-        <p style="color:#ccc;">The tower has reached the top!</p>
-        <button class="btn" onclick="nextLevel()">NEXT FLOOR</button>
+    <div class="header">
+        <span>⏳ <span id="timer">60</span>s</span>
+        <span>⭐ <span id="score">0</span></span>
+        <span>Floor: <span id="lvl">1</span></span>
     </div>
-</div>
 
-<div id="game-ui">
-    <div id="word-display">READY?</div>
-    <input type="text" id="input-box" placeholder="Type 'START' to begin" autocomplete="off">
-</div>
+    <div id="tower-frame">
+        <div id="win-screen" class="overlay">
+            <h1 style="color:#f1c40f">FLOOR CLEAR!</h1>
+            <button onclick="nextLevel()">NEXT LEVEL</button>
+        </div>
+        <div id="brick-stack" style="display:flex; flex-direction:column-reverse;"></div>
+    </div>
 
-<div id="leaderboard">
-    <h3 style="margin-top:0; text-align:center; color: #5D4037;">🏆 TOP 20 BUILDERS</h3>
-    <div id="score-list" style="max-height: 250px; overflow-y: auto;"></div>
-</div>
+    <div id="word-to-type">START</div>
+    <input type="text" id="typer" placeholder="Type here..." autocomplete="off">
+
+    <div id="leaderboard">
+        <h3 style="margin:0 0 10px 0; text-align:center">🏆 TOP 20 RANKINGS</h3>
+        <div id="score-list"></div>
+    </div>
 
 <script>
-    const words = ["CAT", "DOG", "SUN", "FISH", "TREE", "CAKE", "JUMP", "BLUE", "MILK", "HOUSE", "PLANE", "ROCKET", "GARDEN", "BRIGHT", "SILVER", "DRAGON", "CHAMP", "SMART", "BIRD", "FROG"];
-    let state = { score: 0, level: 1, time: 60, currentWord: "START", brickCount: 0, active: false };
-    let ticker;
+    const wordList = ["APPLE", "BREAD", "CHAIR", "DREAM", "EAGLE", "FRUIT", "GRAPE", "HOUSE", "IMAGE", "JUICE", "KNIFE", "LIGHT", "MOUSE", "NIGHT", "OCEAN", "PIANO", "QUEEN", "RIVER", "SMILE", "TABLE"];
+    let game = { score: 0, lvl: 1, time: 60, current: "START", count: 0, active: false };
+    let clock;
 
-    function init() {
-        renderScores();
-        const box = document.getElementById('input-box');
-        box.addEventListener('input', (e) => {
-            if(e.target.value.toUpperCase() === state.currentWord) {
-                handleMatch();
-                e.target.value = "";
+    function initGame() {
+        showScores();
+        const input = document.getElementById('typer');
+        input.addEventListener('input', () => {
+            if (input.value.toUpperCase() === game.current) {
+                input.value = "";
+                handleCorrectWord();
             }
         });
-        box.focus();
+        input.focus();
     }
 
-    function handleMatch() {
-        if(!state.active && state.currentWord === "START") {
-            startClock();
-        } else if(state.active) {
-            state.score += 100;
-            state.brickCount++;
-            document.getElementById('score').innerText = state.score;
-            addBrick(state.currentWord);
+    function handleCorrectWord() {
+        if (!game.active && game.current === "START") {
+            game.active = true;
+            startTimer();
+            spawnWord();
+        } else if (game.active) {
+            game.score += 100;
+            game.count++;
+            document.getElementById('score').innerText = game.score;
             
-            if(state.brickCount >= 10) {
-                levelComplete();
+            // Build visual brick
+            const b = document.createElement('div');
+            b.className = 'brick';
+            b.innerText = game.current;
+            document.getElementById('brick-stack').appendChild(b);
+
+            if (game.count >= 10) {
+                winFloor();
             } else {
-                newWord();
+                spawnWord();
             }
         }
     }
 
-    function startClock() {
-        state.active = true;
-        ticker = setInterval(() => {
-            state.time--;
-            document.getElementById('timer').innerText = state.time;
-            if(state.time <= 0) endGame();
+    function spawnWord() {
+        game.current = wordList[Math.floor(Math.random() * wordList.length)];
+        document.getElementById('word-to-type').innerText = game.current;
+    }
+
+    function startTimer() {
+        clock = setInterval(() => {
+            game.time--;
+            document.getElementById('timer').innerText = game.time;
+            if (game.time <= 0) gameOver();
         }, 1000);
-        newWord();
     }
 
-    function addBrick(txt) {
-        const b = document.createElement('div');
-        b.className = 'brick';
-        b.innerText = txt;
-        document.getElementById('tower-frame').appendChild(b);
-    }
-
-    function newWord() {
-        state.currentWord = words[Math.floor(Math.random() * words.length)];
-        document.getElementById('word-display').innerText = state.currentWord;
-    }
-
-    function levelComplete() {
-        state.active = false;
+    function winFloor() {
+        game.active = false;
         document.getElementById('win-screen').style.display = 'flex';
     }
 
     function nextLevel() {
-        state.level++;
-        state.brickCount = 0;
-        state.time += 20; // Extra time bonus!
-        document.getElementById('lvl').innerText = state.level;
-        
-        // Remove bricks but keep the overlay
-        const frame = document.getElementById('tower-frame');
-        while (frame.children.length > 1) { 
-            frame.removeChild(frame.lastChild);
-        }
-        
+        game.lvl++;
+        game.count = 0;
+        game.time += 20;
+        document.getElementById('lvl').innerText = game.lvl;
+        document.getElementById('brick-stack').innerHTML = "";
         document.getElementById('win-screen').style.display = 'none';
-        state.active = true;
-        newWord();
+        game.active = true;
+        spawnWord();
     }
 
-    function endGame() {
-        state.active = false;
-        clearInterval(ticker);
-        let name = prompt("TIMES UP! Score: " + state.score + "\nType your name for the Top 20:");
-        if(name) {
-            saveScore(name, state.score);
-        }
+    function gameOver() {
+        clearInterval(clock);
+        game.active = false;
+        const name = prompt("Tower Collapsed! Final Score: " + game.score + "\nYour Name:");
+        if (name) saveScore(name, game.score);
         location.reload();
     }
 
     function saveScore(name, score) {
-        let scores = JSON.parse(localStorage.getItem('climb_final_20') || '[]');
-        scores.push({n: name.substring(0,12).toUpperCase(), s: score});
+        let scores = JSON.parse(localStorage.getItem('climb_20_final') || '[]');
+        scores.push({n: name.substring(0,10).toUpperCase(), s: score});
         scores.sort((a,b) => b.s - a.s);
-        localStorage.setItem('climb_final_20', JSON.stringify(scores.slice(0, 20)));
+        localStorage.setItem('climb_20_final', JSON.stringify(scores.slice(0, 20)));
     }
 
-    function renderScores() {
-        let scores = JSON.parse(localStorage.getItem('climb_final_20') || '[]');
+    function showScores() {
+        let scores = JSON.parse(localStorage.getItem('climb_20_final') || '[]');
         document.getElementById('score-list').innerHTML = scores.map((x, i) => 
-            `<div class="score-item"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
+            `<div class="score-row"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
     }
 </script>
 </body>
