@@ -1,118 +1,189 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Word Climber</title>
+    <title>Sky-High Selector</title>
     <style>
-        body { background: #222; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        
-        /* THE PROGRESS FRAME */
-        #frame {
-            width: 50px; height: 300px;
-            border: 5px solid #8d6e63;
-            background: #444;
-            margin: 20px auto;
-            position: relative;
-            border-radius: 10px;
-        }
-        #fill {
-            position: absolute; bottom: 0; width: 100%;
-            background: #4caf50; height: 0%;
-            transition: height 0.3s;
-            box-shadow: 0 0 10px #4caf50;
+        :root { --wood: #5D4037; --neon: #00f2ff; --gold: #ffcc00; --bg: #0f172a; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
+
+        /* THE HUD */
+        .header { display: flex; gap: 40px; margin-bottom: 10px; background: rgba(255,255,255,0.1); padding: 10px 30px; border-radius: 50px; border: 1px solid rgba(0,242,255,0.3); }
+        .val { color: var(--neon); font-weight: bold; font-size: 1.3rem; }
+
+        /* THE TOWER FRAME */
+        #tower-frame {
+            width: 320px; height: 450px;
+            background: rgba(0,0,0,0.5); border: 8px solid var(--wood);
+            border-radius: 15px; position: relative;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
 
-        .stats { font-size: 1.5rem; margin-bottom: 10px; color: #ffeb3b; }
-        #word { font-size: 3rem; margin: 20px; color: #00e5ff; font-weight: bold; }
-        input { font-size: 2rem; width: 80%; padding: 10px; border-radius: 10px; border: none; }
-        
-        #board { margin-top: 30px; background: white; color: black; padding: 15px; border-radius: 10px; width: 300px; margin-left: auto; margin-right: auto; text-align: left; }
-        .entry { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
+        /* TOP SELECTION ZONE */
+        #selection-zone {
+            height: 60px; background: rgba(255,255,255,0.05);
+            border-bottom: 2px dashed var(--neon);
+            display: flex; justify-content: space-around; align-items: center;
+            font-size: 1.8rem; font-weight: 900; color: var(--gold);
+        }
+        .option { padding: 5px 15px; border: 1px solid transparent; }
+        .option.active { border-color: var(--neon); border-radius: 10px; background: rgba(0,242,255,0.1); }
+
+        /* THE BRICK STACK */
+        #brick-container {
+            flex-grow: 1; display: flex; flex-direction: column-reverse;
+            padding: 5px;
+        }
+        .brick {
+            height: 32px; margin: 1px 0; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; text-transform: uppercase; color: #000;
+            animation: slam 0.2s ease-out;
+        }
+        @keyframes slam { from { transform: translateY(-300px); } to { transform: translateY(0); } }
+
+        /* INPUT & PUZZLE */
+        #puzzle-display { font-size: 2.8rem; color: white; font-weight: 900; margin: 15px 0; letter-spacing: 5px; }
+        input { 
+            font-size: 1.8rem; width: 280px; padding: 12px; border-radius: 15px;
+            border: 3px solid var(--neon); background: #1e293b; color: white; text-align: center;
+        }
+
+        #leaderboard {
+            margin-top: 25px; width: 320px; background: white; color: #333;
+            border-radius: 15px; padding: 15px; max-height: 180px; overflow-y: auto;
+        }
+        .row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px; font-size: 0.9rem; }
     </style>
 </head>
-<body onload="start()">
+<body onload="init()">
 
-    <div class="stats">
-        Time: <span id="t">60</span>s | Score: <span id="s">0</span>
+    <div class="header">
+        <div>⏳ <span class="val" id="timer">60</span></div>
+        <div>⭐ <span class="val" id="score">0</span></div>
+        <div>🏗️ <span class="val" id="floor">1</span></div>
     </div>
 
-    <div id="frame">
-        <div id="fill"></div>
+    <div id="tower-frame">
+        <div id="selection-zone">
+            <span class="option" id="opt1">?</span>
+            <span class="option" id="opt2">?</span>
+            <span class="option" id="opt3">?</span>
+        </div>
+        <div id="brick-container"></div>
     </div>
 
-    <div id="word">TYPE: START</div>
-    <input type="text" id="in" placeholder="..." autocomplete="off">
+    <div id="puzzle-display">START</div>
+    <input type="text" id="typer" placeholder="Type correct letter..." autocomplete="off">
 
-    <div id="board">
-        <h3 style="text-align:center">🏆 TOP 20</h3>
+    <div id="leaderboard">
+        <h3 style="margin:0; text-align:center; color: var(--wood);">🏆 TOP 20 BUILDERS</h3>
         <div id="list"></div>
     </div>
 
 <script>
-    let score = 0, time = 60, goal = 0, active = false, cur = "START";
-    let words = ["CAT","DOG","SUN","FISH","TREE","CAKE","JUMP","BLUE","HOUSE","APPLE","ROBOT","STORM"];
+    const bank = [
+        {w: "GRAPE", m: "G_APE", a: "R"}, {w: "MOUSE", m: "MO_SE", a: "U"},
+        {w: "PHONE", m: "PH_NE", a: "O"}, {w: "SNAKE", m: "SN_KE", a: "A"},
+        {w: "TIGER", m: "TI_ER", a: "G"}, {w: "BREAD", m: "BR_AD", a: "E"},
+        {w: "CLOCK", m: "CLO_K", a: "C"}, {w: "FLOWER", m: "FLO_ER", a: "W"}
+    ];
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    function start() {
-        showBoard();
-        document.getElementById('in').addEventListener('input', (e) => {
-            if(e.target.value.toUpperCase() === cur) {
+    let state = { score: 0, floor: 1, time: 60, active: false, cur: {}, count: 0 };
+    let clock;
+
+    function init() {
+        showScores();
+        const box = document.getElementById('typer');
+        box.addEventListener('input', (e) => {
+            let val = e.target.value.toUpperCase();
+            if(!state.active && val === "START") {
+                state.active = true;
                 e.target.value = "";
-                hit();
+                startTimer();
+                nextPuzzle();
+            } else if(state.active && val === state.cur.a) {
+                e.target.value = "";
+                addBrick();
             }
         });
+        box.focus();
     }
 
-    function hit() {
-        if(!active && cur === "START") {
-            active = true;
-            timer();
-            next();
-        } else if(active) {
-            score += 100;
-            goal += 10;
-            document.getElementById('s').innerText = score;
-            document.getElementById('fill').style.height = goal + "%";
-            
-            if(goal >= 100) {
-                goal = 0;
-                time += 10; // Extra time for reaching the top!
-                document.getElementById('word').innerText = "🏆 TOP REACHED!";
-                setTimeout(next, 1000);
-            } else {
-                next();
-            }
+    function nextPuzzle() {
+        state.cur = bank[Math.floor(Math.random()*bank.length)];
+        document.getElementById('puzzle-display').innerText = state.cur.m;
+        
+        // Setup Selection Zone with distractors
+        let options = [state.cur.a];
+        while(options.length < 3) {
+            let r = letters[Math.floor(Math.random()*26)];
+            if(!options.includes(r)) options.push(r);
+        }
+        options.sort(() => Math.random() - 0.5);
+        
+        document.getElementById('opt1').innerText = options[0];
+        document.getElementById('opt2').innerText = options[1];
+        document.getElementById('opt3').innerText = options[2];
+    }
+
+    function addBrick() {
+        state.score += 100;
+        state.count++;
+        document.getElementById('score').innerText = state.score;
+        
+        const b = document.createElement('div');
+        b.className = 'brick';
+        b.innerText = state.cur.w;
+        const colors = ['#00f2ff', '#ff00de', '#7cfc00', '#ff8c00'];
+        b.style.backgroundColor = colors[(state.floor-1) % colors.length];
+        document.getElementById('brick-container').appendChild(b);
+
+        if(state.count >= 10) {
+            levelUp();
+        } else {
+            nextPuzzle();
         }
     }
 
-    function next() {
-        cur = words[Math.floor(Math.random()*words.length)];
-        document.getElementById('word').innerText = cur;
+    function levelUp() {
+        state.floor++;
+        state.count = 0;
+        state.time += 15;
+        document.getElementById('floor').innerText = state.floor;
+        document.getElementById('puzzle-display').innerText = "CLEARED!";
+        setTimeout(() => {
+            document.getElementById('brick-container').innerHTML = "";
+            nextPuzzle();
+        }, 800);
     }
 
-    function timer() {
-        let t = setInterval(() => {
-            time--;
-            document.getElementById('t').innerText = time;
-            if(time <= 0) {
-                clearInterval(t);
-                active = false;
-                let n = prompt("Game Over! Score: " + score + "\nName:");
-                if(n) save(n, score);
+    function startTimer() {
+        clock = setInterval(() => {
+            state.time--;
+            document.getElementById('timer').innerText = state.time;
+            if(state.time <= 0) {
+                clearInterval(clock);
+                state.active = false;
+                let n = prompt("Tower Collapsed! Score: " + state.score + "\nName:");
+                if(n) save(n, state.score);
                 location.reload();
             }
         }, 1000);
     }
 
     function save(n, s) {
-        let sc = JSON.parse(localStorage.getItem('climb20') || '[]');
+        let sc = JSON.parse(localStorage.getItem('selector20') || '[]');
         sc.push({n: n.toUpperCase().substring(0,10), s: s});
         sc.sort((a,b) => b.s - a.s);
-        localStorage.setItem('climb20', JSON.stringify(sc.slice(0, 20)));
+        localStorage.setItem('selector20', JSON.stringify(sc.slice(0, 20)));
     }
 
-    function showBoard() {
-        let sc = JSON.parse(localStorage.getItem('climb20') || '[]');
+    function showScores() {
+        let sc = JSON.parse(localStorage.getItem('selector20') || '[]');
         document.getElementById('list').innerHTML = sc.map((x, i) => 
-            `<div class="entry"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
+            `<div class="row"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
     }
 </script>
 </body>
