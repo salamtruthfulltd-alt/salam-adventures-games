@@ -1,184 +1,223 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Cyber Challenge Arcade</title>
+    <title>Cyber Arcade: Fixed Edition</title>
     <style>
         :root { --neon: #00f2ff; --pink: #ff00de; --gold: #ffcc00; --bg: #0a0a0a; }
         body { background: var(--bg); color: white; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
         
-        /* The Flashing Border */
         #game-box {
             border: 6px solid var(--neon);
-            padding: 20px; border-radius: 15px; background: #151515;
-            text-align: center; width: 420px; position: relative;
-            animation: borderGlow 2s infinite;
+            padding: 20px; border-radius: 20px; background: #111;
+            text-align: center; width: 420px;
+            animation: borderFlash 2s infinite alternate;
         }
-        @keyframes borderGlow {
-            0%, 100% { border-color: var(--neon); box-shadow: 0 0 20px var(--neon); }
-            50% { border-color: var(--pink); box-shadow: 0 0 40px var(--pink); }
+        @keyframes borderFlash {
+            from { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+            to { border-color: var(--pink); box-shadow: 0 0 35px var(--pink); }
         }
 
-        .stats { display: flex; justify-content: space-around; margin: 15px 0; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #333; }
-        .timer-alert { color: red; font-weight: bold; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } }
+        .stats { display: flex; justify-content: space-around; background: #000; padding: 10px; border-radius: 10px; margin: 10px 0; border: 1px solid #333; }
+        .timer-warning { color: #ff3131; font-weight: bold; animation: shake 0.2s infinite; }
+        @keyframes shake { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-        .btn { cursor: pointer; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; transition: 0.2s; }
-        #bonus-btn { background: var(--gold); color: black; margin: 10px; }
-        #bonus-btn:disabled { background: #555; cursor: not-allowed; }
+        .btn { cursor: pointer; border: none; padding: 12px; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+        #bonus-btn { background: var(--gold); color: black; width: 100%; margin-bottom: 15px; border:none; }
+        #bonus-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        #display-area { min-height: 200px; padding: 20px; border: 1px inset #222; background: #000; margin-bottom: 20px; }
-        .color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .color-choice { height: 60px; border: 2px solid white; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        #screen { min-height: 220px; background: #000; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; border: 1px inset #222; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 80%; }
+        .tile { height: 70px; border-radius: 10px; border: 2px solid white; cursor: pointer; opacity: 0.4; }
+        .tile.lit { opacity: 1; box-shadow: 0 0 20px white; background-color: white !important; }
 
+        input { font-size: 2rem; width: 120px; text-align: center; background: #222; color: var(--neon); border: 2px solid #444; border-radius: 5px; outline: none; }
         table { width: 100%; font-size: 0.8rem; border-collapse: collapse; margin-top: 10px; }
-        th { color: var(--neon); border-bottom: 1px solid #444; }
+        th { color: var(--neon); border-bottom: 1px solid #444; padding: 5px; }
         td { padding: 5px; border-bottom: 1px solid #222; }
     </style>
 </head>
-<body onload="renderScores()">
+<body onload="renderLeaderboard()">
 
 <div id="game-box">
-    <h2 id="level-title">LEVEL 1: MATH</h2>
+    <h2 id="lvl-head" style="margin:0; color: var(--neon);">START MISSION</h2>
     
     <div class="stats">
-        <div>⏳ <span id="time-left">30</span>s</div>
-        <div>🏆 <span id="score">0</span>/5</div>
+        <div>⏳ <span id="timer-val">30</span>s</div>
+        <div>🎯 <span id="score-val">0</span>/<span id="goal-val">5</span></div>
     </div>
 
-    <button id="bonus-btn" onclick="useSkip()">★ SKIP QUESTION ★</button>
+    <button id="bonus-btn" class="btn" onclick="useBonus()">★ SKIP QUESTION ★</button>
 
-    <div id="display-area">
-        <div id="game-content">
-            <h3 style="color:var(--neon)">READY?</h3>
-            <button class="btn" style="background:var(--neon); font-size: 1.2rem;" onclick="initGame()">START MISSION</button>
+    <div id="screen">
+        <div id="content">
+            <button class="btn" style="background:var(--neon); font-size: 1.5rem; color:black;" onclick="initGame()">PLAY NOW</button>
         </div>
     </div>
 
     <div id="leaderboard">
-        <strong>RANKING (TOP 10)</strong>
-        <table id="score-table">
-            <thead><tr><th>#</th><th>NAME</th><th>LVL</th></tr></thead>
+        <strong>RANKING (LOCAL TOP 10)</strong>
+        <table>
+            <thead><tr><th>#</th><th>NAME</th><th>LEVEL</th></tr></thead>
             <tbody id="score-body"></tbody>
         </table>
     </div>
 </div>
 
 <script>
-    let score = 0, level = 1, timeLeft = 30, goal = 5, timer = null;
-    let currentSolution = "";
-    const colorNames = ["RED", "BLUE", "GREEN", "YELLOW"];
-    const hexCodes = ["#FF3131", "#3131FF", "#31FF31", "#FFFF31"];
+    let score = 0, level = 1, timeLeft = 30, goal = 5, timerId = null;
+    let currentAns = "", sequence = [], userSequence = [], isWatching = false;
 
-    // BEEP GENERATOR (No 404s!)
-    function sound(freq, type="sine", vol=0.1) {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        g.gain.setValueAtTime(vol, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
-        osc.connect(g); g.connect(ctx.destination);
-        osc.start(); osc.stop(ctx.currentTime + 0.5);
+    function beep(f, d = 0.2) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.frequency.value = f;
+            o.connect(g); g.connect(ctx.destination);
+            o.start(); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + d);
+            o.stop(ctx.currentTime + d);
+        } catch(e) { console.log("Audio blocked"); }
     }
 
     function initGame() {
         score = 0; level = 1; timeLeft = 30; goal = 5;
         document.getElementById('bonus-btn').disabled = false;
-        loadChallenge();
-        if(timer) clearInterval(timer);
-        timer = setInterval(countDown, 1000);
+        if(timerId) clearInterval(timerId);
+        timerId = setInterval(tick, 1000);
+        loadTask();
     }
 
-    function countDown() {
+    function tick() {
         timeLeft--;
-        const timerEl = document.getElementById('time-left');
-        timerEl.innerText = timeLeft;
-        if(timeLeft <= 5) {
-            timerEl.classList.add('timer-alert');
-            sound(150, "square", 0.05); // Alarm beep
-        }
-        if(timeLeft <= 0) endGame();
+        document.getElementById('timer-val').innerText = timeLeft;
+        if(timeLeft <= 5) document.getElementById('timer-val').classList.add('timer-warning');
+        if(timeLeft <= 0) gameOver();
     }
 
-    function loadChallenge() {
-        const area = document.getElementById('game-content');
-        document.getElementById('score').innerText = score;
-        document.getElementById('time-left').classList.remove('timer-alert');
+    function loadTask() {
+        const stage = document.getElementById('content');
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('goal-val').innerText = goal;
+        document.getElementById('lvl-head').innerText = "PHASE " + level;
 
-        if(level === 1) {
-            document.getElementById('level-title').innerText = "LVL 1: MATH";
+        if (level === 1) {
             let a = Math.floor(Math.random() * 9) + 2;
-            let b = Math.floor(Math.random() * 9) + 2;
-            currentSolution = a * b;
-            area.innerHTML = `<h3>Solve Fast!</h3><h1 style="font-size:3rem">${a} x ${b}</h1>
-                              <input type="number" id="input" autofocus onkeydown="if(event.key==='Enter') verify()">`;
-            document.getElementById('input').focus();
-        } else {
-            document.getElementById('level-title').innerText = "LVL 2: COLOR CLASH";
-            document.getElementById('level-title').style.color = "var(--pink)";
-            
-            let textIdx = Math.floor(Math.random() * 4);
-            let colorIdx = Math.floor(Math.random() * 4);
-            if(textIdx === colorIdx) colorIdx = (colorIdx + 1) % 4;
-            
-            currentSolution = colorNames[colorIdx];
-            area.innerHTML = `<h3>Click the COLOR you SEE:</h3>
-                              <h1 style="color:${hexCodes[colorIdx]}; font-size:3.5rem; margin:10px;">${colorNames[textIdx]}</h1>
-                              <div class="color-grid">
-                                ${colorNames.map((c, i) => `<button class="color-choice" style="background:${hexCodes[i]}" onclick="verify('${c}')">${c}</button>`).join('')}
-                              </div>`;
+            let b = Math.floor(Math.random() * 9) + 1;
+            currentAns = a * b;
+            stage.innerHTML = `<h3>Quick Math</h3><h1>${a} × ${b}</h1>
+                               <input type="number" id="in" autofocus onkeydown="if(event.key==='Enter') verify()">`;
+            setTimeout(()=>document.getElementById('in').focus(), 10);
+        } 
+        else if (level === 2) {
+            const colors = ["RED", "BLUE", "GREEN", "YELLOW"];
+            const hex = ["#FF4444", "#4444FF", "#44FF44", "#FFFF44"];
+            let tIdx = Math.floor(Math.random() * 4);
+            let cIdx = Math.floor(Math.random() * 4);
+            if(tIdx === cIdx) cIdx = (cIdx + 1) % 4;
+            currentAns = colors[cIdx];
+            stage.innerHTML = `<h3>Click the INK COLOR</h3>
+                               <h1 style="color:${hex[cIdx]}; margin:10px;">${colors[tIdx]}</h1>
+                               <div class="grid">
+                                   ${colors.map((c, i) => `<button class="btn" style="background:${hex[i]}; color:black; margin:2px;" onclick="verify('${c}')">${c}</button>`).join('')}
+                               </div>`;
+        }
+        else {
+            stage.innerHTML = `<h3>Watch & Repeat</h3>
+                               <div class="grid" id="memory-grid">
+                                   <div class="tile" style="background:#FF4444" id="t0" onclick="tileClick(0)"></div>
+                                   <div class="tile" style="background:#4444FF" id="t1" onclick="tileClick(1)"></div>
+                                   <div class="tile" style="background:#44FF44" id="t2" onclick="tileClick(2)"></div>
+                                   <div class="tile" style="background:#FFFF44" id="t3" onclick="tileClick(3)"></div>
+                               </div>`;
+            startSequence();
         }
     }
 
     function verify(choice) {
-        let userAns = choice || document.getElementById('input').value;
-        if(userAns.toString().toUpperCase() == currentSolution) {
+        let val = choice || document.getElementById('in').value;
+        if(val.toString().toUpperCase() == currentAns) {
             score++;
-            sound(600);
-            if(score >= goal) levelUp(); else loadChallenge();
+            beep(600);
+            if(score >= goal) levelUp(); 
+            else loadTask();
         } else {
-            sound(100, "sawtooth");
-            if(level === 1) document.getElementById('input').value = "";
+            beep(100); 
+            if(level === 1) document.getElementById('in').value = "";
+        }
+    }
+
+    function startSequence() {
+        isWatching = true;
+        userSequence = [];
+        sequence.push(Math.floor(Math.random() * 4));
+        playSequence();
+    }
+
+    async function playSequence() {
+        for (let i = 0; i < sequence.length; i++) {
+            await new Promise(r => setTimeout(r, 600));
+            let tile = document.getElementById('t' + sequence[i]);
+            if(tile) {
+                tile.classList.add('lit');
+                beep(400 + (sequence[i]*50));
+                setTimeout(() => tile.classList.remove('lit'), 300);
+            }
+        }
+        isWatching = false;
+    }
+
+    function tileClick(id) {
+        if(isWatching) return;
+        userSequence.push(id);
+        beep(400 + (id*50));
+        if(userSequence[userSequence.length-1] !== sequence[userSequence.length-1]) {
+            beep(50, 0.5);
+            sequence = []; score = 0; loadTask(); // Reset level score on memory fail
+            return;
+        }
+        if(userSequence.length === sequence.length) {
+            score++;
+            if(score >= goal) levelUp(); 
+            else setTimeout(startSequence, 800);
         }
     }
 
     function levelUp() {
-        level++;
-        score = 0;
-        goal = 8;
-        timeLeft += 10;
-        sound(800);
-        alert("LEVEL CLEAR! Time Added.");
-        loadChallenge();
+        level++; score = 0; timeLeft += 15;
+        goal = (level === 3) ? 3 : 5; // Pass marks
+        beep(800, 0.5);
+        alert("LEVEL UP! Prepare for Phase " + level);
+        loadTask();
     }
 
-    function useSkip() {
+    function useBonus() {
         document.getElementById('bonus-btn').disabled = true;
         score++;
-        sound(1000);
-        if(score >= goal) levelUp(); else loadChallenge();
+        if(score >= goal) levelUp(); else loadTask();
     }
 
-    function endGame() {
-        clearInterval(timer);
-        sound(50, "square", 0.3);
-        let name = prompt(`GAME OVER! You reached Level ${level}. Name:`);
-        if(name) saveScore(name, level);
-        document.getElementById('game-content').innerHTML = `<h3>Time Up!</h3><button class="btn" style="background:var(--pink)" onclick="initGame()">RETRY</button>`;
+    function gameOver() {
+        clearInterval(timerId);
+        beep(50, 1);
+        // Timeout used to ensure the screen updates before the prompt freezes the browser
+        setTimeout(() => {
+            let n = prompt("MISSION FAILED! You reached Phase " + level + ". Enter Name:");
+            if(n) saveScore(n, level);
+            document.getElementById('content').innerHTML = `<button class="btn" style="background:var(--neon); color:black;" onclick="initGame()">RESTART</button>`;
+        }, 100);
     }
 
     function saveScore(n, l) {
-        let s = JSON.parse(localStorage.getItem('scores') || '[]');
-        s.push({n: n.slice(0,10), l: l});
+        let s = JSON.parse(localStorage.getItem('finalScores') || '[]');
+        s.push({n: n.substring(0,10).toUpperCase(), l: l});
         s.sort((a,b) => b.l - a.l);
-        localStorage.setItem('scores', JSON.stringify(s.slice(0,10)));
-        renderScores();
+        localStorage.setItem('finalScores', JSON.stringify(s.slice(0,10)));
+        renderLeaderboard();
     }
 
-    function renderScores() {
-        let s = JSON.parse(localStorage.getItem('scores') || '[]');
+    function renderLeaderboard() {
+        let s = JSON.parse(localStorage.getItem('finalScores') || '[]');
         document.getElementById('score-body').innerHTML = s.map((x, i) => `<tr><td>${i+1}</td><td>${x.n}</td><td>${x.l}</td></tr>`).join('');
     }
 </script>
