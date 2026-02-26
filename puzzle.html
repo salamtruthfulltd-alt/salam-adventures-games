@@ -2,129 +2,189 @@
 <html>
 <head>
 <style>
-  :root { --neon-color: #00f2ff; }
-  body { background: #0a0a0a; color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+  :root { --neon: #00f2ff; --pink: #ff00de; --gold: #ffcc00; }
+  body { background: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
   
-  /* Flashing Border Effect */
+  /* Flashing Border */
   #game-container {
-    border: 5px solid var(--neon-color);
-    padding: 30px;
-    border-radius: 15px;
+    border: 6px solid var(--neon);
+    padding: 25px;
+    border-radius: 20px;
     background: #111;
     text-align: center;
-    width: 400px;
-    animation: flash 1s infinite alternate;
-    box-shadow: 0 0 20px var(--neon-color);
+    width: 450px;
+    box-shadow: 0 0 20px rgba(0,242,255,0.2);
+    animation: borderFlash 2s infinite;
   }
-  @keyframes flash {
-    from { border-color: #00f2ff; box-shadow: 0 0 10px #00f2ff; }
-    to { border-color: #ff00de; box-shadow: 0 0 30px #ff00de; }
+  @keyframes borderFlash {
+    0%, 100% { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+    50% { border-color: var(--pink); box-shadow: 0 0 30px var(--pink); }
   }
 
-  .controls { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; }
-  button { cursor: pointer; padding: 10px; border: none; border-radius: 5px; background: #333; color: white; transition: 0.3s; }
+  .stats-bar { display: flex; justify-content: space-around; background: #222; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; border: 1px solid #444; }
+  .timer-warn { color: #ff4444; animation: shake 0.2s infinite; }
+  @keyframes shake { 0% { transform: translateX(0); } 50% { transform: translateX(3px); } 100% { transform: translateX(0); } }
+
+  button { cursor: pointer; padding: 10px 15px; border: none; border-radius: 5px; background: #333; color: white; font-weight: bold; transition: 0.2s; }
   button:hover { background: #555; }
-  .active { background: #00f2ff; color: black; font-weight: bold; }
-  #bonus-btn { background: #ffcc00; color: black; font-weight: bold; animation: pulse 1s infinite; }
-  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-  
-  #puzzle-area { min-height: 150px; margin-top: 20px; border-top: 1px solid #444; padding-top: 20px; }
-  input { padding: 8px; width: 60%; margin-bottom: 10px; background: #222; border: 1px solid #555; color: white; }
+  #bonus-btn { background: var(--gold); color: black; }
+  #bonus-btn:disabled { opacity: 0.3; filter: grayscale(1); }
+
+  #puzzle-area { background: #000; padding: 20px; border-radius: 10px; min-height: 150px; margin: 15px 0; border: 1px inset #333; }
+  input { font-size: 1.5rem; width: 100px; text-align: center; background: #111; color: var(--gold); border: 1px solid var(--neon); outline: none; }
+
+  /* Leaderboard Styling */
+  #leaderboard { margin-top: 20px; width: 100%; font-size: 0.8rem; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th { border-bottom: 1px solid #444; color: var(--neon); }
+  td { padding: 4px; border-bottom: 1px solid #222; }
+  .rank-1 { color: var(--gold); font-weight: bold; }
 </style>
 </head>
-<body>
+<body onload="updateScoreboard()">
 
 <div id="game-container">
-  <h2>PUZZLE ARCADE</h2>
+  <h1 style="margin-top:0; letter-spacing: 2px;">LVL <span id="lvl-display">1</span>: PUZZLE DASH</h1>
   
-  <div class="controls">
-    <button id="sfx-btn" onclick="toggleSFX()">SFX: OFF</button>
-    <button id="music-btn" onclick="toggleMusic()">Music: OFF</button>
-    <button id="bonus-btn" onclick="triggerBonus()">★ BONUS ★</button>
+  <div class="stats-bar">
+    <div>Time: <span id="timer">30</span>s</div>
+    <div>Goal: <span id="score">0</span>/5</div>
   </div>
 
   <div class="controls">
-    <button onclick="loadPuzzle('math')">Math</button>
-    <button onclick="loadPuzzle('color')">Memory</button>
-    <button onclick="loadPuzzle('word')">Scramble</button>
+    <button id="sfx-toggle" onclick="sfxOn = !sfxOn; this.innerText='SFX: '+(sfxOn?'ON':'OFF')">SFX: OFF</button>
+    <button id="bonus-btn" onclick="useBonus()">★ SKIP ★</button>
   </div>
 
   <div id="puzzle-area">
-    <p>Select a puzzle to begin!</p>
+    <div id="content">
+      <button onclick="startGame()" style="font-size: 1.2rem; background: var(--neon); color: black; padding: 15px 30px;">START GAME</button>
+    </div>
+  </div>
+
+  <div id="leaderboard">
+    <strong>TOP 20 CHALLENGERS</strong>
+    <table id="score-table">
+      <thead><tr><th>#</th><th>Name</th><th>Level</th></tr></thead>
+      <tbody id="score-body"></tbody>
+    </table>
   </div>
 </div>
 
 <script>
   let sfxOn = false;
-  let musicOn = false;
-  let currentAnswer = "";
+  let score = 0;
+  let level = 1;
+  let timeLeft = 30;
+  let timerId = null;
+  let currentAns = "";
+  let goal = 5;
 
-  function toggleSFX() {
-    sfxOn = !sfxOn;
-    document.getElementById('sfx-btn').innerText = `SFX: ${sfxOn ? 'ON' : 'OFF'}`;
-    document.getElementById('sfx-btn').classList.toggle('active');
-  }
-
-  function toggleMusic() {
-    musicOn = !musicOn;
-    document.getElementById('music-btn').innerText = `Music: ${musicOn ? 'ON' : 'OFF'}`;
-    document.getElementById('music-btn').classList.toggle('active');
-    if(sfxOn) playBeep(200);
-  }
-
-  function triggerBonus() {
-    alert("BONUS ACTIVATED! You earned 500 imaginary points!");
-    if(sfxOn) playBeep(800);
-  }
-
-  function playBeep(freq) {
+  function playBeep(f, d) {
     if(!sfxOn) return;
-    const context = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = context.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, context.currentTime);
-    osc.connect(context.destination);
-    osc.start();
-    osc.stop(context.currentTime + 0.1);
+    let ctx = new (window.AudioContext || window.webkitAudioContext)();
+    let osc = ctx.createOscillator();
+    let g = ctx.createGain();
+    osc.frequency.value = f;
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + d);
+    osc.stop(ctx.currentTime + d);
   }
 
-  function loadPuzzle(type) {
-    const area = document.getElementById('puzzle-area');
-    if(sfxOn) playBeep(440);
+  function startGame() {
+    score = 0; level = 1; timeLeft = 30; goal = 5;
+    document.getElementById('lvl-display').innerText = level;
+    document.getElementById('bonus-btn').disabled = false;
+    nextPuzzle();
+    startTimer();
+  }
+
+  function startTimer() {
+    if(timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+      timeLeft--;
+      const tDisp = document.getElementById('timer');
+      tDisp.innerText = timeLeft;
+      
+      if(timeLeft <= 5) {
+        tDisp.classList.add('timer-warn');
+        playBeep(200, 0.1); // Alarm sound
+      }
+
+      if(timeLeft <= 0) gameOver();
+    }, 1000);
+  }
+
+  function nextPuzzle() {
+    document.getElementById('score').innerText = score;
+    const area = document.getElementById('content');
     
-    if (type === 'math') {
-      const a = Math.floor(Math.random() * 12) + 1;
-      const b = Math.floor(Math.random() * 12) + 1;
-      currentAnswer = a * b;
-      area.innerHTML = `<h3>Quick Math</h3><p>What is ${a} x ${b}?</p>
-                        <input type="number" id="ans"><br>
-                        <button onclick="checkAns('math')">Submit</button>`;
-    } else if (type === 'word') {
-      const words = ['GALAXY', 'MATRIX', 'PUZZLE', 'CYBER'];
-      const word = words[Math.floor(Math.random() * words.length)];
-      currentAnswer = word;
-      const scrambled = word.split('').sort(() => 0.5 - Math.random()).join('');
-      area.innerHTML = `<h3>Word Scramble</h3><p>Unscramble: <strong>${scrambled}</strong></p>
-                        <input type="text" id="ans"><br>
-                        <button onclick="checkAns('word')">Submit</button>`;
-    } else if (type === 'color') {
-      area.innerHTML = `<h3>Color Code</h3><p>Which color is often associated with "Stop"?</p>
-                        <input type="text" id="ans"><br>
-                        <button onclick="checkAns('color')">Submit</button>`;
-      currentAnswer = "red";
+    // Math Puzzle (Difficulty scales with Level)
+    let a = Math.floor(Math.random() * (5 + level)) + level;
+    let b = Math.floor(Math.random() * (5 + level)) + 2;
+    currentAns = a * b;
+    
+    area.innerHTML = `<h3>Solve to Level Up:</h3>
+                      <div style="font-size:1.5rem">${a} x ${b} = ?</div><br>
+                      <input type="number" id="user-in" onkeydown="if(event.key==='Enter') check()">`;
+    document.getElementById('user-in').focus();
+  }
+
+  function check() {
+    let val = document.getElementById('user-in').value;
+    if(val == currentAns) {
+      score++;
+      playBeep(600, 0.2);
+      if(score >= goal) nextLevel();
+      else nextPuzzle();
+    } else {
+      playBeep(100, 0.3);
+      document.getElementById('user-in').value = "";
     }
   }
 
-  function checkAns(type) {
-    const val = document.getElementById('ans').value.toLowerCase();
-    if (val == currentAnswer.toString().toLowerCase()) {
-      alert("CORRECT!");
-      if(sfxOn) playBeep(600);
-      loadPuzzle(type);
-    } else {
-      alert("Try again!");
-      if(sfxOn) playBeep(150);
-    }
+  function nextLevel() {
+    level++;
+    score = 0;
+    goal += 2;
+    timeLeft += 15; // Extra time for clearing level
+    document.getElementById('lvl-display').innerText = level;
+    playBeep(880, 0.5);
+    alert("LEVEL CLEAR! Time Added!");
+    nextPuzzle();
+  }
+
+  function useBonus() {
+    score++;
+    document.getElementById('bonus-btn').disabled = true;
+    playBeep(1000, 0.2);
+    if(score >= goal) nextLevel(); else nextPuzzle();
+  }
+
+  function gameOver() {
+    clearInterval(timerId);
+    playBeep(50, 1);
+    const name = prompt(`GAME OVER! You reached Level ${level}. Enter name for Leaderboard:`);
+    if(name) saveScore(name, level);
+    document.getElementById('content').innerHTML = `<button onclick="startGame()">TRY AGAIN</button>`;
+    document.getElementById('timer').classList.remove('timer-warn');
+  }
+
+  function saveScore(name, lvl) {
+    let scores = JSON.parse(localStorage.getItem('puzzleScores') || '[]');
+    scores.push({name: name.substring(0,10), lvl: lvl});
+    scores.sort((a,b) => b.lvl - a.lvl);
+    scores = scores.slice(0, 20); // Keep top 20
+    localStorage.setItem('puzzleScores', JSON.stringify(scores));
+    updateScoreboard();
+  }
+
+  function updateScoreboard() {
+    const scores = JSON.parse(localStorage.getItem('puzzleScores') || '[]');
+    const body = document.getElementById('score-body');
+    body.innerHTML = scores.map((s, i) => 
+      `<tr class="${i==0?'rank-1':''}"><td>${i+1}</td><td>${s.name}</td><td>${s.lvl}</td></tr>`
+    ).join('');
   }
 </script>
 </body>
