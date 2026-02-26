@@ -13,102 +13,103 @@
             margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
             background: #0a0a15; color: white;
             display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; overflow: hidden;
+            min-height: 100vh; overflow-y: auto; padding-bottom: 50px;
         }
 
         /* HUD */
         .hud { 
-            display: flex; gap: 40px; background: rgba(0,0,0,0.85);
-            padding: 15px 50px; border-radius: 0 0 40px 40px;
-            border: 2px solid var(--neon); border-top: none;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); z-index: 100;
+            display: flex; gap: 60px; background: rgba(0,0,0,0.9);
+            padding: 15px 80px; border-radius: 0 0 40px 40px;
+            border: 3px solid var(--neon); border-top: none;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5); z-index: 100;
         }
         .stat { text-align: center; }
-        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .val { font-size: 1.6rem; color: var(--neon); font-weight: bold; text-shadow: 0 0 10px var(--neon); }
+        .label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+        .val { font-size: 2rem; color: var(--neon); font-weight: bold; text-shadow: 0 0 10px var(--neon); }
 
-        /* THE ENLARGED FRAME */
+        /* THE MASSIVE FRAME */
         #tower-frame {
-            width: 400px; height: 550px; /* Bigger Frame */
+            width: 550px; height: 700px; /* Max Size Frame */
             background: var(--bg-dark);
-            border: 12px solid var(--wood);
-            border-bottom: 25px solid #222;
-            border-radius: 15px; position: relative; margin-top: 15px;
+            border: 15px solid var(--wood);
+            border-bottom: 35px solid #222;
+            border-radius: 20px; position: relative; margin-top: 20px;
             display: flex; flex-direction: column; 
-            box-shadow: 0 0 50px rgba(0,0,0,1);
+            box-shadow: 0 0 60px rgba(0,0,0,1);
             overflow: hidden;
         }
 
         /* GRAPHICS INSIDE THE FRAME */
         .internal-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, #020111, #191621);
+            background: linear-gradient(to bottom, #020111 0%, #191621 100%);
             z-index: 1;
         }
         .internal-stars {
             position: absolute; width: 100%; height: 100%;
             background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
-            background-size: 50px 50px; opacity: 0.3; z-index: 2;
+            background-size: 60px 60px; opacity: 0.4; z-index: 2;
         }
         .internal-city {
-            position: absolute; bottom: 0; width: 100%; height: 120px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            position: absolute; bottom: 0; width: 100%; height: 150px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
             display: flex; align-items: flex-end; justify-content: space-around;
-            z-index: 3; opacity: 0.6;
+            z-index: 3; opacity: 0.7;
         }
-        .mini-building { width: 30px; background: #000; border-top: 2px solid #111; }
+        .mini-building { width: 40px; background: #000; border-top: 3px solid #1a1a1a; box-shadow: 0 0 5px #000; }
 
-        /* SELECTION ZONE / CRANE */
+        /* SELECTION ZONE */
         #selection-zone {
-            height: 80px; background: rgba(0, 242, 255, 0.1);
-            border-bottom: 3px dashed var(--neon);
+            height: 100px; background: rgba(0, 242, 255, 0.15);
+            border-bottom: 4px dashed var(--neon);
             display: flex; justify-content: space-around; align-items: center;
-            font-size: 2.2rem; color: var(--gold); font-weight: 900;
-            z-index: 10; position: relative;
+            font-size: 3rem; color: var(--gold); font-weight: 900;
+            z-index: 10; position: relative; text-shadow: 0 0 15px var(--gold);
         }
 
         /* BRICK STACK */
         #stack { 
             flex-grow: 1; display: flex; flex-direction: column-reverse; 
-            padding: 10px; z-index: 10; position: relative;
+            padding: 15px; z-index: 10; position: relative;
         }
         .brick {
-            height: 40px; margin: 2px 0; border-radius: 6px;
+            height: 50px; margin: 3px 0; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: #fff; font-size: 1.1rem;
-            text-shadow: 1px 1px 2px #000;
-            border: 1px solid rgba(255,255,255,0.4);
-            box-shadow: inset 0 0 15px rgba(255,255,255,0.3);
-            animation: slamDown 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 800; color: #fff; font-size: 1.4rem;
+            text-shadow: 2px 2px 4px #000;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.3);
+            animation: slamDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes slamDown { from { transform: translateY(-500px) scale(1.5); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes slamDown { from { transform: translateY(-600px) scale(1.2); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
         /* OVERLAY */
         #menu {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 100;
+            background: rgba(0,0,0,0.9); z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .start-btn {
-            padding: 20px 50px; font-size: 1.8rem; font-weight: bold;
-            background: #2ecc71; color: white; border: none; border-radius: 12px;
-            cursor: pointer; box-shadow: 0 6px 0 #27ae60; transition: 0.1s;
+            padding: 25px 70px; font-size: 2.2rem; font-weight: bold;
+            background: #2ecc71; color: white; border: none; border-radius: 15px;
+            cursor: pointer; box-shadow: 0 8px 0 #27ae60; transition: 0.1s;
         }
-        .start-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #27ae60; }
+        .start-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #27ae60; }
 
         /* INPUT AREA */
-        #puzzle-text { font-size: 3.5rem; margin: 15px 0; font-weight: 900; letter-spacing: 6px; text-shadow: 0 0 15px var(--neon); }
+        #puzzle-text { font-size: 4rem; margin: 20px 0; font-weight: 900; letter-spacing: 8px; text-shadow: 0 0 20px var(--neon); }
         #typer { 
-            font-size: 2rem; width: 300px; padding: 15px; border-radius: 15px;
-            border: 4px solid var(--neon); background: #000; color: white; text-align: center;
-            outline: none; box-shadow: 0 0 20px rgba(0,242,255,0.2);
+            font-size: 2.5rem; width: 400px; padding: 20px; border-radius: 20px;
+            border: 5px solid var(--neon); background: #000; color: white; text-align: center;
+            outline: none; box-shadow: 0 0 30px rgba(0,242,255,0.3);
         }
 
         #leaderboard {
-            margin-top: 15px; width: 400px; background: rgba(255,255,255,0.95); color: #222;
-            border-radius: 10px; padding: 10px; max-height: 120px; overflow-y: auto;
+            margin-top: 30px; width: 550px; background: rgba(255,255,255,0.95); color: #222;
+            border-radius: 15px; padding: 20px; max-height: 180px; overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .row { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 4px; font-weight: bold; }
+        .row { display: flex; justify-content: space-between; border-bottom: 2px solid #ddd; padding: 8px; font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -125,7 +126,8 @@
         <div class="internal-city" id="city-layer"></div>
 
         <div id="menu">
-            <h1 style="color:var(--gold); margin-bottom: 30px; letter-spacing: 2px;">SKYWARD 20</h1>
+            <h1 style="color:var(--gold); font-size: 4rem; margin-bottom: 20px; letter-spacing: 4px; text-shadow: 0 0 20px var(--gold);">SKYWARD 20</h1>
+            <p style="color: #aaa; margin-bottom: 40px; font-size: 1.2rem;">Complete the words to reach the stars!</p>
             <button class="start-btn" onclick="startGame()">START GAME</button>
         </div>
 
@@ -141,6 +143,7 @@
     <input type="text" id="typer" placeholder="Type letter..." disabled autocomplete="off">
 
     <div id="leaderboard">
+        <h3 style="margin:0 0 10px 0; text-align:center;">🏆 TOP 20 ARCHITECTS</h3>
         <div id="list"></div>
     </div>
 
@@ -150,7 +153,8 @@
         {w: "CLOUD", m: "CLO_D", a: "U"}, {w: "DRAGON", m: "DRA_ON", a: "G"},
         {w: "FLOWER", m: "FLO_ER", a: "W"}, {w: "GHOST", m: "GHO_T", a: "S"},
         {w: "HEART", m: "HEA_T", a: "R"}, {w: "JUICE", m: "JUI_E", a: "C"},
-        {w: "LIGHT", m: "LIG_T", a: "H"}, {w: "MUSIC", m: "MUS_C", a: "I"}
+        {w: "LIGHT", m: "LIG_T", a: "H"}, {w: "MUSIC", m: "MUS_C", a: "I"},
+        {w: "PLANET", m: "PLA_ET", a: "N"}, {w: "ROCKET", m: "ROC_ET", a: "K"}
     ];
 
     let state = { score: 0, time: 60, floor: 1, count: 0, active: false, cur: {} };
@@ -158,10 +162,10 @@
 
     // Generate internal city graphics
     const city = document.getElementById('city-layer');
-    for(let i=0; i<15; i++) {
+    for(let i=0; i<12; i++) {
         let b = document.createElement('div');
         b.className = 'mini-building';
-        b.style.height = (Math.random() * 80 + 20) + 'px';
+        b.style.height = (Math.random() * 110 + 30) + 'px';
         city.appendChild(b);
     }
 
@@ -233,18 +237,18 @@
     function endGame() {
         clearInterval(clock);
         state.active = false;
-        let n = prompt("GAME OVER! Score: " + state.score + "\nName for Top 20:");
+        let n = prompt("TOWER SECURED! Score: " + state.score + "\nYour Name:");
         if(n) {
-            let scores = JSON.parse(localStorage.getItem('skyward_ultra') || '[]');
+            let scores = JSON.parse(localStorage.getItem('skyward_max_v1') || '[]');
             scores.push({n: n.toUpperCase().substring(0,10), s: state.score});
             scores.sort((a,b) => b.s - a.s);
-            localStorage.setItem('skyward_ultra', JSON.stringify(scores.slice(0, 20)));
+            localStorage.setItem('skyward_max_v1', JSON.stringify(scores.slice(0, 20)));
         }
         location.reload();
     }
 
     function loadBoard() {
-        let scores = JSON.parse(localStorage.getItem('skyward_ultra') || '[]');
+        let scores = JSON.parse(localStorage.getItem('skyward_max_v1') || '[]');
         document.getElementById('list').innerHTML = scores.map((x, i) => 
             `<div class="row"><span>#${i+1} ${x.n}</span><span>${x.s}</span></div>`).join('');
     }
