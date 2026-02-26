@@ -4,75 +4,69 @@
     <title>MASTER BUILDER</title>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #game { width: 500px; height: 600px; border: 5px solid #fff; position: relative; background: #111; overflow: hidden; }
-        #slider { position: absolute; height: 40px; background: #00f2ff; z-index: 10; }
-        .block { position: absolute; height: 40px; background: #ff00de; border: 1px solid #fff; }
-        #score { font-size: 3rem; margin-bottom: 10px; }
-        #menu { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 20; display: flex; align-items: center; justify-content: center; }
-        button { padding: 20px 50px; font-size: 2rem; background: #2ecc71; color: #fff; border: none; cursor: pointer; border-radius: 10px; }
+        #game-frame { width: 550px; height: 700px; border: 8px solid #5D4037; position: relative; background: #050510; overflow: hidden; }
+        #tower { position: absolute; width: 100%; bottom: 0; transition: 0.3s; }
+        #slider { position: absolute; height: 45px; background: #00f2ff; box-shadow: 0 0 15px #00f2ff; z-index: 10; }
+        .placed { position: absolute; height: 45px; border: 1px solid #fff; }
+        #overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        button { padding: 20px 60px; font-size: 2.5rem; background: #2ecc71; color: #fff; border: none; border-radius: 10px; cursor: pointer; }
+        #score { font-size: 3rem; margin-bottom: 10px; color: #ffcc00; }
     </style>
 </head>
 <body onclick="drop()">
-
     <div id="score">0</div>
-    <div id="game">
-        <div id="menu"><button onclick="start(event)">START</button></div>
-        <div id="slider"></div>
-        <div id="tower"></div>
+    <div id="game-frame">
+        <div id="overlay"><button onclick="start(event)">START</button></div>
+        <div id="tower">
+            <div id="slider"></div>
+        </div>
     </div>
-
 <script>
-    let active = false, score = 0, bWidth = 200, bX = 0, bY = 560, lastX = 150, dir = 4;
+    let active = false, score = 0, width = 250, bX = 0, lastX = 150, dir = 4, bY = 45;
     const slider = document.getElementById('slider');
     const tower = document.getElementById('tower');
 
     function start(e) {
         e.stopPropagation();
-        active = true; score = 0; bWidth = 200; bX = 0; bY = 560; lastX = 150; dir = 4;
-        document.getElementById('menu').style.display = 'none';
+        active = true; score = 0; width = 250; bX = 0; lastX = 150; dir = 4; bY = 45;
+        document.getElementById('overlay').style.display = 'none';
         document.getElementById('score').innerText = '0';
-        tower.innerHTML = `<div class="block" style="width:200px; left:150px; top:560px; background:#444;"></div>`;
+        tower.innerHTML = `<div id="slider"></div><div class="placed" style="width:250px; left:150px; bottom:0; background:#444;"></div>`;
         loop();
     }
 
     function loop() {
         if (!active) return;
         bX += dir;
-        if (bX + bWidth > 500 || bX < 0) dir *= -1;
-        slider.style.width = bWidth + "px";
-        slider.style.left = bX + "px";
-        slider.style.top = (bY - 40) + "px";
+        if (bX + width > 550 || bX < 0) dir *= -1;
+        const s = document.getElementById('slider');
+        s.style.width = width + "px";
+        s.style.left = bX + "px";
+        s.style.bottom = bY + "px";
         requestAnimationFrame(loop);
     }
 
     function drop() {
         if (!active) return;
         let diff = bX - lastX;
-        if (Math.abs(diff) >= bWidth) {
-            active = false;
-            alert("GAME OVER! SCORE: " + score);
-            location.reload();
-            return;
+        if (Math.abs(diff) >= width) {
+            active = false; alert("VOIDED! Score: " + score); location.reload(); return;
         }
-
-        // Slicing
         let slice = Math.abs(diff);
-        bWidth -= slice;
+        width -= slice;
         if (diff > 0) lastX = bX;
-
         const b = document.createElement('div');
-        b.className = 'block';
-        b.style.width = bWidth + "px";
+        b.className = 'placed';
+        b.style.width = width + "px";
         b.style.left = lastX + "px";
-        b.style.top = (bY - 40) + "px";
+        b.style.bottom = bY + "px";
+        b.style.background = `hsl(${score * 20}, 80%, 50%)`;
         tower.appendChild(b);
-
         score++;
         document.getElementById('score').innerText = score;
-        bY -= 40;
+        bY += 45;
         dir += (dir > 0 ? 0.3 : -0.3);
-
-        if (score > 6) tower.style.transform = `translateY(${(score - 6) * 40}px)`;
+        if (score > 6) tower.style.transform = `translateY(${(score - 6) * 45}px)`;
     }
 </script>
 </body>
