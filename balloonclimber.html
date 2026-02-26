@@ -1,120 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Skyward Stack: Cyber-City 20</title>
+    <title>SKYWARD STACK</title>
     <style>
-        body { margin: 0; background: #050510; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; overflow: hidden; height: 100vh; }
-        .hud { display: flex; gap: 40px; padding: 15px; background: #000; border: 2px solid #00f2ff; border-radius: 0 0 20px 20px; box-shadow: 0 0 15px #00f2ff; }
-        .val { color: #00f2ff; font-weight: bold; font-size: 1.5rem; }
-        
-        #frame { 
-            width: 500px; height: 600px; border: 10px solid #5D4037; margin-top: 10px; 
-            position: relative; background: linear-gradient(#020111, #191621); overflow: hidden; 
+        body { background: #0a0a1a; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .hud { font-size: 2rem; color: #00f2ff; margin-bottom: 10px; font-weight: bold; }
+        /* THE BIG BOX */
+        #game-box { 
+            width: 550px; height: 650px; border: 10px solid #5D4037; 
+            margin: 0 auto; background: #111; position: relative;
+            display: flex; flex-direction: column; border-radius: 15px;
         }
-        #selection { height: 70px; border-bottom: 2px dashed #00f2ff; display: flex; justify-content: space-around; align-items: center; font-size: 2.5rem; color: #ffcc00; font-weight: bold; }
-        #stack { display: flex; flex-direction: column-reverse; padding: 10px; height: 100%; }
+        #crane { height: 80px; border-bottom: 3px dashed #00f2ff; display: flex; justify-content: space-around; align-items: center; font-size: 3rem; color: #ffcc00; }
+        #stack { flex-grow: 1; display: flex; flex-direction: column-reverse; padding: 10px; overflow: hidden; }
+        .brick { height: 50px; margin: 2px; border-radius: 8px; background: #00f2ff; color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; border: 2px solid #fff; }
         
-        .brick { 
-            height: 45px; margin: 2px 0; background: #00f2ff; border: 2px solid white; 
-            border-radius: 5px; color: #000; display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; font-size: 1.2rem; animation: drop 0.2s ease-out;
-        }
-        @keyframes drop { from { transform: translateY(-500px); } to { transform: translateY(0); } }
+        #ui { margin-top: 20px; }
+        #puzzle { font-size: 4.5rem; font-weight: bold; letter-spacing: 12px; color: #fff; margin-bottom: 10px; }
+        input { font-size: 2.5rem; width: 100px; text-align: center; border: 4px solid #00f2ff; border-radius: 10px; background: #000; color: #fff; }
         
-        #menu { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        button { padding: 20px 50px; font-size: 2rem; background: #2ecc71; color: white; border: none; border-radius: 10px; cursor: pointer; }
-        
-        #puzzle { font-size: 4rem; margin: 20px; font-weight: bold; letter-spacing: 10px; text-shadow: 0 0 10px #00f2ff; }
-        input { font-size: 2rem; width: 300px; text-align: center; padding: 10px; border-radius: 10px; border: 3px solid #00f2ff; background: #000; color: white; }
+        #overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        button { padding: 25px 60px; font-size: 2.5rem; background: #2ecc71; color: white; border: none; border-radius: 15px; cursor: pointer; }
     </style>
 </head>
-<body onload="drawBoard()">
+<body onload="showBoard()">
 
-    <div class="hud">
-        <div>⏳ <span class="val" id="t">60</span></div>
-        <div>⭐ <span class="val" id="s">0</span></div>
-        <div>🏗️ <span class="val" id="f">1</span></div>
-    </div>
+    <div class="hud">⏳ <span id="time">60</span> | ⭐ <span id="score">0</span> | 🏗️ <span id="floor">1</span></div>
 
-    <div id="frame">
-        <div id="menu">
-            <h1 style="color:#ffcc00">SKYWARD STACK</h1>
-            <button onclick="start()">START</button>
+    <div id="game-box">
+        <div id="overlay">
+            <h1 style="font-size: 3rem; color: #ffcc00;">SKYWARD STACK</h1>
+            <button onclick="play()">START GAME</button>
         </div>
-        <div id="selection"><span id="o1"></span><span id="o2"></span><span id="o3"></span></div>
+        <div id="crane"><span id="o1">?</span><span id="o2">?</span><span id="o3">?</span></div>
         <div id="stack"></div>
     </div>
 
-    <div id="puzzle">READY</div>
-    <input type="text" id="in" maxlength="1" disabled autocomplete="off">
+    <div id="ui">
+        <div id="puzzle">READY</div>
+        <input type="text" id="typer" maxlength="1" disabled autocomplete="off">
+    </div>
 
-    <div id="list" style="margin-top:10px; font-size:0.8rem; color:#aaa"></div>
+    <div id="board" style="margin-top:20px; color:#555; font-size: 0.9rem;"></div>
 
 <script>
-    const words = [{w:"APPLE",m:"APP_E",a:"L"},{w:"BIRD",m:"B_RD",a:"I"},{w:"CAKE",m:"C_KE",a:"A"},{w:"DUCK",m:"D_CK",a:"U"},{w:"FISH",m:"FI_H",a:"S"},{w:"MOON",m:"M_ON",a:"O"}];
-    let score=0, time=60, floor=1, count=0, active=false, cur={};
+    const data = [{w:"APPLE",m:"A_PLE",a:"P"},{w:"DOG",m:"D_G",a:"O"},{w:"FISH",m:"FI_H",a:"S"},{w:"CAKE",m:"C_KE",a:"A"},{w:"MOON",m:"M_ON",a:"O"},{w:"STAR",m:"ST_R",a:"A"}];
+    let s=0, t=60, f=1, count=0, active=false, cur={};
 
-    function start() {
-        active=true; score=0; time=60; floor=1; count=0;
-        document.getElementById('menu').style.display='none';
-        document.getElementById('in').disabled=false;
-        document.getElementById('in').focus();
+    function play() {
+        active=true; s=0; t=60; f=1; count=0;
+        document.getElementById('overlay').style.display='none';
+        document.getElementById('typer').disabled=false;
+        document.getElementById('typer').focus();
         document.getElementById('stack').innerHTML='';
-        tick();
+        timer();
         next();
     }
 
-    function tick() {
-        let itv = setInterval(() => {
-            if(!active) { clearInterval(itv); return; }
-            time--;
-            document.getElementById('t').innerText = time;
-            if(time <= 0) over();
+    function timer() {
+        let clock = setInterval(() => {
+            if(!active) { clearInterval(clock); return; }
+            t--;
+            document.getElementById('time').innerText = t;
+            if(t <= 0) end();
         }, 1000);
     }
 
     function next() {
-        cur = words[Math.floor(Math.random()*words.length)];
+        cur = data[Math.floor(Math.random()*data.length)];
         document.getElementById('puzzle').innerText = cur.m;
-        let o = [cur.a, "X", "Z"].sort(() => Math.random()-0.5);
-        document.getElementById('o1').innerText = o[0];
-        document.getElementById('o2').innerText = o[1];
-        document.getElementById('o3').innerText = o[2];
+        let opts = [cur.a, "B", "X"].sort(() => Math.random()-0.5);
+        document.getElementById('o1').innerText = opts[0];
+        document.getElementById('o2').innerText = opts[1];
+        document.getElementById('o3').innerText = opts[2];
     }
 
-    document.getElementById('in').addEventListener('input', (e) => {
+    document.getElementById('typer').addEventListener('input', (e) => {
         if(e.target.value.toUpperCase() === cur.a) {
             e.target.value = '';
-            score += 100;
+            s += 100;
             count++;
             let b = document.createElement('div');
             b.className = 'brick';
             b.innerText = cur.w;
-            b.style.background = ['#00f2ff','#ff00de','#7cfc00'][floor%3];
+            b.style.backgroundColor = ['#00f2ff','#ff00de','#7cfc00','#ffea00'][f%4];
             document.getElementById('stack').appendChild(b);
             
-            if(count >= 8) { floor++; count=0; time+=10; document.getElementById('stack').innerHTML=''; }
-            document.getElementById('s').innerText = score;
-            document.getElementById('f').innerText = floor;
+            if(count >= 8) { f++; count=0; t+=10; document.getElementById('stack').innerHTML=''; }
+            document.getElementById('score').innerText = s;
+            document.getElementById('floor').innerText = f;
             next();
         } else { e.target.value = ''; }
     });
 
-    function over() {
+    function end() {
         active=false;
-        let n = prompt("GAME OVER! Score: " + score + "\nName:");
+        let n = prompt("SCORE: " + s + "\nNAME:");
         if(n) {
-            let s = JSON.parse(localStorage.getItem('ss20') || '[]');
-            s.push({n:n.substring(0,10), s:score});
-            s.sort((a,b)=>b.s-a.s);
-            localStorage.setItem('ss20', JSON.stringify(s.slice(0,20)));
+            let list = JSON.parse(localStorage.getItem('sky20') || '[]');
+            list.push({n:n, s:s});
+            list.sort((a,b)=>b.s-a.s);
+            localStorage.setItem('sky20', JSON.stringify(list.slice(0,20)));
         }
         location.reload();
     }
 
-    function drawBoard() {
-        let s = JSON.parse(localStorage.getItem('ss20') || '[]');
-        document.getElementById('list').innerHTML = "TOP 20: " + s.map(x => x.n + ":" + x.s).join(" | ");
+    function showBoard() {
+        let list = JSON.parse(localStorage.getItem('sky20') || '[]');
+        document.getElementById('board').innerText = "TOP: " + list.map(x=>x.n+":"+x.s).join(" | ");
     }
 </script>
 </body>
