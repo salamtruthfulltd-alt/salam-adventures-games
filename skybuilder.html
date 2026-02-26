@@ -1,44 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>MASTER BUILDER</title>
+    <meta charset="UTF-8">
+    <title>Master Builder: Digital Void</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #game-frame { width: 550px; height: 700px; border: 8px solid #5D4037; position: relative; background: #050510; overflow: hidden; }
-        #tower { position: absolute; width: 100%; bottom: 0; transition: 0.3s; }
-        #slider { position: absolute; height: 45px; background: #00f2ff; box-shadow: 0 0 15px #00f2ff; z-index: 10; }
-        .placed { position: absolute; height: 45px; border: 1px solid #fff; }
-        #overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        button { padding: 20px 60px; font-size: 2.5rem; background: #2ecc71; color: #fff; border: none; border-radius: 10px; cursor: pointer; }
-        #score { font-size: 3rem; margin-bottom: 10px; color: #ffcc00; }
+        :root { --neon: #00f2ff; --pink: #ff00de; --gold: #ffcc00; --wood: #5D4037; }
+        body { margin: 0; background: #050510; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+
+        /* THE MASSIVE BOX */
+        #game-frame { 
+            width: 600px; height: 800px; border: 15px solid var(--wood); 
+            background: #000; position: relative; overflow: hidden; border-radius: 25px;
+            box-shadow: 0 0 60px rgba(0,0,0,1), inset 0 0 100px rgba(0, 242, 255, 0.1);
+        }
+
+        /* GRAPHICS: CITY & STARS */
+        .stars { position: absolute; inset: 0; background: radial-gradient(white, transparent 2px); background-size: 50px 50px; opacity: 0.3; }
+        .city-bg { position: absolute; bottom: 0; width: 100%; height: 200px; background: linear-gradient(transparent, #111); display: flex; align-items: flex-end; justify-content: space-around; opacity: 0.5; }
+        .bldg { width: 40px; background: #000; border-top: 2px solid #222; }
+
+        /* HUD & TIMER */
+        .hud { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; z-index: 100; pointer-events: none; }
+        .stat { background: rgba(0,0,0,0.8); padding: 10px 25px; border: 2px solid var(--neon); border-radius: 15px; text-align: center; box-shadow: 0 0 15px var(--neon); }
+        .val { font-size: 1.8rem; font-weight: bold; color: var(--neon); }
+        .timer-bar { position: absolute; top: 100px; width: 80%; height: 6px; background: #222; border-radius: 3px; }
+        #timer-fill { width: 100%; height: 100%; background: var(--pink); box-shadow: 0 0 10px var(--pink); transition: width 0.1s linear; }
+
+        /* THE BLOCKS */
+        #viewport { position: absolute; width: 100%; height: 100%; bottom: 0; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .brick { position: absolute; height: 45px; border: 2px solid rgba(255,255,255,0.6); box-shadow: inset 0 0 20px rgba(255,255,255,0.2); border-radius: 4px; }
+        #slider { background: var(--neon); z-index: 50; box-shadow: 0 0 25px var(--neon); }
+        
+        /* MENU */
+        #menu { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .start-btn { padding: 25px 80px; font-size: 2.5rem; background: #2ecc71; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 10px 0 #27ae60; }
     </style>
 </head>
 <body onclick="drop()">
-    <div id="score">0</div>
+
     <div id="game-frame">
-        <div id="overlay"><button onclick="start(event)">START</button></div>
-        <div id="tower">
-            <div id="slider"></div>
+        <div class="stars"></div>
+        <div class="city-bg" id="city"></div>
+
+        <div class="hud">
+            <div class="stat">SCORE<br><span class="val" id="score">0</span></div>
+            <div class="stat">TIME<br><span class="val" id="time-text">10</span></div>
+        </div>
+        <div style="display:flex; justify-content:center;"><div class="timer-bar"><div id="timer-fill"></div></div></div>
+
+        <div id="menu">
+            <h1 style="color:var(--gold); font-size: 3.5rem; margin:0;">MASTER BUILDER</h1>
+            <p style="color:#888; font-size: 1.2rem; margin-bottom: 40px;">"Build the tower. Don't slip."</p>
+            <button class="start-btn" onclick="start(event)">START SYSTEM</button>
+        </div>
+
+        <div id="viewport">
+            <div id="slider" class="brick"></div>
+            <div id="tower"></div>
         </div>
     </div>
+
 <script>
-    let active = false, score = 0, width = 250, bX = 0, lastX = 150, dir = 4, bY = 45;
-    const slider = document.getElementById('slider');
-    const tower = document.getElementById('tower');
+    let active = false, score = 0, width = 300, bX = 0, lastX = 150, bY = 45, dir = 5, timeLeft = 10;
+    let gameInterval, timerInterval;
+
+    // Create City Graphics
+    const city = document.getElementById('city');
+    for(let i=0; i<15; i++) {
+        let b = document.createElement('div');
+        b.className = 'bldg';
+        b.style.height = Math.random() * 150 + 50 + 'px';
+        city.appendChild(b);
+    }
 
     function start(e) {
         e.stopPropagation();
-        active = true; score = 0; width = 250; bX = 0; lastX = 150; dir = 4; bY = 45;
-        document.getElementById('overlay').style.display = 'none';
+        active = true; score = 0; width = 300; lastX = 150; bY = 45; dir = 5; timeLeft = 10;
+        document.getElementById('menu').style.display = 'none';
         document.getElementById('score').innerText = '0';
-        tower.innerHTML = `<div id="slider"></div><div class="placed" style="width:250px; left:150px; bottom:0; background:#444;"></div>`;
+        document.getElementById('tower').innerHTML = `<div class="brick" style="width:300px; left:150px; bottom:0; background:#333;"></div>`;
+        document.getElementById('viewport').style.transform = `translateY(0px)`;
+        runTimer();
         loop();
+    }
+
+    function runTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 10;
+        timerInterval = setInterval(() => {
+            if(!active) return;
+            timeLeft -= 0.1;
+            document.getElementById('time-text').innerText = Math.ceil(timeLeft);
+            document.getElementById('timer-fill').style.width = (timeLeft * 10) + "%";
+            if(timeLeft <= 0) gameOver("TIME EXPIRED!");
+        }, 100);
     }
 
     function loop() {
         if (!active) return;
         bX += dir;
-        if (bX + width > 550 || bX < 0) dir *= -1;
+        if (bX + width > 600 || bX < 0) dir *= -1;
         const s = document.getElementById('slider');
         s.style.width = width + "px";
         s.style.left = bX + "px";
@@ -48,25 +109,46 @@
 
     function drop() {
         if (!active) return;
+
         let diff = bX - lastX;
-        if (Math.abs(diff) >= width) {
-            active = false; alert("VOIDED! Score: " + score); location.reload(); return;
-        }
         let slice = Math.abs(diff);
-        width -= slice;
-        if (diff > 0) lastX = bX;
+
+        if (slice >= width) {
+            gameOver("COLLAPSED INTO THE VOID!");
+            return;
+        }
+
+        // Precision / Slicing logic
+        if (slice < 10) { bX = lastX; } // Snap for perfect hit
+        else {
+            width -= slice;
+            if (diff > 0) lastX = bX; 
+        }
+
         const b = document.createElement('div');
-        b.className = 'placed';
+        b.className = 'brick';
         b.style.width = width + "px";
         b.style.left = lastX + "px";
         b.style.bottom = bY + "px";
-        b.style.background = `hsl(${score * 20}, 80%, 50%)`;
-        tower.appendChild(b);
+        b.style.background = `hsl(${score * 25}, 100%, 50%)`;
+        document.getElementById('tower').appendChild(b);
+
         score++;
         document.getElementById('score').innerText = score;
         bY += 45;
-        dir += (dir > 0 ? 0.3 : -0.3);
-        if (score > 6) tower.style.transform = `translateY(${(score - 6) * 45}px)`;
+        dir += (dir > 0 ? 0.4 : -0.4);
+        runTimer(); // Reset timer on successful drop
+
+        if (score > 7) {
+            document.getElementById('viewport').style.transform = `translateY(${(score - 7) * 45}px)`;
+        }
+    }
+
+    function gameOver(msg) {
+        active = false;
+        clearInterval(timerInterval);
+        alert(msg + "\nStories Built: " + score);
+        location.reload();
     }
 </script>
 </body>
