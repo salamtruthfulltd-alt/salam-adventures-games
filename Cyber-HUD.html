@@ -1,173 +1,198 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Neon Pulse: HUD Edition</title>
+    <title>Neon Stacker: HUD Fixed</title>
     <style>
         :root { --neon: #00f2ff; --pink: #ff00de; --gold: #ffcc00; --bg: #050505; }
         body { background: var(--bg); color: white; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; }
 
-        /* --- THE NEW CYBER HUD BORDER --- */
-        #game-frame {
+        /* CYBER HUD BORDER */
+        #hud-frame {
             position: relative;
-            padding: 30px;
-            background: rgba(10, 10, 10, 0.9);
-            border: 1px solid rgba(0, 242, 255, 0.2); /* Faint main border */
-            width: 400px;
+            padding: 20px;
+            background: #111;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            width: 350px;
+            box-shadow: 0 0 20px rgba(0,0,0,1);
         }
+        .corner { position: absolute; width: 25px; height: 25px; border: 4px solid var(--neon); animation: pulse 2s infinite; }
+        .tl { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+        .tr { top: -5px; right: -5px; border-left: none; border-bottom: none; }
+        .bl { bottom: -5px; left: -5px; border-right: none; border-top: none; }
+        .br { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+        @keyframes pulse { 0%, 100% { border-color: var(--neon); opacity: 1; } 50% { border-color: var(--pink); opacity: 0.5; } }
 
-        /* Animated Corners */
-        .corner { position: absolute; width: 30px; height: 30px; border: 4px solid var(--neon); animation: cornerGlow 2s infinite; }
-        .top-left { top: -5px; left: -5px; border-right: none; border-bottom: none; }
-        .top-right { top: -5px; right: -5px; border-left: none; border-bottom: none; }
-        .bottom-left { bottom: -5px; left: -5px; border-right: none; border-top: none; }
-        .bottom-right { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+        #scan { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: rgba(0, 242, 255, 0.2); animation: scan 3s linear infinite; pointer-events: none; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
-        @keyframes cornerGlow {
-            0%, 100% { filter: drop-shadow(0 0 2px var(--neon)); opacity: 1; }
-            50% { filter: drop-shadow(0 0 10px var(--pink)); border-color: var(--pink); opacity: 0.7; }
-        }
-
-        /* Moving Scanline */
-        #scanline {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: rgba(0, 242, 255, 0.1);
-            box-shadow: 0 0 10px var(--neon);
-            animation: scan 4s linear infinite;
-            pointer-events: none; z-index: 5;
-        }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-
-        /* --- UI ELEMENTS --- */
-        .stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        #target-zone { height: 150px; border: 2px dashed #333; position: relative; display: flex; align-items: center; justify-content: center; margin: 20px 0; overflow: hidden; }
-        #pulse { width: 40px; height: 40px; border: 4px solid var(--pink); border-radius: 50%; position: absolute; transform: scale(0); }
-        .hit-ring { width: 50px; height: 50px; border: 2px solid var(--neon); border-radius: 50%; position: absolute; }
+        .stats { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px; }
+        canvas { background: #000; display: block; border: 1px solid #222; cursor: pointer; }
 
         /* Victory Overlay */
-        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        .stars { font-size: 3rem; color: var(--gold); }
-        .btn { background: var(--neon); color: black; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; }
-        
-        table { width: 100%; font-size: 0.7rem; color: #777; margin-top: 20px; }
+        #victory { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        .stars { font-size: 3rem; color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+        .btn { background: var(--neon); border: none; padding: 12px 25px; font-weight: bold; cursor: pointer; width: 80%; margin-top: 15px; }
     </style>
 </head>
-<body onload="drawScores()">
+<body onload="updateBoard()">
 
-<div id="game-frame">
-    <div class="corner top-left"></div>
-    <div class="corner top-right"></div>
-    <div class="corner bottom-left"></div>
-    <div class="corner bottom-right"></div>
-    <div id="scanline"></div>
+<div id="hud-frame">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div id="scan"></div>
 
     <div class="stats">
-        <div>⏳ <span id="timer">60</span>s</div>
-        <div style="color:var(--gold)">SCORE: <span id="score">0</span></div>
+        <div>LVL: <span id="ui-lvl">1</span></div>
+        <div>PTS: <span id="ui-pts">0</span></div>
+        <div>⏳ <span id="ui-time">60</span></div>
     </div>
 
-    <div id="target-zone" onclick="attemptHit()">
-        <div class="hit-ring"></div>
-        <div id="pulse"></div>
-        <div id="msg" style="z-index:10; font-size: 0.8rem; color: #555;">TAP WHEN PINK HITS RING</div>
+    <div id="victory">
+        <div class="stars" id="star-box">★ ★ ★</div>
+        <h2 style="color:var(--gold)">MISSION SUCCESS</h2>
+        <button class="btn" onclick="nextLevel()">NEXT PHASE</button>
     </div>
 
-    <div id="overlay">
-        <div class="stars" id="star-display"></div>
-        <h2 id="status-msg" style="color:var(--gold)">LEVEL COMPLETE</h2>
-        <button class="btn" onclick="nextLevel()">CONTINUE</button>
-    </div>
+    <canvas id="gameCanvas" width="350" height="450" onclick="dropBlock()"></canvas>
+    
+    <button id="start-btn" class="btn" onclick="initGame()" style="width:100%">START ENGINE</button>
 
-    <button id="start-btn" class="btn" onclick="startGame()">INITIALIZE HUD</button>
-
-    <table id="leaderboard">
-        <thead><tr><th>RANK</th><th>ID</th><th>PTS</th></tr></thead>
-        <tbody id="score-body"></tbody>
+    <table style="width:100%; font-size:0.7rem; margin-top:10px; border-top:1px solid #333;">
+        <tbody id="board"></tbody>
     </table>
 </div>
 
 <script>
-    let game = { score: 0, level: 1, timeLeft: 60, active: false, pulseScale: 0, speed: 0.03 };
-    let clock, anim;
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let state = {
+        score: 0, total: 0, level: 1, timeLeft: 60,
+        stack: [], // Stores {x, w, color}
+        current: {x: 0, w: 150, speed: 3, dir: 1},
+        active: false,
+        goal: 1000
+    };
+    let timer, loop;
 
-    function startGame() {
-        game = { score: 0, level: 1, timeLeft: 60, active: true, pulseScale: 0, speed: 0.03 + (game.level * 0.01) };
+    function initGame() {
+        state.active = true;
+        state.score = 0;
+        state.stack = [{x: 75, w: 200, color: '#333'}]; // Base
+        state.current = {x: 0, w: 200, speed: 3 + state.level, dir: 1};
         document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('score').innerText = "0";
-        if(clock) clearInterval(clock);
-        clock = setInterval(tick, 1000);
-        runPulse();
-    }
-
-    function tick() {
-        game.timeLeft--;
-        document.getElementById('timer').innerText = game.timeLeft;
-        if(game.timeLeft <= 0) endGame();
-    }
-
-    function runPulse() {
-        if(!game.active) return;
-        game.pulseScale += game.speed;
-        if(game.pulseScale > 2) game.pulseScale = 0; // Loop pulse
-
-        document.getElementById('pulse').style.transform = `scale(${game.pulseScale})`;
-        anim = requestAnimationFrame(runPulse);
-    }
-
-    function attemptHit() {
-        if(!game.active) return;
+        document.getElementById('victory').style.display = 'none';
         
-        // Perfect hit is when scale is close to 1.25 (the size of the ring)
-        let diff = Math.abs(game.pulseScale - 1.25);
+        if(timer) clearInterval(timer);
+        timer = setInterval(() => {
+            state.timeLeft--;
+            document.getElementById('ui-time').innerText = state.timeLeft;
+            if(state.timeLeft <= 0) gameOver();
+        }, 1000);
         
-        if(diff < 0.2) {
-            game.score += 100;
-            document.getElementById('score').innerText = game.score;
-            document.getElementById('target-zone').style.borderColor = 'var(--neon)';
-            setTimeout(() => document.getElementById('target-zone').style.borderColor = '#333', 100);
-            game.pulseScale = 0; // Reset pulse on hit
-            
-            if(game.score >= (game.level * 1000)) showVictory();
-        } else {
-            game.timeLeft -= 2; // Penalty for missing
+        gameLoop();
+    }
+
+    function gameLoop() {
+        if(!state.active) return;
+        
+        ctx.clearRect(0,0,350,450);
+        
+        // Move current block
+        state.current.x += (state.current.speed * state.current.dir);
+        if(state.current.x + state.current.w > 350 || state.current.x < 0) state.current.dir *= -1;
+
+        // Draw Stacked blocks
+        state.stack.forEach((b, i) => {
+            ctx.fillStyle = b.color;
+            // Draw from bottom up
+            ctx.fillRect(b.x, 450 - ((i+1) * 30), b.w, 28);
+        });
+
+        // Draw Moving block
+        ctx.fillStyle = state.stack.length % 2 === 0 ? '#00f2ff' : '#ff00de';
+        ctx.fillRect(state.current.x, 450 - ((state.stack.length + 1) * 30), state.current.w, 28);
+
+        loop = requestAnimationFrame(gameLoop);
+    }
+
+    function dropBlock() {
+        if(!state.active) return;
+
+        const last = state.stack[state.stack.length - 1];
+        const curr = state.current;
+
+        // Intersection Logic
+        let x1 = Math.max(last.x, curr.x);
+        let x2 = Math.min(last.x + last.w, curr.x + curr.w);
+        let newWidth = x2 - x1;
+
+        if(newWidth <= 0) {
+            gameOver("STACK COLLAPSED!");
+            return;
         }
+
+        // Add to stack
+        state.stack.push({
+            x: x1, 
+            w: newWidth, 
+            color: state.stack.length % 2 === 0 ? '#ff00de' : '#00f2ff'
+        });
+
+        state.score += 100;
+        document.getElementById('ui-pts').innerText = state.score + state.total;
+
+        // Setup next block
+        state.current = {
+            x: 0, 
+            w: newWidth, 
+            speed: 3 + state.level + (state.stack.length * 0.2), 
+            dir: 1
+        };
+
+        // Scroll tower down if it gets too high
+        if(state.stack.length > 10) {
+            state.stack.shift();
+        }
+
+        if(state.score >= state.goal) winLevel();
     }
 
-    function showVictory() {
-        game.active = false;
-        cancelAnimationFrame(anim);
-        document.getElementById('overlay').style.display = 'flex';
+    function winLevel() {
+        state.active = false;
+        state.total += state.score;
+        cancelAnimationFrame(loop);
         
-        let stars = "★";
-        if(game.timeLeft > 20) stars = "★ ★";
-        if(game.timeLeft > 40) stars = "★ ★ ★";
-        document.getElementById('star-display').innerText = stars;
+        let stars = state.timeLeft > 40 ? "★ ★ ★" : (state.timeLeft > 20 ? "★ ★" : "★");
+        document.getElementById('star-box').innerText = stars;
+        document.getElementById('victory').style.display = 'flex';
     }
 
     function nextLevel() {
-        game.level++;
-        game.score = 0;
-        startGame();
+        state.level++;
+        state.goal += 500;
+        state.timeLeft += 20;
+        document.getElementById('ui-lvl').innerText = state.level;
+        initGame();
     }
 
-    function endGame() {
-        game.active = false;
-        clearInterval(clock);
-        let name = prompt("HUD OFFLINE. Final Score: " + game.score + "\nEnter Callsign:");
-        if(name) saveScore(name, game.score);
+    function gameOver(msg = "TIME EXPIRED") {
+        state.active = false;
+        clearInterval(timer);
+        cancelAnimationFrame(loop);
+        let name = prompt(msg + "\nFinal Score: " + (state.score + state.total) + "\nEnter Callsign:");
+        if(name) {
+            let h = JSON.parse(localStorage.getItem('stack_v5') || '[]');
+            h.push({n: name.substring(0,10).toUpperCase(), s: (state.score + state.total)});
+            h.sort((a,b) => b.s - a.s);
+            localStorage.setItem('stack_v5', JSON.stringify(h.slice(0,5)));
+        }
         location.reload();
     }
 
-    function saveScore(n, s) {
-        let b = JSON.parse(localStorage.getItem('hud_scores') || '[]');
-        b.push({n: n.toUpperCase().substring(0,8), s: s});
-        b.sort((a,b) => b.s - a.s);
-        localStorage.setItem('hud_scores', JSON.stringify(b.slice(10)));
-    }
-
-    function drawScores() {
-        let b = JSON.parse(localStorage.getItem('hud_scores') || '[]');
-        document.getElementById('score-body').innerHTML = b.map((x, i) => 
+    function updateBoard() {
+        let h = JSON.parse(localStorage.getItem('stack_v5') || '[]');
+        document.getElementById('board').innerHTML = h.map((x, i) => 
             `<tr><td>#${i+1}</td><td>${x.n}</td><td>${x.s}</td></tr>`).join('');
     }
 </script>
