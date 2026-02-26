@@ -1,166 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Balloon Pop Climber</title>
+    <title>Word Climber</title>
     <style>
-        body { background: #e0f7fa; font-family: 'Arial Rounded MT Bold', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; overflow: hidden; }
+        body { background: #222; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
         
-        /* THE GAME FRAME */
-        #game-window {
-            width: 350px; height: 500px;
-            background: linear-gradient(#4fc3f7, #e1f5fe);
-            border: 8px solid #795548;
-            border-radius: 15px;
+        /* THE PROGRESS FRAME */
+        #frame {
+            width: 50px; height: 300px;
+            border: 5px solid #8d6e63;
+            background: #444;
+            margin: 20px auto;
             position: relative;
-            margin-top: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        #fill {
+            position: absolute; bottom: 0; width: 100%;
+            background: #4caf50; height: 0%;
+            transition: height 0.3s;
+            box-shadow: 0 0 10px #4caf50;
         }
 
-        /* THE CLIMBER */
-        #explorer {
-            position: absolute; bottom: 10px; left: 50%;
-            transform: translateX(-50%);
-            font-size: 40px; transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 5;
-        }
-
-        /* THE BALLOON */
-        #balloon {
-            position: absolute; top: 50px; left: 50%;
-            transform: translateX(-50%);
-            width: 120px; height: 140px;
-            background: #ff5252;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: bold; font-size: 1.2rem;
-            box-shadow: inset -10px -10px rgba(0,0,0,0.1);
-            animation: float 2s infinite ease-in-out;
-        }
-        @keyframes float { 0%, 100% { top: 50px; } 50% { top: 70px; } }
-
-        /* UI */
-        .ui-top { width: 350px; display: flex; justify-content: space-between; padding: 10px; font-size: 1.2rem; }
-        input { font-size: 1.5rem; padding: 10px; width: 280px; border-radius: 10px; border: 3px solid #4fc3f7; text-align: center; margin-top: 10px; outline: none; }
+        .stats { font-size: 1.5rem; margin-bottom: 10px; color: #ffeb3b; }
+        #word { font-size: 3rem; margin: 20px; color: #00e5ff; font-weight: bold; }
+        input { font-size: 2rem; width: 80%; padding: 10px; border-radius: 10px; border: none; }
         
-        #leaderboard { margin-top: 20px; background: white; width: 320px; border-radius: 10px; padding: 10px; height: 150px; overflow-y: auto; }
-        .row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 3px; font-size: 0.9rem; }
-        
-        .win-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); display:none; flex-direction:column; align-items:center; justify-content:center; z-index: 10; }
+        #board { margin-top: 30px; background: white; color: black; padding: 15px; border-radius: 10px; width: 300px; margin-left: auto; margin-right: auto; text-align: left; }
+        .entry { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
     </style>
 </head>
-<body onload="init()">
+<body onload="start()">
 
-    <div class="ui-top">
-        <span>⏱️ <span id="timer">60</span></span>
-        <span style="color:#d32f2f">⭐ <span id="score">0</span></span>
-        <span>🚩 <span id="lvl">1</span></span>
+    <div class="stats">
+        Time: <span id="t">60</span>s | Score: <span id="s">0</span>
     </div>
 
-    <div id="game-window">
-        <div id="win-screen" class="win-overlay">
-            <h1 style="color:#ffb300; margin:0">WINNER!</h1>
-            <p>You reached the peak!</p>
-            <button onclick="nextLevel()" style="padding:10px 20px; cursor:pointer; background:#4caf50; color:white; border:none; border-radius:5px; font-weight:bold;">NEXT MOUNTAIN</button>
-        </div>
-
-        <div id="explorer">🧗</div>
-        <div id="balloon">START</div>
+    <div id="frame">
+        <div id="fill"></div>
     </div>
 
-    <input type="text" id="typer" placeholder="Type here..." autocomplete="off">
+    <div id="word">TYPE: START</div>
+    <input type="text" id="in" placeholder="..." autocomplete="off">
 
-    <div id="leaderboard">
-        <h3 style="margin:0; text-align:center; font-size: 1rem;">🏆 TOP 20 EXPLORERS</h3>
-        <div id="score-list"></div>
+    <div id="board">
+        <h3 style="text-align:center">🏆 TOP 20</h3>
+        <div id="list"></div>
     </div>
 
 <script>
-    const words = ["APPLE", "BIRD", "CAKE", "DUCK", "FISH", "FROG", "GOLD", "HAND", "ICE", "JUMP", "KITE", "LION", "MOON", "NEST", "PEAR", "SHIP", "STAR", "TREE", "WIND", "ZOOM"];
-    let state = { score: 0, level: 1, time: 60, current: "START", height: 10, active: false };
-    let clock;
+    let score = 0, time = 60, goal = 0, active = false, cur = "START";
+    let words = ["CAT","DOG","SUN","FISH","TREE","CAKE","JUMP","BLUE","HOUSE","APPLE","ROBOT","STORM"];
 
-    function init() {
-        drawScores();
-        const input = document.getElementById('typer');
-        input.addEventListener('input', () => {
-            if (input.value.toUpperCase() === state.current) {
-                input.value = "";
-                pop();
+    function start() {
+        showBoard();
+        document.getElementById('in').addEventListener('input', (e) => {
+            if(e.target.value.toUpperCase() === cur) {
+                e.target.value = "";
+                hit();
             }
         });
-        input.focus();
     }
 
-    function pop() {
-        if (!state.active && state.current === "START") {
-            state.active = true;
-            startTimer();
-            newWord();
-        } else if (state.active) {
-            state.score += 100;
-            state.height += 40; // Move up 40 pixels
-            document.getElementById('score').innerText = state.score;
-            document.getElementById('explorer').style.bottom = state.height + "px";
-
-            if (state.height >= 400) {
-                win();
+    function hit() {
+        if(!active && cur === "START") {
+            active = true;
+            timer();
+            next();
+        } else if(active) {
+            score += 100;
+            goal += 10;
+            document.getElementById('s').innerText = score;
+            document.getElementById('fill').style.height = goal + "%";
+            
+            if(goal >= 100) {
+                goal = 0;
+                time += 10; // Extra time for reaching the top!
+                document.getElementById('word').innerText = "🏆 TOP REACHED!";
+                setTimeout(next, 1000);
             } else {
-                newWord();
+                next();
             }
         }
     }
 
-    function startTimer() {
-        clock = setInterval(() => {
-            state.time--;
-            document.getElementById('timer').innerText = state.time;
-            if (state.time <= 0) gameOver();
+    function next() {
+        cur = words[Math.floor(Math.random()*words.length)];
+        document.getElementById('word').innerText = cur;
+    }
+
+    function timer() {
+        let t = setInterval(() => {
+            time--;
+            document.getElementById('t').innerText = time;
+            if(time <= 0) {
+                clearInterval(t);
+                active = false;
+                let n = prompt("Game Over! Score: " + score + "\nName:");
+                if(n) save(n, score);
+                location.reload();
+            }
         }, 1000);
     }
 
-    function newWord() {
-        state.current = words[Math.floor(Math.random() * words.length)];
-        document.getElementById('balloon').innerText = state.current;
-        // Randomly change balloon color
-        const colors = ["#ff5252", "#448aff", "#4caf50", "#ffab40", "#e040fb"];
-        document.getElementById('balloon').style.background = colors[Math.floor(Math.random()*colors.length)];
+    function save(n, s) {
+        let sc = JSON.parse(localStorage.getItem('climb20') || '[]');
+        sc.push({n: n.toUpperCase().substring(0,10), s: s});
+        sc.sort((a,b) => b.s - a.s);
+        localStorage.setItem('climb20', JSON.stringify(sc.slice(0, 20)));
     }
 
-    function win() {
-        state.active = false;
-        document.getElementById('win-screen').style.display = 'flex';
-    }
-
-    function nextLevel() {
-        state.level++;
-        state.height = 10;
-        state.time += 15;
-        document.getElementById('lvl').innerText = state.level;
-        document.getElementById('explorer').style.bottom = "10px";
-        document.getElementById('win-screen').style.display = 'none';
-        state.active = true;
-        newWord();
-    }
-
-    function gameOver() {
-        clearInterval(clock);
-        state.active = false;
-        const name = prompt("Time's Up! Total Score: " + state.score + "\nEnter Name:");
-        if (name) saveScore(name, state.score);
-        location.reload();
-    }
-
-    function saveScore(n, s) {
-        let scores = JSON.parse(localStorage.getItem('pop_climb_20') || '[]');
-        scores.push({n: n.substring(0,10).toUpperCase(), s: s});
-        scores.sort((a,b) => b.s - a.s);
-        localStorage.setItem('pop_climb_20', JSON.stringify(scores.slice(0, 20)));
-    }
-
-    function drawScores() {
-        let scores = JSON.parse(localStorage.getItem('pop_climb_20') || '[]');
-        document.getElementById('score-list').innerHTML = scores.map((x, i) => 
-            `<div class="row"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
+    function showBoard() {
+        let sc = JSON.parse(localStorage.getItem('climb20') || '[]');
+        document.getElementById('list').innerHTML = sc.map((x, i) => 
+            `<div class="entry"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
     }
 </script>
 </body>
