@@ -3,147 +3,117 @@
 <head>
     <title>MASTER BUILDER</title>
     <style>
-        body { margin: 0; background: #020111; color: white; font-family: 'Arial Black', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .hud { font-size: 2rem; color: #00f2ff; margin-bottom: 10px; text-shadow: 0 0 10px #00f2ff; }
-        
-        /* HUGE GAME FRAME */
-        #game-container { 
-            width: 550px; height: 750px; border: 12px solid #5D4037; 
+        body { margin: 0; background: #020111; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #game-frame { 
+            width: 550px; height: 700px; border: 10px solid #5D4037; 
             background: #000; position: relative; overflow: hidden; border-radius: 20px;
         }
+        #sky { position: absolute; inset: 0; background: linear-gradient(#020111, #3a1c71); z-index: 1; }
         
-        canvas { display: block; background: linear-gradient(#020111, #191621); }
+        /* THE MOVING BLOCK */
+        #slider { 
+            position: absolute; height: 40px; background: #00f2ff; 
+            box-shadow: 0 0 20px #00f2ff; z-index: 10; border: 2px solid white;
+        }
 
-        #overlay { 
-            position: absolute; inset: 0; background: rgba(0,0,0,0.8); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
+        /* THE TOWER */
+        .brick { 
+            position: absolute; height: 40px; background: #ff00de; 
+            border: 2px solid white; z-index: 5;
         }
-        button { 
-            padding: 20px 60px; font-size: 2.5rem; background: #2ecc71; color: white; 
-            border: none; border-radius: 15px; cursor: pointer; font-weight: bold; box-shadow: 0 8px 0 #27ae60;
+
+        #ui { position: absolute; top: 20px; left: 20px; z-index: 20; font-size: 2rem; color: #ffcc00; font-weight: bold; }
+        
+        #menu { 
+            position: absolute; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
-        button:active { transform: translateY(4px); box-shadow: 0 4px 0 #27ae60; }
-        p { text-align: center; padding: 20px; color: #aaa; }
+        button { padding: 20px 60px; font-size: 2.5rem; background: #2ecc71; color: white; border: none; border-radius: 15px; cursor: pointer; }
     </style>
 </head>
-<body>
+<body onclick="drop()">
 
-    <div class="hud">STORY: <span id="score">0</span></div>
+    <div id="ui">FLOORS: <span id="score">0</span></div>
 
-    <div id="game-container">
-        <div id="overlay">
+    <div id="game-frame">
+        <div id="sky"></div>
+        <div id="menu">
             <h1 style="color:#ffcc00; font-size: 3rem;">MASTER BUILDER</h1>
-            <p>"Build the tower. Don't slip."<br>Precision is your only weapon.</p>
-            <button onclick="startGame()">START</button>
+            <p>Build the tower. Don't slip.</p>
+            <button onclick="start(event)">START</button>
         </div>
-        <canvas id="gameCanvas"></canvas>
+        <div id="slider"></div>
+        <div id="tower-container"></div>
     </div>
 
 <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 550;
-    canvas.height = 750;
-
     let score = 0;
-    let speed = 2;
-    let gameActive = false;
-    let blocks = [];
-    const blockHeight = 40;
+    let bWidth = 200;
+    let bX = 0;
+    let bY = 660; // Bottom
+    let dir = 3;
+    let active = false;
+    let lastX = 175;
 
-    // Initial Block
-    let currentBlock = {
-        x: 150,
-        y: 0,
-        width: 250,
-        dir: 1,
-        color: '#00f2ff'
-    };
+    const slider = document.getElementById('slider');
+    const container = document.getElementById('tower-container');
 
-    function startGame() {
+    function start(e) {
+        e.stopPropagation();
         score = 0;
-        speed = 2;
-        blocks = [{ x: 150, y: canvas.height - blockHeight, width: 250, color: '#333' }];
-        currentBlock = { x: 0, y: canvas.height - (blockHeight * 2), width: 250, dir: 1, color: '#00f2ff' };
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('score').innerText = score;
-        gameActive = true;
-        animate();
+        bWidth = 200;
+        lastX = 175;
+        bY = 660;
+        active = true;
+        document.getElementById('menu').style.display = 'none';
+        container.innerHTML = `<div class="brick" style="width:200px; left:175px; top:660px; background:#333;"></div>`;
+        move();
     }
 
-    window.addEventListener('keydown', (e) => { if (e.code === 'Space') dropBlock(); });
-    canvas.addEventListener('mousedown', dropBlock);
+    function move() {
+        if(!active) return;
+        bX += dir;
+        if(bX + bWidth > 550 || bX < 0) dir *= -1;
+        slider.style.width = bWidth + "px";
+        slider.style.left = bX + "px";
+        slider.style.top = (bY - 40) + "px";
+        requestAnimationFrame(move);
+    }
 
-    function dropBlock() {
-        if (!gameActive) return;
+    function drop() {
+        if(!active) return;
 
-        let lastBlock = blocks[blocks.length - 1];
-        let diff = currentBlock.x - lastBlock.x;
-        
-        if (Math.abs(diff) >= currentBlock.width) {
-            gameOver();
+        // Check for miss
+        let miss = Math.abs(bX - lastX);
+        if(miss >= bWidth) {
+            active = false;
+            alert("TOWER COLLAPSED! Floors: " + score);
+            location.reload();
             return;
         }
 
-        // Slice the block
-        if (diff > 0) {
-            currentBlock.width -= diff;
-        } else {
-            currentBlock.width += diff;
-            currentBlock.x = lastBlock.x;
-        }
-
-        blocks.push({...currentBlock});
+        // Slice logic (Simpler version: Must overlap to stay alive)
         score++;
         document.getElementById('score').innerText = score;
+        
+        // Add brick to tower
+        let brick = document.createElement('div');
+        brick.className = 'brick';
+        brick.style.width = bWidth + "px";
+        brick.style.left = bX + "px";
+        brick.style.top = (bY - 40) + "px";
+        brick.style.background = `hsl(${score * 30}, 100%, 50%)`;
+        container.appendChild(brick);
 
-        // Speed up every 5 blocks
-        if (score % 5 === 0) speed += 0.5;
+        // Update for next turn
+        lastX = bX;
+        bY -= 40;
+        dir += (dir > 0 ? 0.2 : -0.2); // Get faster
 
-        // Setup next block
-        currentBlock = {
-            x: currentBlock.dir > 0 ? 0 : canvas.width - currentBlock.width,
-            y: canvas.height - (blockHeight * (blocks.length + 1)),
-            width: currentBlock.width,
-            dir: currentBlock.dir * -1,
-            color: `hsl(${score * 20}, 100%, 50%)`
-        };
-
-        // Scroll tower down if it gets too high
-        if (blocks.length > 10) {
-            ctx.translate(0, blockHeight);
+        // Scroll tower down
+        if(score > 5) {
+            container.style.transform = `translateY(${(score-5) * 40}px)`;
         }
-    }
-
-    function gameOver() {
-        gameActive = false;
-        alert("Tower Collapsed! Stories built: " + score);
-        location.reload();
-    }
-
-    function animate() {
-        if (!gameActive) return;
-        ctx.clearRect(-1000, -1000, 3000, 3000); // Clear wide for scroll
-
-        // Draw static blocks
-        blocks.forEach(b => {
-            ctx.fillStyle = b.color;
-            ctx.fillRect(b.x, b.y, b.width, blockHeight);
-            ctx.strokeStyle = 'white';
-            ctx.strokeRect(b.x, b.y, b.width, blockHeight);
-        });
-
-        // Move and draw current block
-        currentBlock.x += speed * currentBlock.dir;
-        if (currentBlock.x + currentBlock.width > canvas.width || currentBlock.x < 0) {
-            currentBlock.dir *= -1;
-        }
-
-        ctx.fillStyle = currentBlock.color;
-        ctx.fillRect(currentBlock.x, currentBlock.y, currentBlock.width, blockHeight);
-        ctx.strokeRect(currentBlock.x, currentBlock.y, currentBlock.width, blockHeight);
-
-        requestAnimationFrame(animate);
     }
 </script>
 </body>
