@@ -1,219 +1,1075 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Colouring Generator | Salam Adventures</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Colouring Game</title>
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#0f1b33;
+      --panel:#0f203d;
+      --panel2:#0c1a33;
+      --text:#e9f2ff;
+      --muted:#b9c7e6;
+      --stroke:#3a5aa8;
+      --glow:#62ffcf;
+      --btn:#1e3a8a;
+      --btn2:#2563eb;
+      --danger:#ef4444;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
 
-<style>
-body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  margin:0;
-  background:#f4f4f4;
-}
-header{
-  padding:20px;
-  background:#fff;
-  border-bottom:1px solid #eee;
-}
-main{
-  padding:20px;
-  max-width:1100px;
-  margin:auto;
-}
-.controls{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-bottom:15px;
-}
-button,select{
-  padding:10px 14px;
-  border-radius:8px;
-  border:1px solid #ddd;
-  cursor:pointer;
-}
-button{
-  background:#111;
-  color:#fff;
-}
-button.secondary{
-  background:#fff;
-  color:#111;
-}
-.canvasWrap{
-  background:#fff;
-  padding:15px;
-  border-radius:14px;
-  border:1px solid #ddd;
-}
-canvas{
-  display:block;
-  margin:auto;
-  background:#fff;
-}
-</style>
+    html,body{height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg1) 55%, #070b14 100%);}
+    *{box-sizing:border-box;}
+
+    .wrap{
+      max-width: 1100px;
+      margin: 18px auto 30px;
+      padding: 14px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:260px;
+    }
+    .badge{
+      width:40px; height:40px; border-radius:12px;
+      background: linear-gradient(135deg, #22c55e, #60a5fa);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    h1{font-size:18px; margin:0;}
+    .subtitle{font-size:12px; color:var(--muted); margin-top:2px;}
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      transition: transform .08s ease, border-color .2s ease, filter .2s ease;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(98,255,207,.4); filter: brightness(1.06);}
+    .btn:active{transform: translateY(0px) scale(.99);}
+    .btn small{opacity:.8}
+
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+    }
+
+    .toggle input{accent-color: #22c55e;}
+    .range{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+    }
+    .range label{font-size:12px; color:var(--muted);}
+    .range input[type="range"]{width:160px;}
+
+    /* FLASHING BORDER CANVAS CARD */
+    .stage{
+      margin-top:10px;
+      border-radius:24px;
+      padding:12px;
+      position:relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+
+    /* Animated neon border */
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:26px;
+      background: conic-gradient(from 0deg, #ff3d3d, #ffd93d, #3dff6a, #3ddcff, #7c3dff, #ff3d3d);
+      filter: blur(0.2px) saturate(1.2);
+      animation: spin 2.8s linear infinite, pulse 1.1s ease-in-out infinite;
+      z-index:0;
+      opacity:1;
+    }
+
+    /* Inner background */
+    .stage::after{
+      content:"";
+      position:absolute;
+      inset:6px;
+      border-radius:20px;
+      background: linear-gradient(180deg, rgba(10,20,45,.86), rgba(6,10,20,.88));
+      z-index:0;
+    }
+
+    .stage.noflash::before{animation:none; opacity:.35;}
+    @keyframes spin{to{transform: rotate(360deg);}}
+    @keyframes pulse{0%,100%{filter: brightness(1) saturate(1.2);} 50%{filter: brightness(1.25) saturate(1.8);}}
+
+    .canvasWrap{
+      position:relative;
+      z-index:1;
+      padding: 10px;
+      border-radius:18px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    }
+
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:16px;
+      background:#ffffff;
+      touch-action:none; /* prevent scroll on touch */
+    }
+
+    .hint{
+      margin:10px 6px 0;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    /* BRUSH PANEL */
+    .panel{
+      margin-top:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .panelHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      background: linear-gradient(90deg, rgba(34,197,94,.18), rgba(59,130,246,.16), rgba(168,85,247,.14));
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .panelHeader .left{
+      display:flex; align-items:center; gap:10px;
+    }
+    .chip{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+    }
+
+    .panelBody{
+      display:grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap:12px;
+      padding:12px;
+    }
+
+    @media (max-width: 860px){
+      .panelBody{grid-template-columns: 1fr;}
+      .range input[type="range"]{width:140px;}
+    }
+
+    .section{
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:12px;
+    }
+    .section h2{
+      font-size:13px; margin:0 0 10px 0; color:#dbe8ff;
+      display:flex; align-items:center; gap:8px;
+    }
+    .section p{
+      margin:0 0 10px 0; font-size:12px; color:var(--muted);
+    }
+
+    .swatches{
+      display:grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap:8px;
+    }
+    .swatch{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      cursor:pointer;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.25);
+      transition: transform .08s ease, filter .2s ease, outline .2s ease;
+      position:relative;
+    }
+    .swatch:hover{transform: translateY(-1px); filter: brightness(1.08);}
+    .swatch.selected{outline:2px solid rgba(98,255,207,.9); outline-offset:2px;}
+
+    .modeGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .modeBtn{
+      padding:10px 10px;
+      border-radius:16px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      transition: transform .08s ease, border-color .2s ease, filter .2s ease;
+      text-align:left;
+      min-height:60px;
+    }
+    .modeBtn:hover{transform: translateY(-1px); border-color: rgba(98,255,207,.35); filter: brightness(1.06);}
+    .modeBtn.active{border-color: rgba(98,255,207,.9); box-shadow: 0 0 0 2px rgba(98,255,207,.25) inset;}
+    .modeBtn b{display:block; font-size:13px; margin-bottom:4px;}
+    .modeBtn span{display:block; font-size:11px; color:var(--muted); line-height:1.2;}
+
+    .sliders{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .row label{font-size:12px; color:var(--muted);}
+    .row input[type="range"]{flex:1;}
+
+    .footerRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      border-top:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:11px;
+      padding:3px 7px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color: #cfe0ff;
+    }
+
+    .status{
+      font-size:12px; color:var(--muted);
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: #22c55e;
+      box-shadow: 0 0 18px rgba(34,197,94,.7);
+    }
+    .dot.off{
+      background:#ef4444;
+      box-shadow: 0 0 18px rgba(239,68,68,.65);
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <div class="badge"></div>
+        <div>
+          <h1>Interactive Colouring Game</h1>
+          <div class="subtitle">Draw with normal paint, glitter brushes, and mixed effects ✨</div>
+        </div>
+      </div>
 
-<header>
-<h2>Colouring Page Generator</h2>
-</header>
+      <div class="controls">
+        <button class="btn" id="musicBtn" title="Toggle Music">
+          🎵 <span id="musicText">Music: Off</span>
+          <small>(click)</small>
+        </button>
 
-<main>
+        <button class="btn" id="clearBtn" title="Clear the canvas">🧼 Clear</button>
+        <button class="btn" id="undoBtn" title="Undo (Ctrl+Z)">↩️ Undo</button>
+        <button class="btn" id="saveBtn" title="Save as PNG">💾 Save</button>
 
-<div class="controls">
-<select id="picker"></select>
-<button id="btnLoad">Load</button>
-<button id="btnRandom" class="secondary">Random</button>
-<button id="btnDownload" class="secondary">Download</button>
-<button id="btnPrint" class="secondary">Print</button>
-</div>
+        <div class="toggle" title="Toggle flashing border">
+          <input type="checkbox" id="flashToggle" checked />
+          <label for="flashToggle" style="font-size:12px;color:var(--muted);">Flashing Border</label>
+        </div>
 
-<div class="canvasWrap">
-<canvas id="c" width="1240" height="1754"></canvas>
-</div>
+        <div class="range" title="Brush size">
+          <label for="size" style="min-width:72px;">Brush Size</label>
+          <input id="size" type="range" min="3" max="60" value="16" />
+          <span class="kbd" id="sizeVal">16</span>
+        </div>
+      </div>
+    </div>
 
-</main>
+    <div class="stage" id="stage">
+      <div class="canvasWrap">
+        <canvas id="canvas" width="1200" height="800" aria-label="Colouring canvas"></canvas>
+        <div class="hint">
+          <div>Tip: Draw with your mouse/finger. Use <span class="kbd">Ctrl</span>+<span class="kbd">Z</span> to undo.</div>
+          <div class="status">
+            <span class="dot off" id="audioDot"></span>
+            <span id="audioStatus">Audio Locked (click canvas once)</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<script>
-const BASE_RAW =
-"https://raw.githubusercontent.com/salamtruthfulltd-alt/salam-adventures-games/main/colouring%20images/";
+    <!-- Brush / Paint Panel -->
+    <div class="panel">
+      <div class="panelHeader">
+        <div class="left">
+          <span class="chip" id="modeChip">Mode: Normal Paint</span>
+          <span class="chip">Brush Sound: <span id="sfxChip">On</span></span>
+        </div>
+        <div class="left">
+          <button class="btn" id="sfxBtn" title="Toggle brush sound effects">🖌️ SFX: On</button>
+          <button class="btn" id="eraserBtn" title="Eraser mode">🧽 Eraser</button>
+        </div>
+      </div>
 
-const FILES = [
-"butterfly.png",
-"car.png",
-"chest.png",
-"dino.png",
-"dog.png",
-"doll.png",
-"house.png",
-"kids.png",
-"plane.png",
-"prince.png",
-"swan.png",
-"veg.png"
-];
+      <div class="panelBody">
+        <div class="section">
+          <h2>🎨 Paint Colours</h2>
+          <p>Pick a colour, then draw on the page.</p>
+          <div class="swatches" id="colourSwatches"></div>
 
-const picker=document.getElementById("picker");
-const canvas=document.getElementById("c");
-const ctx=canvas.getContext("2d");
+          <div class="sliders">
+            <div class="row">
+              <label for="opacity">Opacity</label>
+              <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
+              <span class="kbd" id="opacityVal">1.00</span>
+            </div>
+            <div class="row">
+              <label for="smooth">Smoothing</label>
+              <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
+              <span class="kbd" id="smoothVal">0.35</span>
+            </div>
+          </div>
+        </div>
 
-const off=document.createElement("canvas");
-const offCtx=off.getContext("2d");
+        <div class="section">
+          <h2>✨ Brushes & Effects</h2>
+          <p>Choose a brush style: glitter and mixed effects included.</p>
 
-FILES.forEach(f=>{
-  const opt=document.createElement("option");
-  opt.value=f;
-  opt.textContent=f.replace(".png","");
-  picker.appendChild(opt);
-});
-picker.value=FILES[0];
+          <div class="modeGrid">
+            <button class="modeBtn active" data-mode="normal">
+              <b>Normal Paint</b>
+              <span>Classic smooth brush</span>
+            </button>
+            <button class="modeBtn" data-mode="glitter">
+              <b>Glitter Brush</b>
+              <span>Sparkles trail behind</span>
+            </button>
+            <button class="modeBtn" data-mode="rainbow">
+              <b>Rainbow Mix</b>
+              <span>Colour-shifting stroke</span>
+            </button>
+            <button class="modeBtn" data-mode="neon">
+              <b>Neon Glow</b>
+              <span>Bright glow outline</span>
+            </button>
+            <button class="modeBtn" data-mode="watercolor">
+              <b>Watercolour</b>
+              <span>Soft layered wash</span>
+            </button>
+            <button class="modeBtn" data-mode="confetti">
+              <b>Confetti Mix</b>
+              <span>Paint + confetti dots</span>
+            </button>
+          </div>
 
-function clearWhite(){
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-}
+          <div class="sliders">
+            <div class="row">
+              <label for="glitter">Glitter Strength</label>
+              <input id="glitter" type="range" min="0" max="1" value="0.55" step="0.05" />
+              <span class="kbd" id="glitterVal">0.55</span>
+            </div>
+            <div class="row">
+              <label for="scatter">Effect Scatter</label>
+              <input id="scatter" type="range" min="0" max="1" value="0.35" step="0.05" />
+              <span class="kbd" id="scatterVal">0.35</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-function drawBorder(){
-  const margin=80;
-  ctx.lineWidth=14;
-  ctx.strokeStyle="#000";
-  ctx.strokeRect(margin,margin,canvas.width-margin*2,canvas.height-margin*2);
-}
+      <div class="footerRow">
+        <div class="status">
+          <span class="kbd">Undo</span> Ctrl+Z · <span class="kbd">Clear</span> Button · <span class="kbd">Save</span> PNG
+        </div>
+        <div class="status">
+          Current: <span class="kbd" id="currentColour">#2563eb</span>
+          <span class="kbd" id="currentMode">normal</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-function findBounds(imageData,w,h){
-  const d=imageData.data;
-  let top=h, left=w, right=0, bottom=0;
+  <script>
+    // ---------- Helpers ----------
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const rand = (a,b) => Math.random()*(b-a)+a;
 
-  for(let y=0;y<h;y++){
-    for(let x=0;x<w;x++){
-      const i=(y*w+x)*4;
-      const r=d[i], g=d[i+1], b=d[i+2];
-      if(!(r>240 && g>240 && b>240)){
-        if(x<left) left=x;
-        if(x>right) right=x;
-        if(y<top) top=y;
-        if(y>bottom) bottom=y;
+    // ---------- Canvas setup ----------
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    // High-DPI scaling for crisp drawing
+    function fitCanvasToDisplay() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const displayW = Math.round(rect.width * dpr);
+      const displayH = Math.round((rect.width * (canvas.height / canvas.width)) * dpr);
+
+      // Keep aspect ratio based on current intrinsic ratio
+      const ratio = canvas.height / canvas.width;
+      const newW = displayW;
+      const newH = Math.round(newW * ratio);
+
+      // Save current pixels
+      const snapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
+
+      canvas.width = newW;
+      canvas.height = newH;
+
+      // Restore scaled image
+      const temp = document.createElement('canvas');
+      temp.width = snapshot.width;
+      temp.height = snapshot.height;
+      temp.getContext('2d').putImageData(snapshot,0,0);
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(temp, 0,0, temp.width,temp.height, 0,0, canvas.width,canvas.height);
+    }
+
+    // Create a simple "colouring page" outline (so it’s a game immediately)
+    function drawStarterOutline() {
+      ctx.save();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      ctx.lineWidth = Math.max(4, canvas.width * 0.006);
+      ctx.strokeStyle = "#111827";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      // Cute cloud + rainbow arc + stars outline
+      const w = canvas.width, h = canvas.height;
+
+      // Cloud
+      ctx.beginPath();
+      const cx = w*0.50, cy = h*0.45, r = w*0.08;
+      ctx.arc(cx - r*1.3, cy, r*0.9, Math.PI*0.1, Math.PI*1.1);
+      ctx.arc(cx - r*0.4, cy - r*0.7, r*1.05, Math.PI*0.9, Math.PI*1.9);
+      ctx.arc(cx + r*0.7, cy - r*0.55, r*0.95, Math.PI*0.9, Math.PI*2.05);
+      ctx.arc(cx + r*1.5, cy, r*0.85, Math.PI*1.1, Math.PI*0.1, true);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Rainbow arcs
+      const rx = w*0.50, ry = h*0.62;
+      const baseR = w*0.26;
+      for(let i=0;i<5;i++){
+        ctx.beginPath();
+        ctx.arc(rx, ry, baseR - i*(w*0.018), Math.PI, 0);
+        ctx.stroke();
+      }
+
+      // Stars
+      function star(x,y,spikes,outer,inner){
+        let rot=Math.PI/2*3;
+        let step=Math.PI/spikes;
+        ctx.beginPath();
+        ctx.moveTo(x, y-outer);
+        for(let i=0;i<spikes;i++){
+          ctx.lineTo(x+Math.cos(rot)*outer, y+Math.sin(rot)*outer); rot+=step;
+          ctx.lineTo(x+Math.cos(rot)*inner, y+Math.sin(rot)*inner); rot+=step;
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+      const s = Math.max(10, w*0.012);
+      star(w*0.18,h*0.25,5,s,s*0.45);
+      star(w*0.82,h*0.22,5,s*0.95,s*0.42);
+      star(w*0.74,h*0.36,5,s*0.75,s*0.35);
+
+      // Little hearts
+      function heart(x,y,size){
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.bezierCurveTo(x - size, y - size, x - size*1.6, y + size*0.4, x, y + size*1.3);
+        ctx.bezierCurveTo(x + size*1.6, y + size*0.4, x + size, y - size, x, y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      heart(w*0.28,h*0.36,w*0.018);
+      heart(w*0.60,h*0.28,w*0.014);
+
+      // Title outline text
+      ctx.font = `700 ${Math.round(w*0.045)}px system-ui, Arial`;
+      ctx.textAlign="center";
+      ctx.textBaseline="middle";
+      ctx.strokeText("COLOUR ME!", w*0.50, h*0.12);
+
+      ctx.restore();
+    }
+
+    // Undo stack
+    const undoStack = [];
+    const MAX_UNDO = 20;
+    function pushUndo() {
+      try {
+        if (undoStack.length >= MAX_UNDO) undoStack.shift();
+        undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+      } catch (e) { /* ignore */ }
+    }
+    function undo() {
+      const last = undoStack.pop();
+      if (!last) return;
+      ctx.putImageData(last,0,0);
+    }
+
+    // ---------- UI state ----------
+    const sizeEl = document.getElementById('size');
+    const sizeVal = document.getElementById('sizeVal');
+    const opacityEl = document.getElementById('opacity');
+    const opacityVal = document.getElementById('opacityVal');
+    const smoothEl = document.getElementById('smooth');
+    const smoothVal = document.getElementById('smoothVal');
+    const glitterEl = document.getElementById('glitter');
+    const glitterVal = document.getElementById('glitterVal');
+    const scatterEl = document.getElementById('scatter');
+    const scatterVal = document.getElementById('scatterVal');
+
+    const modeChip = document.getElementById('modeChip');
+    const currentColourEl = document.getElementById('currentColour');
+    const currentModeEl = document.getElementById('currentMode');
+
+    let brushSize = parseInt(sizeEl.value,10);
+    let brushOpacity = parseFloat(opacityEl.value);
+    let smoothing = parseFloat(smoothEl.value);
+    let glitterStrength = parseFloat(glitterEl.value);
+    let scatter = parseFloat(scatterEl.value);
+
+    let brushColour = "#2563eb";
+    let mode = "normal";
+    let isEraser = false;
+
+    // ---------- Flashing border toggle ----------
+    const stage = document.getElementById('stage');
+    document.getElementById('flashToggle').addEventListener('change', (e)=>{
+      stage.classList.toggle('noflash', !e.target.checked);
+    });
+
+    // ---------- Swatches ----------
+    const colours = [
+      "#000000","#ffffff","#ef4444","#f97316","#facc15",
+      "#22c55e","#10b981","#06b6d4","#3b82f6","#6366f1",
+      "#a855f7","#ec4899","#f43f5e","#8b5cf6","#14b8a6",
+      "#84cc16","#eab308","#fb7185","#60a5fa","#94a3b8"
+    ];
+
+    const swatchWrap = document.getElementById('colourSwatches');
+    function buildSwatches(){
+      swatchWrap.innerHTML = "";
+      colours.forEach((c, idx)=>{
+        const d = document.createElement('div');
+        d.className = "swatch" + (c.toLowerCase() === brushColour.toLowerCase() ? " selected" : "");
+        d.style.background = c === "#ffffff"
+          ? "linear-gradient(135deg,#fff,#dbeafe)"
+          : c;
+        d.title = c;
+        d.addEventListener('click', ()=>{
+          brushColour = c;
+          isEraser = false;
+          document.getElementById('eraserBtn').classList.remove('active');
+          [...document.querySelectorAll('.swatch')].forEach(x=>x.classList.remove('selected'));
+          d.classList.add('selected');
+          currentColourEl.textContent = brushColour;
+        });
+        swatchWrap.appendChild(d);
+      });
+    }
+
+    // ---------- Modes ----------
+    const modeButtons = [...document.querySelectorAll('.modeBtn')];
+    function setMode(m){
+      mode = m;
+      modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode === m));
+      const names = {
+        normal:"Normal Paint",
+        glitter:"Glitter Brush",
+        rainbow:"Rainbow Mix",
+        neon:"Neon Glow",
+        watercolor:"Watercolour",
+        confetti:"Confetti Mix"
+      };
+      modeChip.textContent = "Mode: " + (names[m] || m);
+      currentModeEl.textContent = isEraser ? "eraser" : m;
+    }
+    modeButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        isEraser = false;
+        document.getElementById('eraserBtn').classList.remove('active');
+        setMode(btn.dataset.mode);
+      });
+    });
+
+    // ---------- Eraser ----------
+    const eraserBtn = document.getElementById('eraserBtn');
+    eraserBtn.addEventListener('click', ()=>{
+      isEraser = !isEraser;
+      eraserBtn.classList.toggle('active', isEraser);
+      currentModeEl.textContent = isEraser ? "eraser" : mode;
+    });
+
+    // ---------- Sliders ----------
+    function syncSliders(){
+      sizeVal.textContent = brushSize;
+      opacityVal.textContent = brushOpacity.toFixed(2);
+      smoothVal.textContent = smoothing.toFixed(2);
+      glitterVal.textContent = glitterStrength.toFixed(2);
+      scatterVal.textContent = scatter.toFixed(2);
+    }
+
+    sizeEl.addEventListener('input', ()=>{ brushSize = parseInt(sizeEl.value,10); syncSliders(); });
+    opacityEl.addEventListener('input', ()=>{ brushOpacity = parseFloat(opacityEl.value); syncSliders(); });
+    smoothEl.addEventListener('input', ()=>{ smoothing = parseFloat(smoothEl.value); syncSliders(); });
+    glitterEl.addEventListener('input', ()=>{ glitterStrength = parseFloat(glitterEl.value); syncSliders(); });
+    scatterEl.addEventListener('input', ()=>{ scatter = parseFloat(scatterEl.value); syncSliders(); });
+
+    // ---------- Audio (music + brush SFX) ----------
+    const audioDot = document.getElementById('audioDot');
+    const audioStatus = document.getElementById('audioStatus');
+
+    let audioCtx = null;
+    let audioUnlocked = false;
+
+    function ensureAudio(){
+      if (!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    // Lightweight “music” synth loop (no external files)
+    let musicOn = false;
+    let musicNodes = [];
+    function startMusic(){
+      ensureAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const master = audioCtx.createGain();
+      master.gain.value = 0.14;
+      master.connect(audioCtx.destination);
+
+      // Soft pad + plucky arps
+      function makeOsc(type, freq, gain){
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type;
+        o.frequency.value = freq;
+        g.gain.value = gain;
+        o.connect(g);
+        g.connect(master);
+        o.start();
+        return {o,g};
+      }
+
+      const base = 220; // A3-ish
+      const pad1 = makeOsc("sine", base, 0.25);
+      const pad2 = makeOsc("triangle", base*1.5, 0.10);
+
+      // Gentle LFO for shimmer
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.type = "sine";
+      lfo.frequency.value = 0.15;
+      lfoGain.gain.value = 18;
+      lfo.connect(lfoGain);
+      lfoGain.connect(pad2.o.frequency);
+      lfo.start();
+
+      // Simple arpeggio scheduler
+      const arp = audioCtx.createOscillator();
+      const arpGain = audioCtx.createGain();
+      arp.type = "sine";
+      arpGain.gain.value = 0;
+      arp.connect(arpGain);
+      arpGain.connect(master);
+      arp.start();
+
+      const notes = [0,4,7,12,7,4]; // major-ish
+      let step = 0;
+      const interval = setInterval(()=>{
+        if (!musicOn || !audioCtx) return;
+        const t = audioCtx.currentTime;
+        const n = notes[step % notes.length];
+        const f = base * Math.pow(2, n/12);
+        arp.frequency.setValueAtTime(f, t);
+        arpGain.gain.cancelScheduledValues(t);
+        arpGain.gain.setValueAtTime(0, t);
+        arpGain.gain.linearRampToValueAtTime(0.16, t + 0.02);
+        arpGain.gain.linearRampToValueAtTime(0, t + 0.22);
+        step++;
+      }, 260);
+
+      musicNodes = [{master},{pad1},{pad2},{lfo},{lfoGain},{arp},{arpGain},{interval}];
+    }
+
+    function stopMusic(){
+      musicNodes.forEach(n=>{
+        try{
+          if (n.interval) clearInterval(n.interval);
+          if (n.o) n.o.stop();
+          if (n.master) n.master.disconnect();
+        }catch(e){}
+      });
+      musicNodes = [];
+    }
+
+    const musicBtn = document.getElementById('musicBtn');
+    const musicText = document.getElementById('musicText');
+    musicBtn.addEventListener('click', ()=>{
+      unlockAudio();
+      musicOn = !musicOn;
+      if (musicOn) startMusic(); else stopMusic();
+      musicText.textContent = "Music: " + (musicOn ? "On" : "Off");
+    });
+
+    // Brush SFX (noise + envelope)
+    let sfxOn = true;
+    const sfxBtn = document.getElementById('sfxBtn');
+    const sfxChip = document.getElementById('sfxChip');
+    sfxBtn.addEventListener('click', ()=>{
+      unlockAudio();
+      sfxOn = !sfxOn;
+      sfxBtn.textContent = sfxOn ? "🖌️ SFX: On" : "🖌️ SFX: Off";
+      sfxChip.textContent = sfxOn ? "On" : "Off";
+    });
+
+    function playBrushSfx(intensity=1){
+      if (!sfxOn) return;
+      ensureAudio();
+      if (!audioCtx) return;
+
+      // White noise burst with short envelope, filtered
+      const bufferSize = 2 * audioCtx.sampleRate;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() * 2 - 1) * 0.6;
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = noiseBuffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = 1200;
+      filter.Q.value = 0.9;
+
+      const gain = audioCtx.createGain();
+      const t = audioCtx.currentTime;
+      const g = 0.03 * clamp(intensity, 0.2, 2);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(g, t + 0.01);
+      gain.gain.linearRampToValueAtTime(0, t + 0.08);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      noise.start();
+      noise.stop(t + 0.09);
+    }
+
+    function unlockAudio(){
+      ensureAudio();
+      if (!audioCtx) return;
+
+      // Play a tiny silent click to unlock on mobile
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      g.gain.value = 0.0001;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + 0.01);
+
+      audioUnlocked = true;
+      audioDot.classList.remove('off');
+      audioStatus.textContent = "Audio Ready";
+    }
+
+    // Unlock on first interaction with canvas
+    canvas.addEventListener('pointerdown', ()=> unlockAudio(), { once:true });
+
+    // ---------- Drawing engine ----------
+    let drawing = false;
+    let last = null;
+    let vel = 0;
+
+    function getPos(e){
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const x = (e.clientX - rect.left) * dpr;
+      const y = (e.clientY - rect.top) * dpr;
+      return {x, y};
+    }
+
+    // HSV rainbow helper
+    function hsvToHex(h, s, v){
+      let f = (n, k=(n+h/60)%6) => v - v*s*Math.max(Math.min(k,4-k,1),0);
+      const r = Math.round(f(5)*255);
+      const g = Math.round(f(3)*255);
+      const b = Math.round(f(1)*255);
+      return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+
+    function drawStroke(p0, p1){
+      const dx = p1.x - p0.x, dy = p1.y - p0.y;
+      const dist = Math.hypot(dx,dy);
+      const steps = Math.max(1, Math.floor(dist / 2));
+
+      for (let i=0;i<=steps;i++){
+        const t = i/steps;
+        const x = p0.x + dx*t;
+        const y = p0.y + dy*t;
+
+        // Smoothing (lerp towards point)
+        if (last){
+          const sx = last.x + (x - last.x) * (1 - smoothing);
+          const sy = last.y + (y - last.y) * (1 - smoothing);
+          last.x = sx; last.y = sy;
+        }
+
+        const px = last ? last.x : x;
+        const py = last ? last.y : y;
+
+        // Brush pressure-ish from velocity
+        const v = dist; // coarse
+        vel = vel * 0.85 + v * 0.15;
+        const pressure = clamp(vel/30, 0.25, 1.2);
+        const r = brushSize * pressure * 0.5;
+
+        if (isEraser){
+          ctx.save();
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(px, py, r, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+          continue;
+        }
+
+        // Base paint dot
+        let color = brushColour;
+        if (mode === "rainbow"){
+          const hue = (Date.now()/18 + px/10) % 360;
+          color = hsvToHex(hue, 0.75, 1);
+        }
+
+        if (mode === "watercolor"){
+          ctx.save();
+          ctx.globalAlpha = brushOpacity * 0.18;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(px + rand(-r*scatter, r*scatter), py + rand(-r*scatter, r*scatter), r*1.2, 0, Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(px, py, r*0.85, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        } else if (mode === "neon"){
+          ctx.save();
+          ctx.globalAlpha = brushOpacity * 0.35;
+          ctx.strokeStyle = color;
+          ctx.lineWidth = r*1.8;
+          ctx.shadowBlur = r*2.4;
+          ctx.shadowColor = color;
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+
+          ctx.globalAlpha = brushOpacity * 0.9;
+          ctx.lineWidth = r*0.9;
+          ctx.shadowBlur = r*1.2;
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.save();
+          ctx.globalAlpha = brushOpacity;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(px, py, r, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Glitter effect
+        if (mode === "glitter" || mode === "confetti" || (mode === "rainbow" && glitterStrength > 0.25)){
+          const count = Math.floor(3 + glitterStrength*10);
+          for (let k=0;k<count;k++){
+            const gx = px + rand(-r*2.2, r*2.2) * (0.3 + scatter);
+            const gy = py + rand(-r*2.2, r*2.2) * (0.3 + scatter);
+            const gr = rand(0.8, 2.6) * (0.7 + glitterStrength);
+            const sparkleColor = (mode === "rainbow")
+              ? hsvToHex((Date.now()/10 + k*40)%360, 0.8, 1)
+              : (k%3===0 ? "#ffffff" : (k%3===1 ? "#fde68a" : "#a7f3d0"));
+
+            ctx.save();
+            ctx.globalAlpha = 0.35 + glitterStrength*0.55;
+            ctx.fillStyle = sparkleColor;
+            ctx.beginPath();
+            ctx.arc(gx, gy, gr, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
+        // Confetti mixed effect
+        if (mode === "confetti"){
+          const pops = Math.floor(1 + scatter*6);
+          for (let j=0;j<pops;j++){
+            const cx = px + rand(-r*2.8, r*2.8);
+            const cy = py + rand(-r*2.8, r*2.8);
+            const cw = rand(1.5, 5.5);
+            const ch = rand(1.5, 5.5);
+            const cc = hsvToHex((Date.now()/12 + j*50)%360, 0.8, 1);
+            ctx.save();
+            ctx.globalAlpha = 0.18 + scatter*0.35;
+            ctx.fillStyle = cc;
+            ctx.fillRect(cx, cy, cw, ch);
+            ctx.restore();
+          }
+        }
       }
     }
-  }
 
-  return {top,left,right,bottom};
-}
+    canvas.addEventListener('pointerdown', (e)=>{
+      drawing = true;
+      pushUndo();
+      last = getPos(e);
+      canvas.setPointerCapture(e.pointerId);
+      playBrushSfx(1);
+    });
 
-async function loadImage(file){
-  const img=new Image();
-  img.crossOrigin="anonymous";
-  img.src=BASE_RAW + encodeURIComponent(file);
+    canvas.addEventListener('pointermove', (e)=>{
+      if (!drawing) return;
+      const p = getPos(e);
+      drawStroke(last, p);
+      // Brush SFX pulses based on movement
+      playBrushSfx(clamp(Math.hypot(p.x-last.x,p.y-last.y)/18, 0.3, 1.6));
+      last = p;
+    });
 
-  await new Promise((res,rej)=>{
-    img.onload=res;
-    img.onerror=rej;
-  });
+    function endDraw(e){
+      drawing = false;
+      last = null;
+      try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
+    }
+    canvas.addEventListener('pointerup', endDraw);
+    canvas.addEventListener('pointercancel', endDraw);
+    canvas.addEventListener('pointerleave', ()=>{ drawing=false; last=null; });
 
-  off.width=img.naturalWidth;
-  off.height=img.naturalHeight;
-  offCtx.clearRect(0,0,off.width,off.height);
-  offCtx.drawImage(img,0,0);
+    // ---------- Buttons ----------
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      pushUndo();
+      drawStarterOutline();
+    });
 
-  const imageData=offCtx.getImageData(0,0,off.width,off.height);
-  const b=findBounds(imageData,off.width,off.height);
+    document.getElementById('undoBtn').addEventListener('click', ()=> undo());
 
-  const cropW=b.right-b.left;
-  const cropH=b.bottom-b.top;
+    document.getElementById('saveBtn').addEventListener('click', ()=>{
+      const link = document.createElement('a');
+      link.download = "colouring.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
 
-  clearWhite();
-  drawBorder();
+    // Ctrl+Z
+    window.addEventListener('keydown', (e)=>{
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){
+        e.preventDefault();
+        undo();
+      }
+    });
 
-  // 🔥 ALL DRAWINGS FORCED TO SAME VISUAL HEIGHT
-  const TARGET_HEIGHT=1200;
-  const scale=TARGET_HEIGHT/cropH;
+    // ---------- Init ----------
+    function init(){
+      buildSwatches();
+      syncSliders();
+      currentColourEl.textContent = brushColour;
+      setMode("normal");
 
-  const drawW=cropW*scale;
-  const drawH=cropH*scale;
+      // Fit after first paint to preserve ratio
+      requestAnimationFrame(()=>{
+        fitCanvasToDisplay();
+        drawStarterOutline();
+      });
+    }
 
-  const dx=(canvas.width-drawW)/2;
-  const dy=(canvas.height-drawH)/2;
+    window.addEventListener('resize', ()=>{
+      // Keep it simple: don’t auto-resize repeatedly while drawing.
+      // Users can refresh if they need a different size.
+    });
 
-  ctx.drawImage(
-    off,
-    b.left,b.top,cropW,cropH,
-    dx,dy,drawW,drawH
-  );
-}
-
-document.getElementById("btnLoad")
-.addEventListener("click",()=>loadImage(picker.value));
-
-document.getElementById("btnRandom")
-.addEventListener("click",()=>{
-  const r=FILES[Math.floor(Math.random()*FILES.length)];
-  picker.value=r;
-  loadImage(r);
-});
-
-document.getElementById("btnDownload")
-.addEventListener("click",()=>{
-  const a=document.createElement("a");
-  a.download="colouring.png";
-  a.href=canvas.toDataURL("image/png");
-  a.click();
-});
-
-document.getElementById("btnPrint")
-.addEventListener("click",()=>{
-  const w=window.open("");
-  w.document.write(`
-    <img src="${canvas.toDataURL("image/png")}" style="width:100%">
-    <script>window.onload=()=>window.print()<\/script>
-  `);
-  w.document.close();
-});
-
-loadImage(picker.value);
-</script>
-
+    init();
+  </script>
 </body>
 </html>
