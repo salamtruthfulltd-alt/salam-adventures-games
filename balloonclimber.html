@@ -2,261 +2,232 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spell Stack: Skyward 20</title>
     <style>
         :root { 
-            --wood: #795548; --neon: #00f2ff; --gold: #ffcc00; 
-            --sunset-top: #1a1a40; --sunset-bot: #701c9c;
-            --brick-glow: rgba(0, 242, 255, 0.4);
+            --neon: #00f2ff; --gold: #ffcc00; --wood: #5D4037;
+            --sky-top: #020111; --sky-bot: #3a1c71;
         }
         
         body { 
-            margin: 0; padding: 10px; font-family: 'Segoe UI', Roboto, sans-serif;
-            color: white; display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh; overflow-x: hidden;
-            /* DYNAMIC BACKGROUND SKY */
-            background: linear-gradient(180deg, var(--sunset-top) 0%, var(--sunset-bot) 70%, #ff5722 100%);
+            margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 100%);
+            color: white; display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow: hidden;
         }
 
-        /* BACKGROUND SCENERY (BUILDINGS) */
-        #bg-city {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 50vh;
-            background: 
-                linear-gradient(170deg, transparent 90%, rgba(0,0,0,0.5) 90%),
-                linear-gradient(10deg, transparent 80%, rgba(0,0,0,0.4) 80%),
-                linear-gradient(180deg, transparent 30%, #0a0a20 100%);
-            z-index: -2;
+        /* BACKGROUND DECORATIONS */
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.3; }
+        
+        #city-silhouette {
+            position: fixed; bottom: 0; width: 100%; height: 200px;
+            background: linear-gradient(transparent, #000); z-index: -1;
         }
-        /* CLOUDS */
-        .cloud {
-            position: fixed; background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px; animation: scrollClouds linear infinite; z-index: -1;
+        .building {
+            position: absolute; bottom: 0; background: #050505; width: 60px;
         }
-        @keyframes scrollClouds { from { left: -150px; } to { left: 100%; } }
 
-        /* THE HUD CONSOLE (TOP) */
+        /* HUD */
         .hud { 
-            display: flex; gap: 20px; background: rgba(0, 0, 0, 0.6);
-            padding: 15px 30px; border-radius: 50px; border: 1px solid var(--neon);
-            box-shadow: 0 0 15px var(--neon); margin-bottom: 10px;
-            backdrop-filter: blur(5px);
+            display: flex; gap: 30px; background: rgba(0,0,0,0.8);
+            padding: 10px 40px; border-radius: 0 0 30px 30px;
+            border: 2px solid var(--neon); border-top: none;
+            box-shadow: 0 0 20px var(--neon); z-index: 10;
         }
-        .stat-group { text-align: center; }
-        .label { font-size: 0.7rem; text-transform: uppercase; color: #aaa; letter-spacing: 1px; }
-        .val { font-size: 1.4rem; font-weight: bold; color: var(--neon); text-shadow: 0 0 5px var(--neon); }
+        .stat { text-align: center; }
+        .label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        .val { font-size: 1.4rem; color: var(--neon); font-weight: bold; }
 
-        /* THE BUILDING TOWER */
+        /* THE TOWER FRAME */
         #tower-frame {
-            width: 320px; height: 460px;
-            background: rgba(0,0,0,0.6); border: 8px solid var(--wood);
-            border-bottom: 20px solid #333; border-radius: 15px; 
-            position: relative; display: flex; flex-direction: column; 
-            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            width: 300px; height: 400px;
+            background: rgba(10, 10, 25, 0.7); border: 8px solid var(--wood);
+            border-radius: 10px; position: relative; margin-top: 20px;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
 
-        /* SELECTION ZONE & CRANE BEAM */
-        #crane-beam {
-            height: 70px; background: rgba(255,255,255,0.05);
-            border-bottom: 3px dashed var(--neon);
+        #selection-zone {
+            height: 60px; border-bottom: 2px dashed var(--neon);
             display: flex; justify-content: space-around; align-items: center;
-            font-size: 2rem; font-weight: 900; color: var(--gold);
-            text-shadow: 0 0 10px var(--gold);
+            font-size: 1.8rem; color: var(--gold); font-weight: 900;
         }
-        .option { padding: 5px 15px; transition: 0.2s; }
 
-        /* BRICK STACK CONTAINER */
-        #stack {
-            flex-grow: 1; display: flex; flex-direction: column-reverse;
-            padding: 5px; padding-bottom: 10px;
-        }
+        #stack { flex-grow: 1; display: flex; flex-direction: column-reverse; padding: 5px; }
         .brick {
-            height: 34px; margin: 1px 0; border-radius: 4px;
+            height: 32px; margin: 1px 0; border-radius: 4px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; text-transform: uppercase; color: #000;
-            font-size: 0.9rem;
-            box-shadow: 0 0 10px var(--brick-glow);
-            animation: dropBrick 0.25s ease-out;
-            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: bold; color: #000; font-size: 0.8rem;
+            animation: drop 0.3s ease-out; border: 1px solid rgba(255,255,255,0.2);
         }
-        @keyframes dropBrick { from { transform: translateY(-400px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes drop { from { transform: translateY(-300px); } to { transform: translateY(0); } }
 
-        /* PUZZLE & INPUT */
-        #puzzle-zone { text-align: center; margin: 15px 0; z-index: 10; }
-        #word-display { 
-            font-size: 3rem; color: white; font-weight: 900; 
-            letter-spacing: 5px; text-shadow: 0 0 15px #fff;
+        /* OVERLAYS */
+        #menu-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 20;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        input { 
-            font-size: 1.8rem; width: 280px; padding: 12px; border-radius: 15px;
-            border: 3px solid var(--neon); background: rgba(0,0,0,0.7); color: white; 
-            text-align: center; outline: none; transition: 0.3s;
+        .start-btn {
+            padding: 15px 40px; font-size: 1.5rem; font-weight: bold;
+            background: #2ecc71; color: white; border: none; border-radius: 10px;
+            cursor: pointer; box-shadow: 0 5px 0 #27ae60; transition: 0.1s;
         }
-        input:focus { box-shadow: 0 0 25px var(--neon); }
+        .start-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #27ae60; }
 
-        /* LEADERBOARD (BOTTOM) */
+        /* INPUT AREA */
+        #puzzle-display { font-size: 2.8rem; margin: 15px 0; font-weight: 900; letter-spacing: 4px; }
+        #answer-input { 
+            font-size: 1.5rem; width: 250px; padding: 10px; border-radius: 10px;
+            border: 3px solid var(--neon); background: #000; color: white; text-align: center;
+        }
+
         #leaderboard {
-            margin-top: 20px; width: 320px; background: rgba(0,0,0,0.8);
-            border-radius: 15px; padding: 15px; border: 1px solid #444;
-            max-height: 180px; overflow-y: auto;
+            margin-top: 20px; width: 300px; background: white; color: #333;
+            border-radius: 10px; padding: 10px; max-height: 150px; overflow-y: auto;
         }
-        .row { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid #333; font-size: 0.85rem; }
-        .rank { color: var(--gold); font-weight: bold; margin-right: 8px; }
+        .row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; font-size: 0.8rem; padding: 3px; }
     </style>
 </head>
-<body onload="init()">
+<body>
 
-    <div id="bg-city"></div>
-    <div class="cloud" style="width:100px; height:40px; top:10%; animation-duration: 20s;"></div>
-    <div class="cloud" style="width:150px; height:60px; top:25%; animation-duration: 35s; animation-delay: -10s;"></div>
-    <div class="cloud" style="width:80px; height:30px; top:15%; animation-duration: 15s; animation-delay: -5s;"></div>
+    <div class="stars"></div>
+    <div id="city-silhouette"></div>
 
     <div class="hud">
-        <div class="stat-group"><div class="label">Time</div><div class="val" id="t">60s</div></div>
-        <div class="stat-group"><div class="label">Score</div><div class="val" id="s">0</div></div>
-        <div class="stat-group"><div class="label">Floor</div><div class="val" id="fl">1</div></div>
+        <div class="stat"><div class="label">Time</div><div class="val" id="t">60</div></div>
+        <div class="stat"><div class="label">Score</div><div class="val" id="s">0</div></div>
+        <div class="stat"><div class="label">Floor</div><div class="val" id="f">1</div></div>
     </div>
 
     <div id="tower-frame">
-        <div id="crane-beam">
-            <span class="option" id="opt1">?</span>
-            <span class="option" id="opt2">?</span>
-            <span class="option" id="opt3">?</span>
+        <div id="menu-overlay">
+            <h2 style="color:var(--gold); margin-bottom: 20px;">SKYWARD 20</h2>
+            <button class="start-btn" onclick="startGame()">START BUILDING</button>
+        </div>
+        <div id="selection-zone">
+            <span id="opt1"></span><span id="opt2"></span><span id="opt3"></span>
         </div>
         <div id="stack"></div>
     </div>
 
-    <div id="puzzle-zone">
-        <div id="word-display">START</div>
-        <input type="text" id="typer" placeholder="Type correct letter..." autocomplete="off">
-    </div>
+    <div id="puzzle-display">---</div>
+    <input type="text" id="answer-input" placeholder="Type letter..." disabled>
 
     <div id="leaderboard">
-        <h3 style="margin:0 0 10px 0; text-align:center; color: var(--gold);">🏆 TOP 20 ARCHITECTS</h3>
+        <h4 style="margin:0; text-align:center;">🏆 TOP 20 ARCHITECTS</h4>
         <div id="list"></div>
     </div>
 
 <script>
-    // Game Data
     const data = [
         {w: "GRAPE", m: "G_APE", a: "R"}, {w: "MOUSE", m: "MO_SE", a: "U"},
-        {w: "PHONE", m: "PH_NE", a: "O"}, {w: "SNAKE", m: "SN_KE", a: "A"},
-        {w: "TIGER", m: "TI_ER", a: "G"}, {w: "BREAD", m: "BR_AD", a: "E"},
-        {w: "CLOCK", m: "CLO_K", a: "C"}, {w: "FLOWER", m: "FLO_ER", a: "W"}
+        {w: "PLANE", m: "PL_NE", a: "A"}, {w: "BREAD", m: "BR_AD", a: "E"},
+        {w: "CLOCK", m: "CLO_K", a: "C"}, {w: "FLOWER", m: "FLO_ER", a: "W"},
+        {w: "TIGER", m: "TI_ER", a: "G"}, {w: "SNAKE", m: "SN_KE", a: "A"}
     ];
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    let state = { score: 0, time: 60, floor: 1, count: 0, active: false, cur: {} };
+    let clock;
 
-    // Game State
-    let state = { score: 0, floor: 1, time: 60, active: false, cur: {}, count: 0 };
-    let ticker;
-
-    function init() {
-        renderScores();
-        const input = document.getElementById('typer');
-        input.addEventListener('input', (e) => {
-            let val = e.target.value.toUpperCase();
-            if(!state.active && val === "START") {
-                state.active = true;
-                e.target.value = "";
-                beginGame();
-            } else if(state.active && val === state.cur.a) {
-                e.target.value = "";
-                addBrick();
-            }
-        });
-        input.focus();
+    // Build city silhouette
+    for(let i=0; i<20; i++) {
+        let b = document.createElement('div');
+        b.className = 'building';
+        b.style.left = (i * 45) + 'px';
+        b.style.height = (Math.random() * 100 + 50) + 'px';
+        b.style.opacity = Math.random() * 0.5 + 0.5;
+        document.getElementById('city-silhouette').appendChild(b);
     }
 
-    function beginGame() {
-        state.score = 0; state.floor = 1; state.time = 60; state.count = 0;
-        document.getElementById('s').innerText = "0";
-        document.getElementById('fl').innerText = "1";
-        document.getElementById('stack').innerHTML = "";
+    function renderBoard() {
+        let scores = JSON.parse(localStorage.getItem('skyward20_v2') || '[]');
+        document.getElementById('list').innerHTML = scores.map((x, i) => 
+            `<div class="row"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
+    }
+
+    function startGame() {
+        state.active = true;
+        state.score = 0; state.time = 60; state.floor = 1; state.count = 0;
+        document.getElementById('menu-overlay').style.display = 'none';
+        document.getElementById('answer-input').disabled = false;
+        document.getElementById('answer-input').focus();
+        document.getElementById('stack').innerHTML = '';
+        updateStats();
         
-        ticker = setInterval(() => {
+        clock = setInterval(() => {
             state.time--;
-            document.getElementById('t').innerText = state.time + "s";
+            document.getElementById('t').innerText = state.time;
             if(state.time <= 0) endGame();
         }, 1000);
         
-        nextPuzzle();
+        next();
     }
 
-    function nextPuzzle() {
-        // Get puzzle
-        state.cur = data[Math.floor(Math.random()*data.length)];
-        document.getElementById('word-display').innerText = state.cur.m;
+    function next() {
+        state.cur = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('puzzle-display').innerText = state.cur.m;
         
-        // Options setup
         let opts = [state.cur.a];
         while(opts.length < 3) {
-            let r = letters[Math.floor(Math.random()*26)];
+            let r = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];
             if(!opts.includes(r)) opts.push(r);
         }
-        opts.sort(() => Math.random() - 0.5); // Shuffle
-        
+        opts.sort(() => Math.random() - 0.5);
         document.getElementById('opt1').innerText = opts[0];
         document.getElementById('opt2').innerText = opts[1];
         document.getElementById('opt3').innerText = opts[2];
     }
 
+    document.getElementById('answer-input').addEventListener('input', (e) => {
+        if(!state.active) return;
+        if(e.target.value.toUpperCase() === state.cur.a) {
+            e.target.value = '';
+            addBrick();
+        }
+    });
+
     function addBrick() {
-        state.score += (100 * state.floor);
+        state.score += 100;
         state.count++;
-        document.getElementById('s').innerText = state.score;
+        updateStats();
         
-        // Add Brick
-        const b = document.createElement('div');
+        let b = document.createElement('div');
         b.className = 'brick';
         b.innerText = state.cur.w;
-        // Floor colors (Blue, Pink, Green, Orange)
         const colors = ['#00f2ff', '#ff00de', '#7cfc00', '#ff8c00'];
-        b.style.backgroundColor = colors[(state.floor-1) % colors.length];
+        b.style.backgroundColor = colors[(state.floor-1) % 4];
         document.getElementById('stack').appendChild(b);
 
         if(state.count >= 10) {
-            floorUp();
-        } else {
-            nextPuzzle();
+            state.floor++;
+            state.count = 0;
+            state.time += 10;
+            document.getElementById('stack').innerHTML = '';
+            updateStats();
         }
+        next();
     }
 
-    function floorUp() {
-        state.floor++;
-        state.count = 0;
-        state.time += 15;
-        document.getElementById('fl').innerText = state.floor;
-        document.getElementById('word-display').innerText = "📍 FLOOR UP!";
-        document.getElementById('word-display').style.color = "#ffeb3b";
-        
-        setTimeout(() => {
-            document.getElementById('word-display').style.color = "white";
-            document.getElementById('stack').innerHTML = "";
-            nextPuzzle();
-        }, 800);
+    function updateStats() {
+        document.getElementById('s').innerText = state.score;
+        document.getElementById('f').innerText = state.floor;
     }
 
     function endGame() {
-        clearInterval(ticker);
+        clearInterval(clock);
         state.active = false;
-        let n = prompt("TOWER COMPLETE!\nFinal Score: " + state.score + "\nName for Top 20:");
-        if(n) saveScore(n, state.score);
+        document.getElementById('answer-input').disabled = true;
+        let n = prompt("TOWER COMPLETE! Score: " + state.score + "\nEnter Name:");
+        if(n) {
+            let scores = JSON.parse(localStorage.getItem('skyward20_v2') || '[]');
+            scores.push({n: n.toUpperCase().substring(0,10), s: state.score});
+            scores.sort((a,b) => b.s - a.s);
+            localStorage.setItem('skyward20_v2', JSON.stringify(scores.slice(0, 20)));
+        }
         location.reload();
     }
 
-    // Storage
-    function saveScore(n, s) {
-        let scores = JSON.parse(localStorage.getItem('skyward_v1') || '[]');
-        scores.push({n: n.toUpperCase().substring(0,10), s: s});
-        scores.sort((a,b) => b.s - a.s);
-        localStorage.setItem('skyward_v1', JSON.stringify(scores.slice(0, 20)));
-    }
-
-    function renderScores() {
-        let scores = JSON.parse(localStorage.getItem('skyward_v1') || '[]');
-        document.getElementById('list').innerHTML = scores.map((x, i) => 
-            `<div class="row"><span><span class="rank">#${i+1}</span> ${x.n}</span><span>${x.s}</span></div>`).join('');
-    }
+    renderBoard();
 </script>
 </body>
 </html>
