@@ -4,7 +4,7 @@
     <title>Spell Climb: 20-Rank Edition</title>
     <style>
         :root { --wood: #5D4037; --sky: #81D4FA; --brick: #A1887F; --gold: #FFD700; }
-        body { background: #1a1a1a; color: white; font-family: 'Arial Rounded MT Bold', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        body { background: #1a1a1a; color: white; font-family: 'Arial Rounded MT Bold', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
         /* THE TOWER FRAME */
         #tower-frame {
@@ -16,7 +16,7 @@
             position: relative;
             overflow: hidden;
             display: flex;
-            flex-direction: column-reverse; /* Bricks start at bottom */
+            flex-direction: column-reverse; /* This makes new bricks push old ones up! */
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
@@ -32,51 +32,53 @@
             font-weight: bold;
             color: #fff;
             font-size: 1rem;
-            animation: slideUp 0.3s ease-out;
             flex-shrink: 0;
+            animation: slideUp 0.3s ease-out;
         }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* UI ELEMENTS */
         .stats { width: 340px; display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1rem; }
-        #word-display { font-size: 2rem; color: #4CAF50; margin: 15px 0; text-shadow: 0 0 5px #000; letter-spacing: 2px; }
-        input { font-size: 1.5rem; width: 280px; padding: 12px; border-radius: 10px; border: none; text-align: center; outline: none; }
+        #word-display { font-size: 2.2rem; color: #4CAF50; margin: 15px 0; text-shadow: 1px 1px 2px #000; }
+        input { font-size: 1.5rem; width: 280px; padding: 12px; border-radius: 10px; border: none; text-align: center; outline: none; box-shadow: 0 0 10px var(--gold); }
         
-        #leaderboard { margin-top: 25px; background: white; color: #333; padding: 15px; border-radius: 15px; width: 320px; }
+        #leaderboard { margin-top: 25px; background: white; color: #333; padding: 15px; border-radius: 15px; width: 320px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .score-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 4px 0; font-size: 0.85rem; }
         
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; flex-direction:column; align-items:center; justify-content:center; text-align: center; }
-        .btn { padding: 10px 25px; background: var(--gold); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; flex-direction:column; align-items:center; justify-content:center; text-align: center; z-index: 10; }
+        .btn { padding: 12px 30px; background: var(--gold); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1rem; }
     </style>
 </head>
 <body onload="init()">
 
 <div class="stats">
     <span>⏱️ <span id="timer">60</span>s</span>
-    <span style="color:var(--gold)">PTS: <span id="score">0</span></span>
-    <span>LVL: <span id="lvl">1</span></span>
+    <span style="color:var(--gold)">💰 <span id="score">0</span></span>
+    <span>📍 LVL <span id="lvl">1</span></span>
 </div>
 
 <div id="tower-frame">
     <div id="win-screen" class="overlay">
-        <h1 style="color:var(--gold)">LEVEL UP!</h1>
-        <p>Tower Cleared!</p>
-        <button class="btn" onclick="nextLevel()">KEEP CLIMBING</button>
+        <h1 style="color:var(--gold); font-size: 3rem; margin: 0;">★ ★ ★</h1>
+        <h2 style="color:white; margin: 0;">LEVEL COMPLETE!</h2>
+        <p style="color:#ccc;">The tower has reached the top!</p>
+        <button class="btn" onclick="nextLevel()">NEXT FLOOR</button>
     </div>
 </div>
 
 <div id="game-ui">
-    <div id="word-display">START</div>
-    <input type="text" id="input-box" placeholder="Type here..." autocomplete="off">
+    <div id="word-display">READY?</div>
+    <input type="text" id="input-box" placeholder="Type 'START' to begin" autocomplete="off">
 </div>
 
 <div id="leaderboard">
-    <h3 style="margin-top:0; text-align:center;">🏆 TOP 20 CLIMBERS</h3>
+    <h3 style="margin-top:0; text-align:center; color: #5D4037;">🏆 TOP 20 BUILDERS</h3>
     <div id="score-list" style="max-height: 250px; overflow-y: auto;"></div>
 </div>
 
 <script>
-    const wordBank = ["CAT", "DOG", "SUN", "FISH", "TREE", "CAKE", "JUMP", "BLUE", "MILK", "HOUSE", "PLANE", "ROCKET", "GARDEN", "BRIGHT", "SILVER", "DRAGON", "CHAMP", "SMART"];
+    const words = ["CAT", "DOG", "SUN", "FISH", "TREE", "CAKE", "JUMP", "BLUE", "MILK", "HOUSE", "PLANE", "ROCKET", "GARDEN", "BRIGHT", "SILVER", "DRAGON", "CHAMP", "SMART", "BIRD", "FROG"];
     let state = { score: 0, level: 1, time: 60, currentWord: "START", brickCount: 0, active: false };
     let ticker;
 
@@ -127,7 +129,7 @@
     }
 
     function newWord() {
-        state.currentWord = wordBank[Math.floor(Math.random() * wordBank.length)];
+        state.currentWord = words[Math.floor(Math.random() * words.length)];
         document.getElementById('word-display').innerText = state.currentWord;
     }
 
@@ -139,12 +141,12 @@
     function nextLevel() {
         state.level++;
         state.brickCount = 0;
-        state.time += 15;
+        state.time += 20; // Extra time bonus!
         document.getElementById('lvl').innerText = state.level;
         
-        // Clear bricks from frame (except the overlay)
+        // Remove bricks but keep the overlay
         const frame = document.getElementById('tower-frame');
-        while (frame.childNodes.length > 2) { 
+        while (frame.children.length > 1) { 
             frame.removeChild(frame.lastChild);
         }
         
@@ -156,7 +158,7 @@
     function endGame() {
         state.active = false;
         clearInterval(ticker);
-        let name = prompt("GREAT JOB! Score: " + state.score + "\nEnter your Name:");
+        let name = prompt("TIMES UP! Score: " + state.score + "\nType your name for the Top 20:");
         if(name) {
             saveScore(name, state.score);
         }
@@ -164,14 +166,14 @@
     }
 
     function saveScore(name, score) {
-        let scores = JSON.parse(localStorage.getItem('climb_v4') || '[]');
+        let scores = JSON.parse(localStorage.getItem('climb_final_20') || '[]');
         scores.push({n: name.substring(0,12).toUpperCase(), s: score});
         scores.sort((a,b) => b.s - a.s);
-        localStorage.setItem('climb_v4', JSON.stringify(scores.slice(0, 20)));
+        localStorage.setItem('climb_final_20', JSON.stringify(scores.slice(0, 20)));
     }
 
     function renderScores() {
-        let scores = JSON.parse(localStorage.getItem('climb_v4') || '[]');
+        let scores = JSON.parse(localStorage.getItem('climb_final_20') || '[]');
         document.getElementById('score-list').innerHTML = scores.map((x, i) => 
             `<div class="score-item"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
     }
