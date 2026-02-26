@@ -1,227 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Skyward Stack: Cyber-City 20</title>
     <style>
-        :root { 
-            --neon: #00f2ff; --gold: #ffcc00; --wood: #5D4037;
-            --bg-dark: #050510;
-        }
+        body { margin: 0; background: #050510; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; overflow: hidden; height: 100vh; }
+        .hud { display: flex; gap: 40px; padding: 15px; background: #000; border: 2px solid #00f2ff; border-radius: 0 0 20px 20px; box-shadow: 0 0 15px #00f2ff; }
+        .val { color: #00f2ff; font-weight: bold; font-size: 1.5rem; }
         
-        body { 
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
-            background: #0a0a15; color: white;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; overflow-y: auto; padding-bottom: 50px;
+        #frame { 
+            width: 500px; height: 600px; border: 10px solid #5D4037; margin-top: 10px; 
+            position: relative; background: linear-gradient(#020111, #191621); overflow: hidden; 
         }
-
-        /* HUD */
-        .hud { 
-            display: flex; gap: 60px; background: rgba(0,0,0,0.9);
-            padding: 15px 80px; border-radius: 0 0 40px 40px;
-            border: 3px solid var(--neon); border-top: none;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5); z-index: 100;
-        }
-        .stat { text-align: center; }
-        .label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
-        .val { font-size: 2rem; color: var(--neon); font-weight: bold; text-shadow: 0 0 10px var(--neon); }
-
-        /* THE MASSIVE FRAME */
-        #tower-frame {
-            width: 550px; height: 700px;
-            background: var(--bg-dark);
-            border: 15px solid var(--wood);
-            border-bottom: 35px solid #222;
-            border-radius: 20px; position: relative; margin-top: 20px;
-            display: flex; flex-direction: column; 
-            box-shadow: 0 0 60px rgba(0,0,0,1);
-            overflow: hidden;
-        }
-
-        /* INTERNAL GRAPHICS */
-        .internal-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, #020111 0%, #191621 100%); z-index: 1; }
-        .internal-stars { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px); background-size: 60px 60px; opacity: 0.4; z-index: 2; }
-        .internal-city { position: absolute; bottom: 0; width: 100%; height: 150px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; align-items: flex-end; justify-content: space-around; z-index: 3; opacity: 0.7; }
-        .mini-building { width: 40px; background: #000; border-top: 3px solid #1a1a1a; }
-
-        /* SELECTION ZONE */
-        #selection-zone {
-            height: 100px; background: rgba(0, 242, 255, 0.15);
-            border-bottom: 4px dashed var(--neon);
-            display: flex; justify-content: space-around; align-items: center;
-            font-size: 3rem; color: var(--gold); font-weight: 900;
-            z-index: 10; position: relative; text-shadow: 0 0 15px var(--gold);
-        }
-
-        /* BRICK STACK */
-        #stack { flex-grow: 1; display: flex; flex-direction: column-reverse; padding: 15px; z-index: 10; position: relative; }
-        .brick {
-            height: 50px; margin: 3px 0; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: #fff; font-size: 1.4rem;
-            text-shadow: 2px 2px 4px #000;
-            border: 2px solid rgba(255,255,255,0.4);
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.3);
-            animation: slamDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes slamDown { from { transform: translateY(-600px) scale(1.2); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        #selection { height: 70px; border-bottom: 2px dashed #00f2ff; display: flex; justify-content: space-around; align-items: center; font-size: 2.5rem; color: #ffcc00; font-weight: bold; }
+        #stack { display: flex; flex-direction: column-reverse; padding: 10px; height: 100%; }
         
-        /* OVERDRIVE GLOW */
-        .streak-glow { animation: rainbowGlow 1s infinite alternate!important; }
-        @keyframes rainbowGlow { 0% { box-shadow: 0 0 10px red; } 50% { box-shadow: 0 0 25px cyan; } 100% { box-shadow: 0 0 10px lime; } }
-
-        /* OVERLAY */
-        #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .start-btn { padding: 25px 70px; font-size: 2.2rem; font-weight: bold; background: #2ecc71; color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 8px 0 #27ae60; transition: 0.1s; }
-
-        /* INPUT AREA */
-        #puzzle-text { font-size: 4rem; margin: 20px 0; font-weight: 900; letter-spacing: 8px; text-shadow: 0 0 20px var(--neon); }
-        #typer { font-size: 2.5rem; width: 400px; padding: 20px; border-radius: 20px; border: 5px solid var(--neon); background: #000; color: white; text-align: center; outline: none; }
-
-        #leaderboard { margin-top: 30px; width: 550px; background: rgba(255,255,255,0.95); color: #222; border-radius: 15px; padding: 20px; max-height: 180px; overflow-y: auto; }
-        .row { display: flex; justify-content: space-between; border-bottom: 2px solid #ddd; padding: 8px; font-weight: bold; font-size: 1.1rem; }
+        .brick { 
+            height: 45px; margin: 2px 0; background: #00f2ff; border: 2px solid white; 
+            border-radius: 5px; color: #000; display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; font-size: 1.2rem; animation: drop 0.2s ease-out;
+        }
+        @keyframes drop { from { transform: translateY(-500px); } to { transform: translateY(0); } }
+        
+        #menu { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        button { padding: 20px 50px; font-size: 2rem; background: #2ecc71; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        
+        #puzzle { font-size: 4rem; margin: 20px; font-weight: bold; letter-spacing: 10px; text-shadow: 0 0 10px #00f2ff; }
+        input { font-size: 2rem; width: 300px; text-align: center; padding: 10px; border-radius: 10px; border: 3px solid #00f2ff; background: #000; color: white; }
     </style>
 </head>
-<body onload="loadBoard()">
+<body onload="drawBoard()">
 
     <div class="hud">
-        <div class="stat"><div class="label">Timer</div><div class="val" id="t">60</div></div>
-        <div class="stat"><div class="label">Score</div><div class="val" id="s">0</div></div>
-        <div class="stat"><div class="label">Floor</div><div class="val" id="f">1</div></div>
+        <div>⏳ <span class="val" id="t">60</span></div>
+        <div>⭐ <span class="val" id="s">0</span></div>
+        <div>🏗️ <span class="val" id="f">1</span></div>
     </div>
 
-    <div id="tower-frame">
-        <div class="internal-bg"></div>
-        <div class="internal-stars"></div>
-        <div class="internal-city" id="city-layer"></div>
-
+    <div id="frame">
         <div id="menu">
-            <h1 style="color:var(--gold); font-size: 3.5rem; margin-bottom: 10px;">SKYWARD STACK</h1>
-            <p style="color: #aaa; margin-bottom: 30px; font-size: 1.1rem;">Type the letter to build your tower!</p>
-            <button class="start-btn" onclick="startGame()">START GAME</button>
+            <h1 style="color:#ffcc00">SKYWARD STACK</h1>
+            <button onclick="start()">START</button>
         </div>
-
-        <div id="selection-zone">
-            <span id="opt1">?</span>
-            <span id="opt2">?</span>
-            <span id="opt3">?</span>
-        </div>
+        <div id="selection"><span id="o1"></span><span id="o2"></span><span id="o3"></span></div>
         <div id="stack"></div>
     </div>
 
-    <div id="puzzle-text">READY?</div>
-    <input type="text" id="typer" placeholder="..." disabled autocomplete="off">
+    <div id="puzzle">READY</div>
+    <input type="text" id="in" maxlength="1" disabled autocomplete="off">
 
-    <div id="leaderboard">
-        <h3 style="margin:0 0 10px 0; text-align:center;">🏆 TOP 20 ARCHITECTS</h3>
-        <div id="list"></div>
-    </div>
+    <div id="list" style="margin-top:10px; font-size:0.8rem; color:#aaa"></div>
 
 <script>
-    const data = [
-        {w: "APPLE", m: "APP_E", a: "L"}, {w: "BREAD", m: "BRE_D", a: "A"},
-        {w: "CLOUD", m: "CLO_D", a: "U"}, {w: "FLOWER", m: "FLO_ER", a: "W"},
-        {w: "LIGHT", m: "LIG_T", a: "H"}, {w: "PLANET", m: "PLA_ET", a: "N"},
-        {w: "ROCKET", m: "ROC_ET", a: "K"}, {w: "SNAKE", m: "SN_KE", a: "A"}
-    ];
+    const words = [{w:"APPLE",m:"APP_E",a:"L"},{w:"BIRD",m:"B_RD",a:"I"},{w:"CAKE",m:"C_KE",a:"A"},{w:"DUCK",m:"D_CK",a:"U"},{w:"FISH",m:"FI_H",a:"S"},{w:"MOON",m:"M_ON",a:"O"}];
+    let score=0, time=60, floor=1, count=0, active=false, cur={};
 
-    let state = { score: 0, time: 60, floor: 1, count: 0, active: false, cur: {}, streak: 0 };
-    let clock;
-
-    // Generate internal city graphics
-    const city = document.getElementById('city-layer');
-    for(let i=0; i<12; i++) {
-        let b = document.createElement('div');
-        b.className = 'mini-building';
-        b.style.height = (Math.random() * 110 + 30) + 'px';
-        city.appendChild(b);
+    function start() {
+        active=true; score=0; time=60; floor=1; count=0;
+        document.getElementById('menu').style.display='none';
+        document.getElementById('in').disabled=false;
+        document.getElementById('in').focus();
+        document.getElementById('stack').innerHTML='';
+        tick();
+        next();
     }
 
-    function startGame() {
-        state.active = true; state.score = 0; state.time = 60; state.floor = 1; state.count = 0; state.streak = 0;
-        document.getElementById('menu').style.display = 'none';
-        document.getElementById('typer').disabled = false;
-        document.getElementById('typer').focus();
-        document.getElementById('stack').innerHTML = '';
-        updateStats();
-        clock = setInterval(() => {
-            state.time--;
-            document.getElementById('t').innerText = state.time;
-            if(state.time <= 0) endGame();
+    function tick() {
+        let itv = setInterval(() => {
+            if(!active) { clearInterval(itv); return; }
+            time--;
+            document.getElementById('t').innerText = time;
+            if(time <= 0) over();
         }, 1000);
-        next();
     }
 
     function next() {
-        state.cur = data[Math.floor(Math.random() * data.length)];
-        document.getElementById('puzzle-text').innerText = state.cur.m;
-        let opts = [state.cur.a];
-        while(opts.length < 3) {
-            let r = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];
-            if(!opts.includes(r)) opts.push(r);
-        }
-        opts.sort(() => Math.random() - 0.5);
-        document.getElementById('opt1').innerText = opts[0];
-        document.getElementById('opt2').innerText = opts[1];
-        document.getElementById('opt3').innerText = opts[2];
+        cur = words[Math.floor(Math.random()*words.length)];
+        document.getElementById('puzzle').innerText = cur.m;
+        let o = [cur.a, "X", "Z"].sort(() => Math.random()-0.5);
+        document.getElementById('o1').innerText = o[0];
+        document.getElementById('o2').innerText = o[1];
+        document.getElementById('o3').innerText = o[2];
     }
 
-    document.getElementById('typer').addEventListener('input', (e) => {
-        if(!state.active) return;
-        if(e.target.value.toUpperCase() === state.cur.a) {
+    document.getElementById('in').addEventListener('input', (e) => {
+        if(e.target.value.toUpperCase() === cur.a) {
             e.target.value = '';
-            state.streak++;
-            addBrick();
-        } else if(e.target.value.length > 0) {
-            state.streak = 0; // Break streak on wrong letter
-            e.target.value = '';
-        }
+            score += 100;
+            count++;
+            let b = document.createElement('div');
+            b.className = 'brick';
+            b.innerText = cur.w;
+            b.style.background = ['#00f2ff','#ff00de','#7cfc00'][floor%3];
+            document.getElementById('stack').appendChild(b);
+            
+            if(count >= 8) { floor++; count=0; time+=10; document.getElementById('stack').innerHTML=''; }
+            document.getElementById('s').innerText = score;
+            document.getElementById('f').innerText = floor;
+            next();
+        } else { e.target.value = ''; }
     });
 
-    function addBrick() {
-        let points = (state.streak >= 5) ? 200 : 100;
-        state.score += (points * state.floor);
-        state.count++;
-        updateStats();
-        
-        let b = document.createElement('div');
-        b.className = 'brick' + (state.streak >= 5 ? ' streak-glow' : '');
-        b.innerText = state.cur.w;
-        const colors = ['#00f2ff', '#ff00de', '#7cfc00', '#ff8c00', '#ffea00'];
-        b.style.backgroundColor = colors[(state.floor-1) % 5];
-        document.getElementById('stack').appendChild(b);
-
-        if(state.count >= 10) {
-            state.floor++; state.count = 0; state.time += 15;
-            document.getElementById('stack').innerHTML = '';
-            updateStats();
-        }
-        next();
-    }
-
-    function updateStats() {
-        document.getElementById('s').innerText = state.score;
-        document.getElementById('f').innerText = state.floor;
-    }
-
-    function endGame() {
-        clearInterval(clock);
-        state.active = false;
-        let n = prompt("TOWER SECURED! Score: " + state.score + "\nYour Name:");
+    function over() {
+        active=false;
+        let n = prompt("GAME OVER! Score: " + score + "\nName:");
         if(n) {
-            let scores = JSON.parse(localStorage.getItem('skyward_max_v2') || '[]');
-            scores.push({n: n.toUpperCase().substring(0,10), s: state.score});
-            scores.sort((a,b) => b.s - a.s);
-            localStorage.setItem('skyward_max_v2', JSON.stringify(scores.slice(0, 20)));
+            let s = JSON.parse(localStorage.getItem('ss20') || '[]');
+            s.push({n:n.substring(0,10), s:score});
+            s.sort((a,b)=>b.s-a.s);
+            localStorage.setItem('ss20', JSON.stringify(s.slice(0,20)));
         }
         location.reload();
     }
 
-    function loadBoard() {
-        let scores = JSON.parse(localStorage.getItem('skyward_max_v2') || '[]');
-        document.getElementById('list').innerHTML = scores.map((x, i) => 
-            `<div class="row"><span>#${i+1} ${x.n}</span><span>${x.s}</span></div>`).join('');
+    function drawBoard() {
+        let s = JSON.parse(localStorage.getItem('ss20') || '[]');
+        document.getElementById('list').innerHTML = "TOP 20: " + s.map(x => x.n + ":" + x.s).join(" | ");
     }
 </script>
 </body>
