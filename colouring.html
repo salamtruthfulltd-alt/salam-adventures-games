@@ -1,365 +1,898 @@
-<div id="salam-colouring-game"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salam Adventures – Colouring Game</title>
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --text:#e9f2ff;
+      --muted:#b9c7e6;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    html,body{height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text);
+      background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg1) 55%, #070b14 100%);
+    }
+    *{box-sizing:border-box;}
 
-<script>
-(() => {
-  // =========================
-  // CONFIG (EDIT THIS)
-  // =========================
-  // If your images are on your site, set BASE_PATH like:
-  // const BASE_PATH = "/wp-content/uploads/colouring-images/";
-  //
-  // If they're served from the same folder as the page, use:
-  // const BASE_PATH = "colouring images/";
-  //
-  // If they're on GitHub raw (not ideal for production), it would be something like:
-  // const BASE_PATH = "https://raw.githubusercontent.com/USER/REPO/main/colouring%20images/";
-  const BASE_PATH = "colouring images/";  // <-- CHANGE THIS IF NEEDED
+    .wrap{max-width:1100px; margin:18px auto 30px; padding:14px;}
 
-  const FILES = [
-    "butterfly.png","car.png","chest.png","dino.png","dog.png","doll.png",
-    "house.png","kids.png","plane.png","prince.png","swan.png","veg.png"
-  ];
+    /* -------- Child-friendly buttons -------- */
+    .controls{
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
+      margin-bottom:12px;
+    }
+    .kidbtn{
+      border:none;
+      border-radius:18px;
+      padding:12px 14px;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.2px;
+      color:#0b1220;
+      box-shadow: var(--shadow);
+      display:flex; align-items:center; gap:10px;
+      user-select:none;
+      transition: transform .08s ease, filter .2s ease;
+      font-size:14px;
+    }
+    .kidbtn:hover{transform: translateY(-1px); filter:brightness(1.05);}
+    .kidbtn:active{transform: translateY(0px) scale(.99);}
+    .kidbtn .emoji{font-size:18px; line-height:1;}
+    .kidbtn.active{outline:3px solid rgba(98,255,207,.9); outline-offset:2px;}
 
-  // =========================
-  // BUILD UI (SELF-CONTAINED)
-  // =========================
-  const mount = document.getElementById("salam-colouring-game") || (() => {
-    const d = document.createElement("div");
-    document.body.appendChild(d);
-    return d;
-  })();
+    .b1{background: linear-gradient(135deg,#60a5fa,#34d399);}
+    .b2{background: linear-gradient(135deg,#fbbf24,#fb7185);}
+    .b3{background: linear-gradient(135deg,#a78bfa,#60a5fa);}
+    .b4{background: linear-gradient(135deg,#34d399,#fbbf24);}
+    .b5{background: linear-gradient(135deg,#fb7185,#a78bfa);}
+    .b6{background: linear-gradient(135deg,#fbbf24,#60a5fa);}
 
-  mount.innerHTML = `
-    <style>
-      .sg-wrap{max-width:1100px;margin:14px auto;padding:14px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-      .sg-stage{border-radius:24px;padding:12px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-      .sg-stage::before{content:"";position:absolute;inset:-2px;border-radius:26px;
-        background:conic-gradient(from 0deg,#ff3d3d,#ffd93d,#3dff6a,#3ddcff,#7c3dff,#ff3d3d);
-        animation:sg-spin 2.8s linear infinite, sg-pulse 1.1s ease-in-out infinite;z-index:0}
-      .sg-stage::after{content:"";position:absolute;inset:6px;border-radius:20px;background:#0b1220;opacity:.85;z-index:0}
-      .sg-stage.noflash::before{animation:none;opacity:.35}
-      @keyframes sg-spin{to{transform:rotate(360deg)}}
-      @keyframes sg-pulse{0%,100%{filter:brightness(1)saturate(1.2)}50%{filter:brightness(1.25)saturate(1.8)}}
+    .toggles{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
+      width:100%;
+    }
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .pill input{accent-color:#22c55e;}
+    .pill input[type="range"]{width:170px;}
 
-      .sg-card{position:relative;z-index:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
-        border-radius:18px;padding:10px}
-      .sg-canvas{width:100%;display:block;border-radius:16px;background:#fff;touch-action:none}
-      .sg-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:0 0 12px 0}
-      .sg-pill{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:999px;
-        background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);color:#d8e6ff;font-size:12px}
-      .sg-pill input{accent-color:#22c55e}
-      .sg-pill input[type=range]{width:160px}
-      .sg-btn{
-        border:none;border-radius:18px;padding:12px 14px;cursor:pointer;font-weight:900;
-        box-shadow:0 12px 30px rgba(0,0,0,.25);display:flex;align-items:center;gap:10px;
-        user-select:none;transition:transform .08s ease,filter .2s ease;font-size:14px;color:#0b1220
-      }
-      .sg-btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
-      .sg-btn:active{transform:translateY(0) scale(.99)}
-      .b1{background:linear-gradient(135deg,#60a5fa,#34d399)}
-      .b2{background:linear-gradient(135deg,#fbbf24,#fb7185)}
-      .b3{background:linear-gradient(135deg,#a78bfa,#60a5fa)}
-      .b4{background:linear-gradient(135deg,#34d399,#fbbf24)}
-      .b5{background:linear-gradient(135deg,#fb7185,#a78bfa)}
-      .b6{background:linear-gradient(135deg,#fbbf24,#60a5fa)}
-      .sg-modebar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 10px 0}
-      .sg-small{color:#cfe0ff;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px}
-      .sg-kbd{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;padding:3px 7px;border-radius:8px;
-        border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:#cfe0ff}
-      .sg-err{margin:10px 0 0 0;padding:10px 12px;border-radius:14px;background:rgba(239,68,68,.15);
-        border:1px solid rgba(239,68,68,.35);color:#ffd1d1;font-size:13px;display:none}
-      .sg-swatches{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:10px}
-      .sg-swatch{aspect-ratio:1/1;border-radius:12px;border:1px solid rgba(255,255,255,.16);cursor:pointer;
-        box-shadow:inset 0 0 0 2px rgba(0,0,0,.12),0 6px 14px rgba(0,0,0,.25)}
-      .sg-swatch.sel{outline:2px solid rgba(98,255,207,.9);outline-offset:2px}
-    </style>
+    /* -------- Flashing border stage -------- */
+    .stage{
+      margin-top:10px;
+      border-radius:24px;
+      padding:12px;
+      position:relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:26px;
+      background: conic-gradient(from 0deg, #ff3d3d, #ffd93d, #3dff6a, #3ddcff, #7c3dff, #ff3d3d);
+      animation: spin 2.8s linear infinite, pulse 1.1s ease-in-out infinite;
+      z-index:0;
+      opacity:1;
+    }
+    .stage::after{
+      content:"";
+      position:absolute;
+      inset:6px;
+      border-radius:20px;
+      background: linear-gradient(180deg, rgba(10,20,45,.86), rgba(6,10,20,.88));
+      z-index:0;
+    }
+    .stage.noflash::before{animation:none; opacity:.35;}
+    @keyframes spin{to{transform: rotate(360deg);}}
+    @keyframes pulse{0%,100%{filter: brightness(1) saturate(1.2);} 50%{filter: brightness(1.25) saturate(1.8);}}
 
-    <div class="sg-wrap">
-      <div class="sg-row">
-        <button class="sg-btn b1" id="sgPrev">⬅️ Back</button>
-        <button class="sg-btn b2" id="sgNext">Next ➡️</button>
-        <button class="sg-btn b3" id="sgMusic">🎵 Music: Off</button>
-        <button class="sg-btn b4" id="sgUndo">↩️ Oops!</button>
-        <button class="sg-btn b5" id="sgClean">🧼 Clean Page</button>
-        <button class="sg-btn b6" id="sgSave">⭐ Save My Art</button>
+    .canvasWrap{
+      position:relative;
+      z-index:1;
+      padding: 10px;
+      border-radius:18px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    }
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:16px;
+      background:#ffffff;
+      touch-action:none;
+    }
 
-        <div class="sg-pill">
-          <input type="checkbox" id="sgFlash" checked />
-          <label for="sgFlash">Flashing Border</label>
+    .smallstatus{
+      margin:10px 6px 0;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background:#22c55e; box-shadow:0 0 18px rgba(34,197,94,.7);
+    }
+    .dot.off{
+      background:#ef4444; box-shadow:0 0 18px rgba(239,68,68,.65);
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:11px; padding:3px 7px; border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color:#cfe0ff;
+    }
+
+    /* -------- Paint panel -------- */
+    .panel{
+      margin-top:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      background: linear-gradient(90deg, rgba(34,197,94,.18), rgba(59,130,246,.16), rgba(168,85,247,.14));
+      border-bottom:1px solid rgba(255,255,255,.10);
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .panelBody{
+      display:grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap:12px;
+      padding:12px;
+    }
+    @media (max-width: 860px){ .panelBody{grid-template-columns: 1fr;} }
+
+    .section{
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:12px;
+    }
+    .section h2{font-size:13px; margin:0 0 10px 0; color:#dbe8ff; display:flex; align-items:center; gap:8px;}
+    .section p{margin:0 0 10px 0; font-size:12px; color:var(--muted);}
+
+    .swatches{
+      display:grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap:8px;
+    }
+    .swatch{
+      width:100%;
+      aspect-ratio:1/1;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      cursor:pointer;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.25);
+      transition: transform .08s ease, filter .2s ease, outline .2s ease;
+    }
+    .swatch:hover{transform: translateY(-1px); filter: brightness(1.08);}
+    .swatch.selected{outline:2px solid rgba(98,255,207,.9); outline-offset:2px;}
+
+    .modeGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .modeBtn{
+      padding:10px 10px;
+      border-radius:16px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      transition: transform .08s ease, border-color .2s ease, filter .2s ease;
+      text-align:left;
+      min-height:60px;
+    }
+    .modeBtn:hover{transform: translateY(-1px); border-color: rgba(98,255,207,.35); filter: brightness(1.06);}
+    .modeBtn.active{border-color: rgba(98,255,207,.9); box-shadow: 0 0 0 2px rgba(98,255,207,.25) inset;}
+    .modeBtn b{display:block; font-size:13px; margin-bottom:4px;}
+    .modeBtn span{display:block; font-size:11px; color:var(--muted); line-height:1.2;}
+
+    .sliders{display:grid; gap:10px; margin-top:10px;}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .row label{font-size:12px; color:var(--muted);}
+    .row input[type="range"]{flex:1;}
+
+    .footerRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      border-top:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- Kid-friendly controls -->
+    <div class="controls">
+      <button class="kidbtn b1" id="prevBtn" title="Previous picture">
+        <span class="emoji">⬅️</span> Back
+      </button>
+
+      <button class="kidbtn b2" id="nextBtn" title="Next picture">
+        Next <span class="emoji">➡️</span>
+      </button>
+
+      <button class="kidbtn b3" id="musicBtn" title="Music on/off">
+        <span class="emoji">🎵</span> <span id="musicText">Music: Off</span>
+      </button>
+
+      <button class="kidbtn b4" id="undoBtn" title="Undo">
+        <span class="emoji">↩️</span> Oops!
+      </button>
+
+      <button class="kidbtn b5" id="cleanBtn" title="Reload this picture (clean)">
+        <span class="emoji">🧼</span> Clean Page
+      </button>
+
+      <button class="kidbtn b6" id="saveBtn" title="Save your artwork">
+        <span class="emoji">⭐</span> Save My Art
+      </button>
+
+      <div class="toggles">
+        <div class="pill" title="Toggle flashing border">
+          <input type="checkbox" id="flashToggle" checked />
+          <label for="flashToggle">Flashing Border</label>
         </div>
-        <div class="sg-pill">
-          <label for="sgSize">Brush Size</label>
-          <input id="sgSize" type="range" min="3" max="60" value="18" />
-          <span class="sg-kbd" id="sgSizeVal">18</span>
-        </div>
-      </div>
 
-      <div class="sg-modebar">
-        <button class="sg-btn b1" id="sgPaint">🖌 Paint</button>
-        <button class="sg-btn b2" id="sgFill">🪣 Tap Fill</button>
-        <button class="sg-btn b3" id="sgBlank">📄 Blank</button>
-      </div>
-
-      <div class="sg-stage" id="sgStage">
-        <div class="sg-card">
-          <canvas class="sg-canvas" id="sgCanvas"></canvas>
-          <div class="sg-small">
-            <div>Tip: Tap Fill for little ones · Paint for free drawing · Blank for SEN</div>
-            <div><span class="sg-kbd" id="sgPage">Page 1</span></div>
-          </div>
-          <div class="sg-err" id="sgErr"></div>
-
-          <div class="sg-swatches" id="sgSwatches"></div>
+        <div class="pill" title="Brush size">
+          <label for="size">Brush Size</label>
+          <input id="size" type="range" min="3" max="60" value="16" />
+          <span class="kbd" id="sizeVal">16</span>
         </div>
       </div>
     </div>
-  `;
 
-  const $ = (id) => mount.querySelector(id);
-  const stage = $("#sgStage");
-  const errBox = $("#sgErr");
-  const pageLabel = $("#sgPage");
+    <!-- Canvas (ONLY images appear inside here) -->
+    <div class="stage" id="stage">
+      <div class="canvasWrap">
+        <canvas id="canvas" width="1200" height="800" aria-label="Colouring canvas"></canvas>
 
-  // =========================
-  // CANVAS + STATE
-  // =========================
-  const canvas = $("#sgCanvas");
-  const ctx = canvas.getContext("2d", { willReadFrequently:true });
+        <div class="smallstatus">
+          <div>
+            Tip: Tap Fill = one tap to colour an area · <span class="kbd">Ctrl</span>+<span class="kbd">Z</span> Undo
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <span class="dot off" id="audioDot"></span>
+            <span id="audioStatus">Audio Locked</span>
+            <span class="kbd" id="pageLabel">Page 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  let mode = "paint"; // paint | fill | blank
-  let current = 0;
-  let brushColor = "#2563eb";
-  let brushSize = 18;
-  const undoStack = [];
-  const MAX_UNDO = 20;
+    <!-- Paint / Brush Panel -->
+    <div class="panel">
+      <div class="panelHeader">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="chip" id="modeChip">Mode: Normal Paint</span>
+          <span class="chip">Brush Sound: <b id="sfxChip">On</b></span>
+          <span class="chip">Tap Fill: <b id="fillChip">Off</b></span>
+          <span class="chip">Colour: <span class="kbd" id="currentColour">#2563eb</span></span>
+          <span class="chip">Brush: <span class="kbd" id="currentMode">normal</span></span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="kidbtn b2" id="fillBtn" style="padding:10px 12px; font-size:13px;">
+            <span class="emoji">🪣</span> Tap Fill: Off
+          </button>
+          <button class="kidbtn b4" id="sfxBtn" style="padding:10px 12px; font-size:13px;">
+            <span class="emoji">🖌️</span> SFX: On
+          </button>
+          <button class="kidbtn b5" id="eraserBtn" style="padding:10px 12px; font-size:13px;">
+            <span class="emoji">🧽</span> Eraser
+          </button>
+        </div>
+      </div>
 
-  function showErr(msg){
-    errBox.style.display = "block";
-    errBox.textContent = msg;
-  }
-  function clearErr(){
-    errBox.style.display = "none";
-    errBox.textContent = "";
-  }
+      <div class="panelBody">
+        <div class="section">
+          <h2>🎨 Paint Colours</h2>
+          <p>Pick a colour and start colouring!</p>
+          <div class="swatches" id="colourSwatches"></div>
 
-  function setCanvasSize(){
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = Math.max(320, rect.width || 900);
-    const cssH = cssW * (2/3);
-    canvas.style.height = cssH + "px";
-    canvas.width = Math.round(cssW * dpr);
-    canvas.height = Math.round(cssH * dpr);
-  }
+          <div class="sliders">
+            <div class="row">
+              <label for="opacity">Opacity</label>
+              <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
+              <span class="kbd" id="opacityVal">1.00</span>
+            </div>
+            <div class="row">
+              <label for="smooth">Smoothing</label>
+              <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
+              <span class="kbd" id="smoothVal">0.35</span>
+            </div>
+          </div>
+        </div>
 
-  function pushUndo(){
-    try{
-      undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
-      if (undoStack.length > MAX_UNDO) undoStack.shift();
-    }catch(e){}
-  }
-  function undo(){
-    const last = undoStack.pop();
-    if (last) ctx.putImageData(last,0,0);
-  }
+        <div class="section">
+          <h2>✨ Brushes & Effects</h2>
+          <p>Glitter and mixed brushes included.</p>
 
-  function blank(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-  }
+          <div class="modeGrid">
+            <button class="modeBtn active" data-mode="normal">
+              <b>Normal Paint</b><span>Classic smooth brush</span>
+            </button>
+            <button class="modeBtn" data-mode="glitter">
+              <b>Glitter Brush</b><span>Sparkles trail behind</span>
+            </button>
+            <button class="modeBtn" data-mode="rainbow">
+              <b>Rainbow Mix</b><span>Colour-shifting stroke</span>
+            </button>
+            <button class="modeBtn" data-mode="neon">
+              <b>Neon Glow</b><span>Bright glow outline</span>
+            </button>
+            <button class="modeBtn" data-mode="watercolor">
+              <b>Watercolour</b><span>Soft layered wash</span>
+            </button>
+            <button class="modeBtn" data-mode="confetti">
+              <b>Confetti Mix</b><span>Paint + confetti dots</span>
+            </button>
+          </div>
 
-  // =========================
-  // LOAD IMAGE
-  // =========================
-  const img = new Image();
-  img.decoding = "async";
+          <div class="sliders">
+            <div class="row">
+              <label for="glitter">Glitter Strength</label>
+              <input id="glitter" type="range" min="0" max="1" value="0.55" step="0.05" />
+              <span class="kbd" id="glitterVal">0.55</span>
+            </div>
+            <div class="row">
+              <label for="scatter">Effect Scatter</label>
+              <input id="scatter" type="range" min="0" max="1" value="0.35" step="0.05" />
+              <span class="kbd" id="scatterVal">0.35</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  function drawImage(){
-    blank();
-    const ratio = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
-    const w = img.naturalWidth * ratio;
-    const h = img.naturalHeight * ratio;
-    const x = (canvas.width - w) / 2;
-    const y = (canvas.height - h) / 2;
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(img, x, y, w, h);
-  }
+      <div class="footerRow">
+        <div>Undo: <span class="kbd">Ctrl</span>+<span class="kbd">Z</span></div>
+        <div>Tap Fill: turn it on, then tap a white area to fill it</div>
+      </div>
+    </div>
 
-  function load(index){
-    clearErr();
-    current = (index + FILES.length) % FILES.length;
-    pageLabel.textContent = `Page ${current + 1}`;
-    if (mode === "blank") return; // don't load image in blank mode
-    img.src = BASE_PATH + FILES[current];
-  }
+  </div>
 
-  img.onload = () => {
-    drawImage();
-    undoStack.length = 0;
-  };
-  img.onerror = () => {
-    blank();
-    showErr(
-      "Images not loading. Fix BASE_PATH in the script. " +
-      "Tried: " + (BASE_PATH + FILES[current])
-    );
-  };
+  <script>
+    // ==========================================================
+    //  COLOURING GAME (Repo Images Only) + TAP FILL
+    // ==========================================================
 
-  // =========================
-  // FLOOD FILL (simple + stable)
-  // =========================
-  function hexToRgb(hex){
-    const v = parseInt(hex.replace("#",""),16);
-    return [(v>>16)&255,(v>>8)&255,v&255];
-  }
-  function match(a,b){ return a[0]===b[0] && a[1]===b[1] && a[2]===b[2]; }
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-  function floodFill(x,y,hex){
-    const w = canvas.width, h = canvas.height;
-    if (x<0||y<0||x>=w||y>=h) return;
+    // ---- Pages from your repo folder ----
+    const pages = [
+      "colouring images/butterfly.png",
+      "colouring images/car.png",
+      "colouring images/chest.png",
+      "colouring images/dino.png",
+      "colouring images/dog.png",
+      "colouring images/doll.png",
+      "colouring images/house.png",
+      "colouring images/kids.png",
+      "colouring images/plane.png",
+      "colouring images/prince.png",
+      "colouring images/swan.png",
+      "colouring images/veg.png"
+    ];
 
-    const imgData = ctx.getImageData(0,0,w,h);
-    const data = imgData.data;
-    const i0 = (y*w + x)*4;
+    let currentPage = 0;
 
-    const target = [data[i0], data[i0+1], data[i0+2]];
-    const fill = hexToRgb(hex);
-    if (match(target, fill)) return;
+    // ---- High-DPI helper ----
+    function setCanvasSizeForDPR() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
 
-    const stack = [[x,y]];
-    while(stack.length){
-      const [px,py] = stack.pop();
-      if (px<0||py<0||px>=w||py>=h) continue;
-      const i = (py*w + px)*4;
-      const cur = [data[i], data[i+1], data[i+2]];
-      if (!match(cur, target)) continue;
+      const cssW = rect.width;
+      const cssH = rect.width * (2/3);
 
-      data[i]=fill[0]; data[i+1]=fill[1]; data[i+2]=fill[2]; data[i+3]=255;
-      stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
+      canvas.style.height = cssH + "px";
+
+      const newW = Math.max(600, Math.round(cssW * dpr));
+      const newH = Math.max(400, Math.round(cssH * dpr));
+
+      // snapshot
+      let snap = null;
+      try { snap = ctx.getImageData(0,0,canvas.width,canvas.height); } catch(e){}
+
+      canvas.width = newW;
+      canvas.height = newH;
+
+      if (snap) {
+        const tmp = document.createElement("canvas");
+        tmp.width = snap.width; tmp.height = snap.height;
+        tmp.getContext("2d").putImageData(snap,0,0);
+        ctx.drawImage(tmp, 0,0, tmp.width,tmp.height, 0,0, canvas.width,canvas.height);
+      }
     }
-    ctx.putImageData(imgData,0,0);
-  }
 
-  function getPos(e){
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    return {
-      x: Math.floor((e.clientX - rect.left) * dpr),
-      y: Math.floor((e.clientY - rect.top) * dpr)
+    // ---- Base image drawing ----
+    const baseImage = new Image();
+    baseImage.decoding = "async";
+
+    function drawBaseImage() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      const ratio = Math.min(
+        canvas.width / baseImage.naturalWidth,
+        canvas.height / baseImage.naturalHeight
+      );
+
+      const newW = Math.round(baseImage.naturalWidth * ratio);
+      const newH = Math.round(baseImage.naturalHeight * ratio);
+
+      const x = Math.round((canvas.width - newW) / 2);
+      const y = Math.round((canvas.height - newH) / 2);
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(baseImage, x, y, newW, newH);
+    }
+
+    // Undo stack
+    const undoStack = [];
+    const MAX_UNDO = 20;
+    function pushUndo() {
+      try {
+        if (undoStack.length >= MAX_UNDO) undoStack.shift();
+        undoStack.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+      } catch (e) {}
+    }
+    function undo() {
+      const last = undoStack.pop();
+      if (!last) return;
+      ctx.putImageData(last,0,0);
+    }
+
+    // Load selected page and draw it
+    const pageLabel = document.getElementById("pageLabel");
+    function loadPage(index) {
+      currentPage = (index + pages.length) % pages.length;
+      pageLabel.textContent = `Page ${currentPage + 1}`;
+      baseImage.src = encodeURI(pages[currentPage]);
+    }
+
+    baseImage.onload = () => {
+      drawBaseImage();
+      undoStack.length = 0;
     };
-  }
 
-  // =========================
-  // DRAW
-  // =========================
-  let drawing = false;
-
-  canvas.addEventListener("pointerdown", (e) => {
-    const p = getPos(e);
-    pushUndo();
-
-    if (mode === "fill"){
-      floodFill(p.x, p.y, brushColor);
-      return;
-    }
-    if (mode === "paint"){
-      drawing = true;
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-    }
-  });
-
-  canvas.addEventListener("pointermove", (e) => {
-    if (!drawing || mode !== "paint") return;
-    const p = getPos(e);
-    ctx.strokeStyle = brushColor;
-    ctx.lineWidth = brushSize;
-    ctx.lineCap = "round";
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-  });
-
-  canvas.addEventListener("pointerup", () => drawing=false);
-  canvas.addEventListener("pointerleave", () => drawing=false);
-
-  // =========================
-  // UI HOOKS
-  // =========================
-  $("#sgFlash").addEventListener("change", (e) => {
-    stage.classList.toggle("noflash", !e.target.checked);
-  });
-
-  $("#sgSize").addEventListener("input", (e) => {
-    brushSize = parseInt(e.target.value,10);
-    $("#sgSizeVal").textContent = String(brushSize);
-  });
-
-  $("#sgPrev").addEventListener("click", () => { if (mode !== "blank") load(current-1); });
-  $("#sgNext").addEventListener("click", () => { if (mode !== "blank") load(current+1); });
-  $("#sgUndo").addEventListener("click", undo);
-  $("#sgClean").addEventListener("click", () => {
-    undoStack.length = 0;
-    if (mode === "blank") blank();
-    else load(current);
-  });
-
-  $("#sgSave").addEventListener("click", () => {
-    const a = document.createElement("a");
-    a.download = "my_colouring.png";
-    a.href = canvas.toDataURL("image/png");
-    a.click();
-  });
-
-  $("#sgPaint").addEventListener("click", () => { mode="paint"; });
-  $("#sgFill").addEventListener("click", () => { mode="fill"; });
-  $("#sgBlank").addEventListener("click", () => {
-    mode="blank";
-    undoStack.length = 0;
-    blank();
-  });
-
-  // Basic swatches
-  const colours = [
-    "#000000","#ffffff","#ef4444","#f97316","#facc15",
-    "#22c55e","#10b981","#06b6d4","#3b82f6","#6366f1",
-    "#a855f7","#ec4899","#f43f5e","#8b5cf6","#14b8a6",
-    "#84cc16","#eab308","#fb7185","#60a5fa","#94a3b8"
-  ];
-  const sw = $("#sgSwatches");
-  function renderSwatches(){
-    sw.innerHTML = "";
-    colours.forEach(c=>{
-      const d = document.createElement("div");
-      d.className = "sg-swatch" + (c===brushColor ? " sel" : "");
-      d.style.background = c === "#ffffff" ? "linear-gradient(135deg,#fff,#dbeafe)" : c;
-      d.addEventListener("click", ()=>{
-        brushColor = c;
-        [...sw.children].forEach(x=>x.classList.remove("sel"));
-        d.classList.add("sel");
-      });
-      sw.appendChild(d);
+    // ---------- UI: flashing border toggle ----------
+    const stage = document.getElementById('stage');
+    document.getElementById('flashToggle').addEventListener('change', (e)=>{
+      stage.classList.toggle('noflash', !e.target.checked);
     });
-  }
-  renderSwatches();
 
-  // Music button (safe no-crash stub: toggles text; you can plug your synth later)
-  let musicOn = false;
-  $("#sgMusic").addEventListener("click", () => {
-    musicOn = !musicOn;
-    $("#sgMusic").textContent = musicOn ? "🎵 Music: On" : "🎵 Music: Off";
-  });
+    // ---------- Brushes ----------
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const rand = (a,b) => Math.random()*(b-a)+a;
 
-  // Start
-  setCanvasSize();
-  window.addEventListener("resize", () => {
-    setCanvasSize();
-    if (mode === "blank") blank();
-    else load(current);
-  });
+    const sizeEl = document.getElementById('size');
+    const sizeVal = document.getElementById('sizeVal');
+    const opacityEl = document.getElementById('opacity');
+    const opacityVal = document.getElementById('opacityVal');
+    const smoothEl = document.getElementById('smooth');
+    const smoothVal = document.getElementById('smoothVal');
+    const glitterEl = document.getElementById('glitter');
+    const glitterVal = document.getElementById('glitterVal');
+    const scatterEl = document.getElementById('scatter');
+    const scatterVal = document.getElementById('scatterVal');
 
-  blank();
-  load(0);
-})();
-</script>
+    const modeChip = document.getElementById('modeChip');
+    const currentColourEl = document.getElementById('currentColour');
+    const currentModeEl = document.getElementById('currentMode');
+
+    let brushSize = parseInt(sizeEl.value,10);
+    let brushOpacity = parseFloat(opacityEl.value);
+    let smoothing = parseFloat(smoothEl.value);
+    let glitterStrength = parseFloat(glitterEl.value);
+    let scatter = parseFloat(scatterEl.value);
+
+    let brushColour = "#2563eb";
+    let mode = "normal";
+    let isEraser = false;
+
+    
+    // ---------- TAP FILL (Flood Fill with tolerance + better edges + optional glitter overlay) ----------
+    function hexToRgb(hex){
+      const v = parseInt(hex.replace("#",""),16);
+      return [(v>>16)&255,(v>>8)&255,v&255];
+    }
+    function luminance(r,g,b){
+      return 0.2126*r + 0.7152*g + 0.0722*b;
+    }
+    function colorClose(r,g,b, tr,tg,tb, tol){
+      return Math.abs(r-tr) <= tol && Math.abs(g-tg) <= tol && Math.abs(b-tb) <= tol;
+    }
+
+    // Adds sparkles on top of a filled region (sampled points) – used for Glitter/Confetti/Rainbow fill
+    function sprinkleGlitter(samplePoints){
+      if (!samplePoints || samplePoints.length === 0) return;
+
+      const strength = glitterStrength;          // 0..1
+      const scat = scatter;                      // 0..1
+      const count = Math.min(900, Math.floor(samplePoints.length * (0.08 + strength*0.22)));
+
+      ctx.save();
+      ctx.globalCompositeOperation = "source-over";
+
+      for (let i=0;i<count;i++){
+        const p = samplePoints[(Math.random()*samplePoints.length)|0];
+        const x = p.x + rand(-6, 6) * (0.35 + scat);
+        const y = p.y + rand(-6, 6) * (0.35 + scat);
+
+        const r = rand(0.8, 2.6) * (0.7 + strength);
+        let c = "#ffffff";
+        if (mode === "rainbow"){
+          c = hsvToHex((Date.now()/10 + i*35)%360, 0.85, 1);
+        } else if (mode === "confetti"){
+          c = hsvToHex((Date.now()/12 + i*55)%360, 0.85, 1);
+        } else {
+          c = (i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0");
+        }
+
+        ctx.globalAlpha = 0.22 + strength*0.55;
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.fill();
+
+        if (strength > 0.35 && (i % 12 === 0)){
+          ctx.globalAlpha = 0.16 + strength*0.35;
+          ctx.strokeStyle = c;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x-r*2.2, y);
+          ctx.lineTo(x+r*2.2, y);
+          ctx.moveTo(x, y-r*2.2);
+          ctx.lineTo(x, y+r*2.2);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    // Flood fill. Returns sampled points in the filled region for glitter overlay.
+    function floodFillTap(x, y, fillHex){
+      const w = canvas.width, h = canvas.height;
+      if (x<0||y<0||x>=w||y>=h) return [];
+
+      const img = ctx.getImageData(0,0,w,h);
+      const d = img.data;
+      const i0 = (y*w + x) * 4;
+
+      const tr = d[i0], tg = d[i0+1], tb = d[i0+2], ta = d[i0+3];
+
+      if (ta === 0) return [];
+
+      // If user taps a dark outline, do nothing
+      if (luminance(tr,tg,tb) < 55) return [];
+
+      const [fr,fg,fb] = hexToRgb(fillHex);
+
+      if (tr===fr && tg===fg && tb===fb) return [];
+
+      const tol = 30;
+
+      const stack = [[x,y]];
+      const seen = new Uint8Array(w*h);
+
+      const samples = [];
+      const MAX_SAMPLES = 900;
+
+      const MAX_PIXELS = w*h*0.55;
+      let filled = 0;
+
+      while(stack.length){
+        const [px,py] = stack.pop();
+        if (px<0||py<0||px>=w||py>=h) continue;
+
+        const idx = py*w + px;
+        if (seen[idx]) continue;
+        seen[idx] = 1;
+
+        const i = idx*4;
+        const r = d[i], g = d[i+1], b = d[i+2], a = d[i+3];
+
+        if (a === 0) continue;
+
+        if (luminance(r,g,b) < 55) continue;
+
+        if (!colorClose(r,g,b, tr,tg,tb, tol)) continue;
+
+        d[i] = fr; d[i+1] = fg; d[i+2] = fb; d[i+3] = 255;
+        filled++;
+
+        if (samples.length < MAX_SAMPLES){
+          samples.push({x:px, y:py});
+        } else {
+          const j = (Math.random() * filled) | 0;
+          if (j < MAX_SAMPLES) samples[j] = {x:px, y:py};
+        }
+
+        if (filled > MAX_PIXELS) break;
+
+        stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
+      }
+
+      ctx.putImageData(img,0,0);
+      return samples;
+    }
+
+
+    // ---------- Drawing engine ----------
+    let drawing = false;
+    let last = null;
+    let vel = 0;
+
+    function getPos(e){
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const x = (e.clientX - rect.left) * dpr;
+      const y = (e.clientY - rect.top) * dpr;
+      return {x, y};
+    }
+
+    function hsvToHex(h, s, v){
+      let f = (n, k=(n+h/60)%6) => v - v*s*Math.max(Math.min(k,4-k,1),0);
+      const r = Math.round(f(5)*255);
+      const g = Math.round(f(3)*255);
+      const b = Math.round(f(1)*255);
+      return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+
+    function drawStroke(p0, p1){
+      const dx = p1.x - p0.x, dy = p1.y - p0.y;
+      const dist = Math.hypot(dx,dy);
+      const steps = Math.max(1, Math.floor(dist / 2));
+
+      for (let i=0;i<=steps;i++){
+        const t = i/steps;
+        const x = p0.x + dx*t;
+        const y = p0.y + dy*t;
+
+        if (last){
+          const sx = last.x + (x - last.x) * (1 - smoothing);
+          const sy = last.y + (y - last.y) * (1 - smoothing);
+          last.x = sx; last.y = sy;
+        }
+
+        const px = last ? last.x : x;
+        const py = last ? last.y : y;
+
+        vel = vel * 0.85 + dist * 0.15;
+        const pressure = clamp(vel/30, 0.25, 1.2);
+        const r = brushSize * pressure * 0.5;
+
+        if (isEraser){
+          ctx.save();
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(px, py, r, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+          continue;
+        }
+
+        let color = brushColour;
+        if (mode === "rainbow"){
+          const hue = (Date.now()/18 + px/10) % 360;
+          color = hsvToHex(hue, 0.75, 1);
+        }
+
+        if (mode === "watercolor"){
+          ctx.save();
+          ctx.globalAlpha = brushOpacity * 0.18;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(px + rand(-r*scatter, r*scatter), py + rand(-r*scatter, r*scatter), r*1.2, 0, Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(px, py, r*0.85, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        } else if (mode === "neon"){
+          ctx.save();
+          ctx.globalAlpha = brushOpacity * 0.35;
+          ctx.strokeStyle = color;
+          ctx.lineWidth = r*1.8;
+          ctx.shadowBlur = r*2.4;
+          ctx.shadowColor = color;
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+
+          ctx.globalAlpha = brushOpacity * 0.9;
+          ctx.lineWidth = r*0.9;
+          ctx.shadowBlur = r*1.2;
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.save();
+          ctx.globalAlpha = brushOpacity;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(px, py, r, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        if (mode === "glitter" || mode === "confetti" || (mode === "rainbow" && glitterStrength > 0.25)){
+          const count = Math.floor(3 + glitterStrength*10);
+          for (let k=0;k<count;k++){
+            const gx = px + rand(-r*2.2, r*2.2) * (0.3 + scatter);
+            const gy = py + rand(-r*2.2, r*2.2) * (0.3 + scatter);
+            const gr = rand(0.8, 2.6) * (0.7 + glitterStrength);
+            const sparkleColor = (mode === "rainbow")
+              ? hsvToHex((Date.now()/10 + k*40)%360, 0.8, 1)
+              : (k%3===0 ? "#ffffff" : (k%3===1 ? "#fde68a" : "#a7f3d0"));
+
+            ctx.save();
+            ctx.globalAlpha = 0.35 + glitterStrength*0.55;
+            ctx.fillStyle = sparkleColor;
+            ctx.beginPath();
+            ctx.arc(gx, gy, gr, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
+        if (mode === "confetti"){
+          const pops = Math.floor(1 + scatter*6);
+          for (let j=0;j<pops;j++){
+            const cx = px + rand(-r*2.8, r*2.8);
+            const cy = py + rand(-r*2.8, r*2.8);
+            const cw = rand(1.5, 5.5);
+            const ch = rand(1.5, 5.5);
+            const cc = hsvToHex((Date.now()/12 + j*50)%360, 0.8, 1);
+            ctx.save();
+            ctx.globalAlpha = 0.18 + scatter*0.35;
+            ctx.fillStyle = cc;
+            ctx.fillRect(cx, cy, cw, ch);
+            ctx.restore();
+          }
+        }
+      }
+    }
+
+    canvas.addEventListener('pointerdown', (e)=>{
+      // Tap Fill
+      if (tapFillOn){
+        pushUndo();
+        const p = getPos(e);
+        const samples = floodFillTap(Math.floor(p.x), Math.floor(p.y), brushColour);
+
+        // Glitter / confetti / rainbow also sparkle on fill
+        if (mode === "glitter" || mode === "confetti" || mode === "rainbow"){
+          sprinkleGlitter(samples);
+        }
+        return;
+      }
+
+      drawing = true;
+      pushUndo();
+      last = getPos(e);
+      canvas.setPointerCapture(e.pointerId);
+      playBrushSfx(1);
+    });
+
+    canvas.addEventListener('pointermove', (e)=>{
+      if (!drawing) return;
+      const p = getPos(e);
+      drawStroke(last, p);
+      playBrushSfx(clamp(Math.hypot(p.x-last.x,p.y-last.y)/18, 0.3, 1.6));
+      last = p;
+    });
+
+    function endDraw(e){
+      drawing = false;
+      last = null;
+      try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
+    }
+    canvas.addEventListener('pointerup', endDraw);
+    canvas.addEventListener('pointercancel', endDraw);
+    canvas.addEventListener('pointerleave', ()=>{ drawing=false; last=null; });
+
+    // ---------- Buttons ----------
+    document.getElementById("nextBtn").addEventListener("click", ()=>{
+      loadPage(currentPage + 1);
+    });
+    document.getElementById("prevBtn").addEventListener("click", ()=>{
+      loadPage(currentPage - 1);
+    });
+
+    document.getElementById("cleanBtn").addEventListener("click", ()=>{
+      loadPage(currentPage);
+    });
+
+    document.getElementById("undoBtn").addEventListener("click", ()=> undo());
+
+    document.getElementById("saveBtn").addEventListener("click", ()=>{
+      const link = document.createElement('a');
+      link.download = "my_colouring.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+
+    // Ctrl+Z
+    window.addEventListener('keydown', (e)=>{
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){
+        e.preventDefault();
+        undo();
+      }
+    });
+
+    // ---------- Init ----------
+    function init(){
+      syncSliders();
+      buildSwatches();
+      currentColourEl.textContent = brushColour;
+      setMode("normal");
+      updateFillUI();
+
+      setCanvasSizeForDPR();
+      loadPage(0);
+    }
+
+    window.addEventListener("resize", ()=>{
+      setCanvasSizeForDPR();
+      loadPage(currentPage);
+    });
+
+    init();
+  </script>
+</body>
+</html>
