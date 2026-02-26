@@ -22,18 +22,10 @@
       margin-bottom:12px;
     }
     .kidbtn{
-      border:none;
-      border-radius:18px;
-      padding:12px 14px;
-      cursor:pointer;
-      font-weight:800;
-      letter-spacing:.2px;
-      color:#0b1220;
-      box-shadow: var(--shadow);
-      display:flex; align-items:center; gap:10px;
-      user-select:none;
-      transition: transform .08s ease, filter .2s ease;
-      font-size:14px;
+      border:none; border-radius:18px; padding:12px 14px; cursor:pointer;
+      font-weight:800; letter-spacing:.2px; color:#0b1220;
+      box-shadow: var(--shadow); display:flex; align-items:center; gap:10px;
+      user-select:none; transition: transform .08s ease, filter .2s ease; font-size:14px;
     }
     .kidbtn:hover{transform: translateY(-1px); filter:brightness(1.05);}
     .kidbtn:active{transform: translateY(0px) scale(.99);}
@@ -42,10 +34,13 @@
 
     .b1{background: linear-gradient(135deg,#60a5fa,#34d399);}
     .b2{background: linear-gradient(135deg,#fbbf24,#fb7185);}
-    .b3{background: linear-gradient(135deg,#a78bfa,#60a5fa);}
     .b4{background: linear-gradient(135deg,#34d399,#fbbf24);}
     .b5{background: linear-gradient(135deg,#fb7185,#a78bfa);}
     .b6{background: linear-gradient(135deg,#fbbf24,#60a5fa);}
+
+    .fxStar{background: linear-gradient(135deg,#fde68a,#60a5fa);}
+    .fxGlitter{background: linear-gradient(135deg,#a7f3d0,#f472b6);}
+    .fxConfetti{background: linear-gradient(135deg,#fb7185,#fbbf24);}
 
     .toggles{
       display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
@@ -53,8 +48,7 @@
     }
     .pill{
       display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      border-radius:999px;
+      padding:10px 12px; border-radius:999px;
       background: rgba(0,0,0,.28);
       border:1px solid rgba(255,255,255,.14);
       box-shadow: var(--shadow);
@@ -65,68 +59,35 @@
     .pill input[type="range"]{width:170px;}
 
     .stage{
-      margin-top:10px;
-      border-radius:24px;
-      padding:12px;
-      position:relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      overflow:hidden;
+      margin-top:10px; border-radius:24px; padding:12px; position:relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45); overflow:hidden;
     }
     .stage::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      border-radius:26px;
+      content:""; position:absolute; inset:-2px; border-radius:26px; z-index:0; opacity:1;
       background: conic-gradient(from 0deg, #ff3d3d, #ffd93d, #3dff6a, #3ddcff, #7c3dff, #ff3d3d);
       animation: spin 2.8s linear infinite, pulse 1.1s ease-in-out infinite;
-      z-index:0;
-      opacity:1;
     }
     .stage::after{
-      content:"";
-      position:absolute;
-      inset:6px;
-      border-radius:20px;
+      content:""; position:absolute; inset:6px; border-radius:20px; z-index:0;
       background: linear-gradient(180deg, rgba(10,20,45,.86), rgba(6,10,20,.88));
-      z-index:0;
     }
     .stage.noflash::before{animation:none; opacity:.35;}
     @keyframes spin{to{transform: rotate(360deg);}}
     @keyframes pulse{0%,100%{filter: brightness(1) saturate(1.2);} 50%{filter: brightness(1.25) saturate(1.8);}}
 
     .canvasWrap{
-      position:relative;
-      z-index:1;
-      padding: 10px;
-      border-radius:18px;
+      position:relative; z-index:1; padding: 10px; border-radius:18px;
       background: rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.10);
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     }
     canvas{
-      width:100%;
-      height:auto;
-      display:block;
-      border-radius:16px;
-      background:#ffffff;
-      touch-action:none;
+      width:100%; height:auto; display:block; border-radius:16px; background:#ffffff; touch-action:none;
     }
+
     .smallstatus{
-      margin:10px 6px 0;
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .dot{
-      width:10px; height:10px; border-radius:999px;
-      background:#22c55e; box-shadow:0 0 18px rgba(34,197,94,.7);
-    }
-    .dot.off{
-      background:#ef4444; box-shadow:0 0 18px rgba(239,68,68,.65);
+      margin:10px 6px 0; font-size:12px; color:var(--muted);
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
     }
     .kbd{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
@@ -145,32 +106,20 @@
       overflow:hidden;
     }
     .panelHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:12px 14px;
       background: linear-gradient(90deg, rgba(34,197,94,.18), rgba(59,130,246,.16), rgba(168,85,247,.14));
       border-bottom:1px solid rgba(255,255,255,.10);
       flex-wrap:wrap;
     }
     .chip{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
+      font-size:12px; padding:6px 10px; border-radius:999px;
       background: rgba(0,0,0,.25);
       border:1px solid rgba(255,255,255,.12);
       color:var(--muted);
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+      display:inline-flex; align-items:center; gap:8px;
     }
-    .panelBody{
-      display:grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap:12px;
-      padding:12px;
-    }
+    .panelBody{display:grid; grid-template-columns: 1.1fr 1fr; gap:12px; padding:12px;}
     @media (max-width: 860px){ .panelBody{grid-template-columns: 1fr;} }
     .section{
       background: rgba(0,0,0,.25);
@@ -178,18 +127,12 @@
       border-radius:18px;
       padding:12px;
     }
-    .section h2{font-size:13px; margin:0 0 10px 0; color:#dbe8ff; display:flex; align-items:center; gap:8px;}
+    .section h2{font-size:13px; margin:0 0 10px 0; color:#dbe8ff;}
     .section p{margin:0 0 10px 0; font-size:12px; color:var(--muted);}
 
-    .swatches{
-      display:grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap:8px;
-    }
+    .swatches{display:grid; grid-template-columns: repeat(10, 1fr); gap:8px;}
     .swatch{
-      width:100%;
-      aspect-ratio:1/1;
-      border-radius:12px;
+      width:100%; aspect-ratio:1/1; border-radius:12px;
       border:1px solid rgba(255,255,255,.16);
       cursor:pointer;
       box-shadow: inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.25);
@@ -198,22 +141,15 @@
     .swatch:hover{transform: translateY(-1px); filter: brightness(1.08);}
     .swatch.selected{outline:2px solid rgba(98,255,207,.9); outline-offset:2px;}
 
-    .modeGrid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-    }
+    .modeGrid{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;}
     .modeBtn{
-      padding:10px 10px;
-      border-radius:16px;
-      cursor:pointer;
+      padding:10px; border-radius:16px; cursor:pointer;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.04);
       color:var(--text);
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
       transition: transform .08s ease, border-color .2s ease, filter .2s ease;
-      text-align:left;
-      min-height:60px;
+      text-align:left; min-height:60px;
     }
     .modeBtn:hover{transform: translateY(-1px); border-color: rgba(98,255,207,.35); filter: brightness(1.06);}
     .modeBtn.active{border-color: rgba(98,255,207,.9); box-shadow: 0 0 0 2px rgba(98,255,207,.25) inset;}
@@ -226,11 +162,7 @@
     .row input[type="range"]{flex:1;}
 
     .footerRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:space-between;
-      align-items:center;
+      display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center;
       padding:12px 14px;
       border-top:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.18);
@@ -247,11 +179,14 @@
       <button class="kidbtn b1" id="prevBtn"><span class="emoji">⬅️</span> Back</button>
       <button class="kidbtn b2" id="nextBtn">Next <span class="emoji">➡️</span></button>
 
-      <button class="kidbtn b3" id="musicBtn"><span class="emoji">🎵</span> <span id="musicText">Music: Off</span></button>
+      <!-- NEW: quick FX buttons -->
+      <button class="kidbtn fxStar" id="starsBtn"><span class="emoji">⭐</span> Stars</button>
+      <button class="kidbtn fxGlitter" id="glitterBtn"><span class="emoji">✨</span> Glitter</button>
+      <button class="kidbtn fxConfetti" id="confettiBtn"><span class="emoji">🎉</span> Confetti</button>
 
       <button class="kidbtn b4" id="undoBtn"><span class="emoji">↩️</span> Oops!</button>
       <button class="kidbtn b5" id="cleanBtn"><span class="emoji">🧼</span> Clean Page</button>
-      <button class="kidbtn b6" id="saveBtn"><span class="emoji">⭐</span> Save My Art</button>
+      <button class="kidbtn b6" id="saveBtn"><span class="emoji">💾</span> Save</button>
 
       <div class="toggles">
         <div class="pill">
@@ -274,8 +209,6 @@
         <div class="smallstatus">
           <div>Tip: Tap Fill = one tap to colour an area · <span class="kbd">Ctrl</span>+<span class="kbd">Z</span> Undo</div>
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <span class="dot off" id="audioDot"></span>
-            <span id="audioStatus">Audio Locked</span>
             <span class="kbd" id="pageLabel">Page 1</span>
           </div>
         </div>
@@ -320,20 +253,20 @@
 
         <div class="section">
           <h2>✨ Brushes & Effects</h2>
-          <p>Glitter and mixed brushes included.</p>
+          <p>Use the buttons above or pick a brush here.</p>
 
           <div class="modeGrid">
             <button class="modeBtn active" data-mode="normal"><b>Normal Paint</b><span>Classic smooth brush</span></button>
+            <button class="modeBtn" data-mode="stars"><b>Stars</b><span>Star sprinkles</span></button>
             <button class="modeBtn" data-mode="glitter"><b>Glitter Brush</b><span>Sparkles trail behind</span></button>
             <button class="modeBtn" data-mode="rainbow"><b>Rainbow Mix</b><span>Colour-shifting stroke</span></button>
-            <button class="modeBtn" data-mode="neon"><b>Neon Glow</b><span>Bright glow outline</span></button>
             <button class="modeBtn" data-mode="watercolor"><b>Watercolour</b><span>Soft layered wash</span></button>
             <button class="modeBtn" data-mode="confetti"><b>Confetti Mix</b><span>Paint + confetti dots</span></button>
           </div>
 
           <div class="sliders">
             <div class="row">
-              <label for="glitter">Glitter Strength</label>
+              <label for="glitter">Effect Strength</label>
               <input id="glitter" type="range" min="0" max="1" value="0.55" step="0.05" />
               <span class="kbd" id="glitterVal">0.55</span>
             </div>
@@ -449,16 +382,17 @@
     }
     baseImage.onload = () => { drawBaseImage(); undoStack.length = 0; };
 
-    // ---------- UI: flashing border toggle ----------
+    // UI: flashing border toggle
     const stage = document.getElementById('stage');
     document.getElementById('flashToggle').addEventListener('change', (e)=>{
       stage.classList.toggle('noflash', !e.target.checked);
     });
 
-    // ---------- Brushes ----------
+    // Helpers
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
     const rand = (a,b) => Math.random()*(b-a)+a;
 
+    // UI elements
     const sizeEl = document.getElementById('size');
     const sizeVal = document.getElementById('sizeVal');
     const opacityEl = document.getElementById('opacity');
@@ -477,18 +411,17 @@
     let brushSize = parseInt(sizeEl.value,10);
     let brushOpacity = parseFloat(opacityEl.value);
     let smoothing = parseFloat(smoothEl.value);
-    let glitterStrength = parseFloat(glitterEl.value);
+    let effectStrength = parseFloat(glitterEl.value);
     let scatter = parseFloat(scatterEl.value);
 
     let brushColour = "#2563eb";
     let mode = "normal";
     let isEraser = false;
 
-    // ---------- TAP FILL TOGGLE ----------
+    // Tap Fill
     let tapFillOn = false;
     const fillBtn = document.getElementById("fillBtn");
     const fillChip = document.getElementById("fillChip");
-
     function updateFillUI(){
       fillBtn.classList.toggle("active", tapFillOn);
       fillBtn.innerHTML = tapFillOn
@@ -510,16 +443,16 @@
       sizeVal.textContent = brushSize;
       opacityVal.textContent = brushOpacity.toFixed(2);
       smoothVal.textContent = smoothing.toFixed(2);
-      glitterVal.textContent = glitterStrength.toFixed(2);
+      glitterVal.textContent = effectStrength.toFixed(2);
       scatterVal.textContent = scatter.toFixed(2);
     }
     sizeEl.addEventListener('input', ()=>{ brushSize = parseInt(sizeEl.value,10); syncSliders(); });
     opacityEl.addEventListener('input', ()=>{ brushOpacity = parseFloat(opacityEl.value); syncSliders(); });
     smoothEl.addEventListener('input', ()=>{ smoothing = parseFloat(smoothEl.value); syncSliders(); });
-    glitterEl.addEventListener('input', ()=>{ glitterStrength = parseFloat(glitterEl.value); syncSliders(); });
+    glitterEl.addEventListener('input', ()=>{ effectStrength = parseFloat(glitterEl.value); syncSliders(); });
     scatterEl.addEventListener('input', ()=>{ scatter = parseFloat(scatterEl.value); syncSliders(); });
 
-    // ---------- Swatches ----------
+    // Swatches
     const colours = [
       "#000000","#ffffff","#ef4444","#f97316","#facc15",
       "#22c55e","#10b981","#06b6d4","#3b82f6","#6366f1",
@@ -547,14 +480,25 @@
       });
     }
 
-    // ---------- Modes ----------
+    // Modes
     const modeButtons = [...document.querySelectorAll('.modeBtn')];
     function setMode(m){
       mode = m;
       modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode === m));
-      const names = { normal:"Normal Paint", glitter:"Glitter Brush", rainbow:"Rainbow Mix", neon:"Neon Glow", watercolor:"Watercolour", confetti:"Confetti Mix" };
+      const names = {
+        normal:"Normal Paint",
+        stars:"Stars",
+        glitter:"Glitter",
+        rainbow:"Rainbow",
+        watercolor:"Watercolour",
+        confetti:"Confetti"
+      };
       modeChip.textContent = "Mode: " + (names[m] || m);
       currentModeEl.textContent = isEraser ? "eraser" : m;
+      // highlight quick FX buttons
+      document.getElementById("starsBtn").classList.toggle("active", m==="stars");
+      document.getElementById("glitterBtn").classList.toggle("active", m==="glitter");
+      document.getElementById("confettiBtn").classList.toggle("active", m==="confetti");
     }
     modeButtons.forEach(btn=>{
       btn.addEventListener('click', ()=>{
@@ -564,7 +508,12 @@
       });
     });
 
-    // ---------- Eraser ----------
+    // NEW quick FX buttons
+    document.getElementById("starsBtn").addEventListener("click", ()=>{ isEraser=false; eraserBtn.classList.remove("active"); setMode("stars"); });
+    document.getElementById("glitterBtn").addEventListener("click", ()=>{ isEraser=false; eraserBtn.classList.remove("active"); setMode("glitter"); });
+    document.getElementById("confettiBtn").addEventListener("click", ()=>{ isEraser=false; eraserBtn.classList.remove("active"); setMode("confetti"); });
+
+    // Eraser
     const eraserBtn = document.getElementById('eraserBtn');
     eraserBtn.addEventListener('click', ()=>{
       isEraser = !isEraser;
@@ -574,177 +523,21 @@
       currentModeEl.textContent = isEraser ? "eraser" : mode;
     });
 
-    // ---------- Audio (nursery rhyme loop + brush SFX) ----------
-    const audioDot = document.getElementById('audioDot');
-    const audioStatus = document.getElementById('audioStatus');
+    // Brush SFX (kept)
+    let sfxOn = true;
+    const sfxBtn = document.getElementById('sfxBtn');
+    const sfxChip = document.getElementById('sfxChip');
     let audioCtx = null;
-
     function ensureAudio(){
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === "suspended") audioCtx.resume();
     }
-    function unlockAudio(){
-      ensureAudio();
-      if (!audioCtx) return;
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      g.gain.value = 0.0001;
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start();
-      o.stop(audioCtx.currentTime + 0.01);
-      audioDot.classList.remove('off');
-      audioStatus.textContent = "Audio Ready";
-    }
-    canvas.addEventListener('pointerdown', ()=> unlockAudio(), { once:true });
-
-    // Music: simple nursery-rhyme style (major key melody + bass + soft drum tick)
-    let musicOn = false;
-    let musicTimer = null;
-    let musicMaster = null;
-
-    function noteFreq(midi){ return 440 * Math.pow(2,(midi-69)/12); }
-
-    function playTone(type, freq, t, dur, vol){
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g);
-      g.connect(musicMaster);
-      o.start(t);
-      o.stop(t + dur + 0.02);
-    }
-
-    function playDrum(t, vol){
-      const bufferSize = 0.15 * audioCtx.sampleRate;
-      const buf = audioCtx.createBuffer(1, bufferSize|0, audioCtx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i=0;i<data.length;i++){
-        data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 2);
-      }
-      const src = audioCtx.createBufferSource();
-      src.buffer = buf;
-
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(1800, t);
-
-      const g = audioCtx.createGain();
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol, t + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-
-      src.connect(filter);
-      filter.connect(g);
-      g.connect(musicMaster);
-
-      src.start(t);
-      src.stop(t + 0.16);
-    }
-
-    // Melody (C major) — bouncy and loopable
-    // Each item: [midiNote, beats, accentVol]
-    const melody = [
-      [72,1,1],[74,1,1],[76,1,1],[74,1,1],   // C D E D
-      [72,1,1],[72,1,1],[74,2,0.95],         // C C D(hold)
-      [76,1,1],[77,1,1],[79,2,1],            // E F G(hold)
-      [79,1,0.95],[77,1,0.95],[76,2,0.95],   // G F E(hold)
-      [74,1,1],[72,1,1],[74,1,1],[76,1,1],   // D C D E
-      [74,1,1],[72,1,1],[72,2,0.95],         // D C C(hold)
-    ];
-    const bassProg = [
-      [48,4],[53,4],[55,4],[53,4],           // C F G F
-      [48,4],[53,4],[55,4],[48,4]            // C F G C
-    ];
-
-    function startMusic(){
-      ensureAudio();
-      if (!audioCtx) return;
-
-      musicMaster = audioCtx.createGain();
-      musicMaster.gain.value = 0.18;
-      musicMaster.connect(audioCtx.destination);
-
-      const bpm = 120;
-      const beat = 60 / bpm;
-      let mIdx = 0;
-      let bIdx = 0;
-      let beatCount = 0;
-      let nextTime = audioCtx.currentTime + 0.05;
-
-      function tick(){
-        if (!musicOn || !audioCtx) return;
-
-        // schedule ahead a little
-        const scheduleAhead = 0.25;
-        while (nextTime < audioCtx.currentTime + scheduleAhead){
-          // soft drum on beats 1 and 3
-          const inBar = beatCount % 4;
-          if (inBar === 0 || inBar === 2) playDrum(nextTime, 0.10);
-
-          // bass every beat (gentle triangle)
-          const bassRoot = bassProg[bIdx][0];
-          playTone("triangle", noteFreq(bassRoot), nextTime, beat*0.95, 0.09);
-
-          // melody (square lead, slightly rounded)
-          const item = melody[mIdx];
-          const midi = item[0], beats = item[1], acc = item[2];
-          playTone("square", noteFreq(midi), nextTime, beat*0.98, 0.055 * acc);
-
-          // tiny bell sparkle on beat 4 sometimes
-          if (inBar === 3 && (mIdx % 4 === 0)){
-            playTone("sine", noteFreq(84), nextTime + 0.01, 0.08, 0.018);
-          }
-
-          // advance
-          mIdx = (mIdx + 1) % melody.length;
-          beatCount++;
-
-          // bass progression advances every 4 beats
-          if (beatCount % 4 === 0) bIdx = (bIdx + 1) % bassProg.length;
-
-          nextTime += beat;
-        }
-
-        musicTimer = requestAnimationFrame(tick);
-      }
-
-      tick();
-    }
-
-    function stopMusic(){
-      if (musicTimer) cancelAnimationFrame(musicTimer);
-      musicTimer = null;
-      if (musicMaster){
-        try{ musicMaster.disconnect(); }catch(e){}
-      }
-      musicMaster = null;
-    }
-
-    const musicBtn = document.getElementById('musicBtn');
-    const musicText = document.getElementById('musicText');
-    musicBtn.addEventListener('click', ()=>{
-      unlockAudio();
-      musicOn = !musicOn;
-      if (musicOn) startMusic(); else stopMusic();
-      musicText.textContent = "Music: " + (musicOn ? "On" : "Off");
-    });
-
-    // Brush SFX
-    let sfxOn = true;
-    const sfxBtn = document.getElementById('sfxBtn');
-    const sfxChip = document.getElementById('sfxChip');
-
     sfxBtn.addEventListener('click', ()=>{
-      unlockAudio();
+      ensureAudio();
       sfxOn = !sfxOn;
       sfxBtn.innerHTML = sfxOn ? '<span class="emoji">🖌️</span> SFX: On' : '<span class="emoji">🖌️</span> SFX: Off';
       sfxChip.textContent = sfxOn ? "On" : "Off";
     });
-
     function playBrushSfx(intensity=1){
       if (!sfxOn) return;
       ensureAudio();
@@ -778,57 +571,103 @@
       noise.stop(t + 0.09);
     }
 
-    // ---------- TAP FILL (Improved) + glitter fill ----------
+    // Tap Fill helpers
     function hexToRgb(hex){
       const v = parseInt(hex.replace("#",""),16);
       return [(v>>16)&255,(v>>8)&255,v&255];
     }
-    function luminance(r,g,b){
-      return 0.2126*r + 0.7152*g + 0.0722*b;
-    }
+    function luminance(r,g,b){ return 0.2126*r + 0.7152*g + 0.0722*b; }
     function colorClose(r,g,b, tr,tg,tb, tol){
       return Math.abs(r-tr) <= tol && Math.abs(g-tg) <= tol && Math.abs(b-tb) <= tol;
     }
-    function sprinkleGlitter(samplePoints){
-      if (!samplePoints || samplePoints.length === 0) return;
-      const strength = glitterStrength;
-      const scat = scatter;
-      const count = Math.min(900, Math.floor(samplePoints.length * (0.08 + strength*0.22)));
+
+    function hsvToHex(h, s, v){
+      let f = (n, k=(n+h/60)%6) => v - v*s*Math.max(Math.min(k,4-k,1),0);
+      const r = Math.round(f(5)*255);
+      const g = Math.round(f(3)*255);
+      const b = Math.round(f(1)*255);
+      return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+
+    // Star drawing
+    function drawStar(x,y,r,fill){
       ctx.save();
-      for (let i=0;i<count;i++){
-        const p = samplePoints[(Math.random()*samplePoints.length)|0];
-        const x = p.x + rand(-6, 6) * (0.35 + scat);
-        const y = p.y + rand(-6, 6) * (0.35 + scat);
-        const r = rand(0.8, 2.6) * (0.7 + strength);
-        let c = "#ffffff";
-        if (mode === "rainbow") c = hsvToHex((Date.now()/10 + i*35)%360, 0.85, 1);
-        else if (mode === "confetti") c = hsvToHex((Date.now()/12 + i*55)%360, 0.85, 1);
-        else c = (i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0");
-        ctx.globalAlpha = 0.22 + strength*0.55;
-        ctx.fillStyle = c;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI*2);
-        ctx.fill();
+      ctx.translate(x,y);
+      ctx.beginPath();
+      const spikes = 5;
+      const outer = r;
+      const inner = r*0.45;
+      let rot = Math.PI/2 * 3;
+      let step = Math.PI / spikes;
+      ctx.moveTo(0, -outer);
+      for (let i=0;i<spikes;i++){
+        ctx.lineTo(Math.cos(rot) * outer, Math.sin(rot) * outer);
+        rot += step;
+        ctx.lineTo(Math.cos(rot) * inner, Math.sin(rot) * inner);
+        rot += step;
       }
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
       ctx.restore();
     }
+
+    function sprinkleFX(samplePoints){
+      if (!samplePoints || samplePoints.length === 0) return;
+
+      const strength = effectStrength; // 0..1
+      const scat = scatter;
+
+      const count = Math.min(1000, Math.floor(samplePoints.length * (0.10 + strength*0.25)));
+      ctx.save();
+
+      for (let i=0;i<count;i++){
+        const p = samplePoints[(Math.random()*samplePoints.length)|0];
+        const x = p.x + rand(-7, 7) * (0.35 + scat);
+        const y = p.y + rand(-7, 7) * (0.35 + scat);
+
+        if (mode === "stars"){
+          ctx.globalAlpha = 0.22 + strength*0.55;
+          const starSize = rand(1.5, 5.2) * (0.7 + strength);
+          const c = (i%4===0) ? "#ffffff" : (i%4===1 ? "#fde68a" : (i%4===2 ? "#93c5fd" : "#f9a8d4"));
+          drawStar(x,y,starSize,c);
+        } else if (mode === "confetti"){
+          ctx.globalAlpha = 0.16 + strength*0.40;
+          ctx.fillStyle = hsvToHex((Date.now()/12 + i*55)%360, 0.85, 1);
+          ctx.fillRect(x,y, rand(2,6), rand(2,6));
+        } else { // glitter
+          ctx.globalAlpha = 0.22 + strength*0.55;
+          const r = rand(0.8, 2.8) * (0.7 + strength);
+          const c = (i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0");
+          ctx.fillStyle = c;
+          ctx.beginPath();
+          ctx.arc(x,y,r,0,Math.PI*2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+    }
+
     function floodFillTap(x, y, fillHex){
       const w = canvas.width, h = canvas.height;
       if (x<0||y<0||x>=w||y>=h) return [];
       const img = ctx.getImageData(0,0,w,h);
       const d = img.data;
       const i0 = (y*w + x) * 4;
+
       const tr = d[i0], tg = d[i0+1], tb = d[i0+2], ta = d[i0+3];
       if (ta === 0) return [];
       if (luminance(tr,tg,tb) < 55) return []; // stop on outlines
+
       const [fr,fg,fb] = hexToRgb(fillHex);
       if (tr===fr && tg===fg && tb===fb) return [];
-      const tol = 30;
 
+      const tol = 30;
       const stack = [[x,y]];
       const seen = new Uint8Array(w*h);
       const samples = [];
-      const MAX_SAMPLES = 900;
+      const MAX_SAMPLES = 1000;
 
       const MAX_PIXELS = w*h*0.55;
       let filled = 0;
@@ -836,6 +675,7 @@
       while(stack.length){
         const [px,py] = stack.pop();
         if (px<0||py<0||px>=w||py>=h) continue;
+
         const idx = py*w + px;
         if (seen[idx]) continue;
         seen[idx] = 1;
@@ -854,19 +694,12 @@
 
         stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
       }
+
       ctx.putImageData(img,0,0);
       return samples;
     }
 
-    // ---------- Drawing engine (FIXED Neon + FIXED Watercolour) ----------
-    function hsvToHex(h, s, v){
-      let f = (n, k=(n+h/60)%6) => v - v*s*Math.max(Math.min(k,4-k,1),0);
-      const r = Math.round(f(5)*255);
-      const g = Math.round(f(3)*255);
-      const b = Math.round(f(1)*255);
-      return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
-    }
-
+    // Drawing engine
     function getPos(e){
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
@@ -874,9 +707,8 @@
     }
 
     function watercolorStamp(x,y,r,color){
-      // soft radial wash
       const g = ctx.createRadialGradient(x,y,0, x,y, r*2.2);
-      g.addColorStop(0, color + ""); // hex is fine; alpha set by globalAlpha
+      g.addColorStop(0, color);
       g.addColorStop(1, "rgba(255,255,255,0)");
       ctx.fillStyle = g;
       ctx.beginPath();
@@ -889,7 +721,6 @@
       const dist = Math.hypot(dx,dy);
       const steps = Math.max(1, Math.floor(dist / 2));
 
-      // line caps for nicer look
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
@@ -923,40 +754,10 @@
           ctx.globalCompositeOperation = "multiply";
           ctx.globalAlpha = Math.min(0.22, brushOpacity*0.22);
           watercolorStamp(x + rand(-r*scatter, r*scatter), y + rand(-r*scatter, r*scatter), r, color);
-          // a second lighter pass for depth
           ctx.globalAlpha = Math.min(0.12, brushOpacity*0.12);
           watercolorStamp(x, y, r*0.85, color);
           ctx.restore();
-        }
-        else if (mode === "neon"){
-          // FIXED: neon now draws real segments (prev->cur) with glow
-          ctx.save();
-          ctx.globalCompositeOperation = "source-over";
-          ctx.strokeStyle = color;
-
-          // outer glow
-          ctx.globalAlpha = 0.28 * brushOpacity;
-          ctx.lineWidth = r*2.4;
-          ctx.shadowBlur = r*3.2;
-          ctx.shadowColor = color;
-          ctx.beginPath();
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(cur.x, cur.y);
-          ctx.stroke();
-
-          // inner bright line
-          ctx.globalAlpha = 0.85 * brushOpacity;
-          ctx.lineWidth = r*1.1;
-          ctx.shadowBlur = r*1.4;
-          ctx.beginPath();
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(cur.x, cur.y);
-          ctx.stroke();
-
-          ctx.restore();
-        }
-        else {
-          // normal paint stamp
+        } else {
           ctx.save();
           ctx.globalAlpha = brushOpacity;
           ctx.fillStyle = color;
@@ -966,56 +767,53 @@
           ctx.restore();
         }
 
-        // glitter/confetti trail
-        if (mode === "glitter" || mode === "confetti" || (mode === "rainbow" && glitterStrength > 0.25)){
-          const count = Math.floor(3 + glitterStrength*10);
+        // FX trails
+        if (mode === "stars" || mode === "glitter" || mode === "confetti" || (mode==="rainbow" && effectStrength>0.25)){
+          const count = Math.floor(2 + effectStrength*10);
           for (let k=0;k<count;k++){
             const gx = x + rand(-r*2.2, r*2.2) * (0.3 + scatter);
             const gy = y + rand(-r*2.2, r*2.2) * (0.3 + scatter);
-            const gr = rand(0.8, 2.6) * (0.7 + glitterStrength);
-            const sparkleColor = (mode === "rainbow")
-              ? hsvToHex((Date.now()/10 + k*40)%360, 0.8, 1)
-              : (k%3===0 ? "#ffffff" : (k%3===1 ? "#fde68a" : "#a7f3d0"));
-            ctx.save();
-            ctx.globalAlpha = 0.35 + glitterStrength*0.55;
-            ctx.fillStyle = sparkleColor;
-            ctx.beginPath();
-            ctx.arc(gx, gy, gr, 0, Math.PI*2);
-            ctx.fill();
-            ctx.restore();
-          }
-        }
 
-        if (mode === "confetti"){
-          const pops = Math.floor(1 + scatter*6);
-          for (let j=0;j<pops;j++){
-            const cx = x + rand(-r*2.8, r*2.8);
-            const cy = y + rand(-r*2.8, r*2.8);
-            const cw = rand(1.5, 5.5);
-            const ch = rand(1.5, 5.5);
-            const cc = hsvToHex((Date.now()/12 + j*50)%360, 0.8, 1);
-            ctx.save();
-            ctx.globalAlpha = 0.18 + scatter*0.35;
-            ctx.fillStyle = cc;
-            ctx.fillRect(cx, cy, cw, ch);
-            ctx.restore();
+            if (mode === "stars"){
+              ctx.save();
+              ctx.globalAlpha = 0.20 + effectStrength*0.55;
+              const starSize = rand(1.5, 5.4) * (0.7 + effectStrength);
+              const c = (k%4===0) ? "#ffffff" : (k%4===1 ? "#fde68a" : (k%4===2 ? "#93c5fd" : "#f9a8d4"));
+              drawStar(gx,gy,starSize,c);
+              ctx.restore();
+            } else if (mode === "confetti"){
+              ctx.save();
+              ctx.globalAlpha = 0.16 + effectStrength*0.40;
+              ctx.fillStyle = hsvToHex((Date.now()/12 + k*55)%360, 0.85, 1);
+              ctx.fillRect(gx,gy, rand(2,6), rand(2,6));
+              ctx.restore();
+            } else {
+              ctx.save();
+              ctx.globalAlpha = 0.30 + effectStrength*0.55;
+              const rr = rand(0.8, 2.8) * (0.7 + effectStrength);
+              const cc = (k%3===0) ? "#ffffff" : (k%3===1 ? "#fde68a" : "#a7f3d0");
+              ctx.fillStyle = cc;
+              ctx.beginPath();
+              ctx.arc(gx,gy,rr,0,Math.PI*2);
+              ctx.fill();
+              ctx.restore();
+            }
           }
         }
       }
     }
 
-    // ---------- Pointer events ----------
+    // Pointer events
     let drawing = false;
     let lastPoint = null;
 
     canvas.addEventListener('pointerdown', (e)=>{
-      // Tap Fill
       if (tapFillOn){
         pushUndo();
         const p = getPos(e);
         const samples = floodFillTap(Math.floor(p.x), Math.floor(p.y), brushColour);
-        if (mode === "glitter" || mode === "confetti" || mode === "rainbow"){
-          sprinkleGlitter(samples);
+        if (mode === "stars" || mode === "glitter" || mode === "confetti"){
+          sprinkleFX(samples);
         }
         return;
       }
@@ -1029,10 +827,15 @@
     canvas.addEventListener('pointermove', (e)=>{
       if (!drawing || !lastPoint) return;
       const p = getPos(e);
-      // FIXED: draw segments properly between lastPoint and p
-      drawSegment(lastPoint, p);
-      playBrushSfx(clamp(Math.hypot(p.x-lastPoint.x,p.y-lastPoint.y)/18, 0.3, 1.6));
-      lastPoint = p;
+
+      // smoothing (light)
+      const sx = lastPoint.x + (p.x - lastPoint.x) * (1 - smoothing);
+      const sy = lastPoint.y + (p.y - lastPoint.y) * (1 - smoothing);
+      const smoothP = {x:sx, y:sy};
+
+      drawSegment(lastPoint, smoothP);
+      playBrushSfx(clamp(Math.hypot(smoothP.x-lastPoint.x,smoothP.y-lastPoint.y)/18, 0.3, 1.6));
+      lastPoint = smoothP;
     });
 
     function endDraw(e){
@@ -1044,7 +847,7 @@
     canvas.addEventListener('pointercancel', endDraw);
     canvas.addEventListener('pointerleave', ()=>{ drawing=false; lastPoint=null; });
 
-    // ---------- Buttons ----------
+    // Buttons
     document.getElementById("nextBtn").addEventListener("click", ()=> loadPage(currentPage + 1));
     document.getElementById("prevBtn").addEventListener("click", ()=> loadPage(currentPage - 1));
     document.getElementById("cleanBtn").addEventListener("click", ()=> loadPage(currentPage));
@@ -1064,7 +867,7 @@
       }
     });
 
-    // ---------- Init ----------
+    // Init
     function init(){
       syncSliders();
       buildSwatches();
@@ -1074,7 +877,6 @@
       setCanvasSizeForDPR();
       loadPage(0);
     }
-
     window.addEventListener("resize", ()=>{
       setCanvasSizeForDPR();
       loadPage(currentPage);
