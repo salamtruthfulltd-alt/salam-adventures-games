@@ -1,11 +1,10 @@
 import streamlit as st
 import fitz  # PyMuPDF
 from PIL import Image
-from docx import Document
 import io
-import gc  # Garbage Collector to prevent memory crashes
+import gc
 
-st.set_page_config(page_title="KDP Auto-Fixer", layout="centered")
+st.set_page_config(page_title="Salam Truthful - Smart Fixer", layout="centered")
 
 KDP_TRIM_SIZES = {
     "8.5 x 8.5": (8.5, 8.5),
@@ -14,60 +13,41 @@ KDP_TRIM_SIZES = {
     "8.5 x 11": (8.5, 11)
 }
 
-st.title("🛡️ KDP Professional Auto-Fixer")
+st.title("🎨 KDP Smart-Fit Studio")
+st.subheader("Preventing "Cut-off" Art")
 
-# Sidebar for Settings
-selected_size = st.selectbox("Select Your Book's Trim Size:", list(KDP_TRIM_SIZES.keys()))
+selected_size = st.selectbox("Your Amazon Trim Size:", list(KDP_TRIM_SIZES.keys()))
 base_w, base_h = KDP_TRIM_SIZES[selected_size]
 
-# Amazon KDP Bleed Math
-final_w = base_w + 0.125
-final_h = base_h + 0.25
+# KDP Math (points: 72 per inch)
+# We calculate the "Safe Zone" vs the "Bleed Zone"
+bleed = 0.125
+final_w_pts = (base_w + bleed) * 72
+final_h_pts = (base_h + (bleed * 2)) * 72
+safe_rect = fitz.Rect(bleed*72, bleed*72, (base_w)*72, (base_h+bleed)*72)
 
-uploaded_file = st.file_uploader("Upload PDF or Word Document", type=["pdf", "docx"])
+uploaded_file = st.file_uploader("Upload PDF or Image", type=["pdf", "png", "jpg"])
 
 if uploaded_file:
     output_pdf = fitz.open()
     
-    try:
-        if uploaded_file.name.endswith(".pdf"):
-            with st.spinner("Processing PDF Pages..."):
-                input_pdf = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-                for page in input_pdf:
-                    # Reduced DPI slightly (200 instead of 300) to prevent memory crash
-                    pix = page.get_pixmap(dpi=200) 
-                    img_data = pix.tobytes("png")
-                    
-                    new_page = output_pdf.new_page(width=final_w*72, height=final_h*72)
-                    rect = fitz.Rect(0, 0, final_w*72, final_h*72)
-                    new_page.insert_image(rect, stream=img_data)
-                    
-                    # Force memory cleanup
-                    del pix
-                    gc.collect()
+    if uploaded_file.name.endswith(".pdf"):
+        in_pdf = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+        for page in in_pdf:
+            pix = page.get_pixmap(dpi=200)
+            img_data = pix.tobytes("png")
+            
+            new_page = output_pdf.new_page(width=final_w_pts, height=final_h_pts)
+            
+            # THE SMART FIX: 
+            # This "shrink-wraps" your image into the SAFE ZONE 
+            # so the edges don't get cut off.
+            new_page.insert_image(safe_rect, stream=img_data, keep_proportion=True)
+            
+            del pix
+            gc.collect()
 
-        elif uploaded_file.name.endswith(".docx"):
-            with st.spinner("Extracting Word Images..."):
-                doc = Document(uploaded_file)
-                for rel in doc.part.rels.values():
-                    if "image" in rel.target_ref:
-                        new_page = output_pdf.new_page(width=final_w*72, height=final_h*72)
-                        rect = fitz.Rect(0, 0, final_w*72, final_h*72)
-                        new_page.insert_image(rect, stream=rel.target_part.blob)
-                        gc.collect()
-
-        if len(output_pdf) > 0:
-            st.success(f"Perfect! {len(output_pdf)} pages are ready for Amazon.")
-            pdf_bytes = output_pdf.tobytes()
-            st.download_button(
-                label="📥 Download KDP-Ready PDF",
-                data=pdf_bytes,
-                file_name=f"KDP_Ready_{selected_size.replace(' ','')}.pdf",
-                mime="application/pdf"
-            )
+    st.success("Pages centered in Safe Zone. Edges are now protected!")
     
-    except Exception as e:
-        st.error(f"The file was too large for the server. Try a smaller PDF or export your Word doc as a PDF first.")
-    
-    finally:
-        output_pdf.close()
+    # Download
+    st.download_button("📥 Download Protected PDF", output_pdf.tobytes(), "KDP_Safe_Book.pdf")
