@@ -63,7 +63,6 @@
       box-shadow:var(--shadow);
       padding:12px;
       overflow:hidden;
-
       max-width: 920px !important;
       margin: 0 auto !important;
     }
@@ -128,8 +127,8 @@
     .panel{
       margin-top:0;
       border-radius:22px;
-      overflow:auto;                 /* ✅ so nothing “disappears” */
-      max-height: calc(100vh - 170px); /* ✅ panel scrolls if tall */
+      overflow:auto;
+      max-height: calc(100vh - 170px);
       border:1px solid var(--line);
       box-shadow:var(--shadow);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
@@ -139,7 +138,7 @@
       border-bottom:1px solid rgba(255,255,255,.10);
       background: linear-gradient(90deg, rgba(34,197,94,.16), rgba(59,130,246,.14), rgba(168,85,247,.12));
       display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
-      position:sticky;top:0;z-index:5; /* ✅ keeps header visible while scrolling */
+      position:sticky;top:0;z-index:5;
       backdrop-filter: blur(8px);
     }
     .chip{
@@ -150,10 +149,7 @@
       display:inline-flex;align-items:center;gap:8px;
     }
 
-    /* ✅ IMPORTANT FIX:
-       Your old panelBody was 2 columns (1.1fr 1fr).
-       In a narrow side panel that makes the Brushes/FX look “gone”.
-       Force 1 column here. */
+    /* ✅ single column inside side panel */
     .panelBody{padding:12px;display:grid;grid-template-columns:1fr !important;gap:12px}
 
     .card{
@@ -165,7 +161,7 @@
     .card h3{margin:0 0 10px;font-size:13px;color:#dbe8ff}
     .hint{margin:0 0 10px;font-size:12px;color:var(--muted)}
 
-    .swatches{display:grid;grid-template-columns:repeat(8,1fr);gap:8px} /* ✅ fits side panel */
+    .swatches{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
     .sw{
       width:100%;aspect-ratio:1/1;border-radius:12px;cursor:pointer;
       border:1px solid rgba(255,255,255,.16);
@@ -284,18 +280,23 @@
 
           <div class="card">
             <h3>🖌️ Brushes</h3>
-            <p class="hint">Simple shapes. Glow + Rainbow optional.</p>
+            <p class="hint">Star, glitter, triangle + multicolour included.</p>
 
-            <!-- ✅ ALL SPECIAL BRUSHES STILL HERE -->
             <div class="gridBtns" id="brushGrid">
               <button class="mini active" data-brush="round"><span class="e">●</span>Round</button>
               <button class="mini" data-brush="square"><span class="e">■</span>Square</button>
+              <button class="mini" data-brush="triangle"><span class="e">🔺</span>Triangle</button>
               <button class="mini" data-brush="pencil"><span class="e">✏️</span>Pencil</button>
+
               <button class="mini" data-brush="spray"><span class="e">🌫️</span>Spray</button>
-              <button class="mini" data-brush="heart"><span class="e">💖</span>Heart</button>
               <button class="mini" data-brush="starbrush"><span class="e">⭐</span>Star</button>
+              <button class="mini" data-brush="glitterbrush"><span class="e">✨</span>Glitter</button>
+              <button class="mini" data-brush="heart"><span class="e">💖</span>Heart</button>
+
               <button class="mini" id="glowBtn"><span class="e">💫</span>Glow</button>
-              <button class="mini" id="rainbowBtn"><span class="e">🌈</span>Rainbow</button>
+              <button class="mini" id="rainbowBtn"><span class="e">🌈</span>Multi</button>
+              <button class="mini" id="multiFxBtn"><span class="e">🪄</span>Multi FX</button>
+              <button class="mini" id="normalBtn"><span class="e">🎯</span>Normal</button>
             </div>
 
             <!-- FX panel (toggle) -->
@@ -337,10 +338,6 @@
 <script>
 /* =========================
    PREMIUM COLOURING ENGINE
-   - bgCanvas: locked image
-   - paintCanvas: paint + fills + static stamps
-   - fxCanvas: animated objects (stars twinkle, bubbles float)
-   - eraser removes paint pixels AND deletes nearby fx objects
 ========================= */
 
 const bgCanvas = document.getElementById("bgCanvas");
@@ -441,13 +438,14 @@ baseImage.onload=()=>{
 };
 
 // =====================
-// SIMPLE UI STATE
+// UI STATE
 // =====================
-let mode="paint";
-let brush="round";
+let mode="paint"; // paint | fill | erase
+let brush="round"; // round | square | triangle | pencil | spray | heart | starbrush | glitterbrush
 let glow=false;
-let rainbow=false;
-let fxType="stars";
+let rainbow=false;     // multicolour paint
+let multiFX=false;     // multicolour sparkle overlay while painting
+let fxType="stars";    // stamps
 
 function setMode(m){
   mode=m;
@@ -538,18 +536,27 @@ function buildSwatches(){
 buildSwatches();
 
 // =====================
-// BRUSH BUTTONS (special shapes stay)
+// BRUSH BUTTONS
 // =====================
 const brushChip=document.getElementById("brushChip");
 const brushGrid=document.getElementById("brushGrid");
+
+function brushName(b){
+  return (
+    b==="round" ? "Round" :
+    b==="square" ? "Square" :
+    b==="triangle" ? "Triangle" :
+    b==="pencil" ? "Pencil" :
+    b==="spray" ? "Spray" :
+    b==="heart" ? "Heart" :
+    b==="starbrush" ? "Star" :
+    b==="glitterbrush" ? "Glitter" : "Round"
+  );
+}
+
 function setBrush(b){
   brush=b;
-  brushChip.textContent =
-    b==="round"?"Round":
-    b==="square"?"Square":
-    b==="pencil"?"Pencil":
-    b==="spray"?"Spray":
-    b==="heart"?"Heart":"Star";
+  brushChip.textContent = brushName(b);
   [...brushGrid.querySelectorAll("[data-brush]")].forEach(btn=>{
     btn.classList.toggle("active", btn.dataset.brush===b);
   });
@@ -561,8 +568,18 @@ setBrush("round");
 
 const glowBtn=document.getElementById("glowBtn");
 const rainbowBtn=document.getElementById("rainbowBtn");
+const multiFxBtn=document.getElementById("multiFxBtn");
+const normalBtn=document.getElementById("normalBtn");
+
 glowBtn.onclick=()=>{glow=!glow; glowBtn.classList.toggle("active",glow);};
 rainbowBtn.onclick=()=>{rainbow=!rainbow; rainbowBtn.classList.toggle("active",rainbow);};
+multiFxBtn.onclick=()=>{multiFX=!multiFX; multiFxBtn.classList.toggle("active",multiFX);};
+normalBtn.onclick=()=>{
+  glow=false; rainbow=false; multiFX=false;
+  glowBtn.classList.remove("active");
+  rainbowBtn.classList.remove("active");
+  multiFxBtn.classList.remove("active");
+};
 
 // =====================
 // FX BUTTONS
@@ -611,7 +628,6 @@ function playPop(kind="glitter"){
   if (!sfxOn) return;
   ensureAudio(); if (!audioCtx) return;
   const t=audioCtx.currentTime;
-
   const base = (kind==="stars")?880:(kind==="bubbles")?620:(kind==="confetti")?740:820;
 
   const o=audioCtx.createOscillator();
@@ -647,7 +663,7 @@ function playPop(kind="glitter"){
 }
 
 // =====================
-// UNDO (paint pixels + fx objects)
+// UNDO
 // =====================
 const undoStack=[];
 const MAX_UNDO=25;
@@ -732,7 +748,7 @@ function fillFromBG(x,y, fillHex){
 }
 
 // =====================
-// DRAWING
+// DRAWING HELPERS
 // =====================
 function hsvToRgb(h,s,v){
   const c=v*s, x=c*(1-Math.abs((h/60)%2-1)), m=v-c;
@@ -750,7 +766,7 @@ function rgbToHex(r,g,b){
 }
 function rainbowColor(){
   const hue=(Date.now()/14)%360;
-  const [r,g,b]=hsvToRgb(hue,0.8,1);
+  const [r,g,b]=hsvToRgb(hue,0.85,1);
   return rgbToHex(r,g,b);
 }
 
@@ -769,6 +785,7 @@ function drawHeart(ctx,x,y,size,fill){
   ctx.fill();
   ctx.restore();
 }
+
 function drawStar(ctx,x,y,r,fill){
   ctx.save();
   ctx.translate(x,y);
@@ -786,6 +803,30 @@ function drawStar(ctx,x,y,r,fill){
   ctx.restore();
 }
 
+function drawTriangle(ctx,x,y,r,fill){
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(x, y-r);
+  ctx.lineTo(x-r*0.95, y+r*0.85);
+  ctx.lineTo(x+r*0.95, y+r*0.85);
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.restore();
+}
+
+function sparkleCross(ctx,x,y,len,stroke,alpha=0.22){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x-len,y); ctx.lineTo(x+len,y);
+  ctx.moveTo(x,y-len); ctx.lineTo(x,y+len);
+  ctx.stroke();
+  ctx.restore();
+}
+
 function sprayDot(x,y,r,fill){
   paint.save();
   paint.globalAlpha = brushOpacity * 0.7;
@@ -800,6 +841,29 @@ function sprayDot(x,y,r,fill){
     paint.arc(px,py,rr,0,Math.PI*2);
     paint.fill();
   }
+  paint.restore();
+}
+
+function glitterBrushStamp(x,y,r,baseFill){
+  const count = Math.floor(10 + r*1.2);
+  paint.save();
+  paint.globalCompositeOperation="source-over";
+
+  for (let i=0;i<count;i++){
+    const gx = x + rand(-r*2.2, r*2.2);
+    const gy = y + rand(-r*2.2, r*2.2);
+    const gr = rand(0.7, 2.8) * (0.8 + brushOpacity*0.4);
+
+    const c = rainbow ? rainbowColor() : (i%3===0 ? "#ffffff" : (i%3===1 ? "#fde68a" : baseFill));
+    paint.globalAlpha = 0.10 + brushOpacity*0.35;
+    paint.fillStyle=c;
+    paint.beginPath(); paint.arc(gx,gy,gr,0,Math.PI*2); paint.fill();
+
+    if (i%9===0){
+      sparkleCross(paint, gx, gy, gr*2.1, c, 0.10 + brushOpacity*0.25);
+    }
+  }
+
   paint.restore();
 }
 
@@ -824,6 +888,9 @@ function stampBrush(x,y,baseSize){
   } else if (brush==="square"){
     paint.fillStyle=fill;
     paint.fillRect(x-r, y-r, r*2, r*2);
+  } else if (brush==="triangle"){
+    paint.shadowBlur = glow ? Math.max(6,r*0.8):0;
+    drawTriangle(paint,x,y,Math.max(6,r*1.25),fill);
   } else if (brush==="pencil"){
     paint.shadowBlur = glow ? Math.max(4,r*0.45):0;
     paint.globalAlpha = clamp(brushOpacity*0.9,0,1);
@@ -838,6 +905,22 @@ function stampBrush(x,y,baseSize){
   } else if (brush==="starbrush"){
     paint.shadowBlur = glow ? Math.max(6,r*0.7):0;
     drawStar(paint,x,y,Math.max(8,r*1.5),fill);
+  } else if (brush==="glitterbrush"){
+    paint.shadowBlur = 0;
+    glitterBrushStamp(x,y,Math.max(6,r*1.2),fill);
+  }
+
+  // ✅ optional multicolour brush effect overlay (sparkles + tiny stars)
+  if (multiFX && mode==="paint"){
+    const fxCount = Math.floor(2 + r*0.12);
+    for (let i=0;i<fxCount;i++){
+      const xx = x + rand(-r*1.2, r*1.2);
+      const yy = y + rand(-r*1.2, r*1.2);
+      const c = rainbow ? rainbowColor() : fill;
+      paint.globalAlpha = 0.12 + brushOpacity*0.20;
+      drawStar(paint, xx, yy, rand(2.2, 4.5), c);
+      sparkleCross(paint, xx, yy, rand(2.2, 4.8), "#ffffff", 0.08 + brushOpacity*0.18);
+    }
   }
 
   paint.restore();
@@ -934,8 +1017,8 @@ paintCanvas.addEventListener("pointerleave", ()=>{drawing=false;last=null;});
 // =====================
 // FX OBJECTS
 // =====================
-const stars=[];
-const bubbles=[];
+const stars=[];   // {x,y,size,color,phase,tw,rot}
+const bubbles=[]; // {x,y,r,vy,life,max,drift}
 
 function placeFX(x,y){
   const base = brushSize * 0.55;
@@ -988,18 +1071,12 @@ function placeFX(x,y){
       const gx = x + rand(-base*2.2, base*2.2)*(0.35+scat);
       const gy = y + rand(-base*2.2, base*2.2)*(0.35+scat);
       const gr = rand(0.9, 3.8)*(0.7+strength);
-      const c = (i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0");
+      const c = (rainbow ? rainbowColor() : ((i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0")));
       paint.globalAlpha = 0.20 + strength*0.60;
       paint.fillStyle=c;
       paint.beginPath(); paint.arc(gx,gy,gr,0,Math.PI*2); paint.fill();
       if (i%12===0){
-        paint.globalAlpha = 0.12 + strength*0.25;
-        paint.strokeStyle=c;
-        paint.lineWidth=1;
-        paint.beginPath();
-        paint.moveTo(gx-gr*2.4,gy); paint.lineTo(gx+gr*2.4,gy);
-        paint.moveTo(gx,gy-gr*2.4); paint.lineTo(gx,gy+gr*2.4);
-        paint.stroke();
+        sparkleCross(paint, gx, gy, gr*2.4, c, 0.12 + strength*0.25);
       }
     }
     paint.restore();
@@ -1034,7 +1111,7 @@ function placeFX(x,y){
       const hy = y + rand(-base*1.8, base*1.8)*(0.35+scat);
       const sz = rand(base*0.8, base*1.8)*(0.55+strength);
       paint.globalAlpha = 0.18 + strength*0.55;
-      const c = (i%3===0) ? tint : (i%3===1 ? "#fb7185" : "#f9a8d4");
+      const c = rainbow ? rainbowColor() : (i%3===0 ? tint : (i%3===1 ? "#fb7185" : "#f9a8d4"));
       drawHeart(paint,hx,hy,sz,c);
     }
     paint.restore();
@@ -1049,6 +1126,7 @@ function drawAnimated(){
   fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
   const t = Date.now()/1000;
 
+  // Stars
   for (const s of stars){
     const tw = (Math.sin(t*2.6 + s.phase) * 0.5 + 0.5);
     const alpha = 0.22 + tw * (0.22 + s.tw*0.18);
@@ -1072,6 +1150,7 @@ function drawAnimated(){
     fx.restore();
   }
 
+  // Bubbles
   for (let i=bubbles.length-1;i>=0;i--){
     const b=bubbles[i];
     b.life += 16.7;
