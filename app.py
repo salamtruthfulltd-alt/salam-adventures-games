@@ -4,53 +4,51 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 import io
 
-# --- APP INTERFACE ---
-st.set_page_config(page_title="PictureBook Engine", page_icon="📘")
-st.title("📘 PictureBook Engine (MVP)")
-st.write("Upload your DOCX to generate a KDP-compliant PDF.")
+st.set_page_config(page_title="PictureBook Engine", layout="centered")
 
-# Sidebar Settings
+st.title("📘 PictureBook Engine (MVP)")
+st.write("Upload your DOCX manuscript to generate a KDP-compliant PDF.")
+
+# Sidebar for settings
 st.sidebar.header("Book Settings")
-size_choice = st.sidebar.selectbox("Trim Size", ["8.5 x 8.5", "6 x 9", "8.5 x 11"])
+trim_size = st.sidebar.selectbox("Trim Size", ["8.5 x 8.5", "6 x 9", "8.5 x 11"])
 bleed = st.sidebar.checkbox("Apply KDP Bleed (0.125\")", value=True)
 
-# Math for Sizes
+# Math for KDP
 dims = {"8.5 x 8.5": (8.5, 8.5), "6 x 9": (6, 9), "8.5 x 11": (8.5, 11)}
-base_w, base_h = dims[size_choice]
-
+w, h = dims[trim_size]
 if bleed:
-    final_w = base_w + 0.125
-    final_h = base_h + 0.25
-else:
-    final_w, final_h = base_w, base_h
+    w += 0.125
+    h += 0.25
 
-# --- UPLOAD LOGIC ---
-uploaded_file = st.file_uploader("Choose your DOCX manuscript", type="docx")
+uploaded_file = st.file_uploader("Upload your DOCX file", type="docx")
 
 if uploaded_file:
-    if st.button("Generate KDP PDF"):
-        # Process DOCX
+    if st.button("Generate Print-Ready PDF"):
+        st.info("Rebuilding layout... please wait.")
+        
+        # This is the 'Engine' processing
         doc = Document(uploaded_file)
         pdf_buffer = io.BytesIO()
+        c = canvas.Canvas(pdf_buffer, pagesizes=(w * inch, h * inch))
         
-        # Create PDF
-        c = canvas.Canvas(pdf_buffer, pagesizes=(final_w * inch, final_h * inch))
-        
-        # Simple Loop through paragraphs
+        # Simple Logic: Each paragraph becomes a page (MVP version)
         for para in doc.paragraphs:
             if para.text.strip():
-                # Draw Text Page
                 c.setFont("Helvetica", 12)
-                c.drawString(1 * inch, (final_h - 1) * inch, para.text[:100] + "...")
+                # Text Safe Zone Margins
+                text_object = c.beginText(0.5 * inch, (h - 0.5) * inch)
+                text_object.textLines(para.text)
+                c.drawText(text_object)
                 c.showPage()
         
         c.save()
         pdf_buffer.seek(0)
         
-        st.success("🎉 Book Rebuilt Successfully!")
+        st.success("🎉 Done!")
         st.download_button(
-            label="Download Print-Ready PDF",
+            label="Download KDP PDF",
             data=pdf_buffer,
-            file_name="KDP_Ready_Book.pdf",
+            file_name="KDP_Print_Ready.pdf",
             mime="application/pdf"
         )
