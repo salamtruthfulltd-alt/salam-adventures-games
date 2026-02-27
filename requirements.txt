@@ -1,5 +1,4 @@
-streamlit
-python-docx
-reportlab
-Pillow
-streamlit-drawable-canvas
+streamlit==1.40.0
+streamlit-drawable-canvas==0.9.3
+Pillow==10.2.0
+pandas
