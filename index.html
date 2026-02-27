@@ -34,21 +34,20 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:16px;
+      padding:12px; /* ✅ smaller outer padding */
     }
 
-    /* ====== OUTER 3D FRAME (NO SPIN) ====== */
+    /* ✅ SMALLER APP WRAP */
     .frame{
-      width:min(860px, 100%);
+      width:min(720px, 100%); /* ✅ was 860px */
       border-radius: calc(var(--radius) + 10px);
-      padding:12px;
+      padding:10px;           /* ✅ was 12px */
       position:relative;
       filter: drop-shadow(var(--shadow));
       isolation:isolate;
       transform: translateZ(0);
     }
 
-    /* thick “3D edge” base */
     .frame::before{
       content:"";
       position:absolute;
@@ -64,7 +63,6 @@
       z-index:-2;
     }
 
-    /* flashing edge ONLY (no rotation) */
     .frame::after{
       content:"";
       position:absolute;
@@ -92,7 +90,6 @@
       50%{ opacity:.85; filter:saturate(1.25) brightness(1.10) var(--edgeGlow); }
     }
 
-    /* inner card */
     .card{
       background: rgba(255,255,255,.88);
       border:1px solid rgba(16,24,40,.10);
@@ -103,34 +100,31 @@
     }
 
     header{
-      padding:16px 16px 10px;
+      padding:12px 12px 8px; /* ✅ tighter */
       display:flex;
-      gap:12px;
+      gap:10px;
       align-items:flex-start;
       justify-content:space-between;
       flex-wrap:wrap;
     }
 
-    .titleWrap{
-      min-width:240px;
-      flex:1;
-    }
+    .titleWrap{ min-width:220px; flex:1; }
 
     h1{
       margin:0;
-      font-size: clamp(22px, 2.4vw, 32px);
+      font-size: clamp(20px, 2.2vw, 28px); /* ✅ smaller */
       line-height:1.1;
       letter-spacing:-.02em;
     }
     .sub{
       margin:6px 0 0;
       color:var(--muted);
-      font-size: 14px;
+      font-size: 13px; /* ✅ smaller */
     }
 
     .controls{
       display:flex;
-      gap:10px;
+      gap:8px;
       align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
@@ -139,7 +133,7 @@
     .btn{
       border:0;
       border-radius: 999px;
-      padding:10px 14px;
+      padding:9px 12px; /* ✅ smaller */
       background: var(--btn);
       color: var(--btnText);
       font-weight:700;
@@ -151,7 +145,7 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
-      font-size:14px;
+      font-size:13px; /* ✅ smaller */
     }
     .btn:active{ transform: translateY(1px) scale(.99); box-shadow: 0 8px 18px rgba(16,24,40,.15); }
 
@@ -169,32 +163,30 @@
       background:#ffffff;
       border:1px solid rgba(16,24,40,.12);
       border-radius:999px;
-      padding:8px 12px;
-      font-size:14px;
+      padding:7px 10px; /* ✅ smaller */
+      font-size:13px;   /* ✅ smaller */
       color:var(--muted);
       user-select:none;
     }
     .toggle input{ width:16px; height:16px; }
 
     .content{
-      padding: 10px 16px 16px;
+      padding: 8px 12px 12px; /* ✅ tighter */
       display:flex;
       justify-content:center;
     }
 
-    /* ====== SINGLE PANEL ====== */
     .panel{
-      width: min(680px, 100%);
+      width: min(600px, 100%); /* ✅ was 680px */
       background: rgba(255,255,255,.92);
       border:1px solid rgba(16,24,40,.10);
-      border-radius: 24px;
+      border-radius: 22px; /* ✅ slightly smaller */
       box-shadow: 0 16px 40px rgba(16,24,40,.12);
-      padding: 14px;
+      padding: 12px; /* ✅ smaller */
       position:relative;
       overflow:hidden;
     }
 
-    /* subtle 3D sheen inside panel */
     .panel::before{
       content:"";
       position:absolute;
@@ -208,9 +200,9 @@
     .panelInner{ position:relative; }
 
     .imgWrap{
-      width: min(340px, 78vw);
+      width: min(300px, 74vw); /* ✅ smaller */
       aspect-ratio: 1 / 1;
-      border-radius: 22px;
+      border-radius: 20px;
       margin: 0 auto 10px;
       display:grid;
       place-items:center;
@@ -221,8 +213,8 @@
     }
 
     .imgWrap img{
-      width: 78%;
-      height: 78%;
+      width: 76%;
+      height: 76%;
       object-fit: contain;
       image-rendering:auto;
       filter: drop-shadow(0 12px 18px rgba(16,24,40,.18));
@@ -234,13 +226,13 @@
     }
     .prompt .q{
       font-weight:900;
-      font-size: 18px;
+      font-size: 16px; /* ✅ smaller */
       margin:0;
     }
     .prompt .hint{
       margin:4px 0 0;
       color:var(--muted);
-      font-size: 13px;
+      font-size: 12px; /* ✅ smaller */
     }
 
     .inputRow{
@@ -254,9 +246,9 @@
     }
 
     input[type="text"]{
-      width: min(520px, 100%);
-      font-size: 18px;
-      padding: 12px 14px;
+      width: min(460px, 100%); /* ✅ smaller */
+      font-size: 17px;         /* ✅ slightly smaller */
+      padding: 11px 12px;      /* ✅ smaller */
       border-radius: 14px;
       border: 2px solid rgba(0,0,0,.10);
       outline:none;
@@ -271,21 +263,20 @@
     .checkBtn{
       border:0;
       border-radius: 14px;
-      padding: 12px 14px;
+      padding: 11px 12px; /* ✅ smaller */
       font-weight:900;
       cursor:pointer;
       background: #101828;
       color:#fff;
-      min-width: 110px;
+      min-width: 104px; /* ✅ smaller */
       box-shadow: 0 10px 20px rgba(16,24,40,.18);
       -webkit-tap-highlight-color: transparent;
     }
     .checkBtn:active{ transform: translateY(1px); }
 
-    /* ====== KEYBOARD (UNDER INPUT) ====== */
     .kbd{
       width: 100%;
-      max-width: 620px;
+      max-width: 560px; /* ✅ smaller */
       margin: 10px auto 6px;
       background: rgba(255,255,255,.72);
       border: 1px solid rgba(16,24,40,.10);
@@ -306,8 +297,8 @@
       border:1px solid rgba(16,24,40,.12);
       background:#fff;
       border-radius: 14px;
-      padding: 10px 0;
-      min-width: 44px;
+      padding: 9px 0;   /* ✅ smaller */
+      min-width: 40px;  /* ✅ smaller */
       text-align:center;
       font-weight:900;
       cursor:pointer;
@@ -317,7 +308,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     .key:active{ transform: translateY(1px) scale(.99); }
-    .key.wide{ min-width: 96px; padding: 10px 14px; }
+    .key.wide{ min-width: 88px; padding: 9px 12px; } /* ✅ smaller */
 
     .kbdActions{
       display:flex;
@@ -329,13 +320,14 @@
 
     .smallBtn{
       border-radius: 999px;
-      padding: 10px 14px;
+      padding: 9px 12px; /* ✅ smaller */
       font-weight:900;
       border:1px solid rgba(16,24,40,.12);
       background:#fff;
       cursor:pointer;
       box-shadow: 0 10px 22px rgba(16,24,40,.10);
       -webkit-tap-highlight-color: transparent;
+      font-size: 13px; /* ✅ smaller */
     }
     .smallBtn.primary{
       background: linear-gradient(135deg, rgba(0,209,255,.22), rgba(18,183,106,.22));
@@ -344,7 +336,7 @@
 
     .status{
       width: 100%;
-      max-width: 620px;
+      max-width: 560px; /* ✅ smaller */
       margin: 10px auto 0;
       display:flex;
       justify-content:space-between;
@@ -352,22 +344,23 @@
       gap:10px;
       flex-wrap:wrap;
       color:var(--muted);
-      font-size: 14px;
+      font-size: 13px; /* ✅ smaller */
     }
 
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding: 8px 12px;
+      padding: 7px 10px; /* ✅ smaller */
       border-radius: 999px;
       background:#fff;
       border:1px solid rgba(16,24,40,.10);
       box-shadow: 0 8px 14px rgba(16,24,40,.08);
       color:var(--ink);
       font-weight:800;
-      min-width: 132px;
+      min-width: 122px; /* ✅ smaller */
       justify-content:center;
+      font-size: 13px;
     }
 
     .pill.ok{ border-color: rgba(18,183,106,.35); }
@@ -378,11 +371,11 @@
       font-weight:900;
       margin-top: 8px;
       min-height: 22px;
+      font-size: 14px; /* ✅ smaller */
     }
     .msg.ok{ color: var(--ok); }
     .msg.bad{ color: var(--bad); }
 
-    /* sparkle confetti (only when correct) */
     .sparkle{
       position:absolute;
       inset:0;
@@ -406,13 +399,12 @@
       100%{ transform: translate(var(--dx), var(--dy)) scale(1.05); opacity:0; }
     }
 
-    /* Fit inside tight embeds */
     @media (max-width: 520px){
-      header{ padding:14px 12px 8px; }
-      .content{ padding: 8px 12px 12px; }
+      header{ padding:12px 10px 8px; }
+      .content{ padding: 8px 10px 12px; }
       .panel{ padding: 12px; border-radius: 20px; }
-      .key{ min-width: 38px; border-radius: 12px; }
-      .key.wide{ min-width: 82px; }
+      .key{ min-width: 36px; border-radius: 12px; }
+      .key.wide{ min-width: 78px; }
       input[type="text"]{ font-size:16px; }
     }
   </style>
@@ -484,7 +476,6 @@
   </div>
 
   <script>
-    // ====== WORD LIST (USES YOUR PNGs) ======
     const WORDS = [
       { word: "cat",  img: "spell-images/cat.png"  },
       { word: "dog",  img: "spell-images/dog.png"  },
@@ -499,7 +490,6 @@
       { word: "tree", img: "spell-images/tree.png" }
     ];
 
-    // ====== ELEMENTS ======
     const pic = document.getElementById("pic");
     const answer = document.getElementById("answer");
     const msg = document.getElementById("msg");
@@ -515,12 +505,10 @@
     const clearBtn = document.getElementById("clearBtn");
     const backBtn = document.getElementById("backBtn");
 
-    // ====== STATE ======
     let current = WORDS[Math.floor(Math.random() * WORDS.length)];
     let correct = 0;
     let tries = 0;
 
-    // ====== HELPERS ======
     function setWord(item){
       current = item;
       pic.src = item.img;
@@ -538,22 +526,17 @@
       if(!soundToggle.checked) return;
       if(!("speechSynthesis" in window)) return;
 
-      // stop any current speech
       window.speechSynthesis.cancel();
 
       const u = new SpeechSynthesisUtterance(text);
-
-      // pick best available "natural" English voice
       const voices = window.speechSynthesis.getVoices() || [];
       const preferred =
         voices.find(v => /en-GB/i.test(v.lang) && /natural|google|microsoft|aria|ryan|susan|olivia/i.test(v.name)) ||
         voices.find(v => /en-GB/i.test(v.lang)) ||
         voices.find(v => /en/i.test(v.lang)) ||
         voices[0];
-
       if(preferred) u.voice = preferred;
 
-      // friendly kid pacing
       u.rate = 0.95;
       u.pitch = 1.05;
       u.volume = 1;
@@ -608,7 +591,6 @@
       }
     }
 
-    // ====== KEYBOARD BUILD ======
     function buildKeyboard(){
       const r1 = "QWERTYUIOP".split("");
       const r2 = "ASDFGHJKL".split("");
@@ -635,7 +617,6 @@
       r3.forEach(ch => addKey(row3, ch));
     }
 
-    // ====== EVENTS ======
     sayBtn.addEventListener("click", () => speak("Spell " + current.word + "."));
     newBtn.addEventListener("click", () => setWord(WORDS[Math.floor(Math.random() * WORDS.length)]));
 
@@ -649,12 +630,10 @@
       if(e.key === "Enter"){ e.preventDefault(); check(); }
     });
 
-    // voices sometimes load async
     if("speechSynthesis" in window){
       window.speechSynthesis.onvoiceschanged = () => {};
     }
 
-    // ====== INIT ======
     buildKeyboard();
     setWord(current);
   </script>
