@@ -2,7 +2,7 @@ import streamlit as st
 import fitz  # PyMuPDF
 import io
 
-st.set_page_config(page_title="Salam Truthful Fixer", layout="centered")
+st.set_page_config(page_title="Salam Truthful - KDP Fixer")
 
 st.title("🛡️ KDP Safe-Zone Fixer")
 st.write("Ensuring your art stays away from the 'Cut Line'.")
