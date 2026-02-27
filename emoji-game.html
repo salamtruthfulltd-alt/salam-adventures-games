@@ -1,162 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emoji Fun Garden</title>
     <style>
-        body { 
-            margin: 0; padding: 0; height: 100vh; 
-            background: #FFFAF0; overflow: hidden; 
-            font-family: sans-serif; touch-action: none;
-        }
-        
-        /* The Big Central Area */
-        #game { 
-            height: 70%; width: 100%; 
-            display: flex; justify-content: center; align-items: center; 
-            position: relative; 
+        /* 1. Global Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: radial-gradient(circle, #fff9c4, #ffccbc);
+            font-family: 'Arial Round', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            touch-action: none; /* Prevents zooming/scrolling issues */
         }
 
-        /* High-Quality Bubble */
-        #bubble {
-            width: 280px; height: 280px;
+        /* 2. The Game Stage */
+        #stage {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 3. The High-Quality Bubble */
+        .bubble {
+            width: 280px;
+            height: 280px;
             border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 140px;
-            transition: all 0.2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 130px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
             user-select: none;
-            z-index: 10;
         }
 
-        .bubble-on {
-            background: rgba(255,255,255,0.4);
-            border: 10px solid white;
-            box-shadow: inset 0 0 50px rgba(255,255,255,0.9), 0 10px 30px rgba(0,0,0,0.1);
-            backdrop-filter: blur(5px);
+        /* Glassy Look */
+        .bubble-sealed {
+            background: rgba(255, 255, 255, 0.3);
+            border: 8px solid rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 0 50px rgba(255,255,255,0.6), 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
         }
 
-        /* Huge Toddler Buttons */
-        #tray { 
-            height: 30%; width: 100%; 
-            background: #FF69B4; 
-            display: flex; justify-content: space-around; align-items: center;
-            border-top: 10px solid #C71585;
-            padding: 10px; box-sizing: border-box;
+        .bubble-popped {
+            background: transparent;
+            border: 8px solid transparent;
+            transform: scale(1.2);
+        }
+
+        /* 4. The Bottom Tray */
+        #tray {
+            height: 160px;
+            background: #ff4081;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            border-top: 10px solid #c60055;
+            padding: 10px;
         }
 
         .btn {
-            width: 30%; height: 80%;
-            background: white; border: none; border-radius: 25px;
-            font-size: 50px; cursor: pointer;
-            box-shadow: 0 10px #C71585;
-            display: flex; justify-content: center; align-items: center;
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            border: none;
+            font-size: 50px;
+            background: white;
+            box-shadow: 0 8px #880e4f;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.1s;
         }
 
-        .btn:active { transform: translateY(8px); box-shadow: 0 2px #C71585; }
+        .btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px #880e4f;
+        }
 
-        /* Effects */
-        .pop-star {
-            position: absolute; font-size: 40px; pointer-events: none;
-            animation: burst 0.6s ease-out forwards;
+        /* 5. Particle Effects */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 50px;
+            z-index: 10;
+            animation: burst 1s ease-out forwards;
         }
 
         @keyframes burst {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
         }
 
-        /* Helper Hand Animation */
-        #hand {
-            position: absolute; font-size: 60px;
-            animation: pointer 1.5s infinite;
-            pointer-events: none; z-index: 20;
+        /* Helper hand for toddlers */
+        #hint {
+            position: absolute;
+            font-size: 60px;
+            animation: point 1.5s infinite;
+            pointer-events: none;
         }
-        @keyframes pointer {
-            0% { transform: translateY(0); opacity: 0; }
-            50% { transform: translateY(20px); opacity: 1; }
-            100% { transform: translateY(0); opacity: 0; }
+        @keyframes point {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(20px); }
         }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="game">
-    <div id="hand">👆</div>
-    <div id="bubble" class="bubble-on">😢</div>
-</div>
+    <div id="stage">
+        <div id="hint">👆</div>
+        <div id="emoji-bubble" class="bubble bubble-sealed">😢</div>
+    </div>
 
-<div id="tray">
-    <button class="btn" id="wand-btn" onclick="tapWand()">🪄</button>
-    <button class="btn" id="food-btn" onclick="tapGift('🍭')" style="display:none;">🍭</button>
-    <button class="btn" id="toy-btn" onclick="tapGift('🧸')" style="display:none;">🧸</button>
-</div>
+    <div id="tray">
+        <button id="wand-tool" class="btn" onclick="popAction()">🪄</button>
+        <button id="star-tool" class="btn" onclick="popAction()">✨</button>
+
+        <button id="food-tool" class="btn hidden" onclick="giveAction('🍎')">🍎</button>
+        <button id="sweet-tool" class="btn hidden" onclick="giveAction('🍬')">🍬</button>
+        <button id="gift-tool" class="btn hidden" onclick="giveAction('🎁')">🎁</button>
+    </div>
 
 <script>
-    let faces = ['😢', '😡', '😴', '😨', '😋'];
-    let cur = 0;
-    let popped = false;
-    
-    const b = document.getElementById('bubble');
-    const h = document.getElementById('hand');
-    const wBtn = document.getElementById('wand-btn');
-    const fBtn = document.getElementById('food-btn');
-    const tBtn = document.getElementById('toy-btn');
+    const faces = ['😢', '😡', '😴', '😨', '😋'];
+    let currentFace = 0;
+    let isPopped = false;
 
-    function tapWand() {
-        if(popped) return;
-        popped = true;
-        
+    const bubble = document.getElementById('emoji-bubble');
+    const hint = document.getElementById('hint');
+    
+    // Tools
+    const wands = [document.getElementById('wand-tool'), document.getElementById('star-tool')];
+    const gifts = [document.getElementById('food-tool'), document.getElementById('sweet-tool'), document.getElementById('gift-tool')];
+
+    // ACTION 1: Pop the bubble with a wand
+    function popAction() {
+        if (isPopped) return;
+        isPopped = true;
+
         // Visual Pop
-        b.classList.remove('bubble-on');
-        b.innerText = '😮';
-        h.style.display = 'none'; // Hide helper hand
-        
-        // Explosion
-        for(let i=0; i<10; i++) spawn('✨');
+        bubble.classList.remove('bubble-sealed');
+        bubble.classList.add('bubble-popped');
+        bubble.innerText = '😮';
+        hint.style.display = 'none';
+
+        // Particles
+        spawnParticles('✨');
 
         // Swap Buttons
-        wBtn.style.display = 'none';
-        fBtn.style.display = 'flex';
-        tBtn.style.display = 'flex';
+        wands.forEach(b => b.classList.add('hidden'));
+        gifts.forEach(b => b.classList.remove('hidden'));
     }
 
-    function tapGift(item) {
-        if(!popped) return;
-        
-        b.innerText = '😄';
-        b.style.transform = 'scale(1.4)';
-        
-        for(let i=0; i<8; i++) {
-            spawn(item);
-            spawn('❤️');
-        }
+    // ACTION 2: Give treats
+    function giveAction(item) {
+        if (!isPopped) return;
 
-        // Reset to next emoji
+        // Make Emoji Happy
+        bubble.innerText = '😄';
+        spawnParticles(item);
+        spawnParticles('❤️');
+
+        // Wait, then reset to next level
         setTimeout(() => {
-            cur = (cur + 1) % faces.length;
-            popped = false;
-            b.innerText = faces[cur];
-            b.classList.add('bubble-on');
-            b.style.transform = 'scale(1)';
-            
-            // Swap Buttons Back
-            wBtn.style.display = 'flex';
-            fBtn.style.display = 'none';
-            tBtn.style.display = 'none';
-            h.style.display = 'block'; // Show helper hand again
+            currentFace = (currentFace + 1) % faces.length;
+            isPopped = false;
+
+            // Reset Bubble
+            bubble.classList.remove('bubble-popped');
+            bubble.classList.add('bubble-sealed');
+            bubble.innerText = faces[currentFace];
+            hint.style.display = 'block';
+
+            // Reset Buttons
+            wands.forEach(b => b.classList.remove('hidden'));
+            gifts.forEach(b => b.classList.add('hidden'));
         }, 2000);
     }
 
-    function spawn(symbol) {
-        const s = document.createElement('div');
-        s.className = 'pop-star';
-        s.innerText = symbol;
-        s.style.left = '50%'; s.style.top = '50%';
-        s.style.setProperty('--x', (Math.random()*400 - 200) + 'px');
-        s.style.setProperty('--y', (Math.random()*400 - 200) + 'px');
-        document.getElementById('game').appendChild(s);
-        setTimeout(() => s.remove(), 600);
+    // Effect Function
+    function spawnParticles(icon) {
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = icon;
+            p.style.left = '50%';
+            p.style.top = '50%';
+            
+            // Random direction
+            const x = (Math.random() - 0.5) * 500;
+            const y = (Math.random() - 0.5) * 500;
+            p.style.setProperty('--x', x + 'px');
+            p.style.setProperty('--y', y + 'px');
+
+            document.getElementById('stage').appendChild(p);
+            setTimeout(() => p.remove(), 1000);
+        }
     }
 </script>
-
 </body>
 </html>
