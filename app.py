@@ -2,7 +2,7 @@ import streamlit as st
 import fitz  # PyMuPDF
 import io
 
-st.set_page_config(page_title="Salam Truthful Fixer")
+st.set_page_config(page_title="Salam Truthful Fixer", layout="centered")
 
 st.title("🛡️ KDP Safe-Zone Fixer")
 st.write("Ensuring your art stays away from the 'Cut Line'.")
@@ -15,17 +15,17 @@ w_in, h_in = [float(x) for x in size_choice.split(" x ")]
 final_w = (w_in + 0.125) * 72
 final_h = (h_in + 0.25) * 72
 
-up = st.file_uploader("Upload PDF", type="pdf")
+up = st.file_uploader("Upload your PDF", type="pdf")
 
 if up:
     try:
         out_pdf = fitz.open()
         in_pdf = fitz.open(stream=up.read(), filetype="pdf")
         
-        # SAFE ZONE MATH: We keep the art 0.25" away from the edge.
+        # SAFE ZONE MATH: We keep the art 0.375" away from the edge.
         # This prevents the "Cutoff" you are experiencing.
-        safe_margin = 18 
-        safe_rect = fitz.Rect(safe_margin, safe_margin, final_w - safe_margin, final_h - safe_margin)
+        margin = 27 
+        safe_rect = fitz.Rect(margin, margin, final_w - margin, final_h - margin)
 
         for page in in_pdf:
             pix = page.get_pixmap(dpi=150)
