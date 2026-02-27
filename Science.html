@@ -2,74 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oops! Lost in Space | 404 Error</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduFree Hub | Learn & Play</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: #0b0d17;
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            overflow: hidden;
-        }
+        :root { --p: #4776E6; --s: #8E54E9; --g: #00b09b; --pink: #ff4081; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f0f4f8; overflow-x: hidden; }
+        
+        /* Navigation */
+        nav { background: white; padding: 15px; display: flex; justify-content: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-btn { border: none; background: none; font-weight: bold; color: var(--p); cursor: pointer; padding: 10px; border-radius: 10px; }
+        .nav-btn.active { background: var(--p); color: white; }
 
-        .astronaut {
-            font-size: 80px;
-            animation: float 4s ease-in-out infinite;
-        }
+        .section { display: none; padding: 20px; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-30px) rotate(10deg); }
-        }
+        /* Science Card Style */
+        .card { background: white; border-radius: 25px; padding: 20px; max-width: 400px; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
+        .card-img { width: 100%; height: 200px; border-radius: 20px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 80px; }
+        
+        /* Emoji Game Style */
+        #game-box { height: 300px; display: flex; align-items: center; justify-content: center; font-size: 100px; position: relative; }
+        .bubble-wrap { width: 200px; height: 200px; border: 8px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .tray { display: flex; justify-content: center; gap: 10px; }
+        .big-btn { width: 80px; height: 80px; border-radius: 20px; border: none; font-size: 40px; cursor: pointer; background: white; box-shadow: 0 5px #ddd; }
+        .big-btn:active { transform: translateY(3px); box-shadow: 0 2px #ddd; }
 
-        h1 { font-size: 100px; margin: 10px 0; color: #4776E6; }
-        p { font-size: 20px; color: #94a3b8; max-width: 400px; }
-
-        .btn-home {
-            margin-top: 30px;
-            padding: 15px 40px;
-            background: #8E54E9;
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 10px 20px rgba(142, 84, 233, 0.4);
-            transition: 0.3s;
-        }
-
-        .btn-home:hover { background: #4776E6; transform: scale(1.05); }
-
-        .links {
-            margin-top: 50px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .links a { color: #00b09b; text-decoration: none; font-size: 14px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="astronaut">👨‍🚀</div>
-    <h1>404</h1>
-    <h2>Houston, we have a problem!</h2>
-    <p>This page has floated away into a black hole. Let's get you back to safety!</p>
+<nav>
+    <button class="nav-btn active" onclick="show('home', this)">🏠 Hub</button>
+    <button class="nav-btn" onclick="show('science', this)">🔬 Science</button>
+    <button class="nav-btn" onclick="show('game', this)">🎮 Game</button>
+</nav>
 
-    <a href="index.html" class="btn-home">Back to the Hub 🚀</a>
-
-    <div class="links">
-        <a href="science.html">Science Explorer</a>
-        <a href="games.html">Fun Games</a>
-        <a href="library.html">Free Ebooks</a>
+<div id="home" class="section active">
+    <h1 style="text-align: center; color: var(--p);">Welcome to EduFree Hub</h1>
+    <p style="text-align: center;">Your free primary resource library.</p>
+    <div class="card">
+        <h3>Primary Maths Generator</h3>
+        <p>Coming Soon: Dynamic worksheet creator for English and Maths!</p>
     </div>
+</div>
+
+<div id="science" class="section">
+    <div class="card">
+        <div class="card-img" id="sci-img">🔭</div>
+        <h2 id="sci-title">Ready to Learn?</h2>
+        <p id="sci-desc">Click the button to generate a science topic.</p>
+        <button class="big-btn" style="width: auto; padding: 0 20px; font-size: 18px; background: var(--g); color: white;" onclick="genSci()">Generate Topic ✨</button>
+    </div>
+</div>
+
+<div id="game" class="section">
+    <div id="game-box">
+        <div id="main-bubble" class="bubble-wrap">😢</div>
+    </div>
+    <div class="tray">
+        <button id="w1" class="big-btn" style="background: var(--s);" onclick="popEmoji()">🪄</button>
+        <button id="f1" class="big-btn hidden" style="background: var(--pink);" onclick="feedEmoji('🍎')">🍎</button>
+        <button id="f2" class="big-btn hidden" style="background: var(--pink);" onclick="feedEmoji('🎁')">🎁</button>
+    </div>
+</div>
+
+<script>
+    // Navigation Logic
+    function show(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // Science Logic
+    const sciTopics = [
+        { t: "The Solar System", d: "Eight planets orbit the Sun.", i: "🪐", f: "Earth is the only planet with life!" },
+        { t: "The Human Body", d: "Your heart pumps blood to your toes!", i: "❤️", f: "Your heart is the size of your fist." },
+        { t: "Gravity", d: "Gravity pulls everything down to Earth.", i: "🍏", f: "There is no gravity in deep space!" }
+    ];
+    function genSci() {
+        const item = sciTopics[Math.floor(Math.random()*sciTopics.length)];
+        document.getElementById('sci-title').innerText = item.t;
+        document.getElementById('sci-desc').innerText = item.d;
+        document.getElementById('sci-img').innerText = item.i;
+    }
+
+    // Game Logic
+    let isPopped = false;
+    function popEmoji() {
+        if(isPopped) return;
+        isPopped = true;
+        const b = document.getElementById('main-bubble');
+        b.style.border = "none"; b.style.background = "none"; b.innerText = "😮";
+        document.getElementById('w1').classList.add('hidden');
+        document.getElementById('f1').classList.remove('hidden');
+        document.getElementById('f2').classList.remove('hidden');
+    }
+    function feedEmoji(item) {
+        const b = document.getElementById('main-bubble');
+        b.innerText = "😄";
+        setTimeout(() => {
+            b.innerText = "😢";
+            b.style.border = "8px solid white"; b.style.background = "rgba(255,255,255,0.5)";
+            isPopped = false;
+            document.getElementById('w1').classList.remove('hidden');
+            document.getElementById('f1').classList.add('hidden');
+            document.getElementById('f2').classList.add('hidden');
+        }, 2000);
+    }
+</script>
 
 </body>
 </html>
