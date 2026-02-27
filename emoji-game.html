@@ -2,117 +2,170 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emoji Pop Deluxe</title>
     <style>
+        :root {
+            --bg: #fff0f5;
+            --primary: #ff69b4;
+            --secondary: #9370db;
+        }
         body { 
             margin: 0; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
-            background: #FFF0F5; 
-            font-family: sans-serif;
+            background: var(--bg); 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             touch-action: manipulation;
         }
-        #screen { 
+        #game-area { 
             flex-grow: 1; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            position: relative; 
+            perspective: 1000px;
         }
-        /* The Bubble */
-        #emoji { 
-            font-size: 120px; 
-            width: 250px; 
-            height: 250px; 
-            display: flex; 
-            align-items: center; 
+
+        /* High-End Bubble Effect */
+        #emoji-container {
+            width: 260px;
+            height: 260px;
+            display: flex;
+            align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: all 0.3s;
+            font-size: 130px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             user-select: none;
+            position: relative;
         }
-        .in-bubble { 
-            background: rgba(255,255,255,0.6); 
-            border: 8px solid white; 
-            box-shadow: inset 0 0 50px white;
+
+        .bubble-active {
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.5) 100%);
+            border: 4px solid rgba(255,255,255,0.8);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 0 60px rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
         }
-        /* Big Buttons */
+
+        /* Bounce Animation */
+        .bounce { animation: bounce 0.5s ease; }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.85); }
+        }
+
+        /* UI Trays */
         .tray { 
             display: flex; 
             justify-content: center; 
-            gap: 15px; 
-            padding: 20px; 
-            background: #FF69B4; 
+            gap: 20px; 
+            padding: 25px; 
+            background: white;
+            border-radius: 40px 40px 0 0;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
         }
         .item { 
-            width: 80px; 
-            height: 80px; 
-            background: white; 
-            border-radius: 20px; 
-            font-size: 40px; 
+            width: 85px; height: 85px; 
+            background: #f8f9fa;
+            border-radius: 25px; 
+            font-size: 45px; 
             border: none; 
-            box-shadow: 0 5px #C71585;
+            box-shadow: 0 8px #ddd;
             cursor: pointer;
+            transition: 0.1s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .item:active { transform: translateY(4px); box-shadow: 0 1px #C71585; }
-        
-        .floating { position: absolute; font-size: 50px; animation: fly 1s forwards; }
-        @keyframes fly { 0% { bottom: 50%; opacity: 1; } 100% { bottom: 80%; opacity: 0; } }
+        .item:active { transform: translateY(6px); box-shadow: 0 2px #ddd; }
+        .wand-btn { background: var(--secondary); color: white; box-shadow: 0 8px #6a4ea1; }
+        .gift-btn { background: var(--primary); color: white; box-shadow: 0 8px #d81b60; }
+
+        /* Effects */
+        .particle { 
+            position: absolute; 
+            font-size: 50px; 
+            pointer-events: none;
+            animation: popOut 0.8s ease-out forwards; 
+        }
+        @keyframes popOut {
+            0% { transform: translate(0,0) scale(0); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
+        }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
     </style>
 </head>
 <body>
 
-<div id="screen">
-    <div id="emoji" class="in-bubble">😢</div>
+<div id="game-area">
+    <div id="emoji-container" class="bubble-active">😢</div>
 </div>
 
-<div class="tray" style="background: #9370DB;">
-    <button class="item" onclick="popIt()">🪄</button>
-    <button class="item" onclick="popIt()">⭐</button>
+<div class="tray" style="padding-bottom: 10px;">
+    <button class="item wand-btn" onclick="popMe()">🪄</button>
+    <button class="item wand-btn" onclick="popMe()">🌟</button>
 </div>
 
 <div class="tray">
-    <button class="item" onclick="give('🍎')">🍎</button>
-    <button class="item" onclick="give('🍬')">🍬</button>
-    <button class="item" onclick="give('🎁')">🎁</button>
+    <button class="item gift-btn" onclick="feed('🍎')">🍎</button>
+    <button class="item gift-btn" onclick="feed('🍬')">🍬</button>
+    <button class="item gift-btn" onclick="feed('🎁')">🎁</button>
 </div>
 
 <script>
-    let isPopped = false;
-    let faces = ['😢', '😡', '😴', '😨'];
+    let popped = false;
+    let faces = ['😢', '😡', '😴', '😨', '😋'];
     let current = 0;
-    const el = document.getElementById('emoji');
+    const emoji = document.getElementById('emoji-container');
 
-    function popIt() {
-        if(isPopped) return;
-        isPopped = true;
-        el.classList.remove('in-bubble');
-        el.innerText = '😮';
-        spawn('✨');
+    function popMe() {
+        if(popped) return;
+        popped = true;
+        
+        document.body.classList.add('shake');
+        setTimeout(() => document.body.classList.remove('shake'), 300);
+
+        emoji.classList.remove('bubble-active');
+        emoji.classList.add('bounce');
+        emoji.innerText = '😮';
+        
+        burst('✨');
     }
 
-    function give(gift) {
-        if(!isPopped) return;
-        el.innerText = '😄';
-        spawn(gift);
-        spawn('❤️');
+    function feed(item) {
+        if(!popped) return;
         
+        emoji.innerText = '😄';
+        emoji.style.transform = 'scale(1.2)';
+        burst(item);
+        burst('❤️');
+
         setTimeout(() => {
             current = (current + 1) % faces.length;
-            el.innerText = faces[current];
-            el.classList.add('in-bubble');
-            isPopped = false;
+            emoji.innerText = faces[current];
+            emoji.classList.add('bubble-active');
+            emoji.style.transform = 'scale(1)';
+            emoji.classList.remove('bounce');
+            popped = false;
         }, 2000);
     }
 
-    function spawn(icon) {
-        const s = document.createElement('div');
-        s.className = 'floating';
-        s.innerText = icon;
-        s.style.left = (Math.random() * 60 + 20) + '%';
-        document.body.appendChild(s);
-        setTimeout(() => s.remove(), 1000);
+    function burst(symbol) {
+        for(let i=0; i<8; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = symbol;
+            p.style.setProperty('--x', (Math.random()*400 - 200) + 'px');
+            p.style.setProperty('--y', (Math.random()*400 - 200) + 'px');
+            p.style.left = '50%';
+            p.style.top = '50%';
+            document.getElementById('game-area').appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        }
     }
 </script>
 </body>
