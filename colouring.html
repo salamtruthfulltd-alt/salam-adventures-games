@@ -8,8 +8,6 @@
     :root{
       --bg1:#0b1024;
       --bg2:#111a33;
-      --panel:#0f1730;
-      --panel2:#121d3d;
       --stroke:rgba(255,255,255,.14);
       --stroke2:rgba(255,255,255,.09);
       --txt:#eaf0ff;
@@ -18,7 +16,6 @@
       --round:22px;
       --round2:16px;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -34,61 +31,16 @@
       padding:28px;
     }
 
-    /* Outer frame */
-    .app {
-      width:min(980px, 96vw);
+    .app{
+      width:min(980px,96vw);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       border:1px solid var(--stroke);
       border-radius: 28px;
       box-shadow: var(--shadow);
       overflow:hidden;
-      position:relative;
     }
 
-    /* Top toolbar */
-    .topbar{
-      padding:14px 16px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
-      border-bottom:1px solid var(--stroke2);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    .pill{
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(12,18,42,.55);
-      color:var(--txt);
-      border-radius: 999px;
-      padding:10px 14px;
-      font-weight:700;
-      font-size:14px;
-      cursor:pointer;
-      transition:.15s transform, .15s filter, .15s opacity;
-      user-select:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      box-shadow: inset 0 0 14px rgba(255,255,255,.06);
-    }
-    .pill:hover{ transform: translateY(-1px); filter:brightness(1.08) }
-    .pill:active{ transform: translateY(0px) scale(.99) }
-    .pill[disabled]{opacity:.55; cursor:not-allowed}
-
-    /* Gradient candy buttons */
-    .b-back{ background:linear-gradient(90deg,#63c7ff,#6a8bff); }
-    .b-next{ background:linear-gradient(90deg,#ffd86b,#ff8c6b); color:#1b1020;}
-    .b-paint{ background:linear-gradient(90deg,#ff6bd6,#8a7bff);}
-    .b-fill{ background:linear-gradient(90deg,#5effa1,#5cc2ff); color:#06131b;}
-    .b-erase{ background:linear-gradient(90deg,#ff7b7b,#ffb86b); color:#221105;}
-    .b-fx{ background:linear-gradient(90deg,#ffef5c,#ff7bf0); color:#1b1020;}
-    .b-undo{ background:linear-gradient(90deg,#7bffef,#7ba2ff); color:#06131b;}
-    .b-clear{ background:linear-gradient(90deg,#ff7bf0,#ff7b7b); color:#1b0b12;}
-    .b-save{ background:linear-gradient(90deg,#baff6b,#6bffda); color:#06131b;}
-
-    /* Main layout */
+    /* Main 2-column layout */
     .main{
       display:grid;
       grid-template-columns: 1.15fr .85fr;
@@ -104,7 +56,7 @@
       display:flex;
       flex-direction:column;
       gap:12px;
-      min-height: 640px;
+      min-height: 660px;
     }
 
     .right{
@@ -112,10 +64,10 @@
       border:1px solid var(--stroke2);
       border-radius: var(--round);
       padding:14px;
-      min-height: 640px;
+      min-height: 660px;
     }
 
-    /* Smaller image container (as requested) */
+    /* LEFT: image container smaller */
     .canvas-wrap{
       background: linear-gradient(180deg, rgba(5,8,22,.8), rgba(7,10,28,.65));
       border:1px solid rgba(255,255,255,.12);
@@ -125,8 +77,8 @@
     }
 
     .canvas-stage{
-      width: 420px;       /* smaller */
-      height: 420px;      /* smaller */
+      width: 420px;
+      height: 420px;
       margin: 0 auto;
       background:#ffffff;
       border-radius: 16px;
@@ -178,7 +130,6 @@
       font-size:12.5px;
       color:rgba(234,240,255,.75);
     }
-
     .badge{
       padding:6px 10px;
       border-radius:999px;
@@ -186,28 +137,74 @@
       background: rgba(0,0,0,.20);
     }
 
-    /* Brushes moved UNDER image (as requested) */
-    .brushes-container{
-      margin-top: 6px;
-      padding: 12px;
+    /* Buttons style */
+    .pill{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(12,18,42,.55);
+      color:var(--txt);
+      border-radius: 999px;
+      padding:10px 14px;
+      font-weight:800;
+      font-size:14px;
+      cursor:pointer;
+      transition:.15s transform, .15s filter, .15s opacity;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow: inset 0 0 14px rgba(255,255,255,.06);
+    }
+    .pill:hover{ transform: translateY(-1px); filter:brightness(1.08) }
+    .pill:active{ transform: translateY(0px) scale(.99) }
+    .pill[disabled]{opacity:.55; cursor:not-allowed}
+
+    /* Candy gradients */
+    .b-back{ background:linear-gradient(90deg,#63c7ff,#6a8bff); }
+    .b-next{ background:linear-gradient(90deg,#ffd86b,#ff8c6b); color:#1b1020;}
+    .b-save{ background:linear-gradient(90deg,#baff6b,#6bffda); color:#06131b;}
+    .b-undo{ background:linear-gradient(90deg,#7bffef,#7ba2ff); color:#06131b;}
+    .b-clear{ background:linear-gradient(90deg,#ff7bf0,#ff7b7b); color:#1b0b12;}
+
+    .b-paint{ background:linear-gradient(90deg,#ff6bd6,#8a7bff);}
+    .b-fill{ background:linear-gradient(90deg,#5effa1,#5cc2ff); color:#06131b;}
+    .b-erase{ background:linear-gradient(90deg,#ff7b7b,#ffb86b); color:#221105;}
+    .b-fx{ background:linear-gradient(90deg,#ffef5c,#ff7bf0); color:#1b1020;}
+
+    /* NEW: Mode buttons row UNDER the paint area */
+    .modebar{
+      margin-top:12px;
+      padding:12px;
       background: linear-gradient(145deg, #1e2a4a, #0c122a);
       border:1px solid rgba(255,255,255,.14);
       border-radius: 20px;
       display:flex;
-      flex-direction:column;
       gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
       box-shadow: inset 0 0 12px rgba(255,255,255,0.05);
     }
 
+    /* Brushes section (stays under modes) */
+    .brushes-container{
+      margin-top: 0;
+      padding: 12px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 20px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
     .brushes-title{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      color:rgba(234,240,255,.9);
-      font-weight:800;
+      font-weight:900;
       font-size:13px;
+      color:rgba(234,240,255,.9);
     }
+    .mini{ font-size:12px; color:var(--muted); }
 
     .brush-row{
       display:flex;
@@ -215,11 +212,10 @@
       gap:10px;
       justify-content:center;
     }
-
     .brush-btn{
-      padding: 10px 14px;       /* slightly smaller */
+      padding: 10px 14px;
       font-size: 13.5px;
-      font-weight:800;
+      font-weight:900;
       border-radius: 14px;
       border:1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.06);
@@ -238,7 +234,7 @@
       background: rgba(255,255,255,.12);
     }
 
-    /* Right panel controls */
+    /* RIGHT SIDE PANEL blocks */
     .panel-title{
       font-weight:900;
       letter-spacing:.2px;
@@ -248,12 +244,6 @@
       justify-content:space-between;
       gap:10px;
     }
-
-    .mini{
-      font-size:12px;
-      color:var(--muted);
-    }
-
     .row{
       background: rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.10);
@@ -261,7 +251,6 @@
       padding:12px;
       margin-bottom:12px;
     }
-
     .chips{
       display:flex;
       flex-wrap:wrap;
@@ -269,17 +258,15 @@
       align-items:center;
       margin-bottom:10px;
     }
-
     .chip{
       font-size:12px;
-      font-weight:800;
+      font-weight:900;
       padding:7px 10px;
       border-radius: 999px;
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: rgba(234,240,255,.9);
     }
-
     .chip strong{ color:#fff }
 
     .palette{
@@ -289,8 +276,7 @@
       margin-top:10px;
     }
     .swatch{
-      width:34px;
-      height:34px;
+      width:34px;height:34px;
       border-radius: 10px;
       border:2px solid rgba(255,255,255,.55);
       cursor:pointer;
@@ -346,7 +332,14 @@
       line-height:1.35;
     }
 
-    /* Responsive */
+    /* Right-side action buttons grouped */
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
     @media (max-width: 880px){
       body{ padding:14px; }
       .main{ grid-template-columns: 1fr; }
@@ -357,45 +350,36 @@
 </head>
 <body>
   <div class="app" role="application" aria-label="Colouring App">
-    <!-- TOP CONTROLS (NO BRUSHES HERE ANYMORE) -->
-    <div class="topbar">
-      <button class="pill b-back" id="btnBack">⬅️ Back</button>
-      <button class="pill b-next" id="btnNext">Next ➡️</button>
-
-      <button class="pill b-paint" id="btnModePaint">🖌️ Paint</button>
-      <button class="pill b-fill" id="btnModeFill">🪣 Fill</button>
-      <button class="pill b-erase" id="btnModeErase">🧼 Erase</button>
-      <button class="pill b-fx" id="btnModeFX">✨ FX</button>
-
-      <button class="pill b-undo" id="btnUndo">↩️ Undo</button>
-      <button class="pill b-clear" id="btnClear">🧽 Clear</button>
-      <button class="pill b-save" id="btnSave">💾 Save</button>
-    </div>
-
     <div class="main">
-      <!-- LEFT: IMAGE + BRUSHES UNDER IMAGE -->
+      <!-- LEFT: IMAGE + MODE BUTTONS UNDER IMAGE + BRUSHES UNDER THAT -->
       <div class="left">
         <div class="canvas-wrap">
           <div class="canvas-stage" id="stage">
-            <!-- Your lineart (never erased) -->
+            <!-- ✅ Image is back and always visible -->
             <img id="lineart" alt="Colouring Page" src="butterfly.png" />
-            <!-- Paint layer (erasing only affects this) -->
             <canvas id="paintLayer"></canvas>
-            <!-- FX layer (sparkles etc.) -->
             <canvas id="fxLayer"></canvas>
           </div>
 
           <div class="tip">
-            Tip: <b>Paint</b> = draw • <b>Fill</b> = tap an area • <b>Erase</b> removes paint only • <b>FX</b> adds stars/glitter/confetti.
+            Tip: <b>Paint</b> = draw • <b>Fill</b> = tap an area • <b>Erase</b> removes paint only • <b>FX</b> adds sparkles.
           </div>
 
           <div class="statusbar">
             <span class="badge" id="pageBadge">Page 1</span>
             <span class="badge" id="modeBadge">Mode: Paint</span>
           </div>
+
+          <!-- ✅ MODE BUTTONS MOVED UNDER PAINT AREA (NOT TOP) -->
+          <div class="modebar">
+            <button class="pill b-paint" id="btnModePaint">🖌️ Paint</button>
+            <button class="pill b-fill" id="btnModeFill">🪣 Fill</button>
+            <button class="pill b-erase" id="btnModeErase">🧼 Erase</button>
+            <button class="pill b-fx" id="btnModeFX">✨ FX</button>
+          </div>
         </div>
 
-        <!-- BRUSHES MOVED UNDER IMAGE (EMPTY SPACE FILLED) -->
+        <!-- ✅ BRUSHES UNDER IMAGE -->
         <div class="brushes-container">
           <div class="brushes-title">
             <span>🧰 Brushes</span>
@@ -413,16 +397,28 @@
           </div>
 
           <div class="small-note">
-            Brush affects Paint mode. FX mode uses the FX selector (Stars/Glitter/Confetti) on the right.
+            Brush affects Paint mode. FX mode uses FX selector on the right.
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: COLOURS + SLIDERS + FX -->
+      <!-- RIGHT: KEEP ALL OTHER BUTTONS HERE -->
       <div class="right">
         <div class="panel-title">
           <span>Controls</span>
-          <span class="mini">Colour • Size • Opacity • Smooth</span>
+          <span class="mini">Pages • Undo • Clear • Save • Colour</span>
+        </div>
+
+        <!-- ✅ Right side buttons (Back/Next/Undo/Clear/Save) -->
+        <div class="row">
+          <div class="actions">
+            <button class="pill b-back" id="btnBack">⬅️ Back</button>
+            <button class="pill b-next" id="btnNext">Next ➡️</button>
+            <button class="pill b-undo" id="btnUndo">↩️ Undo</button>
+            <button class="pill b-clear" id="btnClear">🧽 Clear</button>
+            <button class="pill b-save" id="btnSave">💾 Save</button>
+          </div>
+          <div class="small-note">Undo affects paint + FX. Clear wipes paint + FX (image stays).</div>
         </div>
 
         <div class="row">
@@ -430,42 +426,33 @@
             <span class="chip">Colour: <strong id="chipColour">#ff4d6d</strong></span>
             <span class="chip">Brush: <strong id="chipBrush">Round</strong></span>
             <span class="chip">FX: <strong id="chipFX">Stars</strong></span>
+            <span class="chip">SFX: <strong id="chipSFX">On</strong></span>
           </div>
 
           <div class="toggle">
-            <span class="chip">SFX: <strong id="chipSFX">On</strong></span>
+            <span class="chip">Sound Effects</span>
             <button id="btnSFX">🔊 SFX</button>
           </div>
 
           <div class="small-note">Pick a colour (paint + tint for some FX).</div>
-
           <div class="palette" id="palette"></div>
 
           <div class="slider">
-            <label>
-              <span>Size</span>
-              <span id="valSize">16</span>
-            </label>
+            <label><span>Size</span><span id="valSize">16</span></label>
             <input id="size" type="range" min="4" max="60" value="16"/>
 
-            <label>
-              <span>Opacity</span>
-              <span id="valOpacity">0.90</span>
-            </label>
+            <label><span>Opacity</span><span id="valOpacity">0.90</span></label>
             <input id="opacity" type="range" min="0.1" max="1" step="0.05" value="0.9"/>
 
-            <label>
-              <span>Smooth</span>
-              <span id="valSmooth">0.55</span>
-            </label>
+            <label><span>Smooth</span><span id="valSmooth">0.55</span></label>
             <input id="smooth" type="range" min="0" max="0.9" step="0.05" value="0.55"/>
           </div>
         </div>
 
         <div class="row">
           <div class="panel-title" style="margin:0 0 8px">
-            <span>✨ FX Mode</span>
-            <span class="mini">Tap to drop effects</span>
+            <span>✨ FX Selector</span>
+            <span class="mini">Use in FX mode</span>
           </div>
 
           <div class="chips" id="fxChips">
@@ -474,18 +461,16 @@
             <button class="brush-btn" data-fx="confetti">🎉 Confetti</button>
           </div>
 
-          <div class="small-note">
-            In FX mode: tap to place effects. They gently twinkle automatically.
-          </div>
+          <div class="small-note">In FX mode: tap canvas to drop effects (they twinkle).</div>
         </div>
 
         <div class="row">
           <div class="panel-title" style="margin:0 0 8px">
             <span>Pages</span>
-            <span class="mini">Replace images here</span>
+            <span class="mini">Edit list in code</span>
           </div>
           <div class="small-note">
-            This demo uses: <b>butterfly.png</b>. Add more pages in the <code>pages[]</code> array in the script.
+            This demo uses: <b>butterfly.png</b>. Add more in <code>pages[]</code> (e.g. star.png, balloon.png, salam.png).
           </div>
         </div>
       </div>
@@ -493,7 +478,7 @@
   </div>
 
   <script>
-    // ---------- Simple SFX (tiny beeps) ----------
+    // ---------- Simple SFX ----------
     let sfxOn = true;
     const beep = (freq=660, dur=0.06, type="sine", vol=0.045) => {
       if(!sfxOn) return;
@@ -501,8 +486,7 @@
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const o = ctx.createOscillator();
         const g = ctx.createGain();
-        o.type = type;
-        o.frequency.value = freq;
+        o.type = type; o.frequency.value = freq;
         g.gain.value = vol;
         o.connect(g); g.connect(ctx.destination);
         o.start();
@@ -528,16 +512,18 @@
     const chipFX = document.getElementById('chipFX');
     const chipSFX = document.getElementById('chipSFX');
 
-    // Top buttons
+    // Right action buttons
     const btnBack = document.getElementById('btnBack');
     const btnNext = document.getElementById('btnNext');
+    const btnUndo = document.getElementById('btnUndo');
+    const btnClear = document.getElementById('btnClear');
+    const btnSave = document.getElementById('btnSave');
+
+    // Mode buttons (now under paint)
     const btnModePaint = document.getElementById('btnModePaint');
     const btnModeFill = document.getElementById('btnModeFill');
     const btnModeErase = document.getElementById('btnModeErase');
     const btnModeFX = document.getElementById('btnModeFX');
-    const btnUndo = document.getElementById('btnUndo');
-    const btnClear = document.getElementById('btnClear');
-    const btnSave = document.getElementById('btnSave');
 
     // Right controls
     const paletteEl = document.getElementById('palette');
@@ -547,37 +533,32 @@
     const valSize = document.getElementById('valSize');
     const valOpacity = document.getElementById('valOpacity');
     const valSmooth = document.getElementById('valSmooth');
-
     const btnSFX = document.getElementById('btnSFX');
 
-    // Brush row (under image)
+    // Brushes (under image)
     const brushRow = document.getElementById('brushRow');
     const brushBadge = document.getElementById('brushBadge');
 
     // FX chips (right)
     const fxChips = document.getElementById('fxChips');
 
-    // ---------- App State ----------
-    const pages = [
-      "butterfly.png"
-      // Add more like: "star.png", "balloon.png", "salam.png"
-    ];
+    // ---------- State ----------
+    const pages = ["butterfly.png"]; // add more here
     let pageIndex = 0;
 
-    let mode = "paint"; // paint | fill | erase | fx
-    let brush = "round"; // round | square | triangle | spray | star | glitter | multi
-    let fxMode = "stars"; // stars | glitter | confetti
+    let mode = "paint";     // paint | fill | erase | fx
+    let brush = "round";    // round | square | triangle | spray | star | glitter | multi
+    let fxMode = "stars";   // stars | glitter | confetti
 
     let colour = "#ff4d6d";
     let brushSize = parseInt(sizeEl.value, 10);
     let opacity = parseFloat(opacityEl.value);
     let smooth = parseFloat(smoothEl.value);
 
-    // Undo stacks (paint + fx)
+    // Undo stores both layers + particles
     const undoStack = [];
     const maxUndo = 30;
 
-    // FX particles store
     const fxParticles = [];
 
     // ---------- Helpers ----------
@@ -587,16 +568,16 @@
       beep(m === "erase" ? 240 : 660, 0.06, "triangle");
     }
 
-    function setBrush(b){
-      brush = b;
-      brushBadge.textContent = b[0].toUpperCase() + b.slice(1);
-      chipBrush.textContent = brushLabel(b);
-      beep(520, 0.05, "sine");
-    }
-
     function brushLabel(b){
       const map = {round:"Round", square:"Square", triangle:"Triangle", spray:"Spray", star:"Star", glitter:"Glitter", multi:"Multi"};
       return map[b] || "Round";
+    }
+
+    function setBrush(b){
+      brush = b;
+      brushBadge.textContent = brushLabel(b);
+      chipBrush.textContent = brushLabel(b);
+      beep(520, 0.05, "sine");
     }
 
     function setFX(f){
@@ -622,13 +603,11 @@
         cv.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
       });
 
-      // keep paint crisp
       pctx.lineCap = "round";
       pctx.lineJoin = "round";
     }
 
     function snapshot(){
-      // Save both layers for undo
       try{
         const p = paint.toDataURL("image/png");
         const f = fx.toDataURL("image/png");
@@ -639,31 +618,35 @@
 
     function restoreSnap(snap){
       if(!snap) return;
-      // Restore paint
+      const dpr = window.devicePixelRatio || 1;
+      const w = paint.width / dpr;
+      const h = paint.height / dpr;
+
       const ip = new Image();
       ip.onload = ()=>{
-        pctx.clearRect(0,0,paint.width,paint.height);
-        pctx.drawImage(ip, 0,0, paint.width/(window.devicePixelRatio||1), paint.height/(window.devicePixelRatio||1));
+        pctx.clearRect(0,0,w,h);
+        pctx.drawImage(ip, 0,0, w, h);
       };
       ip.src = snap.p;
 
-      // Restore fx
       const iff = new Image();
       iff.onload = ()=>{
-        fctx.clearRect(0,0,fx.width,fx.height);
-        fctx.drawImage(iff, 0,0, fx.width/(window.devicePixelRatio||1), fx.height/(window.devicePixelRatio||1));
+        fctx.clearRect(0,0,w,h);
+        fctx.drawImage(iff, 0,0, w, h);
       };
       iff.src = snap.f;
 
-      // Restore particles
       fxParticles.length = 0;
       snap.fxParticles.forEach(x=>fxParticles.push(x));
     }
 
     function clearAll(){
       snapshot();
-      pctx.clearRect(0,0,paint.width,paint.height);
-      fctx.clearRect(0,0,fx.width,fx.height);
+      const dpr = window.devicePixelRatio || 1;
+      const w = paint.width / dpr;
+      const h = paint.height / dpr;
+      pctx.clearRect(0,0,w,h);
+      fctx.clearRect(0,0,w,h);
       fxParticles.length = 0;
       beep(180,0.08,"square");
     }
@@ -679,14 +662,19 @@
       pageIndex = Math.max(0, Math.min(pages.length-1, i));
       img.src = pages[pageIndex];
       pageBadge.textContent = `Page ${pageIndex+1}`;
-      // Clear layers for new page
-      pctx.clearRect(0,0,paint.width,paint.height);
-      fctx.clearRect(0,0,fx.width,fx.height);
+
+      // clear layers for new page (image never touched)
+      const dpr = window.devicePixelRatio || 1;
+      const w = paint.width / dpr;
+      const h = paint.height / dpr;
+      pctx.clearRect(0,0,w,h);
+      fctx.clearRect(0,0,w,h);
       fxParticles.length = 0;
       undoStack.length = 0;
-      beep(720,0.06,"sine");
+
       btnBack.disabled = pageIndex === 0;
       btnNext.disabled = pageIndex === pages.length-1;
+      beep(720,0.06,"sine");
     }
 
     // ---------- Palette ----------
@@ -728,11 +716,23 @@
     function drawStroke(from, to){
       const steps = Math.max(1, Math.floor(Math.hypot(to.x-from.x, to.y-from.y) / 2));
       for(let i=0;i<=steps;i++){
-        const t = i/steps;
-        const x = lerp(from.x, to.x, t);
-        const y = lerp(from.y, to.y, t);
+        const tt = i/steps;
+        const x = lerp(from.x, to.x, tt);
+        const y = lerp(from.y, to.y, tt);
         stampPaint(x,y);
       }
+    }
+
+    function drawStar(ctx, x, y, outerR, innerR, points){
+      ctx.beginPath();
+      const step = Math.PI / points;
+      for(let i=0;i<2*points;i++){
+        const r = (i%2===0)? outerR : innerR;
+        const a = i*step - Math.PI/2;
+        ctx.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r);
+      }
+      ctx.closePath();
+      ctx.fill();
     }
 
     function stampPaint(x,y){
@@ -753,12 +753,10 @@
         ctx.beginPath();
         ctx.arc(x,y,r,0,Math.PI*2);
         ctx.fill();
-      }
-      else if(brush === "square"){
+      } else if(brush === "square"){
         ctx.fillStyle = colour;
         ctx.fillRect(x-r, y-r, brushSize, brushSize);
-      }
-      else if(brush === "triangle"){
+      } else if(brush === "triangle"){
         ctx.fillStyle = colour;
         ctx.beginPath();
         ctx.moveTo(x, y-r);
@@ -766,21 +764,17 @@
         ctx.lineTo(x-r, y+r);
         ctx.closePath();
         ctx.fill();
-      }
-      else if(brush === "spray"){
+      } else if(brush === "spray"){
         ctx.fillStyle = colour;
         for(let i=0;i<18;i++){
           const a = Math.random()*Math.PI*2;
           const rr = Math.random()*r;
           ctx.fillRect(x + Math.cos(a)*rr, y + Math.sin(a)*rr, 1.6, 1.6);
         }
-      }
-      else if(brush === "star"){
+      } else if(brush === "star"){
         ctx.fillStyle = colour;
         drawStar(ctx, x, y, r, Math.max(4, r*0.55), 5);
-      }
-      else if(brush === "glitter"){
-        // glitter: multistamp sparkles around point
+      } else if(brush === "glitter"){
         for(let i=0;i<8;i++){
           const a = Math.random()*Math.PI*2;
           const rr = Math.random()*r;
@@ -789,9 +783,7 @@
           ctx.fillStyle = colour;
           drawStar(ctx, cx, cy, Math.max(2, r*0.35), Math.max(1, r*0.18), 5);
         }
-      }
-      else if(brush === "multi"){
-        // rainbow multi
+      } else if(brush === "multi"){
         const rainbow = ["#ff3b30","#ff9500","#ffcc00","#34c759","#00c7be","#007aff","#5856d6","#af52de"];
         ctx.fillStyle = rainbow[Math.floor(Math.random()*rainbow.length)];
         ctx.beginPath();
@@ -802,19 +794,7 @@
       ctx.restore();
     }
 
-    function drawStar(ctx, x, y, outerR, innerR, points){
-      ctx.beginPath();
-      const step = Math.PI / points;
-      for(let i=0;i<2*points;i++){
-        const r = (i%2===0)? outerR : innerR;
-        const a = i*step - Math.PI/2;
-        ctx.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r);
-      }
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    // ---------- Fill (simple flood fill on paint layer only) ----------
+    // ---------- Fill (paint layer only) ----------
     function hexToRgba(hex, a=1){
       const h = hex.replace("#","");
       const v = parseInt(h.length===3 ? h.split("").map(c=>c+c).join("") : h, 16);
@@ -824,21 +804,21 @@
     function floodFill(x,y){
       snapshot();
 
-      const w = paint.width/(window.devicePixelRatio||1);
-      const h = paint.height/(window.devicePixelRatio||1);
+      const dpr = window.devicePixelRatio || 1;
+      const w = paint.width / dpr;
+      const h = paint.height / dpr;
 
-      // Read paint layer only (so you fill empty zones without touching lineart image)
       const imgData = pctx.getImageData(0,0,w,h);
       const data = imgData.data;
 
       const ix = Math.floor(x);
       const iy = Math.floor(y);
-      const idx = (iy*w + ix)*4;
+      if(ix<0||iy<0||ix>=w||iy>=h) return;
 
+      const idx = (iy*w + ix)*4;
       const target = { r:data[idx], g:data[idx+1], b:data[idx+2], a:data[idx+3] };
       const fill = hexToRgba(colour, opacity);
 
-      // If target already close to fill, return
       if (Math.abs(target.r-fill.r)<3 && Math.abs(target.g-fill.g)<3 && Math.abs(target.b-fill.b)<3 && Math.abs(target.a-fill.a)<3){
         return;
       }
@@ -883,9 +863,8 @@
 
       if(fxMode === "stars"){
         fxParticles.push({ ...base, type:"star", spin:(Math.random()*2-1)*0.012 });
-        beep(880,0.05,"triangle");
-      }
-      else if(fxMode === "glitter"){
+        beep(880, 0.05, "triangle");
+      } else if(fxMode === "glitter"){
         for(let i=0;i<8;i++){
           fxParticles.push({
             ...base,
@@ -896,9 +875,8 @@
             spin:(Math.random()*2-1)*0.02
           });
         }
-        beep(980,0.05,"sine");
-      }
-      else if(fxMode === "confetti"){
+        beep(980, 0.05, "sine");
+      } else if(fxMode === "confetti"){
         for(let i=0;i<16;i++){
           fxParticles.push({
             ...base,
@@ -911,13 +889,14 @@
             spin:(Math.random()*2-1)*0.06
           });
         }
-        beep(700,0.05,"square");
+        beep(700, 0.05, "square");
       }
     }
 
     function renderFX(t){
-      const w = fx.width/(window.devicePixelRatio||1);
-      const h = fx.height/(window.devicePixelRatio||1);
+      const dpr = window.devicePixelRatio || 1;
+      const w = fx.width / dpr;
+      const h = fx.height / dpr;
       fctx.clearRect(0,0,w,h);
 
       for(let i=fxParticles.length-1;i>=0;i--){
@@ -936,26 +915,21 @@
         fctx.save();
         fctx.globalAlpha = a;
 
-        // subtle color tint using chosen paint colour sometimes
         const usePaint = (Math.random() < 0.6);
-        const c = usePaint ? colour : `hsl(${p.hue} 90% 65%)`;
-        fctx.fillStyle = c;
+        fctx.fillStyle = usePaint ? colour : `hsl(${p.hue} 90% 65%)`;
 
         if(p.type === "star"){
           fctx.translate(p.x, p.y);
           fctx.rotate(age * p.spin);
           drawStar(fctx, 0, 0, p.size*0.55, p.size*0.25, 5);
-        }
-        else if(p.type === "spark"){
+        } else if(p.type === "spark"){
           fctx.translate(p.x, p.y);
           fctx.rotate(age * p.spin);
           drawStar(fctx, 0, 0, p.size*0.55, p.size*0.15, 6);
-        }
-        else if(p.type === "confetti"){
-          // motion
+        } else if(p.type === "confetti"){
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.03; // gravity
+          p.vy += 0.03;
           fctx.translate(p.x, p.y);
           fctx.rotate(age * p.spin);
           fctx.fillRect(-p.size/2, -p.size/2, p.size, Math.max(4, p.size*0.45));
@@ -967,7 +941,7 @@
       requestAnimationFrame(renderFX);
     }
 
-    // ---------- Pointer events ----------
+    // ---------- Pointer ----------
     function onDown(e){
       const pos = getPos(e);
       if(mode === "paint" || mode === "erase"){
@@ -986,11 +960,8 @@
     function onMove(e){
       if(!drawing) return;
       const pos = getPos(e);
-
-      // smoothing
       const sx = lerp(last.x, pos.x, 1 - smooth);
       const sy = lerp(last.y, pos.y, 1 - smooth);
-
       drawStroke(last, {x:sx, y:sy});
       last = {x:sx, y:sy};
     }
@@ -1000,13 +971,10 @@
       last = null;
     }
 
-    // Attach
     stage.addEventListener("pointerdown", onDown);
     stage.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
-
-    // Touch prevention scroll
     stage.addEventListener("touchstart", (e)=>e.preventDefault(), {passive:false});
     stage.addEventListener("touchmove", (e)=>e.preventDefault(), {passive:false});
 
@@ -1029,28 +997,22 @@
     };
 
     btnSave.onclick = ()=>{
-      // Save merged: lineart image + paint + fx
       const rect = stage.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
       const out = document.createElement("canvas");
-      out.width = Math.round(rect.width * (window.devicePixelRatio||1));
-      out.height = Math.round(rect.height * (window.devicePixelRatio||1));
+      out.width = Math.round(rect.width * dpr);
+      out.height = Math.round(rect.height * dpr);
       const octx = out.getContext("2d");
 
-      // Draw white base
+      // white base
       octx.fillStyle = "#ffffff";
       octx.fillRect(0,0,out.width,out.height);
 
-      // Draw lineart image
-      // We draw the image scaled to stage size (same as displayed)
-      // Use stage size in CSS pixels:
-      const w = rect.width;
-      const h = rect.height;
-      // Convert to output coords:
-      const dpr = window.devicePixelRatio||1;
+      // draw at CSS pixel scale
       octx.setTransform(dpr,0,0,dpr,0,0);
-      octx.drawImage(img, 0,0, w, h);
-      octx.drawImage(paint, 0,0, w, h);
-      octx.drawImage(fx, 0,0, w, h);
+      octx.drawImage(img, 0,0, rect.width, rect.height);
+      octx.drawImage(paint, 0,0, rect.width, rect.height);
+      octx.drawImage(fx, 0,0, rect.width, rect.height);
 
       const a = document.createElement("a");
       a.download = `colouring-page-${pageIndex+1}.png`;
@@ -1059,7 +1021,7 @@
       beep(980,0.07,"triangle");
     };
 
-    // ---------- Brush buttons (under image) ----------
+    // Brushes (under image)
     brushRow.addEventListener("click", (e)=>{
       const btn = e.target.closest(".brush-btn");
       if(!btn) return;
@@ -1067,10 +1029,9 @@
       document.querySelectorAll("#brushRow .brush-btn").forEach(x=>x.classList.remove("active"));
       btn.classList.add("active");
       setBrush(b);
-      chipBrush.textContent = brushLabel(b);
     });
 
-    // ---------- FX selector chips ----------
+    // FX selector (right)
     fxChips.addEventListener("click", (e)=>{
       const btn = e.target.closest(".brush-btn");
       if(!btn) return;
@@ -1080,7 +1041,7 @@
       setFX(f);
     });
 
-    // ---------- Sliders ----------
+    // Sliders
     function syncSliders(){
       brushSize = parseInt(sizeEl.value, 10);
       opacity = parseFloat(opacityEl.value);
@@ -1089,12 +1050,11 @@
       valOpacity.textContent = opacity.toFixed(2);
       valSmooth.textContent = smooth.toFixed(2);
     }
+    sizeEl.oninput = syncSliders;
+    opacityEl.oninput = syncSliders;
+    smoothEl.oninput = syncSliders;
 
-    sizeEl.oninput = ()=>{ syncSliders(); };
-    opacityEl.oninput = ()=>{ syncSliders(); };
-    smoothEl.oninput = ()=>{ syncSliders(); };
-
-    // ---------- Init ----------
+    // Init
     function init(){
       resizeCanvases();
       buildPalette();
@@ -1108,31 +1068,32 @@
     }
 
     window.addEventListener("resize", ()=>{
-      // When resizing, keep current drawings by snapshotting images then redrawing after resize
       const pData = paint.toDataURL("image/png");
       const fData = fx.toDataURL("image/png");
-
       resizeCanvases();
 
       const ip = new Image();
       ip.onload = ()=>{
-        pctx.clearRect(0,0,paint.width,paint.height);
-        pctx.drawImage(ip,0,0, stage.clientWidth, stage.clientHeight);
+        const dpr = window.devicePixelRatio || 1;
+        const w = paint.width / dpr;
+        const h = paint.height / dpr;
+        pctx.clearRect(0,0,w,h);
+        pctx.drawImage(ip,0,0,w,h);
       };
       ip.src = pData;
 
       const iff = new Image();
       iff.onload = ()=>{
-        fctx.clearRect(0,0,fx.width,fx.height);
-        fctx.drawImage(iff,0,0, stage.clientWidth, stage.clientHeight);
+        const dpr = window.devicePixelRatio || 1;
+        const w = fx.width / dpr;
+        const h = fx.height / dpr;
+        fctx.clearRect(0,0,w,h);
+        fctx.drawImage(iff,0,0,w,h);
       };
       iff.src = fData;
     });
 
-    img.addEventListener("load", ()=> {
-      // ensure canvases match stage
-      resizeCanvases();
-    });
+    img.addEventListener("load", resizeCanvases);
 
     init();
   </script>
