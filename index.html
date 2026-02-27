@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Spell & Sparkle | Salam Adventures</title>
+  <title>Spell &amp; Sparkle | Salam Adventures</title>
   <style>
     :root{
       --bg1:#fff1f7;
       --bg2:#eefcff;
-      --card:#ffffff;
       --ink:#101828;
       --muted:#667085;
-      --radius:28px;
-      --shadow: 0 30px 90px rgba(16,24,40,.18);
-      --shadow2: 0 10px 28px rgba(16,24,40,.12);
-      --edgeGlow: 0 0 18px rgba(255,255,255,.55);
+      --radius:22px;
+      --shadow: 0 22px 60px rgba(16,24,40,.18);
+      --shadow2: 0 8px 20px rgba(16,24,40,.12);
+      --edgeGlow: 0 0 14px rgba(255,255,255,.55);
       --ok:#12b76a;
       --bad:#f04438;
       --btn:#101828;
@@ -28,20 +27,19 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--ink);
       background:
-        radial-gradient(1000px 700px at 12% 18%, rgba(255,92,210,.28), transparent 55%),
-        radial-gradient(900px 700px at 86% 30%, rgba(0,209,255,.20), transparent 55%),
+        radial-gradient(900px 600px at 12% 18%, rgba(255,92,210,.26), transparent 55%),
+        radial-gradient(820px 620px at 86% 30%, rgba(0,209,255,.18), transparent 55%),
         linear-gradient(135deg, var(--bg1), var(--bg2));
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:center;
-      padding:12px; /* ✅ smaller outer padding */
+      padding:8px; /* tighter */
     }
 
-    /* ✅ SMALLER APP WRAP */
     .frame{
-      width:min(720px, 100%); /* ✅ was 860px */
+      width:min(520px, 100%);
       border-radius: calc(var(--radius) + 10px);
-      padding:10px;           /* ✅ was 12px */
+      padding:7px; /* slightly tighter */
       position:relative;
       filter: drop-shadow(var(--shadow));
       isolation:isolate;
@@ -55,11 +53,11 @@
       border-radius: calc(var(--radius) + 10px);
       background:
         linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55)),
-        linear-gradient(135deg, rgba(255,92,210,.25), rgba(0,209,255,.18));
+        linear-gradient(135deg, rgba(255,92,210,.22), rgba(0,209,255,.16));
       box-shadow:
-        inset 0 3px 0 rgba(255,255,255,.85),
-        inset 0 -10px 18px rgba(16,24,40,.10),
-        0 18px 45px rgba(16,24,40,.18);
+        inset 0 2px 0 rgba(255,255,255,.85),
+        inset 0 -8px 14px rgba(16,24,40,.10),
+        0 14px 34px rgba(16,24,40,.16);
       z-index:-2;
     }
 
@@ -68,7 +66,7 @@
       position:absolute;
       inset:0;
       border-radius: calc(var(--radius) + 10px);
-      padding:4px;
+      padding:3px;
       background: conic-gradient(
         from 0deg,
         #ff4fd8, #7c4dff, #00d1ff, #00ff95, #ffe66d, #ff9b4a, #ff4fd8
@@ -79,19 +77,19 @@
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       filter: saturate(1.1) brightness(1.05);
-      opacity:.65;
+      opacity:.62;
       z-index:-1;
       animation: edgePulse 1.8s ease-in-out infinite;
       pointer-events:none;
     }
 
     @keyframes edgePulse{
-      0%,100%{ opacity:.45; filter:saturate(1.05) brightness(1.00) var(--edgeGlow); }
-      50%{ opacity:.85; filter:saturate(1.25) brightness(1.10) var(--edgeGlow); }
+      0%,100%{ opacity:.40; filter:saturate(1.05) brightness(1.00) var(--edgeGlow); }
+      50%{ opacity:.78; filter:saturate(1.25) brightness(1.10) var(--edgeGlow); }
     }
 
     .card{
-      background: rgba(255,255,255,.88);
+      background: rgba(255,255,255,.90);
       border:1px solid rgba(16,24,40,.10);
       border-radius: var(--radius);
       box-shadow: var(--shadow2);
@@ -99,32 +97,34 @@
       backdrop-filter: blur(8px);
     }
 
+    /* ✅ SHORTER: less header height */
     header{
-      padding:12px 12px 8px; /* ✅ tighter */
+      padding:8px 10px 6px; /* was 10px 10px 8px */
       display:flex;
-      gap:10px;
+      gap:8px;
       align-items:flex-start;
       justify-content:space-between;
       flex-wrap:wrap;
     }
 
-    .titleWrap{ min-width:220px; flex:1; }
+    .titleWrap{ min-width:200px; flex:1; }
 
     h1{
       margin:0;
-      font-size: clamp(20px, 2.2vw, 28px); /* ✅ smaller */
-      line-height:1.1;
+      font-size: 18px; /* slightly smaller */
+      line-height:1.05;
       letter-spacing:-.02em;
     }
     .sub{
-      margin:6px 0 0;
+      margin:4px 0 0; /* smaller */
       color:var(--muted);
-      font-size: 13px; /* ✅ smaller */
+      font-size: 11px; /* smaller */
+      line-height:1.25;
     }
 
     .controls{
       display:flex;
-      gap:8px;
+      gap:6px;
       align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
@@ -133,56 +133,58 @@
     .btn{
       border:0;
       border-radius: 999px;
-      padding:9px 12px; /* ✅ smaller */
+      padding:7px 9px; /* tighter */
       background: var(--btn);
       color: var(--btnText);
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
-      box-shadow: 0 10px 22px rgba(16,24,40,.18);
-      transition: transform .08s ease, box-shadow .15s ease;
+      box-shadow: 0 8px 18px rgba(16,24,40,.16);
       user-select:none;
       -webkit-tap-highlight-color: transparent;
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      font-size:13px; /* ✅ smaller */
+      gap:6px;
+      font-size:12px;
+      white-space:nowrap;
     }
-    .btn:active{ transform: translateY(1px) scale(.99); box-shadow: 0 8px 18px rgba(16,24,40,.15); }
+    .btn:active{ transform: translateY(1px) scale(.99); }
 
     .btn.secondary{
       background:#ffffff;
       color:var(--ink);
       border:1px solid rgba(16,24,40,.12);
-      box-shadow: 0 10px 22px rgba(16,24,40,.10);
+      box-shadow: 0 8px 18px rgba(16,24,40,.10);
     }
 
     .toggle{
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      gap:6px;
       background:#ffffff;
       border:1px solid rgba(16,24,40,.12);
       border-radius:999px;
-      padding:7px 10px; /* ✅ smaller */
-      font-size:13px;   /* ✅ smaller */
+      padding:5px 8px; /* tighter */
+      font-size:12px;
       color:var(--muted);
       user-select:none;
+      white-space:nowrap;
     }
-    .toggle input{ width:16px; height:16px; }
+    .toggle input{ width:14px; height:14px; }
 
+    /* ✅ SHORTER: reduce panel padding + image block */
     .content{
-      padding: 8px 12px 12px; /* ✅ tighter */
+      padding: 6px 10px 8px; /* was 8px 10px 10px */
       display:flex;
       justify-content:center;
     }
 
     .panel{
-      width: min(600px, 100%); /* ✅ was 680px */
-      background: rgba(255,255,255,.92);
+      width: min(460px, 100%);
+      background: rgba(255,255,255,.93);
       border:1px solid rgba(16,24,40,.10);
-      border-radius: 22px; /* ✅ slightly smaller */
-      box-shadow: 0 16px 40px rgba(16,24,40,.12);
-      padding: 12px; /* ✅ smaller */
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(16,24,40,.12);
+      padding: 9px; /* was 10px */
       position:relative;
       overflow:hidden;
     }
@@ -191,19 +193,19 @@
       content:"";
       position:absolute;
       inset:-40% -40%;
-      background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.85), transparent 40%),
-                  radial-gradient(circle at 80% 35%, rgba(0,209,255,.12), transparent 45%),
-                  radial-gradient(circle at 45% 90%, rgba(255,92,210,.10), transparent 45%);
+      background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.80), transparent 40%),
+                  radial-gradient(circle at 80% 35%, rgba(0,209,255,.10), transparent 45%),
+                  radial-gradient(circle at 45% 90%, rgba(255,92,210,.08), transparent 45%);
       pointer-events:none;
     }
 
     .panelInner{ position:relative; }
 
     .imgWrap{
-      width: min(300px, 74vw); /* ✅ smaller */
+      width: min(200px, 58vw); /* smaller */
       aspect-ratio: 1 / 1;
-      border-radius: 20px;
-      margin: 0 auto 10px;
+      border-radius: 14px;
+      margin: 0 auto 6px; /* smaller */
       display:grid;
       place-items:center;
       overflow:hidden;
@@ -216,40 +218,40 @@
       width: 76%;
       height: 76%;
       object-fit: contain;
-      image-rendering:auto;
-      filter: drop-shadow(0 12px 18px rgba(16,24,40,.18));
+      filter: drop-shadow(0 10px 14px rgba(16,24,40,.18));
     }
 
     .prompt{
       text-align:center;
-      margin: 6px 0 10px;
+      margin: 2px 0 6px; /* tighter */
     }
     .prompt .q{
       font-weight:900;
-      font-size: 16px; /* ✅ smaller */
+      font-size: 13px; /* smaller */
       margin:0;
     }
     .prompt .hint{
-      margin:4px 0 0;
+      margin:3px 0 0;
       color:var(--muted);
-      font-size: 12px; /* ✅ smaller */
+      font-size: 10.5px; /* smaller */
+      line-height:1.2;
     }
 
     .inputRow{
       display:flex;
-      gap:10px;
+      gap:8px;
       align-items:center;
       justify-content:center;
       flex-wrap:wrap;
-      margin: 10px auto 10px;
+      margin: 6px auto 6px; /* tighter */
       width:100%;
     }
 
     input[type="text"]{
-      width: min(460px, 100%); /* ✅ smaller */
-      font-size: 17px;         /* ✅ slightly smaller */
-      padding: 11px 12px;      /* ✅ smaller */
-      border-radius: 14px;
+      width: min(340px, 100%);
+      font-size: 15px; /* smaller */
+      padding: 9px 10px; /* smaller */
+      border-radius: 12px;
       border: 2px solid rgba(0,0,0,.10);
       outline:none;
       background:#fff;
@@ -257,124 +259,125 @@
     }
     input[type="text"]:focus{
       border-color: rgba(0,209,255,.55);
-      box-shadow: 0 0 0 5px rgba(0,209,255,.15), inset 0 2px 0 rgba(255,255,255,.7);
+      box-shadow: 0 0 0 4px rgba(0,209,255,.14), inset 0 2px 0 rgba(255,255,255,.7);
     }
 
     .checkBtn{
       border:0;
-      border-radius: 14px;
-      padding: 11px 12px; /* ✅ smaller */
+      border-radius: 12px;
+      padding: 9px 10px; /* smaller */
       font-weight:900;
       cursor:pointer;
       background: #101828;
       color:#fff;
-      min-width: 104px; /* ✅ smaller */
-      box-shadow: 0 10px 20px rgba(16,24,40,.18);
+      min-width: 88px;
+      box-shadow: 0 8px 16px rgba(16,24,40,.16);
       -webkit-tap-highlight-color: transparent;
+      font-size: 12px;
     }
     .checkBtn:active{ transform: translateY(1px); }
 
+    .msg{
+      text-align:center;
+      font-weight:900;
+      margin-top: 4px; /* tighter */
+      min-height: 18px; /* smaller */
+      font-size: 12px;
+    }
+    .msg.ok{ color: #12b76a; }
+    .msg.bad{ color: #f04438; }
+
+    /* ✅ SHORTER: smaller keyboard */
     .kbd{
       width: 100%;
-      max-width: 560px; /* ✅ smaller */
-      margin: 10px auto 6px;
-      background: rgba(255,255,255,.72);
+      max-width: 420px;
+      margin: 6px auto 6px; /* tighter */
+      background: rgba(255,255,255,.74);
       border: 1px solid rgba(16,24,40,.10);
-      border-radius: 18px;
-      padding: 10px;
-      box-shadow: 0 12px 28px rgba(16,24,40,.10);
+      border-radius: 14px;
+      padding: 7px; /* smaller */
+      box-shadow: 0 10px 22px rgba(16,24,40,.10);
     }
 
     .row{
       display:flex;
-      gap:8px;
+      gap:6px;
       justify-content:center;
-      margin: 8px 0;
+      margin: 5px 0; /* tighter */
       flex-wrap:nowrap;
     }
 
     .key{
       border:1px solid rgba(16,24,40,.12);
       background:#fff;
-      border-radius: 14px;
-      padding: 9px 0;   /* ✅ smaller */
-      min-width: 40px;  /* ✅ smaller */
+      border-radius: 11px;
+      padding: 7px 0; /* smaller */
+      min-width: 28px; /* smaller */
       text-align:center;
       font-weight:900;
       cursor:pointer;
       user-select:none;
-      box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 8px 14px rgba(16,24,40,.10);
-      transition: transform .06s ease;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.8), 0 6px 10px rgba(16,24,40,.10);
       -webkit-tap-highlight-color: transparent;
+      font-size: 11px;
     }
     .key:active{ transform: translateY(1px) scale(.99); }
-    .key.wide{ min-width: 88px; padding: 9px 12px; } /* ✅ smaller */
+    .key.wide{ min-width: 66px; padding: 7px 9px; }
 
     .kbdActions{
       display:flex;
-      gap:10px;
+      gap:8px;
       justify-content:center;
-      margin-top: 10px;
+      margin-top: 7px;
       flex-wrap:wrap;
     }
 
     .smallBtn{
       border-radius: 999px;
-      padding: 9px 12px; /* ✅ smaller */
+      padding: 7px 9px; /* smaller */
       font-weight:900;
       border:1px solid rgba(16,24,40,.12);
       background:#fff;
       cursor:pointer;
-      box-shadow: 0 10px 22px rgba(16,24,40,.10);
+      box-shadow: 0 8px 16px rgba(16,24,40,.10);
       -webkit-tap-highlight-color: transparent;
-      font-size: 13px; /* ✅ smaller */
+      font-size: 11px;
     }
     .smallBtn.primary{
-      background: linear-gradient(135deg, rgba(0,209,255,.22), rgba(18,183,106,.22));
+      background: linear-gradient(135deg, rgba(0,209,255,.20), rgba(18,183,106,.20));
       border-color: rgba(0,0,0,.06);
     }
 
     .status{
       width: 100%;
-      max-width: 560px; /* ✅ smaller */
-      margin: 10px auto 0;
+      max-width: 420px;
+      margin: 6px auto 0; /* tighter */
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
       color:var(--muted);
-      font-size: 13px; /* ✅ smaller */
+      font-size: 11px; /* smaller */
     }
 
     .pill{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding: 7px 10px; /* ✅ smaller */
+      gap:6px;
+      padding: 5px 8px; /* smaller */
       border-radius: 999px;
       background:#fff;
       border:1px solid rgba(16,24,40,.10);
-      box-shadow: 0 8px 14px rgba(16,24,40,.08);
+      box-shadow: 0 7px 12px rgba(16,24,40,.08);
       color:var(--ink);
       font-weight:800;
-      min-width: 122px; /* ✅ smaller */
+      min-width: 104px;
       justify-content:center;
-      font-size: 13px;
+      font-size: 11px;
     }
-
     .pill.ok{ border-color: rgba(18,183,106,.35); }
     .pill.bad{ border-color: rgba(240,68,56,.35); }
-
-    .msg{
-      text-align:center;
-      font-weight:900;
-      margin-top: 8px;
-      min-height: 22px;
-      font-size: 14px; /* ✅ smaller */
-    }
-    .msg.ok{ color: var(--ok); }
-    .msg.bad{ color: var(--bad); }
 
     .sparkle{
       position:absolute;
@@ -386,11 +389,11 @@
     .sparkle.on{ opacity:1; }
     .spark{
       position:absolute;
-      width:10px;height:10px;
+      width:8px;height:8px; /* smaller */
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0) 60%),
                   radial-gradient(circle at 50% 50%, rgba(255,92,210,.95), rgba(0,209,255,.0) 65%);
-      filter: drop-shadow(0 0 10px rgba(255,255,255,.8));
+      filter: drop-shadow(0 0 8px rgba(255,255,255,.8));
       animation: pop 700ms ease-out forwards;
     }
     @keyframes pop{
@@ -399,13 +402,12 @@
       100%{ transform: translate(var(--dx), var(--dy)) scale(1.05); opacity:0; }
     }
 
-    @media (max-width: 520px){
-      header{ padding:12px 10px 8px; }
-      .content{ padding: 8px 10px 12px; }
-      .panel{ padding: 12px; border-radius: 20px; }
-      .key{ min-width: 36px; border-radius: 12px; }
-      .key.wide{ min-width: 78px; }
-      input[type="text"]{ font-size:16px; }
+    @media (max-width: 380px){
+      .frame{ width:min(360px, 100%); padding:6px; }
+      .panel{ width:100%; padding:8px; }
+      .imgWrap{ width:min(180px, 70vw); }
+      .key{ min-width: 26px; }
+      input[type="text"]{ font-size:14px; }
     }
   </style>
 </head>
@@ -416,15 +418,15 @@
       <header>
         <div class="titleWrap">
           <h1>Spell &amp; Sparkle</h1>
-          <p class="sub">Press <b>Say the word</b>, then type it. Get it right to see the frame sparkle ✨</p>
+          <p class="sub">Press <b>Say the word</b>, then type it. Get it right to sparkle ✨</p>
         </div>
 
         <div class="controls">
-          <button class="btn" id="sayBtn">🔊 Say the word</button>
-          <button class="btn secondary" id="newBtn">🎲 New word</button>
+          <button class="btn" id="sayBtn">🔊 Say</button>
+          <button class="btn secondary" id="newBtn">🎲 New</button>
           <label class="toggle" title="Turn voice on/off">
             <input type="checkbox" id="soundToggle" checked />
-            <span>Sound on</span>
+            <span>Sound</span>
           </label>
         </div>
       </header>
@@ -440,7 +442,7 @@
 
             <div class="prompt">
               <p class="q">What word is this?</p>
-              <p class="hint">Tap <b>Say the word</b>, then spell it below.</p>
+              <p class="hint">Tap <b>Say</b>, then spell it.</p>
             </div>
 
             <div class="inputRow">
@@ -457,7 +459,7 @@
 
               <div class="kbdActions">
                 <button class="smallBtn" id="clearBtn">Clear</button>
-                <button class="smallBtn" id="backBtn">⌫ Backspace</button>
+                <button class="smallBtn" id="backBtn">⌫ Back</button>
                 <button class="smallBtn primary" id="checkBtn2">Check</button>
               </div>
             </div>
@@ -552,15 +554,15 @@
       const cx = rect.width / 2;
       const cy = rect.height / 2;
 
-      for(let i=0;i<22;i++){
+      for(let i=0;i<18;i++){
         const s = document.createElement("div");
         s.className = "spark";
         const ang = Math.random() * Math.PI * 2;
-        const dist = 40 + Math.random() * 160;
+        const dist = 30 + Math.random() * 120;
         const dx = Math.cos(ang) * dist;
         const dy = Math.sin(ang) * dist;
-        s.style.left = (cx + (Math.random()*40-20)) + "px";
-        s.style.top  = (cy + (Math.random()*40-20)) + "px";
+        s.style.left = (cx + (Math.random()*30-15)) + "px";
+        s.style.top  = (cy + (Math.random()*30-15)) + "px";
         s.style.setProperty("--dx", dx + "px");
         s.style.setProperty("--dy", dy + "px");
         sparkleLayer.appendChild(s);
