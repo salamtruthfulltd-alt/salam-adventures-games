@@ -2,1139 +2,1064 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Salam Adventures • Colouring</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salam Adventures – Premium Colouring</title>
   <style>
     :root{
-      --bg1:#0b1024;
-      --bg2:#111a33;
-      --panel:#0f1730;
-      --panel2:#121d3d;
-      --stroke:rgba(255,255,255,.14);
-      --stroke2:rgba(255,255,255,.09);
-      --txt:#eaf0ff;
-      --muted:rgba(234,240,255,.7);
-      --shadow:0 18px 60px rgba(0,0,0,.55);
-      --round:22px;
-      --round2:16px;
+      --bg:#0b1220;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(0,0,0,.28);
+      --line:rgba(255,255,255,.12);
+      --text:#e9f2ff;
+      --muted:#b9c7e6;
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --good:#62ffcf;
     }
-
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--txt);
-      background:
-        radial-gradient(900px 500px at 20% 10%, rgba(92,189,255,.20), transparent 60%),
-        radial-gradient(700px 450px at 80% 20%, rgba(255,152,238,.20), transparent 60%),
-        radial-gradient(700px 450px at 40% 85%, rgba(138,255,189,.14), transparent 60%),
-        linear-gradient(180deg, var(--bg1), #050816 70%);
-      display:flex;
-      justify-content:center;
-      padding:28px;
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
+      background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg) 55%, #070b14 100%);
     }
+    .wrap{max-width:1100px;margin:14px auto 26px;padding:14px}
 
-    /* Outer frame */
-    .app {
-      width:min(980px, 96vw);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--stroke);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
+    /* BUTTONS (moved BELOW canvas) */
+    .btnbar{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;
+      margin-top:12px;margin-bottom:12px;
     }
-
-    /* Top toolbar */
-    .topbar{
-      padding:14px 16px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
-      border-bottom:1px solid var(--stroke2);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    .pill{
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(12,18,42,.55);
-      color:var(--txt);
-      border-radius: 999px;
-      padding:10px 14px;
-      font-weight:700;
+    .btn{
+      border:none;border-radius:16px;padding:11px 14px;cursor:pointer;
+      font-weight:900;letter-spacing:.2px;color:#09101e;
+      box-shadow:var(--shadow);
+      display:flex;align-items:center;gap:10px;user-select:none;
+      transition:transform .08s ease, filter .2s ease;
+      background: linear-gradient(135deg,#60a5fa,#34d399);
       font-size:14px;
-      cursor:pointer;
-      transition:.15s transform, .15s filter, .15s opacity;
-      user-select:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      box-shadow: inset 0 0 14px rgba(255,255,255,.06);
     }
-    .pill:hover{ transform: translateY(-1px); filter:brightness(1.08) }
-    .pill:active{ transform: translateY(0px) scale(.99) }
-    .pill[disabled]{opacity:.55; cursor:not-allowed}
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .btn:active{transform:translateY(0) scale(.99)}
+    .btn .e{font-size:18px;line-height:1}
+    .btn.active{outline:3px solid rgba(98,255,207,.92);outline-offset:2px}
+    .bNext{background:linear-gradient(135deg,#fbbf24,#fb7185)}
+    .bMode{background:linear-gradient(135deg,#a78bfa,#60a5fa)}
+    .bFill{background:linear-gradient(135deg,#22c55e,#fbbf24)}
+    .bErase{background:linear-gradient(135deg,#fb7185,#a78bfa)}
+    .bFx{background:linear-gradient(135deg,#a7f3d0,#f472b6)}
+    .bUndo{background:linear-gradient(135deg,#34d399,#fbbf24)}
+    .bClear{background:linear-gradient(135deg,#fbbf24,#60a5fa)}
+    .bSave{background:linear-gradient(135deg,#fb7185,#60a5fa)}
 
-    /* Gradient candy buttons */
-    .b-back{ background:linear-gradient(90deg,#63c7ff,#6a8bff); }
-    .b-next{ background:linear-gradient(90deg,#ffd86b,#ff8c6b); color:#1b1020;}
-    .b-paint{ background:linear-gradient(90deg,#ff6bd6,#8a7bff);}
-    .b-fill{ background:linear-gradient(90deg,#5effa1,#5cc2ff); color:#06131b;}
-    .b-erase{ background:linear-gradient(90deg,#ff7b7b,#ffb86b); color:#221105;}
-    .b-fx{ background:linear-gradient(90deg,#ffef5c,#ff7bf0); color:#1b1020;}
-    .b-undo{ background:linear-gradient(90deg,#7bffef,#7ba2ff); color:#06131b;}
-    .b-clear{ background:linear-gradient(90deg,#ff7bf0,#ff7b7b); color:#1b0b12;}
-    .b-save{ background:linear-gradient(90deg,#baff6b,#6bffda); color:#06131b;}
-
-    /* Main layout */
-    .main{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:14px;
-      padding:14px;
-    }
-
-    .left{
+    /* STAGE */
+    .stage{
+      border-radius:22px;
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--stroke2);
-      border-radius: var(--round);
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height: 640px;
-    }
-
-    .right{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--stroke2);
-      border-radius: var(--round);
-      padding:14px;
-      min-height: 640px;
-    }
-
-    /* Smaller image container (as requested) */
-    .canvas-wrap{
-      background: linear-gradient(180deg, rgba(5,8,22,.8), rgba(7,10,28,.65));
-      border:1px solid rgba(255,255,255,.12);
-      border-radius: var(--round);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
       padding:12px;
-      box-shadow: inset 0 0 22px rgba(0,0,0,.55);
-    }
-
-    .canvas-stage{
-      width: 420px;       /* smaller */
-      height: 420px;      /* smaller */
-      margin: 0 auto;
-      background:#ffffff;
-      border-radius: 16px;
-      border: 10px solid rgba(255,255,255,.88);
-      box-shadow: 0 18px 45px rgba(0,0,0,.35);
-      position:relative;
       overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
     }
-
-    .canvas-stage img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-      pointer-events:none;
-      user-select:none;
-      position:absolute;
-      inset:0;
-    }
-
-    canvas{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      touch-action:none;
-    }
-
-    .tip{
-      font-size:13px;
-      color:var(--muted);
-      margin-top:10px;
-      padding:10px 12px;
-      background: rgba(0,0,0,.22);
+    .frame{
+      border-radius:18px;
+      background: rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.10);
-      border-radius: 14px;
+      padding:10px;
     }
 
-    .statusbar{
-      display:flex;
-      gap:10px;
-      justify-content:space-between;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:6px;
-      font-size:12.5px;
-      color:rgba(234,240,255,.75);
-    }
-
-    .badge{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.20);
-    }
-
-    /* Brushes moved UNDER image (as requested) */
-    .brushes-container{
-      margin-top: 6px;
-      padding: 12px;
-      background: linear-gradient(145deg, #1e2a4a, #0c122a);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius: 20px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      box-shadow: inset 0 0 12px rgba(255,255,255,0.05);
-    }
-
-    .brushes-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      color:rgba(234,240,255,.9);
-      font-weight:800;
-      font-size:13px;
-    }
-
-    .brush-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:center;
-    }
-
-    .brush-btn{
-      padding: 10px 14px;       /* slightly smaller */
-      font-size: 13.5px;
-      font-weight:800;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color:var(--txt);
-      cursor:pointer;
-      user-select:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      transition:.12s transform, .12s filter;
-      box-shadow: inset 0 0 14px rgba(255,255,255,.06);
-    }
-    .brush-btn:hover{ transform: translateY(-1px); filter:brightness(1.08) }
-    .brush-btn.active{
-      outline: 2px solid rgba(255,255,255,.35);
-      background: rgba(255,255,255,.12);
-    }
-
-    /* Right panel controls */
-    .panel-title{
-      font-weight:900;
-      letter-spacing:.2px;
-      margin:4px 0 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .mini{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .row{
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      padding:12px;
-      margin-bottom:12px;
-    }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      margin-bottom:10px;
-    }
-
-    .chip{
-      font-size:12px;
-      font-weight:800;
-      padding:7px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(234,240,255,.9);
-    }
-
-    .chip strong{ color:#fff }
-
-    .palette{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
-    }
-    .swatch{
-      width:34px;
-      height:34px;
-      border-radius: 10px;
-      border:2px solid rgba(255,255,255,.55);
-      cursor:pointer;
-      box-shadow: 0 10px 25px rgba(0,0,0,.25), inset 0 0 10px rgba(255,255,255,.10);
+    /* CANVAS STACK */
+    .stack{
       position:relative;
+      width:100%;
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+      touch-action:none;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     }
-    .swatch.active::after{
-      content:"";
-      position:absolute;
-      inset:-4px;
-      border-radius: 12px;
-      border:2px solid rgba(255,255,255,.95);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.15);
+    canvas{
+      display:block;
+      width:100%;
+      height:auto;
+      border-radius:16px;
+      touch-action:none;
+      background:transparent;
+    }
+    #bgCanvas{position:relative;z-index:1;pointer-events:none;background:#fff}
+    #paintCanvas{position:absolute;inset:0;z-index:2}
+    #fxCanvas{position:absolute;inset:0;z-index:3;pointer-events:none}
+
+    .status{
+      margin-top:10px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+      color:var(--muted);font-size:12px;
+    }
+    .kbd{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      font-size:11px;padding:3px 7px;border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.25);color:#cfe0ff;
     }
 
-    .slider{
-      margin-top:10px;
-      display:grid;
-      gap:10px;
+    /* PANEL */
+    .panel{
+      margin-top:12px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
     }
-    .slider label{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      font-size:12.5px;
-      color:rgba(234,240,255,.85);
-      gap:10px;
+    .panelHead{
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(90deg, rgba(34,197,94,.16), rgba(59,130,246,.14), rgba(168,85,247,.12));
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
     }
-    input[type="range"]{ width:100% }
+    .chip{
+      font-size:12px;padding:6px 10px;border-radius:999px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .panelBody{padding:12px;display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
+    @media (max-width:860px){.panelBody{grid-template-columns:1fr}}
+    .card{
+      border-radius:18px;
+      background: var(--card2);
+      border:1px solid rgba(255,255,255,.10);
+      padding:12px;
+    }
+    .card h3{margin:0 0 10px;font-size:13px;color:#dbe8ff}
+    .hint{margin:0 0 10px;font-size:12px;color:var(--muted)}
 
-    .toggle{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-top:10px;
-    }
-    .toggle button{
-      border-radius:999px;
+    .swatches{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+    .sw{
+      width:100%;aspect-ratio:1/1;border-radius:12px;cursor:pointer;
       border:1px solid rgba(255,255,255,.16);
-      background: linear-gradient(90deg,#6bffda,#ff7bf0);
-      color:#09121f;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.25);
+      transition:transform .08s ease, filter .2s ease, outline .2s ease;
+    }
+    .sw:hover{transform:translateY(-1px);filter:brightness(1.08)}
+    .sw.sel{outline:2px solid rgba(98,255,207,.9);outline-offset:2px}
+
+    .gridBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .mini{
+      border-radius:16px;padding:10px 10px;border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);cursor:pointer;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
       font-weight:900;
-      padding:10px 14px;
-      cursor:pointer;
-      box-shadow: inset 0 0 12px rgba(255,255,255,.22);
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      transition:transform .08s ease, filter .2s ease, border-color .2s ease;
+      user-select:none;
     }
+    .mini:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .mini.active{border-color: rgba(98,255,207,.92); box-shadow: 0 0 0 2px rgba(98,255,207,.25) inset;}
+    .mini .e{font-size:18px}
 
-    .small-note{
-      font-size:12px;
-      color:rgba(234,240,255,.68);
-      margin-top:8px;
-      line-height:1.35;
-    }
+    .sliders{display:grid;gap:10px;margin-top:10px}
+    .row{display:flex;align-items:center;gap:10px}
+    .row label{font-size:12px;color:var(--muted);min-width:86px}
+    .row input[type="range"]{flex:1}
+    .row .val{min-width:54px;text-align:right}
 
-    /* Responsive */
-    @media (max-width: 880px){
-      body{ padding:14px; }
-      .main{ grid-template-columns: 1fr; }
-      .left,.right{ min-height:auto; }
-      .canvas-stage{ width:min(420px, 84vw); height:min(420px, 84vw); }
-    }
+    .fxPanel{display:none}
+    .fxPanel.show{display:block}
   </style>
 </head>
+
 <body>
-  <div class="app" role="application" aria-label="Colouring App">
-    <!-- TOP CONTROLS (NO BRUSHES HERE ANYMORE) -->
-    <div class="topbar">
-      <button class="pill b-back" id="btnBack">⬅️ Back</button>
-      <button class="pill b-next" id="btnNext">Next ➡️</button>
+<div class="wrap">
 
-      <button class="pill b-paint" id="btnModePaint">🖌️ Paint</button>
-      <button class="pill b-fill" id="btnModeFill">🪣 Fill</button>
-      <button class="pill b-erase" id="btnModeErase">🧼 Erase</button>
-      <button class="pill b-fx" id="btnModeFX">✨ FX</button>
+  <div class="stage">
+    <div class="frame">
+      <div class="stack" id="stack">
+        <canvas id="bgCanvas" width="1200" height="800"></canvas>
+        <canvas id="paintCanvas" width="1200" height="800"></canvas>
+        <canvas id="fxCanvas" width="1200" height="800"></canvas>
+      </div>
 
-      <button class="pill b-undo" id="btnUndo">↩️ Undo</button>
-      <button class="pill b-clear" id="btnClear">🧽 Clear</button>
-      <button class="pill b-save" id="btnSave">💾 Save</button>
-    </div>
-
-    <div class="main">
-      <!-- LEFT: IMAGE + BRUSHES UNDER IMAGE -->
-      <div class="left">
-        <div class="canvas-wrap">
-          <div class="canvas-stage" id="stage">
-            <!-- Your lineart (never erased) -->
-            <img id="lineart" alt="Colouring Page" src="butterfly.png" />
-            <!-- Paint layer (erasing only affects this) -->
-            <canvas id="paintLayer"></canvas>
-            <!-- FX layer (sparkles etc.) -->
-            <canvas id="fxLayer"></canvas>
-          </div>
-
-          <div class="tip">
-            Tip: <b>Paint</b> = draw • <b>Fill</b> = tap an area • <b>Erase</b> removes paint only • <b>FX</b> adds stars/glitter/confetti.
-          </div>
-
-          <div class="statusbar">
-            <span class="badge" id="pageBadge">Page 1</span>
-            <span class="badge" id="modeBadge">Mode: Paint</span>
-          </div>
-        </div>
-
-        <!-- BRUSHES MOVED UNDER IMAGE (EMPTY SPACE FILLED) -->
-        <div class="brushes-container">
-          <div class="brushes-title">
-            <span>🧰 Brushes</span>
-            <span class="mini" id="brushBadge">Round</span>
-          </div>
-
-          <div class="brush-row" id="brushRow">
-            <button class="brush-btn active" data-brush="round">● Round</button>
-            <button class="brush-btn" data-brush="square">■ Square</button>
-            <button class="brush-btn" data-brush="triangle">▲ Triangle</button>
-            <button class="brush-btn" data-brush="spray">🌫️ Spray</button>
-            <button class="brush-btn" data-brush="star">⭐ Star</button>
-            <button class="brush-btn" data-brush="glitter">✨ Glitter</button>
-            <button class="brush-btn" data-brush="multi">🌈 Multi</button>
-          </div>
-
-          <div class="small-note">
-            Brush affects Paint mode. FX mode uses the FX selector (Stars/Glitter/Confetti) on the right.
-          </div>
+      <div class="status">
+        <div>Tip: Paint = draw · Fill = tap area · Erase removes paint + FX · Stars twinkle automatically</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span class="kbd" id="pageLabel">Page 1</span>
+          <span class="kbd" id="modeLabel">Mode: Paint</span>
         </div>
       </div>
 
-      <!-- RIGHT: COLOURS + SLIDERS + FX -->
-      <div class="right">
-        <div class="panel-title">
-          <span>Controls</span>
-          <span class="mini">Colour • Size • Opacity • Smooth</span>
+      <!-- MOVED BUTTONS HERE (below canvas) -->
+      <div class="btnbar">
+        <button class="btn" id="prevBtn"><span class="e">⬅️</span>Back</button>
+        <button class="btn bNext" id="nextBtn">Next<span class="e">➡️</span></button>
+
+        <button class="btn bMode active" id="paintModeBtn"><span class="e">🖌️</span>Paint</button>
+        <button class="btn bFill" id="fillModeBtn"><span class="e">🪣</span>Fill</button>
+        <button class="btn bErase" id="eraseModeBtn"><span class="e">🧽</span>Erase</button>
+
+        <button class="btn bFx" id="fxToggleBtn"><span class="e">✨</span>FX</button>
+
+        <button class="btn bUndo" id="undoBtn"><span class="e">↩️</span>Undo</button>
+        <button class="btn bClear" id="clearBtn"><span class="e">🧼</span>Clear</button>
+        <button class="btn bSave" id="saveBtn"><span class="e">💾</span>Save</button>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <div class="panelHead">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <span class="chip">Colour: <span class="kbd" id="colourChip">#2563eb</span></span>
+          <span class="chip">Brush: <span class="kbd" id="brushChip">Round</span></span>
+          <span class="chip">FX: <span class="kbd" id="fxChip">Stars</span></span>
+          <span class="chip">SFX: <b id="sfxChip">On</b></span>
         </div>
+        <button class="btn bFx" id="sfxBtn" style="padding:10px 12px;font-size:13px;"><span class="e">🔊</span>SFX</button>
+      </div>
 
-        <div class="row">
-          <div class="chips">
-            <span class="chip">Colour: <strong id="chipColour">#ff4d6d</strong></span>
-            <span class="chip">Brush: <strong id="chipBrush">Round</strong></span>
-            <span class="chip">FX: <strong id="chipFX">Stars</strong></span>
-          </div>
+      <div class="panelBody">
+        <div class="card">
+          <h3>🎨 Colours</h3>
+          <p class="hint">Pick a colour (paint + tint for some FX).</p>
+          <div class="swatches" id="swatches"></div>
 
-          <div class="toggle">
-            <span class="chip">SFX: <strong id="chipSFX">On</strong></span>
-            <button id="btnSFX">🔊 SFX</button>
-          </div>
-
-          <div class="small-note">Pick a colour (paint + tint for some FX).</div>
-
-          <div class="palette" id="palette"></div>
-
-          <div class="slider">
-            <label>
-              <span>Size</span>
-              <span id="valSize">16</span>
-            </label>
-            <input id="size" type="range" min="4" max="60" value="16"/>
-
-            <label>
-              <span>Opacity</span>
-              <span id="valOpacity">0.90</span>
-            </label>
-            <input id="opacity" type="range" min="0.1" max="1" step="0.05" value="0.9"/>
-
-            <label>
-              <span>Smooth</span>
-              <span id="valSmooth">0.55</span>
-            </label>
-            <input id="smooth" type="range" min="0" max="0.9" step="0.05" value="0.55"/>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="panel-title" style="margin:0 0 8px">
-            <span>✨ FX Mode</span>
-            <span class="mini">Tap to drop effects</span>
-          </div>
-
-          <div class="chips" id="fxChips">
-            <button class="brush-btn active" data-fx="stars">✨ Stars</button>
-            <button class="brush-btn" data-fx="glitter">💎 Glitter</button>
-            <button class="brush-btn" data-fx="confetti">🎉 Confetti</button>
-          </div>
-
-          <div class="small-note">
-            In FX mode: tap to place effects. They gently twinkle automatically.
+          <div class="sliders">
+            <div class="row">
+              <label for="size">Size</label>
+              <input id="size" type="range" min="3" max="90" value="28" />
+              <span class="kbd val" id="sizeVal">28</span>
+            </div>
+            <div class="row">
+              <label for="opacity">Opacity</label>
+              <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
+              <span class="kbd val" id="opacityVal">1.00</span>
+            </div>
+            <div class="row">
+              <label for="smooth">Smooth</label>
+              <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
+              <span class="kbd val" id="smoothVal">0.35</span>
+            </div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="panel-title" style="margin:0 0 8px">
-            <span>Pages</span>
-            <span class="mini">Replace images here</span>
+        <div class="card">
+          <h3>🖌️ Brushes</h3>
+          <p class="hint">Simple shapes. Glow + Rainbow optional.</p>
+
+          <div class="gridBtns" id="brushGrid">
+            <button class="mini active" data-brush="round"><span class="e">●</span>Round</button>
+            <button class="mini" data-brush="square"><span class="e">■</span>Square</button>
+            <button class="mini" data-brush="pencil"><span class="e">✏️</span>Pencil</button>
+            <button class="mini" data-brush="spray"><span class="e">🌫️</span>Spray</button>
+            <button class="mini" data-brush="heart"><span class="e">💖</span>Heart</button>
+            <button class="mini" data-brush="starbrush"><span class="e">⭐</span>Star</button>
+            <button class="mini" id="glowBtn"><span class="e">💫</span>Glow</button>
+            <button class="mini" id="rainbowBtn"><span class="e">🌈</span>Rainbow</button>
           </div>
-          <div class="small-note">
-            This demo uses: <b>butterfly.png</b>. Add more pages in the <code>pages[]</code> array in the script.
+
+          <div class="fxPanel" id="fxPanel" style="margin-top:12px;">
+            <h3 style="margin:0 0 10px;font-size:13px;color:#dbe8ff;">✨ FX Stamps</h3>
+            <p class="hint">Tap canvas to place FX. Stars twinkle. Bubbles float.</p>
+
+            <div class="gridBtns" id="fxGrid">
+              <button class="mini active" data-fx="stars"><span class="e">⭐</span>Stars</button>
+              <button class="mini" data-fx="glitter"><span class="e">✨</span>Glitter</button>
+              <button class="mini" data-fx="confetti"><span class="e">🎉</span>Confetti</button>
+              <button class="mini" data-fx="hearts"><span class="e">💖</span>Hearts</button>
+              <button class="mini" data-fx="bubbles"><span class="e">🫧</span>Bubbles</button>
+              <button class="mini" data-fx="none"><span class="e">🚫</span>Off</button>
+            </div>
+
+            <div class="sliders">
+              <div class="row">
+                <label for="fxStrength">FX</label>
+                <input id="fxStrength" type="range" min="0" max="1" value="0.6" step="0.05" />
+                <span class="kbd val" id="fxStrengthVal">0.60</span>
+              </div>
+              <div class="row">
+                <label for="fxScatter">Scatter</label>
+                <input id="fxScatter" type="range" min="0" max="1" value="0.35" step="0.05" />
+                <span class="kbd val" id="fxScatterVal">0.35</span>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
+
   </div>
+</div>
 
-  <script>
-    // ---------- Simple SFX (tiny beeps) ----------
-    let sfxOn = true;
-    const beep = (freq=660, dur=0.06, type="sine", vol=0.045) => {
-      if(!sfxOn) return;
-      try{
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = type;
-        o.frequency.value = freq;
-        g.gain.value = vol;
-        o.connect(g); g.connect(ctx.destination);
-        o.start();
-        o.stop(ctx.currentTime + dur);
-        o.onended = () => ctx.close();
-      }catch(e){}
+<script>
+/* same engine – only changes:
+   1) buttons moved below canvas
+   2) canvas height shortened (aspect ratio changed) */
+
+const bgCanvas = document.getElementById("bgCanvas");
+const paintCanvas = document.getElementById("paintCanvas");
+const fxCanvas = document.getElementById("fxCanvas");
+const bg = bgCanvas.getContext("2d", { willReadFrequently:true });
+const paint = paintCanvas.getContext("2d", { willReadFrequently:true });
+const fx = fxCanvas.getContext("2d", { willReadFrequently:true });
+
+const pages = [
+  "colouring images/butterfly.png",
+  "colouring images/car.png",
+  "colouring images/chest.png",
+  "colouring images/dino.png",
+  "colouring images/dog.png",
+  "colouring images/doll.png",
+  "colouring images/house.png",
+  "colouring images/kids.png",
+  "colouring images/plane.png",
+  "colouring images/prince.png",
+  "colouring images/swan.png",
+  "colouring images/veg.png"
+];
+let currentPage = 0;
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rand=(a,b)=>Math.random()*(b-a)+a;
+
+const pageLabel = document.getElementById("pageLabel");
+const modeLabel = document.getElementById("modeLabel");
+
+/* SHORTEN GAME: make canvas shorter */
+function setCanvasSizeForDPR(){
+  const stack = document.getElementById("stack");
+  const rect = stack.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  const cssW = rect.width;
+  const cssH = rect.width * 0.55;  // <<< SHORTER than before (was 2/3)
+  stack.style.height = cssH + "px";
+
+  const newW = Math.max(600, Math.round(cssW*dpr));
+  const newH = Math.max(380, Math.round(cssH*dpr));
+
+  let paintSnap=null;
+  try{ paintSnap = paint.getImageData(0,0,paintCanvas.width,paintCanvas.height); }catch(e){}
+
+  bgCanvas.width=newW; bgCanvas.height=newH;
+  paintCanvas.width=newW; paintCanvas.height=newH;
+  fxCanvas.width=newW; fxCanvas.height=newH;
+
+  if (baseImage.complete && baseImage.naturalWidth) drawBaseImage();
+
+  if (paintSnap){
+    const tmp=document.createElement("canvas");
+    tmp.width=paintSnap.width; tmp.height=paintSnap.height;
+    tmp.getContext("2d").putImageData(paintSnap,0,0);
+    paint.drawImage(tmp,0,0,tmp.width,tmp.height,0,0,paintCanvas.width,paintCanvas.height);
+  }
+
+  stars.length=0;
+  bubbles.length=0;
+}
+
+const baseImage = new Image();
+baseImage.decoding="async";
+
+function drawBaseImage(){
+  bg.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+  bg.fillStyle="#ffffff";
+  bg.fillRect(0,0,bgCanvas.width,bgCanvas.height);
+
+  const ratio=Math.min(bgCanvas.width/baseImage.naturalWidth, bgCanvas.height/baseImage.naturalHeight);
+  const w=Math.round(baseImage.naturalWidth*ratio);
+  const h=Math.round(baseImage.naturalHeight*ratio);
+  const x=Math.round((bgCanvas.width-w)/2);
+  const y=Math.round((bgCanvas.height-h)/2);
+
+  bg.imageSmoothingEnabled=true;
+  bg.imageSmoothingQuality="high";
+  bg.drawImage(baseImage,x,y,w,h);
+}
+
+function clearAll(){
+  paint.clearRect(0,0,paintCanvas.width,paintCanvas.height);
+  stars.length=0;
+  bubbles.length=0;
+  undoStack.length=0;
+}
+
+function loadPage(i){
+  currentPage=(i+pages.length)%pages.length;
+  pageLabel.textContent=`Page ${currentPage+1}`;
+  baseImage.src = encodeURI(pages[currentPage]);
+}
+baseImage.onload=()=>{
+  drawBaseImage();
+  clearAll();
+};
+
+let mode="paint";
+let brush="round";
+let glow=false;
+let rainbow=false;
+let fxType="stars";
+
+function setMode(m){
+  mode=m;
+  modeLabel.textContent = `Mode: ${m.charAt(0).toUpperCase()+m.slice(1)}`;
+  paintModeBtn.classList.toggle("active", m==="paint");
+  fillModeBtn.classList.toggle("active", m==="fill");
+  eraseModeBtn.classList.toggle("active", m==="erase");
+}
+
+const paintModeBtn=document.getElementById("paintModeBtn");
+const fillModeBtn=document.getElementById("fillModeBtn");
+const eraseModeBtn=document.getElementById("eraseModeBtn");
+paintModeBtn.onclick=()=>setMode("paint");
+fillModeBtn.onclick=()=>setMode("fill");
+eraseModeBtn.onclick=()=>setMode("erase");
+
+const fxToggleBtn=document.getElementById("fxToggleBtn");
+const fxPanel=document.getElementById("fxPanel");
+fxToggleBtn.onclick=()=>{
+  fxPanel.classList.toggle("show");
+  fxToggleBtn.classList.toggle("active", fxPanel.classList.contains("show"));
+};
+
+const sizeEl=document.getElementById("size");
+const opacityEl=document.getElementById("opacity");
+const smoothEl=document.getElementById("smooth");
+const fxStrengthEl=document.getElementById("fxStrength");
+const fxScatterEl=document.getElementById("fxScatter");
+
+const sizeVal=document.getElementById("sizeVal");
+const opacityVal=document.getElementById("opacityVal");
+const smoothVal=document.getElementById("smoothVal");
+const fxStrengthVal=document.getElementById("fxStrengthVal");
+const fxScatterVal=document.getElementById("fxScatterVal");
+
+let brushSize=parseInt(sizeEl.value,10);
+let brushOpacity=parseFloat(opacityEl.value);
+let smoothing=parseFloat(smoothEl.value);
+let fxStrength=parseFloat(fxStrengthEl.value);
+let fxScatter=parseFloat(fxScatterEl.value);
+
+function syncVals(){
+  sizeVal.textContent=brushSize;
+  opacityVal.textContent=brushOpacity.toFixed(2);
+  smoothVal.textContent=smoothing.toFixed(2);
+  fxStrengthVal.textContent=fxStrength.toFixed(2);
+  fxScatterVal.textContent=fxScatter.toFixed(2);
+}
+sizeEl.oninput=()=>{brushSize=parseInt(sizeEl.value,10);syncVals();};
+opacityEl.oninput=()=>{brushOpacity=parseFloat(opacityEl.value);syncVals();};
+smoothEl.oninput=()=>{smoothing=parseFloat(smoothEl.value);syncVals();};
+fxStrengthEl.oninput=()=>{fxStrength=parseFloat(fxStrengthEl.value);syncVals();};
+fxScatterEl.oninput=()=>{fxScatter=parseFloat(fxScatterEl.value);syncVals();};
+syncVals();
+
+let colour="#2563eb";
+const colourChip=document.getElementById("colourChip");
+colourChip.textContent=colour;
+
+const colours=[
+  "#000000","#ffffff","#ef4444","#f97316","#facc15",
+  "#22c55e","#10b981","#06b6d4","#3b82f6","#6366f1",
+  "#a855f7","#ec4899","#f43f5e","#8b5cf6","#14b8a6",
+  "#84cc16","#eab308","#fb7185","#60a5fa","#94a3b8"
+];
+const swatches=document.getElementById("swatches");
+function buildSwatches(){
+  swatches.innerHTML="";
+  colours.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="sw"+(c.toLowerCase()===colour.toLowerCase()?" sel":"");
+    d.style.background = (c==="#ffffff") ? "linear-gradient(135deg,#fff,#dbeafe)" : c;
+    d.onclick=()=>{
+      colour=c;
+      colourChip.textContent=colour;
+      [...swatches.children].forEach(x=>x.classList.remove("sel"));
+      d.classList.add("sel");
     };
+    swatches.appendChild(d);
+  });
+}
+buildSwatches();
 
-    // ---------- Elements ----------
-    const stage = document.getElementById('stage');
-    const img = document.getElementById('lineart');
+const brushChip=document.getElementById("brushChip");
+const brushGrid=document.getElementById("brushGrid");
+function setBrush(b){
+  brush=b;
+  brushChip.textContent =
+    b==="round"?"Round":
+    b==="square"?"Square":
+    b==="pencil"?"Pencil":
+    b==="spray"?"Spray":
+    b==="heart"?"Heart":"Star";
+  [...brushGrid.querySelectorAll("[data-brush]")].forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.brush===b);
+  });
+}
+brushGrid.querySelectorAll("[data-brush]").forEach(btn=>{
+  btn.onclick=()=>setBrush(btn.dataset.brush);
+});
+setBrush("round");
 
-    const paint = document.getElementById('paintLayer');
-    const fx = document.getElementById('fxLayer');
-    const pctx = paint.getContext('2d');
-    const fctx = fx.getContext('2d');
+const glowBtn=document.getElementById("glowBtn");
+const rainbowBtn=document.getElementById("rainbowBtn");
+glowBtn.onclick=()=>{glow=!glow; glowBtn.classList.toggle("active",glow);};
+rainbowBtn.onclick=()=>{rainbow=!rainbow; rainbowBtn.classList.toggle("active",rainbow);};
 
-    const modeBadge = document.getElementById('modeBadge');
-    const pageBadge = document.getElementById('pageBadge');
+const fxChip=document.getElementById("fxChip");
+const fxGrid=document.getElementById("fxGrid");
+function setFxType(t){
+  fxType=t;
+  fxChip.textContent =
+    t==="stars"?"Stars":
+    t==="glitter"?"Glitter":
+    t==="confetti"?"Confetti":
+    t==="hearts"?"Hearts":
+    t==="bubbles"?"Bubbles":"Off";
+  fxGrid.querySelectorAll("[data-fx]").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.fx===t);
+  });
+}
+fxGrid.querySelectorAll("[data-fx]").forEach(btn=>{
+  btn.onclick=()=>setFxType(btn.dataset.fx);
+});
+setFxType("stars");
 
-    const chipColour = document.getElementById('chipColour');
-    const chipBrush = document.getElementById('chipBrush');
-    const chipFX = document.getElementById('chipFX');
-    const chipSFX = document.getElementById('chipSFX');
+let sfxOn=true;
+const sfxChipEl=document.getElementById("sfxChip");
+const sfxBtn=document.getElementById("sfxBtn");
+let audioCtx=null;
 
-    // Top buttons
-    const btnBack = document.getElementById('btnBack');
-    const btnNext = document.getElementById('btnNext');
-    const btnModePaint = document.getElementById('btnModePaint');
-    const btnModeFill = document.getElementById('btnModeFill');
-    const btnModeErase = document.getElementById('btnModeErase');
-    const btnModeFX = document.getElementById('btnModeFX');
-    const btnUndo = document.getElementById('btnUndo');
-    const btnClear = document.getElementById('btnClear');
-    const btnSave = document.getElementById('btnSave');
+function ensureAudio(){
+  if (!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if (audioCtx.state==="suspended") audioCtx.resume();
+}
+paintCanvas.addEventListener("pointerdown", ()=>ensureAudio(), { once:true });
 
-    // Right controls
-    const paletteEl = document.getElementById('palette');
-    const sizeEl = document.getElementById('size');
-    const opacityEl = document.getElementById('opacity');
-    const smoothEl = document.getElementById('smooth');
-    const valSize = document.getElementById('valSize');
-    const valOpacity = document.getElementById('valOpacity');
-    const valSmooth = document.getElementById('valSmooth');
+sfxBtn.onclick=()=>{
+  ensureAudio();
+  sfxOn=!sfxOn;
+  sfxChipEl.textContent=sfxOn?"On":"Off";
+  sfxBtn.classList.toggle("active", sfxOn);
+};
 
-    const btnSFX = document.getElementById('btnSFX');
+function playPop(kind="glitter"){
+  if (!sfxOn) return;
+  ensureAudio(); if (!audioCtx) return;
+  const t=audioCtx.currentTime;
 
-    // Brush row (under image)
-    const brushRow = document.getElementById('brushRow');
-    const brushBadge = document.getElementById('brushBadge');
+  const base = (kind==="stars")?880:(kind==="bubbles")?620:(kind==="confetti")?740:820;
 
-    // FX chips (right)
-    const fxChips = document.getElementById('fxChips');
+  const o=audioCtx.createOscillator();
+  const g=audioCtx.createGain();
+  o.type="triangle";
+  o.frequency.setValueAtTime(base,t);
+  o.frequency.exponentialRampToValueAtTime(base*1.7,t+0.06);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(0.12,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.12);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(t); o.stop(t+0.14);
 
-    // ---------- App State ----------
-    const pages = [
-      "butterfly.png"
-      // Add more like: "star.png", "balloon.png", "salam.png"
-    ];
-    let pageIndex = 0;
+  const dur=0.09;
+  const nSamps=Math.max(1,Math.floor(dur*audioCtx.sampleRate));
+  const buf=audioCtx.createBuffer(1,nSamps,audioCtx.sampleRate);
+  const data=buf.getChannelData(0);
+  for (let i=0;i<nSamps;i++){
+    const env=Math.pow(1-i/nSamps,2);
+    data[i]=(Math.random()*2-1)*0.35*env;
+  }
+  const src=audioCtx.createBufferSource();
+  src.buffer=buf;
+  const hp=audioCtx.createBiquadFilter();
+  hp.type="highpass";
+  hp.frequency.setValueAtTime((kind==="bubbles")?1200:2200,t);
+  const ng=audioCtx.createGain();
+  ng.gain.setValueAtTime(0.0001,t);
+  ng.gain.linearRampToValueAtTime((kind==="bubbles")?0.05:0.07,t+0.01);
+  ng.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  src.connect(hp); hp.connect(ng); ng.connect(audioCtx.destination);
+  src.start(t); src.stop(t+dur+0.01);
+}
 
-    let mode = "paint"; // paint | fill | erase | fx
-    let brush = "round"; // round | square | triangle | spray | star | glitter | multi
-    let fxMode = "stars"; // stars | glitter | confetti
+const undoStack=[];
+const MAX_UNDO=25;
+function snapshotState(){
+  let img=null;
+  try{ img=paint.getImageData(0,0,paintCanvas.width,paintCanvas.height);}catch(e){}
+  const st = stars.map(s=>({...s}));
+  const bb = bubbles.map(b=>({...b}));
+  return { img, st, bb };
+}
+function restoreState(s){
+  if (s.img) paint.putImageData(s.img,0,0);
+  stars.length=0; bubbles.length=0;
+  s.st.forEach(x=>stars.push({...x}));
+  s.bb.forEach(x=>bubbles.push({...x}));
+}
+function pushUndo(){
+  const s=snapshotState();
+  if (!s.img) return;
+  if (undoStack.length>=MAX_UNDO) undoStack.shift();
+  undoStack.push(s);
+}
+function undo(){
+  const s=undoStack.pop();
+  if (s) restoreState(s);
+}
 
-    let colour = "#ff4d6d";
-    let brushSize = parseInt(sizeEl.value, 10);
-    let opacity = parseFloat(opacityEl.value);
-    let smooth = parseFloat(smoothEl.value);
+function hexToRgb(hex){
+  const v=parseInt(hex.replace("#",""),16);
+  return [(v>>16)&255,(v>>8)&255,v&255];
+}
+function luminance(r,g,b){ return 0.2126*r + 0.7152*g + 0.0722*b; }
+function closeCol(r,g,b, tr,tg,tb, tol){
+  return Math.abs(r-tr)<=tol && Math.abs(g-tg)<=tol && Math.abs(b-tb)<=tol;
+}
+function fillFromBG(x,y, fillHex){
+  const w=bgCanvas.width,h=bgCanvas.height;
+  if (x<0||y<0||x>=w||y>=h) return;
 
-    // Undo stacks (paint + fx)
-    const undoStack = [];
-    const maxUndo = 30;
+  const bgImg=bg.getImageData(0,0,w,h);
+  const bd=bgImg.data;
 
-    // FX particles store
-    const fxParticles = [];
+  const i0=(y*w+x)*4;
+  const tr=bd[i0], tg=bd[i0+1], tb=bd[i0+2], ta=bd[i0+3];
+  if (ta===0) return;
+  if (luminance(tr,tg,tb)<55) return;
 
-    // ---------- Helpers ----------
-    function setMode(m){
-      mode = m;
-      modeBadge.textContent = "Mode: " + (m[0].toUpperCase() + m.slice(1));
-      beep(m === "erase" ? 240 : 660, 0.06, "triangle");
-    }
+  const [fr,fgc,fbc]=hexToRgb(fillHex);
 
-    function setBrush(b){
-      brush = b;
-      brushBadge.textContent = b[0].toUpperCase() + b.slice(1);
-      chipBrush.textContent = brushLabel(b);
-      beep(520, 0.05, "sine");
-    }
+  const paintImg=paint.getImageData(0,0,w,h);
+  const pd=paintImg.data;
 
-    function brushLabel(b){
-      const map = {round:"Round", square:"Square", triangle:"Triangle", spray:"Spray", star:"Star", glitter:"Glitter", multi:"Multi"};
-      return map[b] || "Round";
-    }
+  const tol=30;
+  const stack=[[x,y]];
+  const seen=new Uint8Array(w*h);
+  const MAX=w*h*0.6;
+  let filled=0;
 
-    function setFX(f){
-      fxMode = f;
-      chipFX.textContent = f[0].toUpperCase() + f.slice(1);
-      beep(780, 0.05, "sine");
-    }
+  while(stack.length){
+    const [px,py]=stack.pop();
+    if (px<0||py<0||px>=w||py>=h) continue;
+    const idx=py*w+px;
+    if (seen[idx]) continue;
+    seen[idx]=1;
 
-    function setColour(c){
-      colour = c;
-      chipColour.textContent = c.toLowerCase();
-    }
+    const bi=idx*4;
+    const r=bd[bi], g=bd[bi+1], b=bd[bi+2], a=bd[bi+3];
+    if (a===0) continue;
+    if (luminance(r,g,b)<55) continue;
+    if (!closeCol(r,g,b,tr,tg,tb,tol)) continue;
 
-    function resizeCanvases(){
-      const rect = stage.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
+    pd[bi]=fr; pd[bi+1]=fgc; pd[bi+2]=fbc; pd[bi+3]=255;
+    filled++; if (filled>MAX) break;
 
-      [paint, fx].forEach(cv=>{
-        cv.width = Math.round(rect.width * dpr);
-        cv.height = Math.round(rect.height * dpr);
-        cv.style.width = rect.width + "px";
-        cv.style.height = rect.height + "px";
-        cv.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+    stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
+  }
+  paint.putImageData(paintImg,0,0);
+}
+
+function hsvToRgb(h,s,v){
+  const c=v*s, x=c*(1-Math.abs((h/60)%2-1)), m=v-c;
+  let r=0,g=0,b=0;
+  if (h<60){r=c;g=x;}
+  else if (h<120){r=x;g=c;}
+  else if (h<180){g=c;b=x;}
+  else if (h<240){g=x;b=c;}
+  else if (h<300){r=x;b=c;}
+  else {r=c;b=x;}
+  return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+}
+function rgbToHex(r,g,b){
+  return "#"+[r,g,b].map(n=>n.toString(16).padStart(2,"0")).join("");
+}
+function rainbowColor(){
+  const hue=(Date.now()/14)%360;
+  const [r,g,b]=hsvToRgb(hue,0.8,1);
+  return rgbToHex(r,g,b);
+}
+
+function drawHeart(ctx,x,y,size,fill){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(size/20,size/20);
+  ctx.beginPath();
+  ctx.moveTo(0,6);
+  ctx.bezierCurveTo(0,-2,-10,-2,-10,6);
+  ctx.bezierCurveTo(-10,12,-4,16,0,20);
+  ctx.bezierCurveTo(4,16,10,12,10,6);
+  ctx.bezierCurveTo(10,-2,0,-2,0,6);
+  ctx.closePath();
+  ctx.fillStyle=fill;
+  ctx.fill();
+  ctx.restore();
+}
+function drawStar(ctx,x,y,r,fill){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.beginPath();
+  const spikes=5, outer=r, inner=r*0.45;
+  let rot=Math.PI/2*3, step=Math.PI/spikes;
+  ctx.moveTo(0,-outer);
+  for(let i=0;i<spikes;i++){
+    ctx.lineTo(Math.cos(rot)*outer,Math.sin(rot)*outer); rot+=step;
+    ctx.lineTo(Math.cos(rot)*inner,Math.sin(rot)*inner); rot+=step;
+  }
+  ctx.closePath();
+  ctx.fillStyle=fill;
+  ctx.fill();
+  ctx.restore();
+}
+
+function sprayDot(x,y,r,fill){
+  paint.save();
+  paint.globalAlpha = brushOpacity * 0.7;
+  paint.fillStyle = fill;
+  for (let i=0;i<Math.floor(12 + brushSize*0.25);i++){
+    const a=Math.random()*Math.PI*2;
+    const d=Math.random()*r*2.0;
+    const px=x+Math.cos(a)*d;
+    const py=y+Math.sin(a)*d;
+    const rr=Math.random()*(r*0.22)+0.7;
+    paint.beginPath();
+    paint.arc(px,py,rr,0,Math.PI*2);
+    paint.fill();
+  }
+  paint.restore();
+}
+
+function stampBrush(x,y,baseSize){
+  const fill = rainbow ? rainbowColor() : colour;
+  const r = baseSize;
+
+  paint.save();
+  paint.globalAlpha = brushOpacity;
+  paint.globalCompositeOperation = "source-over";
+
+  if (glow){
+    paint.shadowColor = fill;
+    paint.shadowBlur = Math.max(6, r*0.9);
+  } else {
+    paint.shadowBlur = 0;
+  }
+
+  if (brush==="round"){
+    paint.fillStyle=fill;
+    paint.beginPath(); paint.arc(x,y,r,0,Math.PI*2); paint.fill();
+  } else if (brush==="square"){
+    paint.fillStyle=fill;
+    paint.fillRect(x-r, y-r, r*2, r*2);
+  } else if (brush==="pencil"){
+    paint.shadowBlur = glow ? Math.max(4,r*0.45):0;
+    paint.globalAlpha = clamp(brushOpacity*0.9,0,1);
+    paint.fillStyle=fill;
+    paint.beginPath(); paint.arc(x,y,Math.max(1.5,r*0.35),0,Math.PI*2); paint.fill();
+  } else if (brush==="spray"){
+    paint.shadowBlur = 0;
+    sprayDot(x,y,r,fill);
+  } else if (brush==="heart"){
+    paint.shadowBlur = glow ? Math.max(6,r*0.7):0;
+    drawHeart(paint,x,y,Math.max(10,r*2.2),fill);
+  } else if (brush==="starbrush"){
+    paint.shadowBlur = glow ? Math.max(6,r*0.7):0;
+    drawStar(paint,x,y,Math.max(8,r*1.5),fill);
+  }
+
+  paint.restore();
+}
+
+function eraseAt(x,y,r){
+  paint.save();
+  paint.globalCompositeOperation="destination-out";
+  paint.globalAlpha=1;
+  paint.beginPath();
+  paint.arc(x,y,r,0,Math.PI*2);
+  paint.fill();
+  paint.restore();
+
+  const rr = r*1.2;
+  for (let i=stars.length-1;i>=0;i--){
+    const s=stars[i];
+    const d=Math.hypot(s.x-x,s.y-y);
+    if (d < rr + s.size*0.9) stars.splice(i,1);
+  }
+  for (let i=bubbles.length-1;i>=0;i--){
+    const b=bubbles[i];
+    const d=Math.hypot(b.x-x,b.y-y);
+    if (d < rr + b.r*1.1) bubbles.splice(i,1);
+  }
+}
+
+function getPos(e){
+  const rect=paintCanvas.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  return { x:(e.clientX-rect.left)*dpr, y:(e.clientY-rect.top)*dpr };
+}
+
+let drawing=false;
+let last=null;
+
+paintCanvas.addEventListener("pointerdown",(e)=>{
+  const p=getPos(e);
+
+  if (mode==="fill"){
+    pushUndo();
+    fillFromBG(Math.floor(p.x),Math.floor(p.y), colour);
+    return;
+  }
+
+  if (fxPanel.classList.contains("show") && fxType!=="none" && mode!=="erase"){
+    pushUndo();
+    placeFX(p.x,p.y);
+    return;
+  }
+
+  pushUndo();
+  drawing=true;
+  last=p;
+  paintCanvas.setPointerCapture(e.pointerId);
+
+  if (mode==="erase"){
+    eraseAt(p.x,p.y,brushSize*0.55);
+  } else {
+    stampBrush(p.x,p.y,brushSize*0.5);
+  }
+});
+
+paintCanvas.addEventListener("pointermove",(e)=>{
+  if (!drawing || !last) return;
+  const p=getPos(e);
+
+  const sx = last.x + (p.x-last.x)*(1 - smoothing);
+  const sy = last.y + (p.y-last.y)*(1 - smoothing);
+  const sp = {x:sx,y:sy};
+
+  const dx=sp.x-last.x, dy=sp.y-last.y;
+  const dist=Math.hypot(dx,dy);
+  const steps=Math.max(1,Math.floor(dist/2));
+
+  for (let i=0;i<=steps;i++){
+    const t=i/steps;
+    const x=last.x+dx*t;
+    const y=last.y+dy*t;
+    if (mode==="erase") eraseAt(x,y,brushSize*0.55);
+    else stampBrush(x,y,brushSize*0.5);
+  }
+  last=sp;
+});
+
+function endDraw(e){
+  drawing=false; last=null;
+  try{ paintCanvas.releasePointerCapture(e.pointerId); }catch(_){}
+}
+paintCanvas.addEventListener("pointerup", endDraw);
+paintCanvas.addEventListener("pointercancel", endDraw);
+paintCanvas.addEventListener("pointerleave", ()=>{drawing=false;last=null;});
+
+const stars=[];
+const bubbles=[];
+
+function placeFX(x,y){
+  const base = brushSize * 0.55;
+  const strength = fxStrength;
+  const scat = fxScatter;
+  const tint = (colour==="#ffffff") ? "#fde68a" : colour;
+
+  if (fxType==="stars"){
+    const sSize = base*(0.9+strength*1.3);
+    stars.push({ x,y, size:sSize, color:tint, phase:Math.random()*Math.PI*2, tw: 0.6 + strength*0.9 });
+    const extras = Math.floor(2 + strength*5);
+    for (let i=0;i<extras;i++){
+      stars.push({
+        x: x + rand(-sSize*1.2, sSize*1.2)*(0.35+scat),
+        y: y + rand(-sSize*1.2, sSize*1.2)*(0.35+scat),
+        size: rand(3,7)*(0.9+strength),
+        color: ["#ffffff","#fde68a","#93c5fd","#f9a8d4"][i%4],
+        phase:Math.random()*Math.PI*2,
+        tw: 0.9 + strength*1.2
       });
-
-      // keep paint crisp
-      pctx.lineCap = "round";
-      pctx.lineJoin = "round";
     }
+    playPop("stars");
+    return;
+  }
 
-    function snapshot(){
-      // Save both layers for undo
-      try{
-        const p = paint.toDataURL("image/png");
-        const f = fx.toDataURL("image/png");
-        undoStack.push({p, f, fxParticles: JSON.parse(JSON.stringify(fxParticles))});
-        if(undoStack.length > maxUndo) undoStack.shift();
-      }catch(e){}
-    }
-
-    function restoreSnap(snap){
-      if(!snap) return;
-      // Restore paint
-      const ip = new Image();
-      ip.onload = ()=>{
-        pctx.clearRect(0,0,paint.width,paint.height);
-        pctx.drawImage(ip, 0,0, paint.width/(window.devicePixelRatio||1), paint.height/(window.devicePixelRatio||1));
-      };
-      ip.src = snap.p;
-
-      // Restore fx
-      const iff = new Image();
-      iff.onload = ()=>{
-        fctx.clearRect(0,0,fx.width,fx.height);
-        fctx.drawImage(iff, 0,0, fx.width/(window.devicePixelRatio||1), fx.height/(window.devicePixelRatio||1));
-      };
-      iff.src = snap.f;
-
-      // Restore particles
-      fxParticles.length = 0;
-      snap.fxParticles.forEach(x=>fxParticles.push(x));
-    }
-
-    function clearAll(){
-      snapshot();
-      pctx.clearRect(0,0,paint.width,paint.height);
-      fctx.clearRect(0,0,fx.width,fx.height);
-      fxParticles.length = 0;
-      beep(180,0.08,"square");
-    }
-
-    function undo(){
-      if(undoStack.length === 0) return;
-      const snap = undoStack.pop();
-      restoreSnap(snap);
-      beep(320,0.06,"triangle");
-    }
-
-    function loadPage(i){
-      pageIndex = Math.max(0, Math.min(pages.length-1, i));
-      img.src = pages[pageIndex];
-      pageBadge.textContent = `Page ${pageIndex+1}`;
-      // Clear layers for new page
-      pctx.clearRect(0,0,paint.width,paint.height);
-      fctx.clearRect(0,0,fx.width,fx.height);
-      fxParticles.length = 0;
-      undoStack.length = 0;
-      beep(720,0.06,"sine");
-      btnBack.disabled = pageIndex === 0;
-      btnNext.disabled = pageIndex === pages.length-1;
-    }
-
-    // ---------- Palette ----------
-    const colours = [
-      "#000000","#ffffff","#ff3b30","#ff9500","#ffcc00","#34c759","#00c7be","#007aff",
-      "#5856d6","#af52de","#ff2d55","#ff6b6b","#8a7bff","#00d4ff","#ffd86b","#baff6b",
-      "#ff7bf0","#6bffda","#6a8bff","#ff8c6b","#9ea7b8","#3a3f55"
-    ];
-
-    function buildPalette(){
-      paletteEl.innerHTML = "";
-      colours.forEach(c=>{
-        const s = document.createElement("div");
-        s.className = "swatch" + (c.toLowerCase()===colour.toLowerCase() ? " active" : "");
-        s.style.background = c;
-        s.title = c;
-        s.addEventListener("click", ()=>{
-          document.querySelectorAll(".swatch").forEach(x=>x.classList.remove("active"));
-          s.classList.add("active");
-          setColour(c);
-          beep(900,0.04,"sine");
-        });
-        paletteEl.appendChild(s);
+  if (fxType==="bubbles"){
+    const count = Math.floor(2 + strength*5);
+    for (let i=0;i<count;i++){
+      const r = rand(base*0.35, base*0.9)*(0.8+strength);
+      bubbles.push({
+        x: x + rand(-base*1.3, base*1.3)*(0.35+scat),
+        y: y + rand(-base*0.6, base*0.6)*(0.35+scat),
+        r, vy: rand(0.35, 0.9) + strength*0.75,
+        life: 0, max: rand(1200, 2000),
+        drift: rand(-0.18,0.18)
       });
     }
+    playPop("bubbles");
+    return;
+  }
 
-    // ---------- Drawing ----------
-    let drawing = false;
-    let last = null;
-
-    function getPos(e){
-      const rect = stage.getBoundingClientRect();
-      const t = (e.touches && e.touches[0]) ? e.touches[0] : e;
-      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
-    }
-
-    function lerp(a,b,t){ return a + (b-a)*t; }
-
-    function drawStroke(from, to){
-      const steps = Math.max(1, Math.floor(Math.hypot(to.x-from.x, to.y-from.y) / 2));
-      for(let i=0;i<=steps;i++){
-        const t = i/steps;
-        const x = lerp(from.x, to.x, t);
-        const y = lerp(from.y, to.y, t);
-        stampPaint(x,y);
+  if (fxType==="glitter"){
+    const count = Math.floor(18 + strength*65);
+    paint.save();
+    for (let i=0;i<count;i++){
+      const gx = x + rand(-base*2.2, base*2.2)*(0.35+scat);
+      const gy = y + rand(-base*2.2, base*2.2)*(0.35+scat);
+      const gr = rand(0.9, 3.8)*(0.7+strength);
+      const c = (i%3===0) ? "#ffffff" : (i%3===1 ? "#fde68a" : "#a7f3d0");
+      paint.globalAlpha = 0.20 + strength*0.60;
+      paint.fillStyle=c;
+      paint.beginPath(); paint.arc(gx,gy,gr,0,Math.PI*2); paint.fill();
+      if (i%12===0){
+        paint.globalAlpha = 0.12 + strength*0.25;
+        paint.strokeStyle=c;
+        paint.lineWidth=1;
+        paint.beginPath();
+        paint.moveTo(gx-gr*2.4,gy); paint.lineTo(gx+gr*2.4,gy);
+        paint.moveTo(gx,gy-gr*2.4); paint.lineTo(gx,gy+gr*2.4);
+        paint.stroke();
       }
     }
+    paint.restore();
+    playPop("glitter");
+    return;
+  }
 
-    function stampPaint(x,y){
-      const ctx = pctx;
-      ctx.save();
-      ctx.globalAlpha = opacity;
+  if (fxType==="confetti"){
+    const pieces = Math.floor(16 + strength*55);
+    paint.save();
+    for (let i=0;i<pieces;i++){
+      const cx = x + rand(-base*2.4, base*2.4)*(0.35+scat);
+      const cy = y + rand(-base*2.4, base*2.4)*(0.35+scat);
+      const w = rand(2, 9)*(0.8+strength);
+      const h = rand(2, 9)*(0.8+strength);
+      const hue = (Date.now()/10 + i*37) % 360;
+      const [r,g,b]=hsvToRgb(hue,0.85,1);
+      paint.globalAlpha = 0.14 + strength*0.50;
+      paint.fillStyle = rgbToHex(r,g,b);
+      paint.fillRect(cx,cy,w,h);
+    }
+    paint.restore();
+    playPop("confetti");
+    return;
+  }
 
-      if(mode === "erase"){
-        ctx.globalCompositeOperation = "destination-out";
-      } else {
-        ctx.globalCompositeOperation = "source-over";
-      }
+  if (fxType==="hearts"){
+    const n = Math.floor(3 + strength*8);
+    paint.save();
+    for (let i=0;i<n;i++){
+      const hx = x + rand(-base*1.8, base*1.8)*(0.35+scat);
+      const hy = y + rand(-base*1.8, base*1.8)*(0.35+scat);
+      const sz = rand(base*0.8, base*1.8)*(0.55+strength);
+      paint.globalAlpha = 0.18 + strength*0.55;
+      const c = (i%3===0) ? tint : (i%3===1 ? "#fb7185" : "#f9a8d4");
+      drawHeart(paint,hx,hy,sz,c);
+    }
+    paint.restore();
+    playPop("glitter");
+  }
+}
 
-      const r = brushSize/2;
+function drawAnimated(){
+  fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  const t = Date.now()/1000;
 
-      if(brush === "round" || mode === "erase"){
-        ctx.fillStyle = colour;
-        ctx.beginPath();
-        ctx.arc(x,y,r,0,Math.PI*2);
-        ctx.fill();
-      }
-      else if(brush === "square"){
-        ctx.fillStyle = colour;
-        ctx.fillRect(x-r, y-r, brushSize, brushSize);
-      }
-      else if(brush === "triangle"){
-        ctx.fillStyle = colour;
-        ctx.beginPath();
-        ctx.moveTo(x, y-r);
-        ctx.lineTo(x+r, y+r);
-        ctx.lineTo(x-r, y+r);
-        ctx.closePath();
-        ctx.fill();
-      }
-      else if(brush === "spray"){
-        ctx.fillStyle = colour;
-        for(let i=0;i<18;i++){
-          const a = Math.random()*Math.PI*2;
-          const rr = Math.random()*r;
-          ctx.fillRect(x + Math.cos(a)*rr, y + Math.sin(a)*rr, 1.6, 1.6);
-        }
-      }
-      else if(brush === "star"){
-        ctx.fillStyle = colour;
-        drawStar(ctx, x, y, r, Math.max(4, r*0.55), 5);
-      }
-      else if(brush === "glitter"){
-        // glitter: multistamp sparkles around point
-        for(let i=0;i<8;i++){
-          const a = Math.random()*Math.PI*2;
-          const rr = Math.random()*r;
-          const cx = x + Math.cos(a)*rr;
-          const cy = y + Math.sin(a)*rr;
-          ctx.fillStyle = colour;
-          drawStar(ctx, cx, cy, Math.max(2, r*0.35), Math.max(1, r*0.18), 5);
-        }
-      }
-      else if(brush === "multi"){
-        // rainbow multi
-        const rainbow = ["#ff3b30","#ff9500","#ffcc00","#34c759","#00c7be","#007aff","#5856d6","#af52de"];
-        ctx.fillStyle = rainbow[Math.floor(Math.random()*rainbow.length)];
-        ctx.beginPath();
-        ctx.arc(x,y,r,0,Math.PI*2);
-        ctx.fill();
-      }
+  for (const s of stars){
+    const tw = (Math.sin(t*2.6 + s.phase) * 0.5 + 0.5);
+    const alpha = 0.22 + tw * (0.22 + s.tw*0.18);
+    const glowA = 0.10 + tw*0.25;
 
-      ctx.restore();
+    fx.save();
+    fx.globalAlpha = alpha;
+    fx.shadowColor = s.color;
+    fx.shadowBlur = Math.max(6, s.size*0.9) * (0.6 + tw);
+    drawStar(fx, s.x, s.y, s.size*(0.92 + tw*0.12), s.color);
+
+    fx.globalAlpha = glowA;
+    fx.shadowBlur = 0;
+    fx.strokeStyle = "#ffffff";
+    fx.lineWidth = 1;
+    const rr = s.size*(0.5 + tw*0.35);
+    fx.beginPath();
+    fx.moveTo(s.x-rr, s.y); fx.lineTo(s.x+rr, s.y);
+    fx.moveTo(s.x, s.y-rr); fx.lineTo(s.x, s.y+rr);
+    fx.stroke();
+    fx.restore();
+  }
+
+  for (let i=bubbles.length-1;i>=0;i--){
+    const b=bubbles[i];
+    b.life += 16.7;
+    b.y -= b.vy;
+    b.x += b.drift;
+    const a = 1 - (b.life / b.max);
+
+    if (a <= 0 || b.y < -b.r*3){
+      bubbles.splice(i,1);
+      continue;
     }
 
-    function drawStar(ctx, x, y, outerR, innerR, points){
-      ctx.beginPath();
-      const step = Math.PI / points;
-      for(let i=0;i<2*points;i++){
-        const r = (i%2===0)? outerR : innerR;
-        const a = i*step - Math.PI/2;
-        ctx.lineTo(x + Math.cos(a)*r, y + Math.sin(a)*r);
-      }
-      ctx.closePath();
-      ctx.fill();
-    }
+    fx.save();
+    fx.globalAlpha = 0.12 + a*0.22;
+    fx.strokeStyle = "rgba(255,255,255,.9)";
+    fx.lineWidth = Math.max(1, b.r*0.08);
+    fx.shadowColor = "rgba(255,255,255,.6)";
+    fx.shadowBlur = b.r*0.6;
+    fx.beginPath();
+    fx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    fx.stroke();
 
-    // ---------- Fill (simple flood fill on paint layer only) ----------
-    function hexToRgba(hex, a=1){
-      const h = hex.replace("#","");
-      const v = parseInt(h.length===3 ? h.split("").map(c=>c+c).join("") : h, 16);
-      return { r:(v>>16)&255, g:(v>>8)&255, b:v&255, a: Math.round(a*255) };
-    }
+    fx.globalAlpha = 0.10 + a*0.18;
+    fx.shadowBlur = 0;
+    fx.beginPath();
+    fx.arc(b.x-b.r*0.3, b.y-b.r*0.3, b.r*0.25, 0, Math.PI*2);
+    fx.stroke();
+    fx.restore();
+  }
 
-    function floodFill(x,y){
-      snapshot();
+  requestAnimationFrame(drawAnimated);
+}
+requestAnimationFrame(drawAnimated);
 
-      const w = paint.width/(window.devicePixelRatio||1);
-      const h = paint.height/(window.devicePixelRatio||1);
+// Buttons
+document.getElementById("nextBtn").onclick=()=>loadPage(currentPage+1);
+document.getElementById("prevBtn").onclick=()=>loadPage(currentPage-1);
 
-      // Read paint layer only (so you fill empty zones without touching lineart image)
-      const imgData = pctx.getImageData(0,0,w,h);
-      const data = imgData.data;
+document.getElementById("clearBtn").onclick=()=>{
+  pushUndo();
+  paint.clearRect(0,0,paintCanvas.width,paintCanvas.height);
+  stars.length=0;
+  bubbles.length=0;
+};
 
-      const ix = Math.floor(x);
-      const iy = Math.floor(y);
-      const idx = (iy*w + ix)*4;
+document.getElementById("saveBtn").onclick=()=>{
+  const out=document.createElement("canvas");
+  out.width=bgCanvas.width; out.height=bgCanvas.height;
+  const o=out.getContext("2d");
+  o.drawImage(bgCanvas,0,0);
+  o.drawImage(paintCanvas,0,0);
+  o.drawImage(fxCanvas,0,0);
+  const link=document.createElement("a");
+  link.download="my_colouring.png";
+  link.href=out.toDataURL("image/png");
+  link.click();
+};
 
-      const target = { r:data[idx], g:data[idx+1], b:data[idx+2], a:data[idx+3] };
-      const fill = hexToRgba(colour, opacity);
+document.getElementById("undoBtn").onclick=undo;
 
-      // If target already close to fill, return
-      if (Math.abs(target.r-fill.r)<3 && Math.abs(target.g-fill.g)<3 && Math.abs(target.b-fill.b)<3 && Math.abs(target.a-fill.a)<3){
-        return;
-      }
+window.addEventListener("keydown",(e)=>{
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z"){
+    e.preventDefault(); undo();
+  }
+});
 
-      const stack = [[ix,iy]];
-      const seen = new Uint8Array(w*h);
-
-      const match = (i)=>{
-        return data[i]===target.r && data[i+1]===target.g && data[i+2]===target.b && data[i+3]===target.a;
-      };
-
-      while(stack.length){
-        const [cx,cy] = stack.pop();
-        if(cx<0||cy<0||cx>=w||cy>=h) continue;
-        const si = cy*w + cx;
-        if(seen[si]) continue;
-        seen[si]=1;
-
-        const di = si*4;
-        if(!match(di)) continue;
-
-        data[di]=fill.r; data[di+1]=fill.g; data[di+2]=fill.b; data[di+3]=fill.a;
-
-        stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);
-      }
-
-      pctx.putImageData(imgData,0,0);
-      beep(520,0.07,"sine");
-    }
-
-    // ---------- FX ----------
-    function addFX(x,y){
-      snapshot();
-      const base = {
-        x, y,
-        size: Math.max(10, brushSize*0.9),
-        born: performance.now(),
-        life: 2500 + Math.random()*1200,
-        hue: Math.random()*360,
-        alpha: 0.9
-      };
-
-      if(fxMode === "stars"){
-        fxParticles.push({ ...base, type:"star", spin:(Math.random()*2-1)*0.012 });
-        beep(880,0.05,"triangle");
-      }
-      else if(fxMode === "glitter"){
-        for(let i=0;i<8;i++){
-          fxParticles.push({
-            ...base,
-            x: x + (Math.random()*2-1)*18,
-            y: y + (Math.random()*2-1)*18,
-            size: Math.max(6, base.size*0.45),
-            type:"spark",
-            spin:(Math.random()*2-1)*0.02
-          });
-        }
-        beep(980,0.05,"sine");
-      }
-      else if(fxMode === "confetti"){
-        for(let i=0;i<16;i++){
-          fxParticles.push({
-            ...base,
-            x: x + (Math.random()*2-1)*12,
-            y: y + (Math.random()*2-1)*12,
-            size: Math.max(6, base.size*0.35),
-            type:"confetti",
-            vx: (Math.random()*2-1)*0.7,
-            vy: -0.9 - Math.random()*0.8,
-            spin:(Math.random()*2-1)*0.06
-          });
-        }
-        beep(700,0.05,"square");
-      }
-    }
-
-    function renderFX(t){
-      const w = fx.width/(window.devicePixelRatio||1);
-      const h = fx.height/(window.devicePixelRatio||1);
-      fctx.clearRect(0,0,w,h);
-
-      for(let i=fxParticles.length-1;i>=0;i--){
-        const p = fxParticles[i];
-        const age = t - p.born;
-        const u = age / p.life;
-        if(u >= 1){
-          fxParticles.splice(i,1);
-          continue;
-        }
-
-        const fade = 1 - u;
-        const tw = 0.6 + 0.4*Math.sin((age/120) + i);
-        const a = Math.max(0, p.alpha * fade * tw);
-
-        fctx.save();
-        fctx.globalAlpha = a;
-
-        // subtle color tint using chosen paint colour sometimes
-        const usePaint = (Math.random() < 0.6);
-        const c = usePaint ? colour : `hsl(${p.hue} 90% 65%)`;
-        fctx.fillStyle = c;
-
-        if(p.type === "star"){
-          fctx.translate(p.x, p.y);
-          fctx.rotate(age * p.spin);
-          drawStar(fctx, 0, 0, p.size*0.55, p.size*0.25, 5);
-        }
-        else if(p.type === "spark"){
-          fctx.translate(p.x, p.y);
-          fctx.rotate(age * p.spin);
-          drawStar(fctx, 0, 0, p.size*0.55, p.size*0.15, 6);
-        }
-        else if(p.type === "confetti"){
-          // motion
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.03; // gravity
-          fctx.translate(p.x, p.y);
-          fctx.rotate(age * p.spin);
-          fctx.fillRect(-p.size/2, -p.size/2, p.size, Math.max(4, p.size*0.45));
-        }
-
-        fctx.restore();
-      }
-
-      requestAnimationFrame(renderFX);
-    }
-
-    // ---------- Pointer events ----------
-    function onDown(e){
-      const pos = getPos(e);
-      if(mode === "paint" || mode === "erase"){
-        snapshot();
-        drawing = true;
-        last = pos;
-        stampPaint(pos.x, pos.y);
-        beep(mode==="erase"?220:740, 0.03, "sine", 0.03);
-      } else if(mode === "fill"){
-        floodFill(pos.x, pos.y);
-      } else if(mode === "fx"){
-        addFX(pos.x, pos.y);
-      }
-    }
-
-    function onMove(e){
-      if(!drawing) return;
-      const pos = getPos(e);
-
-      // smoothing
-      const sx = lerp(last.x, pos.x, 1 - smooth);
-      const sy = lerp(last.y, pos.y, 1 - smooth);
-
-      drawStroke(last, {x:sx, y:sy});
-      last = {x:sx, y:sy};
-    }
-
-    function onUp(){
-      drawing = false;
-      last = null;
-    }
-
-    // Attach
-    stage.addEventListener("pointerdown", onDown);
-    stage.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
-
-    // Touch prevention scroll
-    stage.addEventListener("touchstart", (e)=>e.preventDefault(), {passive:false});
-    stage.addEventListener("touchmove", (e)=>e.preventDefault(), {passive:false});
-
-    // ---------- Buttons ----------
-    btnModePaint.onclick = ()=> setMode("paint");
-    btnModeFill.onclick  = ()=> setMode("fill");
-    btnModeErase.onclick = ()=> setMode("erase");
-    btnModeFX.onclick    = ()=> setMode("fx");
-
-    btnUndo.onclick = undo;
-    btnClear.onclick = clearAll;
-
-    btnBack.onclick = ()=> loadPage(pageIndex-1);
-    btnNext.onclick = ()=> loadPage(pageIndex+1);
-
-    btnSFX.onclick = ()=>{
-      sfxOn = !sfxOn;
-      chipSFX.textContent = sfxOn ? "On" : "Off";
-      beep(600,0.05,"sine");
-    };
-
-    btnSave.onclick = ()=>{
-      // Save merged: lineart image + paint + fx
-      const rect = stage.getBoundingClientRect();
-      const out = document.createElement("canvas");
-      out.width = Math.round(rect.width * (window.devicePixelRatio||1));
-      out.height = Math.round(rect.height * (window.devicePixelRatio||1));
-      const octx = out.getContext("2d");
-
-      // Draw white base
-      octx.fillStyle = "#ffffff";
-      octx.fillRect(0,0,out.width,out.height);
-
-      // Draw lineart image
-      // We draw the image scaled to stage size (same as displayed)
-      // Use stage size in CSS pixels:
-      const w = rect.width;
-      const h = rect.height;
-      // Convert to output coords:
-      const dpr = window.devicePixelRatio||1;
-      octx.setTransform(dpr,0,0,dpr,0,0);
-      octx.drawImage(img, 0,0, w, h);
-      octx.drawImage(paint, 0,0, w, h);
-      octx.drawImage(fx, 0,0, w, h);
-
-      const a = document.createElement("a");
-      a.download = `colouring-page-${pageIndex+1}.png`;
-      a.href = out.toDataURL("image/png");
-      a.click();
-      beep(980,0.07,"triangle");
-    };
-
-    // ---------- Brush buttons (under image) ----------
-    brushRow.addEventListener("click", (e)=>{
-      const btn = e.target.closest(".brush-btn");
-      if(!btn) return;
-      const b = btn.getAttribute("data-brush");
-      document.querySelectorAll("#brushRow .brush-btn").forEach(x=>x.classList.remove("active"));
-      btn.classList.add("active");
-      setBrush(b);
-      chipBrush.textContent = brushLabel(b);
-    });
-
-    // ---------- FX selector chips ----------
-    fxChips.addEventListener("click", (e)=>{
-      const btn = e.target.closest(".brush-btn");
-      if(!btn) return;
-      const f = btn.getAttribute("data-fx");
-      document.querySelectorAll("#fxChips .brush-btn").forEach(x=>x.classList.remove("active"));
-      btn.classList.add("active");
-      setFX(f);
-    });
-
-    // ---------- Sliders ----------
-    function syncSliders(){
-      brushSize = parseInt(sizeEl.value, 10);
-      opacity = parseFloat(opacityEl.value);
-      smooth = parseFloat(smoothEl.value);
-      valSize.textContent = brushSize;
-      valOpacity.textContent = opacity.toFixed(2);
-      valSmooth.textContent = smooth.toFixed(2);
-    }
-
-    sizeEl.oninput = ()=>{ syncSliders(); };
-    opacityEl.oninput = ()=>{ syncSliders(); };
-    smoothEl.oninput = ()=>{ syncSliders(); };
-
-    // ---------- Init ----------
-    function init(){
-      resizeCanvases();
-      buildPalette();
-      syncSliders();
-      setColour(colour);
-      chipBrush.textContent = "Round";
-      chipFX.textContent = "Stars";
-      chipSFX.textContent = "On";
-      loadPage(0);
-      requestAnimationFrame(renderFX);
-    }
-
-    window.addEventListener("resize", ()=>{
-      // When resizing, keep current drawings by snapshotting images then redrawing after resize
-      const pData = paint.toDataURL("image/png");
-      const fData = fx.toDataURL("image/png");
-
-      resizeCanvases();
-
-      const ip = new Image();
-      ip.onload = ()=>{
-        pctx.clearRect(0,0,paint.width,paint.height);
-        pctx.drawImage(ip,0,0, stage.clientWidth, stage.clientHeight);
-      };
-      ip.src = pData;
-
-      const iff = new Image();
-      iff.onload = ()=>{
-        fctx.clearRect(0,0,fx.width,fx.height);
-        fctx.drawImage(iff,0,0, stage.clientWidth, stage.clientHeight);
-      };
-      iff.src = fData;
-    });
-
-    img.addEventListener("load", ()=> {
-      // ensure canvases match stage
-      resizeCanvases();
-    });
-
-    init();
-  </script>
+// Start
+setCanvasSizeForDPR();
+loadPage(0);
+setMode("paint");
+window.addEventListener("resize", ()=>{
+  setCanvasSizeForDPR();
+  if (baseImage.complete && baseImage.naturalWidth) drawBaseImage();
+});
+</script>
 </body>
 </html>
