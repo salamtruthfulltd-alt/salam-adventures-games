@@ -1,63 +1,73 @@
 import streamlit as st
-from PIL import Image
 import fitz  # PyMuPDF
+from PIL import Image
+from docx import Document
 import io
+import gc  # Garbage Collector to prevent memory crashes
 
-st.set_page_config(page_title="Salam Truthful KDP Studio", layout="centered")
+st.set_page_config(page_title="KDP Auto-Fixer", layout="centered")
 
-# 1. KDP SIZES
 KDP_TRIM_SIZES = {
-    "8.5 x 8.5 (Square)": (8.5, 8.5),
-    "8 x 10 (Classic Picture Book)": (8, 10),
-    "6 x 9 (Standard Novel)": (6, 9),
-    "8.5 x 11 (Max Size)": (8.5, 11)
+    "8.5 x 8.5": (8.5, 8.5),
+    "8 x 10": (8, 10),
+    "6 x 9": (6, 9),
+    "8.5 x 11": (8.5, 11)
 }
 
-st.title("🎨 Salam Truthful KDP Studio")
-st.write("Professional KDP Page Previewer & Converter")
+st.title("🛡️ KDP Professional Auto-Fixer")
 
-# --- SIDEBAR ---
-st.sidebar.header("Target Dimensions")
-selected_label = st.sidebar.selectbox("Choose Trim Size:", list(KDP_TRIM_SIZES.keys()))
-base_w, base_h = KDP_TRIM_SIZES[selected_label]
+# Sidebar for Settings
+selected_size = st.selectbox("Select Your Book's Trim Size:", list(KDP_TRIM_SIZES.keys()))
+base_w, base_h = KDP_TRIM_SIZES[selected_size]
 
-has_bleed = st.sidebar.checkbox("Apply 0.125\" Amazon Bleed", value=True)
-final_w = base_w + 0.125 if has_bleed else base_w
-final_h = base_h + 0.25 if has_bleed else base_h
+# Amazon KDP Bleed Math
+final_w = base_w + 0.125
+final_h = base_h + 0.25
 
-st.sidebar.success(f"Target Export: {final_w}\" x {final_h}\"")
-
-# --- MAIN UPLOADER ---
-uploaded_file = st.file_uploader("Upload your PDF or Word Document", type=["pdf", "docx"])
+uploaded_file = st.file_uploader("Upload PDF or Word Document", type=["pdf", "docx"])
 
 if uploaded_file:
-    pages = []
+    output_pdf = fitz.open()
     
-    # PDF Processing
-    if uploaded_file.name.endswith(".pdf"):
-        with st.spinner("Processing PDF..."):
-            doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-            for page in doc:
-                pix = page.get_pixmap(dpi=150)
-                img = Image.open(io.BytesIO(pix.tobytes("png")))
-                pages.append(img)
-                
-    if pages:
-        st.write(f"### Successfully Loaded {len(pages)} Pages")
-        
-        # Navigation
-        page_num = st.select_slider("Select Page to Preview", options=range(1, len(pages)+1))
-        
-        # Display the page in a "KDP Frame"
-        st.write(f"#### Preview: Page {page_num}")
-        st.image(pages[page_num-1], use_container_width=True, caption=f"KDP {selected_label} Layout")
-        
-        st.markdown("---")
-        st.info(f"Ready to export as {final_w} x {final_h} PDF for Amazon KDP.")
-        
-        if st.button("🚀 Download Formatted PDF"):
-            st.success("Generating your high-resolution KDP file...")
-            st.markdown(f"[Back to SalamTruthful.com](https://www.salamtruthful.com)")
+    try:
+        if uploaded_file.name.endswith(".pdf"):
+            with st.spinner("Processing PDF Pages..."):
+                input_pdf = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+                for page in input_pdf:
+                    # Reduced DPI slightly (200 instead of 300) to prevent memory crash
+                    pix = page.get_pixmap(dpi=200) 
+                    img_data = pix.tobytes("png")
+                    
+                    new_page = output_pdf.new_page(width=final_w*72, height=final_h*72)
+                    rect = fitz.Rect(0, 0, final_w*72, final_h*72)
+                    new_page.insert_image(rect, stream=img_data)
+                    
+                    # Force memory cleanup
+                    del pix
+                    gc.collect()
 
-else:
-    st.info("Awaiting file upload... Please use a PDF or Word Doc.")
+        elif uploaded_file.name.endswith(".docx"):
+            with st.spinner("Extracting Word Images..."):
+                doc = Document(uploaded_file)
+                for rel in doc.part.rels.values():
+                    if "image" in rel.target_ref:
+                        new_page = output_pdf.new_page(width=final_w*72, height=final_h*72)
+                        rect = fitz.Rect(0, 0, final_w*72, final_h*72)
+                        new_page.insert_image(rect, stream=rel.target_part.blob)
+                        gc.collect()
+
+        if len(output_pdf) > 0:
+            st.success(f"Perfect! {len(output_pdf)} pages are ready for Amazon.")
+            pdf_bytes = output_pdf.tobytes()
+            st.download_button(
+                label="📥 Download KDP-Ready PDF",
+                data=pdf_bytes,
+                file_name=f"KDP_Ready_{selected_size.replace(' ','')}.pdf",
+                mime="application/pdf"
+            )
+    
+    except Exception as e:
+        st.error(f"The file was too large for the server. Try a smaller PDF or export your Word doc as a PDF first.")
+    
+    finally:
+        output_pdf.close()
