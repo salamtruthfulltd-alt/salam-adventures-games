@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Salam Adventures – Premium Colouring</title>
+  <title>Salam Adventures – Colouring</title>
   <style>
     :root{
       --bg:#0b1220;
@@ -38,7 +38,7 @@
     .btn .e{font-size:16px;line-height:1}
     .btn.active{outline:3px solid rgba(98,255,207,.92);outline-offset:2px}
     .bNext{background:linear-gradient(135deg,#fbbf24,#fb7185)}
-    .bMode{background:linear-gradient(135deg,#a78bfa,#60a5fa)}
+    .bTool{background:linear-gradient(135deg,#a78bfa,#60a5fa)}
     .bFill{background:linear-gradient(135deg,#22c55e,#fbbf24)}
     .bErase{background:linear-gradient(135deg,#fb7185,#a78bfa)}
     .bFx{background:linear-gradient(135deg,#a7f3d0,#f472b6)}
@@ -158,6 +158,7 @@
     .row input[type="range"]{flex:1}
     .row .val{min-width:54px;text-align:right}
 
+    /* FX panel only shows when tool = FX */
     .fxPanel{display:none}
     .fxPanel.show{display:block}
   </style>
@@ -165,7 +166,6 @@
 
 <body>
 <div class="wrap">
-
   <div class="stage">
     <div class="frame">
       <div class="stack" id="stack">
@@ -175,22 +175,22 @@
       </div>
 
       <div class="status">
-        <div>Paint = drag · Fill = tap · FX = tap/drag when FX is ON · Erase removes paint + FX</div>
+        <div>Paint = drag · Fill = tap · FX = tap/drag · Erase removes paint + FX (NOT the picture)</div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <span class="kbd" id="pageLabel">Page 1</span>
-          <span class="kbd" id="modeLabel">Mode: Paint</span>
+          <span class="kbd" id="toolLabel">Tool: Paint</span>
         </div>
       </div>
 
+      <!-- Buttons below canvas -->
       <div class="btnbar">
         <button class="btn" id="prevBtn"><span class="e">⬅️</span>Back</button>
         <button class="btn bNext" id="nextBtn">Next<span class="e">➡️</span></button>
 
-        <button class="btn bMode active" id="paintModeBtn"><span class="e">🖌️</span>Paint</button>
-        <button class="btn bFill" id="fillModeBtn"><span class="e">🪣</span>Fill</button>
-        <button class="btn bErase" id="eraseModeBtn"><span class="e">🧽</span>Erase</button>
-
-        <button class="btn bFx" id="fxToggleBtn"><span class="e">✨</span>FX</button>
+        <button class="btn bTool active" id="paintToolBtn"><span class="e">🖌️</span>Paint</button>
+        <button class="btn bFill" id="fillToolBtn"><span class="e">🪣</span>Fill</button>
+        <button class="btn bFx" id="fxToolBtn"><span class="e">✨</span>FX</button>
+        <button class="btn bErase" id="eraseToolBtn"><span class="e">🧽</span>Erase</button>
 
         <button class="btn bUndo" id="undoBtn"><span class="e">↩️</span>Undo</button>
         <button class="btn bClear" id="clearBtn"><span class="e">🧼</span>Clear</button>
@@ -204,9 +204,9 @@
           <span class="chip">Brush: <span class="kbd" id="brushChip">Round</span></span>
           <span class="chip">FX: <span class="kbd" id="fxChip">Stars</span></span>
           <span class="chip">SFX: <b id="sfxChip">On</b></span>
-          <span class="chip">FX Mode: <b id="fxModeChip">Off</b></span>
         </div>
 
+        <!-- Save next to SFX -->
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <button class="btn bFx" id="sfxBtn" style="padding:9px 12px;font-size:13px;"><span class="e">🔊</span>SFX</button>
           <button class="btn bSave" id="saveBtn" style="padding:9px 12px;font-size:13px;"><span class="e">💾</span>Save</button>
@@ -216,7 +216,7 @@
       <div class="panelBody">
         <div class="card">
           <h3>🎨 Colours</h3>
-          <p class="hint">Pick a colour (paint + tint for some FX).</p>
+          <p class="hint">Pick a colour (also tints some FX).</p>
           <div class="swatches" id="swatches"></div>
 
           <div class="sliders">
@@ -240,7 +240,7 @@
 
         <div class="card">
           <h3>🖌️ Brushes</h3>
-          <p class="hint">Brush buttons work in Paint mode. FX button turns FX mode ON.</p>
+          <p class="hint">Brush shapes (Paint tool).</p>
 
           <div class="gridBtns" id="brushGrid">
             <button class="mini active" data-brush="round"><span class="e">●</span>Round</button>
@@ -254,8 +254,8 @@
           </div>
 
           <div class="fxPanel" id="fxPanel" style="margin-top:10px;">
-            <h3 style="margin:0 0 8px;font-size:13px;color:#dbe8ff;">✨ FX Stamps</h3>
-            <p class="hint">Choose an FX then tap/drag on the picture (while FX mode is ON).</p>
+            <h3 style="margin:0 0 8px;font-size:13px;color:#dbe8ff;">✨ FX Stamps (FX tool)</h3>
+            <p class="hint">Choose FX then tap/drag on the picture.</p>
 
             <div class="gridBtns" id="fxGrid">
               <button class="mini active" data-fx="stars"><span class="e">⭐</span>Stars</button>
@@ -263,7 +263,6 @@
               <button class="mini" data-fx="confetti"><span class="e">🎉</span>Confetti</button>
               <button class="mini" data-fx="hearts"><span class="e">💖</span>Hearts</button>
               <button class="mini" data-fx="bubbles"><span class="e">🫧</span>Bubbles</button>
-              <button class="mini" data-fx="none"><span class="e">🚫</span>Off</button>
             </div>
 
             <div class="sliders">
@@ -283,17 +282,14 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-/* FIX: FX button + special FX buttons now ALWAYS work
-   - FX button toggles "FX MODE" on/off
-   - When FX MODE is ON:
-       Tap canvas => places selected FX
-       Drag canvas => stamps FX along the drag path
-   - Paint mode stays normal (drag paints)
+/* FIXED VERSION:
+   - FX tool is its OWN tool (not a toggle)
+   - When FX tool is selected, FX buttons (stars/confetti/etc) ALWAYS stamp on tap/drag
+   - No tap-timer logic, no “maybe tap maybe drag” confusion
 */
 
 const bgCanvas = document.getElementById("bgCanvas");
@@ -323,7 +319,11 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rand=(a,b)=>Math.random()*(b-a)+a;
 
 const pageLabel = document.getElementById("pageLabel");
-const modeLabel = document.getElementById("modeLabel");
+const toolLabel = document.getElementById("toolLabel");
+
+/* animated FX objects */
+const stars=[];
+const bubbles=[];
 
 function setCanvasSizeForDPR(){
   const stack = document.getElementById("stack");
@@ -331,7 +331,7 @@ function setCanvasSizeForDPR(){
   const dpr = window.devicePixelRatio || 1;
 
   const cssW = rect.width;
-  const cssH = rect.width * 0.55;
+  const cssH = rect.width * 0.55;  // your “good” shorter size
   stack.style.height = cssH + "px";
 
   const newW = Math.max(600, Math.round(cssW*dpr));
@@ -388,50 +388,38 @@ function loadPage(i){
   pageLabel.textContent=`Page ${currentPage+1}`;
   baseImage.src = encodeURI(pages[currentPage]);
 }
-baseImage.onload=()=>{
-  drawBaseImage();
-  clearAll();
-};
+baseImage.onload=()=>{ drawBaseImage(); clearAll(); };
 
-/* Modes */
-let mode="paint"; // paint | fill | erase
+/* TOOL STATE */
+let tool="paint"; // paint | fill | fx | erase
 let brush="round";
 let glow=false;
 let rainbow=false;
 let fxType="stars";
-let fxMode=false;
 
-const fxModeChip=document.getElementById("fxModeChip");
-
-function setMode(m){
-  mode=m;
-  modeLabel.textContent = `Mode: ${m.charAt(0).toUpperCase()+m.slice(1)}`;
-  paintModeBtn.classList.toggle("active", m==="paint");
-  fillModeBtn.classList.toggle("active", m==="fill");
-  eraseModeBtn.classList.toggle("active", m==="erase");
-  if (m!=="paint") setFxMode(false);
-}
-
-function setFxMode(on){
-  fxMode=!!on;
-  fxModeChip.textContent = fxMode ? "On" : "Off";
-  fxToggleBtn.classList.toggle("active", fxMode);
-  fxPanel.classList.toggle("show", fxMode);
-}
-
-const paintModeBtn=document.getElementById("paintModeBtn");
-const fillModeBtn=document.getElementById("fillModeBtn");
-const eraseModeBtn=document.getElementById("eraseModeBtn");
-paintModeBtn.onclick=()=>setMode("paint");
-fillModeBtn.onclick=()=>setMode("fill");
-eraseModeBtn.onclick=()=>setMode("erase");
-
-const fxToggleBtn=document.getElementById("fxToggleBtn");
 const fxPanel=document.getElementById("fxPanel");
-fxToggleBtn.onclick=()=>{
-  if (mode!=="paint") setMode("paint");
-  setFxMode(!fxMode);
-};
+
+function setTool(t){
+  tool=t;
+  toolLabel.textContent = `Tool: ${t.charAt(0).toUpperCase()+t.slice(1)}`;
+
+  paintToolBtn.classList.toggle("active", t==="paint");
+  fillToolBtn.classList.toggle("active", t==="fill");
+  fxToolBtn.classList.toggle("active", t==="fx");
+  eraseToolBtn.classList.toggle("active", t==="erase");
+
+  fxPanel.classList.toggle("show", t==="fx");
+}
+
+const paintToolBtn=document.getElementById("paintToolBtn");
+const fillToolBtn=document.getElementById("fillToolBtn");
+const fxToolBtn=document.getElementById("fxToolBtn");
+const eraseToolBtn=document.getElementById("eraseToolBtn");
+
+paintToolBtn.onclick=()=>setTool("paint");
+fillToolBtn.onclick=()=>setTool("fill");
+fxToolBtn.onclick=()=>setTool("fx");
+eraseToolBtn.onclick=()=>setTool("erase");
 
 /* Sliders */
 const sizeEl=document.getElementById("size");
@@ -495,9 +483,10 @@ function buildSwatches(){
 }
 buildSwatches();
 
-/* Brush buttons */
+/* Brushes */
 const brushChip=document.getElementById("brushChip");
 const brushGrid=document.getElementById("brushGrid");
+
 function setBrush(b){
   brush=b;
   brushChip.textContent =
@@ -511,14 +500,14 @@ function setBrush(b){
   });
 }
 brushGrid.querySelectorAll("[data-brush]").forEach(btn=>{
-  btn.onclick=()=>{ setBrush(btn.dataset.brush); setFxMode(false); };
+  btn.onclick=()=>{ setBrush(btn.dataset.brush); setTool("paint"); };
 });
 setBrush("round");
 
 const glowBtn=document.getElementById("glowBtn");
 const rainbowBtn=document.getElementById("rainbowBtn");
-glowBtn.onclick=()=>{glow=!glow; glowBtn.classList.toggle("active",glow); setFxMode(false);};
-rainbowBtn.onclick=()=>{rainbow=!rainbow; rainbowBtn.classList.toggle("active",rainbow); setFxMode(false);};
+glowBtn.onclick=()=>{glow=!glow; glowBtn.classList.toggle("active",glow); setTool("paint");};
+rainbowBtn.onclick=()=>{rainbow=!rainbow; rainbowBtn.classList.toggle("active",rainbow); setTool("paint");};
 
 /* FX buttons */
 const fxChip=document.getElementById("fxChip");
@@ -529,14 +518,13 @@ function setFxType(t){
     t==="stars"?"Stars":
     t==="glitter"?"Glitter":
     t==="confetti"?"Confetti":
-    t==="hearts"?"Hearts":
-    t==="bubbles"?"Bubbles":"Off";
+    t==="hearts"?"Hearts":"Bubbles";
   fxGrid.querySelectorAll("[data-fx]").forEach(btn=>{
     btn.classList.toggle("active", btn.dataset.fx===t);
   });
 }
 fxGrid.querySelectorAll("[data-fx]").forEach(btn=>{
-  btn.onclick=()=>{ setFxType(btn.dataset.fx); if (btn.dataset.fx==="none") setFxMode(false); else setFxMode(true); };
+  btn.onclick=()=>{ setFxType(btn.dataset.fx); setTool("fx"); };
 });
 setFxType("stars");
 
@@ -550,8 +538,6 @@ function ensureAudio(){
   if (!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
   if (audioCtx.state==="suspended") audioCtx.resume();
 }
-paintCanvas.addEventListener("pointerdown", ()=>ensureAudio(), { once:true });
-
 sfxBtn.onclick=()=>{
   ensureAudio();
   sfxOn=!sfxOn;
@@ -577,7 +563,7 @@ function playPop(kind="glitter"){
   o.start(t); o.stop(t+0.14);
 }
 
-/* Undo */
+/* Undo stack (paint + animated objects only) */
 const undoStack=[];
 const MAX_UNDO=25;
 function snapshotState(){
@@ -604,7 +590,7 @@ function undo(){
   if (s) restoreState(s);
 }
 
-/* Fill (unchanged) */
+/* Fill */
 function hexToRgb(hex){
   const v=parseInt(hex.replace("#",""),16);
   return [(v>>16)&255,(v>>8)&255,v&255];
@@ -657,7 +643,7 @@ function fillFromBG(x,y, fillHex){
   paint.putImageData(paintImg,0,0);
 }
 
-/* Draw helpers */
+/* Drawing helpers */
 function hsvToRgb(h,s,v){
   const c=v*s, x=c*(1-Math.abs((h/60)%2-1)), m=v-c;
   let r=0,g=0,b=0;
@@ -758,6 +744,7 @@ function stampBrush(x,y,baseSize){
   paint.restore();
 }
 function eraseAt(x,y,r){
+  // erase paint layer only
   paint.save();
   paint.globalCompositeOperation="destination-out";
   paint.globalAlpha=1;
@@ -766,6 +753,7 @@ function eraseAt(x,y,r){
   paint.fill();
   paint.restore();
 
+  // remove animated objects near cursor (stars/bubbles)
   const rr = r*1.2;
   for (let i=stars.length-1;i>=0;i--){
     const s=stars[i];
@@ -777,21 +765,8 @@ function eraseAt(x,y,r){
   }
 }
 
-/* Pointer pos */
-function getPos(e){
-  const rect=paintCanvas.getBoundingClientRect();
-  const dpr=window.devicePixelRatio||1;
-  return { x:(e.clientX-rect.left)*dpr, y:(e.clientY-rect.top)*dpr };
-}
-
-/* FX objects */
-const stars=[];
-const bubbles=[];
-
 /* FX placement */
 function placeFX(x,y){
-  if (fxType==="none") return;
-
   const base = brushSize * 0.55;
   const strength = fxStrength;
   const scat = fxScatter;
@@ -831,7 +806,7 @@ function placeFX(x,y){
     return;
   }
 
-  // stamp-only FX to paint layer
+  // stamp-only FX onto paint layer
   if (fxType==="glitter"){
     const count = Math.floor(18 + strength*65);
     paint.save();
@@ -843,6 +818,15 @@ function placeFX(x,y){
       paint.globalAlpha = 0.20 + strength*0.60;
       paint.fillStyle=c;
       paint.beginPath(); paint.arc(gx,gy,gr,0,Math.PI*2); paint.fill();
+      if (i%12===0){
+        paint.globalAlpha = 0.12 + strength*0.25;
+        paint.strokeStyle=c;
+        paint.lineWidth=1;
+        paint.beginPath();
+        paint.moveTo(gx-gr*2.4,gy); paint.lineTo(gx+gr*2.4,gy);
+        paint.moveTo(gx,gy-gr*2.4); paint.lineTo(gx,gy+gr*2.4);
+        paint.stroke();
+      }
     }
     paint.restore();
     playPop("glitter");
@@ -884,21 +868,23 @@ function placeFX(x,y){
   }
 }
 
-/* INPUT: paint / fill / erase / fxMode */
+/* Pointer pos */
+function getPos(e){
+  const rect=paintCanvas.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  return { x:(e.clientX-rect.left)*dpr, y:(e.clientY-rect.top)*dpr };
+}
+
+/* Input handling */
 let drawing=false;
 let last=null;
-let downPos=null;
-let started=false;
-let lastFXStamp=null;
-
-const DRAG_START_PX = 6;
+let lastFX=null;
 
 paintCanvas.addEventListener("pointerdown",(e)=>{
-  const p=getPos(e);
   ensureAudio();
+  const p=getPos(e);
 
-  // Fill (tap)
-  if (mode==="fill"){
+  if (tool==="fill"){
     pushUndo();
     fillFromBG(Math.floor(p.x),Math.floor(p.y), colour);
     return;
@@ -906,39 +892,28 @@ paintCanvas.addEventListener("pointerdown",(e)=>{
 
   pushUndo();
   drawing=true;
-  started=false;
-  downPos=p;
   last=p;
-  lastFXStamp=p;
+  lastFX=p;
   paintCanvas.setPointerCapture(e.pointerId);
 
-  // erase starts immediately
-  if (mode==="erase"){
+  if (tool==="erase"){
     eraseAt(p.x,p.y,brushSize*0.55);
-    started=true;
+    return;
+  }
+  if (tool==="fx"){
+    placeFX(p.x,p.y);
     return;
   }
 
-  // FX mode: tap places FX immediately too (feels responsive)
-  if (fxMode){
-    placeFX(p.x,p.y);
-  } else {
-    // paint dot
-    stampBrush(p.x,p.y,brushSize*0.5);
-    started=true;
-  }
+  // paint tool
+  stampBrush(p.x,p.y,brushSize*0.5);
 });
 
 paintCanvas.addEventListener("pointermove",(e)=>{
   if (!drawing || !last) return;
   const p=getPos(e);
 
-  if (!started && downPos){
-    if (Math.hypot(p.x-downPos.x,p.y-downPos.y) > DRAG_START_PX) started=true;
-  }
-
-  // Erase drag
-  if (mode==="erase"){
+  if (tool==="erase"){
     const dx=p.x-last.x, dy=p.y-last.y;
     const dist=Math.hypot(dx,dy);
     const steps=Math.max(1,Math.floor(dist/2));
@@ -950,47 +925,49 @@ paintCanvas.addEventListener("pointermove",(e)=>{
     return;
   }
 
-  // FX drag: stamp along path
-  if (fxMode){
-    const dx=p.x-lastFXStamp.x, dy=p.y-lastFXStamp.y;
-    const dist=Math.hypot(dx,dy);
+  if (tool==="fx"){
+    // stamp along path
     const gap = Math.max(6, brushSize*0.6);
+    const dx=p.x-lastFX.x, dy=p.y-lastFX.y;
+    const dist=Math.hypot(dx,dy);
     if (dist >= gap){
       const steps=Math.floor(dist/gap);
       for (let i=1;i<=steps;i++){
         const t=i/steps;
-        placeFX(lastFXStamp.x+dx*t, lastFXStamp.y+dy*t);
+        placeFX(lastFX.x+dx*t, lastFX.y+dy*t);
       }
-      lastFXStamp=p;
+      lastFX=p;
     }
     last=p;
     return;
   }
 
-  // Paint drag
-  const sx = last.x + (p.x-last.x)*(1 - smoothing);
-  const sy = last.y + (p.y-last.y)*(1 - smoothing);
-  const sp = {x:sx,y:sy};
+  if (tool==="paint"){
+    // smooth painting
+    const sx = last.x + (p.x-last.x)*(1 - smoothing);
+    const sy = last.y + (p.y-last.y)*(1 - smoothing);
+    const sp = {x:sx,y:sy};
 
-  const dx=sp.x-last.x, dy=sp.y-last.y;
-  const dist=Math.hypot(dx,dy);
-  const steps=Math.max(1,Math.floor(dist/2));
-
-  for (let i=0;i<=steps;i++){
-    const t=i/steps;
-    stampBrush(last.x+dx*t, last.y+dy*t, brushSize*0.5);
+    const dx=sp.x-last.x, dy=sp.y-last.y;
+    const dist=Math.hypot(dx,dy);
+    const steps=Math.max(1,Math.floor(dist/2));
+    for (let i=0;i<=steps;i++){
+      const t=i/steps;
+      stampBrush(last.x+dx*t, last.y+dy*t, brushSize*0.5);
+    }
+    last=sp;
   }
-  last=sp;
 });
 
-paintCanvas.addEventListener("pointerup",(e)=>{
-  drawing=false; last=null; downPos=null; started=false; lastFXStamp=null;
+function endStroke(e){
+  drawing=false; last=null; lastFX=null;
   try{ paintCanvas.releasePointerCapture(e.pointerId); }catch(_){}
-});
-paintCanvas.addEventListener("pointercancel",()=>{drawing=false; last=null; downPos=null; started=false; lastFXStamp=null;});
-paintCanvas.addEventListener("pointerleave",()=>{drawing=false; last=null; downPos=null; started=false; lastFXStamp=null;});
+}
+paintCanvas.addEventListener("pointerup", endStroke);
+paintCanvas.addEventListener("pointercancel", endStroke);
+paintCanvas.addEventListener("pointerleave", ()=>{drawing=false;last=null;lastFX=null;});
 
-/* Animation */
+/* Animated overlay (twinkling stars + floating bubbles) */
 function drawAnimated(){
   fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
   const t = Date.now()/1000;
@@ -1078,20 +1055,21 @@ document.getElementById("saveBtn").onclick=()=>{
 
 document.getElementById("undoBtn").onclick=undo;
 
+/* Start */
+setCanvasSizeForDPR();
+loadPage(0);
+setTool("paint");
+
+window.addEventListener("resize", ()=>{
+  setCanvasSizeForDPR();
+  if (baseImage.complete && baseImage.naturalWidth) drawBaseImage();
+});
+
+/* Keyboard undo */
 window.addEventListener("keydown",(e)=>{
   if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z"){
     e.preventDefault(); undo();
   }
-});
-
-/* Start */
-setCanvasSizeForDPR();
-loadPage(0);
-setMode("paint");
-setFxMode(false);
-window.addEventListener("resize", ()=>{
-  setCanvasSizeForDPR();
-  if (baseImage.complete && baseImage.naturalWidth) drawBaseImage();
 });
 </script>
 </body>
