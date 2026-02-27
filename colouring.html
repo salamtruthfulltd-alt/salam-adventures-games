@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -19,7 +19,9 @@
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
       background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg) 55%, #070b14 100%);
     }
-    .wrap{max-width:1100px;margin:14px auto 26px;padding:14px}
+
+    /* ✅ SMALLER APP CONTAINER */
+    .wrap{max-width:920px;margin:14px auto 26px;padding:12px}
 
     /* SIMPLE TOP BAR */
     .topbar{
@@ -64,6 +66,17 @@
       padding:10px;
     }
 
+    /* ✅ CANVAS + PANEL SIDE-BY-SIDE */
+    .stageGrid{
+      display:grid;
+      grid-template-columns: 1fr 420px; /* right panel width */
+      gap:12px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .stageGrid{grid-template-columns:1fr;}
+    }
+
     /* CANVAS STACK */
     .stack{
       position:relative;
@@ -100,7 +113,7 @@
 
     /* PANEL */
     .panel{
-      margin-top:12px;
+      margin-top:0; /* ✅ remove top spacing since it's now side-by-side */
       border-radius:22px;
       overflow:hidden;
       border:1px solid var(--line);
@@ -120,8 +133,10 @@
       color:var(--muted);
       display:inline-flex;align-items:center;gap:8px;
     }
-    .panelBody{padding:12px;display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
-    @media (max-width:860px){.panelBody{grid-template-columns:1fr}}
+
+    /* ✅ make panel internal layout single-column (better for side panel) */
+    .panelBody{padding:12px;display:grid;grid-template-columns:1fr;gap:12px}
+
     .card{
       border-radius:18px;
       background: var(--card2);
@@ -187,107 +202,113 @@
   </div>
 
   <div class="stage">
-    <div class="frame">
-      <div class="stack" id="stack">
-        <canvas id="bgCanvas" width="1200" height="800"></canvas>
-        <canvas id="paintCanvas" width="1200" height="800"></canvas>
-        <canvas id="fxCanvas" width="1200" height="800"></canvas>
-      </div>
+    <!-- ✅ SIDE-BY-SIDE WRAP -->
+    <div class="stageGrid">
 
-      <div class="status">
-        <div>
-          Tip: Paint = draw · Fill = tap area · Erase removes paint + FX · Stars twinkle automatically
+      <!-- LEFT: CANVAS AREA -->
+      <div class="frame">
+        <div class="stack" id="stack">
+          <canvas id="bgCanvas" width="1200" height="800"></canvas>
+          <canvas id="paintCanvas" width="1200" height="800"></canvas>
+          <canvas id="fxCanvas" width="1200" height="800"></canvas>
         </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <span class="kbd" id="pageLabel">Page 1</span>
-          <span class="kbd" id="modeLabel">Mode: Paint</span>
-        </div>
-      </div>
-    </div>
 
-    <div class="panel">
-      <div class="panelHead">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-          <span class="chip">Colour: <span class="kbd" id="colourChip">#2563eb</span></span>
-          <span class="chip">Brush: <span class="kbd" id="brushChip">Round</span></span>
-          <span class="chip">FX: <span class="kbd" id="fxChip">Stars</span></span>
-          <span class="chip">SFX: <b id="sfxChip">On</b></span>
-        </div>
-        <button class="btn bFx" id="sfxBtn" style="padding:10px 12px;font-size:13px;"><span class="e">🔊</span>SFX</button>
-      </div>
-
-      <div class="panelBody">
-        <div class="card">
-          <h3>🎨 Colours</h3>
-          <p class="hint">Pick a colour (paint + tint for some FX).</p>
-          <div class="swatches" id="swatches"></div>
-
-          <div class="sliders">
-            <div class="row">
-              <label for="size">Size</label>
-              <input id="size" type="range" min="3" max="90" value="28" />
-              <span class="kbd val" id="sizeVal">28</span>
-            </div>
-            <div class="row">
-              <label for="opacity">Opacity</label>
-              <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
-              <span class="kbd val" id="opacityVal">1.00</span>
-            </div>
-            <div class="row">
-              <label for="smooth">Smooth</label>
-              <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
-              <span class="kbd val" id="smoothVal">0.35</span>
-            </div>
+        <div class="status">
+          <div>
+            Tip: Paint = draw · Fill = tap area · Erase removes paint + FX · Stars twinkle automatically
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <span class="kbd" id="pageLabel">Page 1</span>
+            <span class="kbd" id="modeLabel">Mode: Paint</span>
           </div>
         </div>
+      </div>
 
-        <div class="card">
-          <h3>🖌️ Brushes</h3>
-          <p class="hint">Simple shapes. Glow + Rainbow optional.</p>
-
-          <div class="gridBtns" id="brushGrid">
-            <button class="mini active" data-brush="round"><span class="e">●</span>Round</button>
-            <button class="mini" data-brush="square"><span class="e">■</span>Square</button>
-            <button class="mini" data-brush="pencil"><span class="e">✏️</span>Pencil</button>
-            <button class="mini" data-brush="spray"><span class="e">🌫️</span>Spray</button>
-            <button class="mini" data-brush="heart"><span class="e">💖</span>Heart</button>
-            <button class="mini" data-brush="starbrush"><span class="e">⭐</span>Star</button>
-            <button class="mini" id="glowBtn"><span class="e">💫</span>Glow</button>
-            <button class="mini" id="rainbowBtn"><span class="e">🌈</span>Rainbow</button>
+      <!-- RIGHT: PANEL -->
+      <div class="panel">
+        <div class="panelHead">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <span class="chip">Colour: <span class="kbd" id="colourChip">#2563eb</span></span>
+            <span class="chip">Brush: <span class="kbd" id="brushChip">Round</span></span>
+            <span class="chip">FX: <span class="kbd" id="fxChip">Stars</span></span>
+            <span class="chip">SFX: <b id="sfxChip">On</b></span>
           </div>
+          <button class="btn bFx" id="sfxBtn" style="padding:10px 12px;font-size:13px;"><span class="e">🔊</span>SFX</button>
+        </div>
 
-          <!-- FX panel (toggle) -->
-          <div class="fxPanel" id="fxPanel" style="margin-top:12px;">
-            <h3 style="margin:0 0 10px;font-size:13px;color:#dbe8ff;">✨ FX Stamps</h3>
-            <p class="hint">Tap canvas to place FX. Stars twinkle. Bubbles float.</p>
-
-            <div class="gridBtns" id="fxGrid">
-              <button class="mini active" data-fx="stars"><span class="e">⭐</span>Stars</button>
-              <button class="mini" data-fx="glitter"><span class="e">✨</span>Glitter</button>
-              <button class="mini" data-fx="confetti"><span class="e">🎉</span>Confetti</button>
-              <button class="mini" data-fx="hearts"><span class="e">💖</span>Hearts</button>
-              <button class="mini" data-fx="bubbles"><span class="e">🫧</span>Bubbles</button>
-              <button class="mini" data-fx="none"><span class="e">🚫</span>Off</button>
-            </div>
+        <div class="panelBody">
+          <div class="card">
+            <h3>🎨 Colours</h3>
+            <p class="hint">Pick a colour (paint + tint for some FX).</p>
+            <div class="swatches" id="swatches"></div>
 
             <div class="sliders">
               <div class="row">
-                <label for="fxStrength">FX</label>
-                <input id="fxStrength" type="range" min="0" max="1" value="0.6" step="0.05" />
-                <span class="kbd val" id="fxStrengthVal">0.60</span>
+                <label for="size">Size</label>
+                <input id="size" type="range" min="3" max="90" value="28" />
+                <span class="kbd val" id="sizeVal">28</span>
               </div>
               <div class="row">
-                <label for="fxScatter">Scatter</label>
-                <input id="fxScatter" type="range" min="0" max="1" value="0.35" step="0.05" />
-                <span class="kbd val" id="fxScatterVal">0.35</span>
+                <label for="opacity">Opacity</label>
+                <input id="opacity" type="range" min="0.05" max="1" value="1" step="0.05" />
+                <span class="kbd val" id="opacityVal">1.00</span>
+              </div>
+              <div class="row">
+                <label for="smooth">Smooth</label>
+                <input id="smooth" type="range" min="0" max="0.9" value="0.35" step="0.05" />
+                <span class="kbd val" id="smoothVal">0.35</span>
               </div>
             </div>
           </div>
 
+          <div class="card">
+            <h3>🖌️ Brushes</h3>
+            <p class="hint">Simple shapes. Glow + Rainbow optional.</p>
+
+            <div class="gridBtns" id="brushGrid">
+              <button class="mini active" data-brush="round"><span class="e">●</span>Round</button>
+              <button class="mini" data-brush="square"><span class="e">■</span>Square</button>
+              <button class="mini" data-brush="pencil"><span class="e">✏️</span>Pencil</button>
+              <button class="mini" data-brush="spray"><span class="e">🌫️</span>Spray</button>
+              <button class="mini" data-brush="heart"><span class="e">💖</span>Heart</button>
+              <button class="mini" data-brush="starbrush"><span class="e">⭐</span>Star</button>
+              <button class="mini" id="glowBtn"><span class="e">💫</span>Glow</button>
+              <button class="mini" id="rainbowBtn"><span class="e">🌈</span>Rainbow</button>
+            </div>
+
+            <!-- FX panel (toggle) -->
+            <div class="fxPanel" id="fxPanel" style="margin-top:12px;">
+              <h3 style="margin:0 0 10px;font-size:13px;color:#dbe8ff;">✨ FX Stamps</h3>
+              <p class="hint">Tap canvas to place FX. Stars twinkle. Bubbles float.</p>
+
+              <div class="gridBtns" id="fxGrid">
+                <button class="mini active" data-fx="stars"><span class="e">⭐</span>Stars</button>
+                <button class="mini" data-fx="glitter"><span class="e">✨</span>Glitter</button>
+                <button class="mini" data-fx="confetti"><span class="e">🎉</span>Confetti</button>
+                <button class="mini" data-fx="hearts"><span class="e">💖</span>Hearts</button>
+                <button class="mini" data-fx="bubbles"><span class="e">🫧</span>Bubbles</button>
+                <button class="mini" data-fx="none"><span class="e">🚫</span>Off</button>
+              </div>
+
+              <div class="sliders">
+                <div class="row">
+                  <label for="fxStrength">FX</label>
+                  <input id="fxStrength" type="range" min="0" max="1" value="0.6" step="0.05" />
+                  <span class="kbd val" id="fxStrengthVal">0.60</span>
+                </div>
+                <div class="row">
+                  <label for="fxScatter">Scatter</label>
+                  <input id="fxScatter" type="range" min="0" max="1" value="0.35" step="0.05" />
+                  <span class="kbd val" id="fxScatterVal">0.35</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
 
+    </div><!-- /stageGrid -->
   </div>
 </div>
 
