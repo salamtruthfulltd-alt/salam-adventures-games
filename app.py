@@ -1,53 +1,48 @@
 import streamlit as st
 import fitz  # PyMuPDF
-from PIL import Image
 import io
-import gc
 
-st.set_page_config(page_title="Salam Truthful - Smart Fixer", layout="centered")
+# 1. Setup
+st.set_page_config(page_title="Salam Truthful KDP Fixer")
+st.title("🛡️ KDP Safe-Zone Fixer")
+st.write("Ensuring your art never gets cut off by Amazon's blades.")
 
-KDP_TRIM_SIZES = {
-    "8.5 x 8.5": (8.5, 8.5),
-    "8 x 10": (8, 10),
-    "6 x 9": (6, 9),
-    "8.5 x 11": (8.5, 11)
-}
+# 2. Dimensions
+size_choice = st.selectbox("Select Trim Size", ["8.5 x 8.5", "8 x 10", "6 x 9", "8.5 x 11"])
+w_in, h_in = [float(x) for x in size_choice.split(" x ")]
 
-st.title("🎨 KDP Smart-Fit Studio")
-st.subheader("Preventing "Cut-off" Art")
+# 3. The Math (72 points = 1 inch)
+# We add the required 0.125" bleed
+final_w = (w_in + 0.125) * 72
+final_h = (h_in + 0.25) * 72
 
-selected_size = st.selectbox("Your Amazon Trim Size:", list(KDP_TRIM_SIZES.keys()))
-base_w, base_h = KDP_TRIM_SIZES[selected_size]
+up = st.file_uploader("Upload your PDF", type="pdf")
 
-# KDP Math (points: 72 per inch)
-# We calculate the "Safe Zone" vs the "Bleed Zone"
-bleed = 0.125
-final_w_pts = (base_w + bleed) * 72
-final_h_pts = (base_h + (bleed * 2)) * 72
-safe_rect = fitz.Rect(bleed*72, bleed*72, (base_w)*72, (base_h+bleed)*72)
-
-uploaded_file = st.file_uploader("Upload PDF or Image", type=["pdf", "png", "jpg"])
-
-if uploaded_file:
-    output_pdf = fitz.open()
-    
-    if uploaded_file.name.endswith(".pdf"):
-        in_pdf = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-        for page in in_pdf:
-            pix = page.get_pixmap(dpi=200)
-            img_data = pix.tobytes("png")
+if up:
+    try:
+        out_pdf = fitz.open()
+        with st.spinner("Protecting Safe Zones..."):
+            in_pdf = fitz.open(stream=up.read(), filetype="pdf")
             
-            new_page = output_pdf.new_page(width=final_w_pts, height=final_h_pts)
-            
-            # THE SMART FIX: 
-            # This "shrink-wraps" your image into the SAFE ZONE 
-            # so the edges don't get cut off.
-            new_page.insert_image(safe_rect, stream=img_data, keep_proportion=True)
-            
-            del pix
-            gc.collect()
+            # This is how we solve the cut-off: 
+            # We create a 'Safe Rect' that is slightly smaller than the page.
+            # Your art goes INSIDE this box so it's never near the blade.
+            safe_margin = 18  # 0.25 inch safety cushion
+            safe_rect = fitz.Rect(safe_margin, safe_margin, final_w - safe_margin, final_h - safe_margin)
 
-    st.success("Pages centered in Safe Zone. Edges are now protected!")
-    
-    # Download
-    st.download_button("📥 Download Protected PDF", output_pdf.tobytes(), "KDP_Safe_Book.pdf")
+            for page in in_pdf:
+                # Convert page to image
+                pix = page.get_pixmap(dpi=150)
+                img_data = pix.tobytes("png")
+                
+                # Create KDP sized page
+                new_page = out_pdf.new_page(width=final_w, height=final_h)
+                
+                # Insert image into the SAFE ZONE only
+                new_page.insert_image(safe_rect, stream=img_data, keep_proportion=True)
+
+        st.success("Success! Art is now centered and safe.")
+        st.download_button("📥 Download KDP-Ready PDF", out_pdf.tobytes(), "KDP_Safe_Book.pdf")
+        
+    except Exception as e:
+        st.error("Server error. Please try a smaller PDF or refresh the page.")
