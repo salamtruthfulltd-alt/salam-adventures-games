@@ -5,79 +5,123 @@ from reportlab.lib.units import inch
 import io
 from PIL import Image
 
-st.set_page_config(page_title="PictureBook Studio", layout="wide")
+# 1. SEARCH ENGINE OPTIMIZATION (SEO)
+st.set_page_config(
+    page_title="Fix KDP Books | Word to KDP Picture Book Converter",
+    page_icon="📚",
+    layout="wide"
+)
 
-st.title("🎨 PictureBook Layout Studio")
+# Custom Styling for the viewing window
+st.markdown("""
+    <style>
+    .stImage {border: 2px solid #f0f2f6; border-radius: 10px;}
+    .page-box {background-color: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px;}
+    </style>
+    """, unsafe_allow_html=True)
 
-# Initialize "Session State" to remember your layout changes
+st.title("📚 Fix KDP Books: Studio Edition")
+st.subheader("The easiest way to convert Word layouts into KDP-ready PDFs")
+
+# 2. SESSION STATE (The app's "Memory")
 if 'layout_order' not in st.session_state:
     st.session_state.layout_order = []
 
-# --- SIDEBAR: KDP SETTINGS ---
-st.sidebar.header("KDP Settings")
+# 3. SIDEBAR: KDP COMPLIANCE
+st.sidebar.header("📐 KDP Print Settings")
 size_choice = st.sidebar.selectbox("Trim Size", ["8.5 x 8.5", "6 x 9", "8.5 x 11"])
-bleed = st.sidebar.checkbox("Apply KDP Bleed", value=True)
+bleed = st.sidebar.checkbox("Add KDP Bleed (Recommended)", value=True)
 
-# Math for PDF
+# Calculate dimensions
 dims = {"8.5 x 8.5": (8.5, 8.5), "6 x 9": (6, 9), "8.5 x 11": (8.5, 11)}
 w, h = dims[size_choice]
-if bleed: w += 0.125; h += 0.25
+if bleed:
+    w += 0.125
+    h += 0.25
 
-# --- FILE UPLOADER ---
-uploaded_file = st.file_uploader("Upload your DOCX", type="docx")
+# 4. FILE UPLOADER
+uploaded_file = st.file_uploader("Upload your DOCX manuscript (like Luna and the Feather Forest)", type="docx")
 
 if uploaded_file and not st.session_state.layout_order:
-    doc = Document(uploaded_file)
-    # Extract images and text into a list we can move
-    for rel in doc.part.rels.values():
-        if "image" in rel.target_ref:
-            st.session_state.layout_order.append({"type": "image", "content": rel.target_part.blob})
-    for p in doc.paragraphs:
-        if p.text.strip():
-            st.session_state.layout_order.append({"type": "text", "content": p.text.strip()})
+    with st.spinner("Scanning manuscript layers..."):
+        doc = Document(uploaded_file)
+        
+        # Extract Images (Backgrounds)
+        for rel in doc.part.rels.values():
+            if "image" in rel.target_ref:
+                st.session_state.layout_order.append({
+                    "type": "image", 
+                    "content": rel.target_part.blob,
+                    "name": "Background Artwork"
+                })
+        
+        # Extract Text (Story Layers)
+        for p in doc.paragraphs:
+            if p.text.strip():
+                st.session_state.layout_order.append({
+                    "type": "text", 
+                    "content": p.text.strip(),
+                    "name": "Story Text"
+                })
 
-# --- THE VIEWING & EDITING WINDOW ---
+# 5. THE VIEWING & EDITING STUDIO
 if st.session_state.layout_order:
-    st.subheader("🖼️ Layout Editor")
-    st.write("Rearrange your pages before generating the PDF.")
+    st.write("---")
+    st.header("🖼️ Page Layout Window")
+    st.write("Review the order of your pages. Use the arrows to move content or the X to delete.")
 
     for i, item in enumerate(st.session_state.layout_order):
-        col1, col2, col3 = st.columns([1, 4, 1])
-        
-        with col1:
-            st.write(f"**Page {i+1}**")
-            if st.button("⬆️", key=f"up_{i}") and i > 0:
-                st.session_state.layout_order[i], st.session_state.layout_order[i-1] = st.session_state.layout_order[i-1], st.session_state.layout_order[i]
-                st.rerun()
-            if st.button("⬇️", key=f"down_{i}") and i < len(st.session_state.layout_order)-1:
-                st.session_state.layout_order[i], st.session_state.layout_order[i+1] = st.session_state.layout_order[i+1], st.session_state.layout_order[i]
-                st.rerun()
+        with st.container():
+            col1, col2, col3 = st.columns([1, 4, 1])
+            
+            with col1:
+                st.write(f"**Item {i+1}**")
+                if st.button("⬆️", key=f"up_{i}") and i > 0:
+                    st.session_state.layout_order[i], st.session_state.layout_order[i-1] = st.session_state.layout_order[i-1], st.session_state.layout_order[i]
+                    st.rerun()
+                if st.button("⬇️", key=f"down_{i}") and i < len(st.session_state.layout_order)-1:
+                    st.session_state.layout_order[i], st.session_state.layout_order[i+1] = st.session_state.layout_order[i+1], st.session_state.layout_order[i]
+                    st.rerun()
 
-        with col2:
-            if item["type"] == "image":
-                st.image(item["content"], width=200)
-            else:
-                st.info(item["content"])
+            with col2:
+                if item["type"] == "image":
+                    st.image(item["content"], caption=f"Detected Image {i+1}", width=300)
+                else:
+                    st.info(f"📜 **Text Layer:** {item['content']}")
 
-        with col3:
-            if st.button("❌", key=f"del_{i}"):
-                st.session_state.layout_order.pop(i)
-                st.rerun()
+            with col3:
+                if st.button("❌", key=f"del_{i}", help="Delete this layer"):
+                    st.session_state.layout_order.pop(i)
+                    st.rerun()
 
-    # --- FINAL EXPORT ---
-    if st.button("🚀 Generate Final KDP PDF"):
+    # 6. PDF GENERATOR
+    st.write("---")
+    if st.button("🚀 FINISHED: Generate KDP-Ready PDF", use_container_width=True):
         output = io.BytesIO()
-        c = canvas.Canvas(output, pagesizes=(w * inch, h * inch))
+        pdf_canvas = canvas.Canvas(output, pagesizes=(w * inch, h * inch))
         
         for item in st.session_state.layout_order:
             if item["type"] == "image":
-                img = Image.open(io.BytesIO(item["content"]))
-                c.drawInlineImage(img, 0, 0, width=w*inch, height=h*inch)
+                img_data = Image.open(io.BytesIO(item["content"]))
+                pdf_canvas.drawInlineImage(img_data, 0, 0, width=w*inch, height=h*inch)
+                pdf_canvas.showPage()
             else:
-                c.setFont("Helvetica-Bold", 14)
-                c.drawCentredString((w/2)*inch, 1*inch, item["content"])
-            c.showPage()
+                # Basic text placement if text is separate
+                pdf_canvas.setFont("Helvetica-Bold", 14)
+                pdf_canvas.drawCentredString((w/2)*inch, (h/2)*inch, item["content"])
+                pdf_canvas.showPage()
         
-        c.save()
+        pdf_canvas.save()
         output.seek(0)
-        st.download_button("Download Book", output, "My_Layout.pdf")
+        
+        st.balloons()
+        st.success("Your KDP-compliant PDF is ready!")
+        st.download_button(
+            label="📥 Download Now",
+            data=output,
+            file_name=f"KDP_Final_{size_choice.replace(' ','')}.pdf",
+            mime="application/pdf"
+        )
+else:
+    if uploaded_file:
+        st.warning("We found the file, but no images or text were detected. Try a different DOCX format.")
