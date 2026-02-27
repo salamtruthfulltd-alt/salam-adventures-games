@@ -1,177 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Emoji Friends & Gifts</title>
     <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #fff5f8;
-            font-family: 'Comic Sans MS', cursive;
+        body { 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            background: #FFF0F5; 
+            font-family: sans-serif;
             overflow: hidden;
             touch-action: manipulation;
         }
-
-        #game-view {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+        #screen { 
+            flex-grow: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
         }
-
-        /* The Bubble & Emoji */
-        .bubble {
-            width: 280px;
-            height: 280px;
-            background: rgba(255, 255, 255, 0.4);
-            border: 3px solid white;
+        /* The Bubble */
+        #emoji { 
+            font-size: 120px; 
+            width: 250px; 
+            height: 250px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 140px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1), inset 0 0 40px white;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 5;
+            transition: all 0.3s;
+            user-select: none;
         }
-
-        .bubble.popped {
-            border: none;
-            background: none;
-            box-shadow: none;
-            transform: scale(1.2);
+        .in-bubble { 
+            background: rgba(255,255,255,0.6); 
+            border: 8px solid white; 
+            box-shadow: inset 0 0 50px white;
         }
-
-        /* The Tool Shelves */
-        .shelf {
-            background: #ff80ab;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            border-top: 5px solid #f06292;
+        /* Big Buttons */
+        .tray { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            padding: 20px; 
+            background: #FF69B4; 
         }
-
-        .item-btn {
-            width: 70px;
-            height: 70px;
-            background: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px #d81b60;
+        .item { 
+            width: 80px; 
+            height: 80px; 
+            background: white; 
+            border-radius: 20px; 
+            font-size: 40px; 
+            border: none; 
+            box-shadow: 0 5px #C71585;
             cursor: pointer;
         }
-
-        .item-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px #d81b60;
-        }
-
-        /* Flying Hearts/Stars */
-        .effect {
-            position: absolute;
-            font-size: 40px;
-            pointer-events: none;
-            animation: flyUp 1.5s ease-out forwards;
-        }
-
-        @keyframes flyUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-300px) scale(1.5); opacity: 0; }
-        }
-
-        #status-text {
-            font-size: 24px;
-            color: #d81b60;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+        .item:active { transform: translateY(4px); box-shadow: 0 1px #C71585; }
+        
+        .floating { position: absolute; font-size: 50px; animation: fly 1s forwards; }
+        @keyframes fly { 0% { bottom: 50%; opacity: 1; } 100% { bottom: 80%; opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="game-view">
-        <div id="status-text">Pop the bubble with a wand! 🪄</div>
-        <div id="main-bubble" class="bubble">😢</div>
-    </div>
+<div id="screen">
+    <div id="emoji" class="in-bubble">😢</div>
+</div>
 
-    <div class="shelf" style="background: #ba68c8; border-top-color: #9c27b0;">
-        <button class="item-btn" onclick="useTool('🪄')">🪄</button>
-        <button class="item-btn" onclick="useTool('🪄')">🌟</button>
-    </div>
+<div class="tray" style="background: #9370DB;">
+    <button class="item" onclick="popIt()">🪄</button>
+    <button class="item" onclick="popIt()">⭐</button>
+</div>
 
-    <div class="shelf">
-        <button class="item-btn" onclick="giveGift('🍎')">🍎</button>
-        <button class="item-btn" onclick="giveGift('🍬')">🍬</button>
-        <button class="item-btn" onclick="giveGift('🎁')">🎁</button>
-        <button class="item-btn" onclick="giveGift('🧸')">🧸</button>
-    </div>
+<div class="tray">
+    <button class="item" onclick="give('🍎')">🍎</button>
+    <button class="item" onclick="give('🍬')">🍬</button>
+    <button class="item" onclick="give('🎁')">🎁</button>
+</div>
 
 <script>
-    const levels = ['😢', '😡', '😴', '😨', '😋'];
-    let current = 0;
     let isPopped = false;
-    const bubble = document.getElementById('main-bubble');
-    const status = document.getElementById('status-text');
+    let faces = ['😢', '😡', '😴', '😨'];
+    let current = 0;
+    const el = document.getElementById('emoji');
 
-    function useTool(tool) {
-        if (isPopped) return;
-        
+    function popIt() {
+        if(isPopped) return;
         isPopped = true;
-        bubble.classList.add('popped');
-        bubble.innerText = '😮';
-        status.innerText = "Give your friend a treat! 🍎🍬";
-        
-        spawnEffect('✨');
-        spawnEffect('✨');
+        el.classList.remove('in-bubble');
+        el.innerText = '😮';
+        spawn('✨');
     }
 
-    function giveGift(gift) {
-        if (!isPopped) {
-            status.innerText = "Pop the bubble first! 🪄";
-            return;
-        }
-
-        // Happy Reaction!
-        bubble.innerText = '😄';
-        status.innerText = "Yum! So happy! ❤️";
+    function give(gift) {
+        if(!isPopped) return;
+        el.innerText = '😄';
+        spawn(gift);
+        spawn('❤️');
         
-        for(let i=0; i<5; i++) {
-            spawnEffect('❤️');
-            spawnEffect(gift);
-        }
-
-        // Reset to next level after a few seconds
         setTimeout(() => {
-            current = (current + 1) % levels.length;
+            current = (current + 1) % faces.length;
+            el.innerText = faces[current];
+            el.classList.add('in-bubble');
             isPopped = false;
-            bubble.classList.remove('popped');
-            bubble.innerText = levels[current];
-            status.innerText = "Pop the bubble with a wand! 🪄";
-        }, 2500);
+        }, 2000);
     }
 
-    function spawnEffect(icon) {
-        const e = document.createElement('div');
-        e.className = 'effect';
-        e.innerText = icon;
-        e.style.left = (Math.random() * 60 + 20) + '%';
-        e.style.top = '50%';
-        document.getElementById('game-view').appendChild(e);
-        setTimeout(() => e.remove(), 1500);
+    function spawn(icon) {
+        const s = document.createElement('div');
+        s.className = 'floating';
+        s.innerText = icon;
+        s.style.left = (Math.random() * 60 + 20) + '%';
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 1000);
     }
 </script>
-
 </body>
 </html>
