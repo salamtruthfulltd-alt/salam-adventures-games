@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emoji Pop Magic!</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: radial-gradient(circle, #fff9c4, #ffeb3b);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        #game-area {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Magic Bubble */
+        .bubble {
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.8), 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* The Button Console */
+        #console {
+            background: #ff4081;
+            width: 100%;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-top: 8px solid #c60055;
+        }
+
+        .magic-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            border: none;
+            font-size: 40px;
+            cursor: pointer;
+            box-shadow: 0 6px #888;
+            transition: 0.1s;
+        }
+
+        .magic-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px #666;
+        }
+
+        #btn-tickle { background-color: #4caf50; }
+        #btn-grow { background-color: #2196f3; }
+        #btn-shine { background-color: #ffeb3b; }
+
+        /* Treats and Stars */
+        .treat {
+            position: absolute;
+            font-size: 40px;
+            pointer-events: none;
+            animation: fall 2s linear forwards;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+        }
+
+        #counter {
+            font-size: 24px;
+            color: #c60055;
+            padding: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="counter">Stars: <span id="star-count">0</span></div>
+
+    <div id="game-area">
+        <div id="main-bubble" class="bubble">😢</div>
+    </div>
+
+    <div id="console">
+        <button id="btn-tickle" class="magic-btn" onclick="popBubble('tickle')">🖐️</button>
+        <button id="btn-grow" class="magic-btn" onclick="popBubble('grow')">🎈</button>
+        <button id="btn-shine" class="magic-btn" onclick="popBubble('shine')">✨</button>
+    </div>
+
+    <script>
+        const emojis = [
+            { icon: '😢', name: 'Sad' },
+            { icon: '😴', name: 'Tired' },
+            { icon: '😠', name: 'Grumpy' },
+            { icon: '😨', name: 'Scared' },
+            { icon: '😋', name: 'Hungry' }
+        ];
+
+        let currentIndex = 0;
+        let stars = 0;
+        const bubble = document.getElementById('main-bubble');
+        const starDisplay = document.getElementById('star-count');
+        const gameArea = document.getElementById('game-area');
+
+        function popBubble(magicType) {
+            // 1. Change to Happy Emoji
+            bubble.innerText = '😄';
+            bubble.style.animation = 'none';
+            bubble.style.transform = 'scale(1.5)';
+            bubble.style.backgroundColor = 'rgba(255, 255, 0, 0.5)';
+
+            // 2. Drop Treats
+            for (let i = 0; i < 15; i++) {
+                createTreat();
+            }
+
+            // 3. Update Stars
+            stars += 5;
+            starDisplay.innerText = stars;
+
+            // 4. Move to next after a delay
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % emojis.length;
+                bubble.innerText = emojis[currentIndex].icon;
+                bubble.style.transform = 'scale(1)';
+                bubble.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                bubble.style.animation = 'float 3s ease-in-out infinite';
+            }, 1500);
+        }
+
+        function createTreat() {
+            const treats = ['⭐', '🍬', '🍭', '🍫', '🍩'];
+            const treat = document.createElement('div');
+            treat.className = 'treat';
+            treat.innerText = treats[Math.floor(Math.random() * treats.length)];
+            treat.style.left = (Math.random() * 80 + 10) + '%';
+            treat.style.top = '40%';
+            gameArea.appendChild(treat);
+
+            setTimeout(() => treat.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
