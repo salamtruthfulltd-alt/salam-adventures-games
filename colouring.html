@@ -20,7 +20,7 @@
       background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg) 55%, #070b14 100%);
     }
 
-    /* ✅ FORCE SMALLER APP */
+    /* ✅ SMALLER APP */
     .wrap{
       width:100%;
       max-width: 920px !important;
@@ -64,7 +64,6 @@
       padding:12px;
       overflow:hidden;
 
-      /* ✅ hard cap */
       max-width: 920px !important;
       margin: 0 auto !important;
     }
@@ -76,7 +75,7 @@
       min-width:0;
     }
 
-    /* ✅ FORCE SIDE-BY-SIDE (flex beats anything else) */
+    /* ✅ SIDE-BY-SIDE */
     .stageGrid{
       display:flex !important;
       gap:12px !important;
@@ -84,7 +83,7 @@
       width:100%;
     }
     .leftCol{flex:1 1 auto; min-width:0;}
-    .panel{flex:0 0 360px; min-width:0;}
+    .panel{flex:0 0 380px; min-width:0;}
 
     @media (max-width: 900px){
       .stageGrid{display:block !important;}
@@ -129,7 +128,8 @@
     .panel{
       margin-top:0;
       border-radius:22px;
-      overflow:hidden;
+      overflow:auto;                 /* ✅ so nothing “disappears” */
+      max-height: calc(100vh - 170px); /* ✅ panel scrolls if tall */
       border:1px solid var(--line);
       box-shadow:var(--shadow);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
@@ -139,6 +139,8 @@
       border-bottom:1px solid rgba(255,255,255,.10);
       background: linear-gradient(90deg, rgba(34,197,94,.16), rgba(59,130,246,.14), rgba(168,85,247,.12));
       display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:5; /* ✅ keeps header visible while scrolling */
+      backdrop-filter: blur(8px);
     }
     .chip{
       font-size:12px;padding:6px 10px;border-radius:999px;
@@ -148,9 +150,11 @@
       display:inline-flex;align-items:center;gap:8px;
     }
 
-    /* keep your internal layout unchanged */
-    .panelBody{padding:12px;display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
-    @media (max-width:860px){.panelBody{grid-template-columns:1fr}}
+    /* ✅ IMPORTANT FIX:
+       Your old panelBody was 2 columns (1.1fr 1fr).
+       In a narrow side panel that makes the Brushes/FX look “gone”.
+       Force 1 column here. */
+    .panelBody{padding:12px;display:grid;grid-template-columns:1fr !important;gap:12px}
 
     .card{
       border-radius:18px;
@@ -161,7 +165,7 @@
     .card h3{margin:0 0 10px;font-size:13px;color:#dbe8ff}
     .hint{margin:0 0 10px;font-size:12px;color:var(--muted)}
 
-    .swatches{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+    .swatches{display:grid;grid-template-columns:repeat(8,1fr);gap:8px} /* ✅ fits side panel */
     .sw{
       width:100%;aspect-ratio:1/1;border-radius:12px;cursor:pointer;
       border:1px solid rgba(255,255,255,.16);
@@ -181,6 +185,7 @@
       display:flex;align-items:center;justify-content:center;gap:8px;
       transition:transform .08s ease, filter .2s ease, border-color .2s ease;
       user-select:none;
+      white-space:nowrap;
     }
     .mini:hover{transform:translateY(-1px);filter:brightness(1.06)}
     .mini.active{border-color: rgba(98,255,207,.92); box-shadow: 0 0 0 2px rgba(98,255,207,.25) inset;}
@@ -217,7 +222,6 @@
   </div>
 
   <div class="stage">
-    <!-- ✅ NOW IT IS DEFINITELY SIDE-BY-SIDE -->
     <div class="stageGrid">
 
       <!-- LEFT: DRAWING WINDOW -->
@@ -282,6 +286,7 @@
             <h3>🖌️ Brushes</h3>
             <p class="hint">Simple shapes. Glow + Rainbow optional.</p>
 
+            <!-- ✅ ALL SPECIAL BRUSHES STILL HERE -->
             <div class="gridBtns" id="brushGrid">
               <button class="mini active" data-brush="round"><span class="e">●</span>Round</button>
               <button class="mini" data-brush="square"><span class="e">■</span>Square</button>
@@ -379,7 +384,6 @@ function setCanvasSizeForDPR(){
   const newW = Math.max(600, Math.round(cssW*dpr));
   const newH = Math.max(400, Math.round(cssH*dpr));
 
-  // snapshot paint (so resize doesn't wipe)
   let paintSnap=null;
   try{ paintSnap = paint.getImageData(0,0,paintCanvas.width,paintCanvas.height); }catch(e){}
 
@@ -387,10 +391,8 @@ function setCanvasSizeForDPR(){
   paintCanvas.width=newW; paintCanvas.height=newH;
   fxCanvas.width=newW; fxCanvas.height=newH;
 
-  // redraw bg
   if (baseImage.complete && baseImage.naturalWidth) drawBaseImage();
 
-  // restore paint
   if (paintSnap){
     const tmp=document.createElement("canvas");
     tmp.width=paintSnap.width; tmp.height=paintSnap.height;
@@ -398,8 +400,6 @@ function setCanvasSizeForDPR(){
     paint.drawImage(tmp,0,0,tmp.width,tmp.height,0,0,paintCanvas.width,paintCanvas.height);
   }
 
-  // scale animated objects positions to new size? easiest: clear anim objects on resize
-  // (keeps app stable and still feels fine)
   stars.length=0;
   bubbles.length=0;
 }
@@ -424,7 +424,6 @@ function drawBaseImage(){
 }
 
 function clearAll(){
-  // keep bg, clear paint + fx objects
   paint.clearRect(0,0,paintCanvas.width,paintCanvas.height);
   stars.length=0;
   bubbles.length=0;
@@ -444,11 +443,11 @@ baseImage.onload=()=>{
 // =====================
 // SIMPLE UI STATE
 // =====================
-let mode="paint"; // paint | fill | erase
-let brush="round"; // round | square | pencil | spray | heart | starbrush
+let mode="paint";
+let brush="round";
 let glow=false;
 let rainbow=false;
-let fxType="stars"; // stars | glitter | confetti | hearts | bubbles | none
+let fxType="stars";
 
 function setMode(m){
   mode=m;
@@ -539,7 +538,7 @@ function buildSwatches(){
 buildSwatches();
 
 // =====================
-// BRUSH BUTTONS
+// BRUSH BUTTONS (special shapes stay)
 // =====================
 const brushChip=document.getElementById("brushChip");
 const brushGrid=document.getElementById("brushGrid");
@@ -588,7 +587,7 @@ fxGrid.querySelectorAll("[data-fx]").forEach(btn=>{
 setFxType("stars");
 
 // =====================
-// SFX (cute pop)
+// SFX
 // =====================
 let sfxOn=true;
 const sfxChipEl=document.getElementById("sfxChip");
@@ -626,7 +625,6 @@ function playPop(kind="glitter"){
   o.connect(g); g.connect(audioCtx.destination);
   o.start(t); o.stop(t+0.14);
 
-  // tiny sparkle noise
   const dur=0.09;
   const nSamps=Math.max(1,Math.floor(dur*audioCtx.sampleRate));
   const buf=audioCtx.createBuffer(1,nSamps,audioCtx.sampleRate);
@@ -656,7 +654,6 @@ const MAX_UNDO=25;
 function snapshotState(){
   let img=null;
   try{ img=paint.getImageData(0,0,paintCanvas.width,paintCanvas.height);}catch(e){}
-  // deep copy objects
   const st = stars.map(s=>({...s}));
   const bb = bubbles.map(b=>({...b}));
   return { img, st, bb };
@@ -680,7 +677,7 @@ function undo(){
 document.getElementById("undoBtn").onclick=undo;
 
 // =====================
-// FILL (boundary from BG; paint onto paintCanvas)
+// FILL
 // =====================
 function hexToRgb(hex){
   const v=parseInt(hex.replace("#",""),16);
@@ -700,7 +697,7 @@ function fillFromBG(x,y, fillHex){
   const i0=(y*w+x)*4;
   const tr=bd[i0], tg=bd[i0+1], tb=bd[i0+2], ta=bd[i0+3];
   if (ta===0) return;
-  if (luminance(tr,tg,tb)<55) return; // on line
+  if (luminance(tr,tg,tb)<55) return;
 
   const [fr,fgc,fbc]=hexToRgb(fillHex);
 
@@ -723,7 +720,7 @@ function fillFromBG(x,y, fillHex){
     const bi=idx*4;
     const r=bd[bi], g=bd[bi+1], b=bd[bi+2], a=bd[bi+3];
     if (a===0) continue;
-    if (luminance(r,g,b)<55) continue; // boundary line
+    if (luminance(r,g,b)<55) continue;
     if (!closeCol(r,g,b,tr,tg,tb,tol)) continue;
 
     pd[bi]=fr; pd[bi+1]=fgc; pd[bi+2]=fbc; pd[bi+3]=255;
@@ -735,7 +732,7 @@ function fillFromBG(x,y, fillHex){
 }
 
 // =====================
-// DRAWING (paint)
+// DRAWING
 // =====================
 function hsvToRgb(h,s,v){
   const c=v*s, x=c*(1-Math.abs((h/60)%2-1)), m=v-c;
@@ -847,7 +844,6 @@ function stampBrush(x,y,baseSize){
 }
 
 function eraseAt(x,y,r){
-  // erase paint pixels
   paint.save();
   paint.globalCompositeOperation="destination-out";
   paint.globalAlpha=1;
@@ -856,7 +852,6 @@ function eraseAt(x,y,r){
   paint.fill();
   paint.restore();
 
-  // also remove nearby animated objects
   const rr = r*1.2;
   for (let i=stars.length-1;i>=0;i--){
     const s=stars[i];
@@ -882,21 +877,18 @@ let last=null;
 paintCanvas.addEventListener("pointerdown",(e)=>{
   const p=getPos(e);
 
-  // Fill mode: single tap
   if (mode==="fill"){
     pushUndo();
     fillFromBG(Math.floor(p.x),Math.floor(p.y), colour);
     return;
   }
 
-  // FX mode: if panel is open AND fxType not off, single tap
   if (fxPanel.classList.contains("show") && fxType!=="none" && mode!=="erase"){
     pushUndo();
     placeFX(p.x,p.y);
     return;
   }
 
-  // Paint / Erase drag
   pushUndo();
   drawing=true;
   last=p;
@@ -913,7 +905,6 @@ paintCanvas.addEventListener("pointermove",(e)=>{
   if (!drawing || !last) return;
   const p=getPos(e);
 
-  // smoothing
   const sx = last.x + (p.x-last.x)*(1 - smoothing);
   const sy = last.y + (p.y-last.y)*(1 - smoothing);
   const sp = {x:sx,y:sy};
@@ -941,10 +932,10 @@ paintCanvas.addEventListener("pointercancel", endDraw);
 paintCanvas.addEventListener("pointerleave", ()=>{drawing=false;last=null;});
 
 // =====================
-// FX OBJECTS (animated layer)
+// FX OBJECTS
 // =====================
-const stars=[];   // {x,y,size,color,phase,tw,rot}
-const bubbles=[]; // {x,y,r,vy,life,max,drift}
+const stars=[];
+const bubbles=[];
 
 function placeFX(x,y){
   const base = brushSize * 0.55;
@@ -953,17 +944,8 @@ function placeFX(x,y){
   const tint = (colour==="#ffffff") ? "#fde68a" : colour;
 
   if (fxType==="stars"){
-    // animated star object(s)
     const sSize = base*(0.9+strength*1.3);
-    stars.push({
-      x,y,
-      size:sSize,
-      color:tint,
-      phase:Math.random()*Math.PI*2,
-      tw: 0.6 + strength*0.9,
-      rot: Math.random()*Math.PI*2
-    });
-    // extra tiny stars around (static as objects too)
+    stars.push({ x,y, size:sSize, color:tint, phase:Math.random()*Math.PI*2, tw: 0.6 + strength*0.9, rot: Math.random()*Math.PI*2 });
     const extras = Math.floor(2 + strength*5);
     for (let i=0;i<extras;i++){
       stars.push({
@@ -998,7 +980,6 @@ function placeFX(x,y){
     return;
   }
 
-  // The rest are stamped onto PAINT layer (so they are erasable by pixels)
   if (fxType==="glitter"){
     const count = Math.floor(18 + strength*65);
     paint.save();
@@ -1062,27 +1043,23 @@ function placeFX(x,y){
 }
 
 // =====================
-// ANIMATION LOOP (stars twinkle, bubbles float)
+// ANIMATION LOOP
 // =====================
 function drawAnimated(){
   fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
-
   const t = Date.now()/1000;
 
-  // Stars
   for (const s of stars){
-    const tw = (Math.sin(t*2.6 + s.phase) * 0.5 + 0.5); // 0..1
+    const tw = (Math.sin(t*2.6 + s.phase) * 0.5 + 0.5);
     const alpha = 0.22 + tw * (0.22 + s.tw*0.18);
     const glowA = 0.10 + tw*0.25;
 
     fx.save();
     fx.globalAlpha = alpha;
-    // glow halo
     fx.shadowColor = s.color;
     fx.shadowBlur = Math.max(6, s.size*0.9) * (0.6 + tw);
     drawStar(fx, s.x, s.y, s.size*(0.92 + tw*0.12), s.color);
 
-    // little cross sparkle
     fx.globalAlpha = glowA;
     fx.shadowBlur = 0;
     fx.strokeStyle = "#ffffff";
@@ -1092,14 +1069,12 @@ function drawAnimated(){
     fx.moveTo(s.x-rr, s.y); fx.lineTo(s.x+rr, s.y);
     fx.moveTo(s.x, s.y-rr); fx.lineTo(s.x, s.y+rr);
     fx.stroke();
-
     fx.restore();
   }
 
-  // Bubbles
   for (let i=bubbles.length-1;i>=0;i--){
     const b=bubbles[i];
-    b.life += 16.7; // approx ms per frame
+    b.life += 16.7;
     b.y -= b.vy;
     b.x += b.drift;
     const a = 1 - (b.life / b.max);
@@ -1119,7 +1094,6 @@ function drawAnimated(){
     fx.arc(b.x,b.y,b.r,0,Math.PI*2);
     fx.stroke();
 
-    // highlight
     fx.globalAlpha = 0.10 + a*0.18;
     fx.shadowBlur = 0;
     fx.beginPath();
@@ -1151,7 +1125,6 @@ document.getElementById("saveBtn").onclick=()=>{
   const o=out.getContext("2d");
   o.drawImage(bgCanvas,0,0);
   o.drawImage(paintCanvas,0,0);
-  // include current animated frame
   o.drawImage(fxCanvas,0,0);
 
   const link=document.createElement("a");
@@ -1159,8 +1132,6 @@ document.getElementById("saveBtn").onclick=()=>{
   link.href=out.toDataURL("image/png");
   link.click();
 };
-
-document.getElementById("undoBtn").onclick=undo;
 
 window.addEventListener("keydown",(e)=>{
   if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z"){
@@ -1176,7 +1147,6 @@ loadPage(0);
 setMode("paint");
 window.addEventListener("resize", ()=>{
   setCanvasSizeForDPR();
-  // keep bg visible
   if (baseImage.complete && baseImage.naturalWidth) drawBaseImage();
 });
 </script>
