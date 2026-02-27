@@ -7,9 +7,8 @@
   <style>
     :root{
       --bg:#0b1220;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(0,0,0,.28);
-      --line: rgba(255,255,255,.12);
+      --card2:rgba(0,0,0,.30);
+      --line:rgba(255,255,255,.14);
       --text:#e9f2ff;
       --muted:#b9c7e6;
       --shadow: 0 14px 40px rgba(0,0,0,.45);
@@ -19,45 +18,31 @@
       --blue:#60a5fa;
       --purple:#a78bfa;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
     body{
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      background:
-        radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg) 55%, #070b14 100%);
+      background: radial-gradient(1200px 700px at 20% 10%, #203a7a 0%, var(--bg) 55%, #070b14 100%);
       display:flex;
       align-items:center;
       justify-content:center;
       padding:12px;
     }
 
-    /* ===== APP SIZE (SMALL + EMBED FRIENDLY) ===== */
-    .wrap{
-      width:min(980px, 100%);
-      margin:auto;
-    }
+    /* ✅ SMALL APP SIZE */
+    .wrap{width:min(980px,100%);}
 
     .topbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
+      display:flex;flex-wrap:wrap;gap:10px;
+      align-items:center;justify-content:center;
       margin-bottom:12px;
     }
-
     .btn{
-      border:none;border-radius:16px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-weight:900;
-      letter-spacing:.2px;
-      color:#09101e;
+      border:none;border-radius:16px;padding:10px 14px;cursor:pointer;
+      font-weight:900;letter-spacing:.2px;color:#09101e;
       box-shadow:var(--shadow);
-      display:flex;align-items:center;gap:10px;
-      user-select:none;
+      display:flex;align-items:center;gap:10px;user-select:none;
       transition:transform .08s ease, filter .2s ease;
       background: linear-gradient(135deg,#60a5fa,#34d399);
       font-size:14px;
@@ -85,27 +70,21 @@
       overflow:hidden;
     }
 
-    /* ===== SIDE BY SIDE BOARD + TRAY ===== */
-    .grid{
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-    }
-    .left{flex:1 1 auto; min-width:0;}
-    .right{flex:0 0 340px; min-width:0;}
+    /* ✅ SIDE BY SIDE */
+    .grid{display:flex;gap:12px;align-items:flex-start}
+    .left{flex:1 1 auto;min-width:0}
+    .right{flex:0 0 340px;min-width:0}
     @media (max-width: 860px){
-      .grid{flex-direction:column;}
-      .right{flex:1 1 auto; width:100%;}
+      .grid{flex-direction:column}
+      .right{width:100%}
     }
 
-    /* ===== BOARD CARD ===== */
     .card{
       border-radius:20px;
       background: var(--card2);
       border:1px solid rgba(255,255,255,.10);
       overflow:hidden;
     }
-
     .cardHead{
       padding:10px 12px;
       display:flex;flex-wrap:wrap;gap:10px;
@@ -113,13 +92,13 @@
       border-bottom:1px solid rgba(255,255,255,.10);
       background: linear-gradient(90deg, rgba(34,197,94,.14), rgba(59,130,246,.12), rgba(168,85,247,.10));
     }
-
     .chip{
       font-size:12px;padding:6px 10px;border-radius:999px;
       background:rgba(0,0,0,.25);
       border:1px solid rgba(255,255,255,.12);
       color:var(--muted);
       display:inline-flex;align-items:center;gap:8px;
+      white-space:nowrap;
     }
     .kbd{
       font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
@@ -128,71 +107,57 @@
       background:rgba(0,0,0,.25);color:#cfe0ff;
     }
 
-    .boardWrap{
-      padding:12px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
+    .boardWrap{padding:12px;display:flex;justify-content:center;align-items:center}
 
-    /* ===== BOARD (drop targets) ===== */
+    /* ✅ BOARD */
     .board{
       width:min(560px, 100%);
-      aspect-ratio: 3 / 2; /* 3x2 looks perfect; 2x2 still fits */
+      aspect-ratio: 3 / 2; /* works for 3x2 and still looks good for 2x2 */
       border-radius:18px;
-      background: #ffffff;
+      background:#fff;
       position:relative;
       overflow:hidden;
-
-      /* fancy 3D border */
       box-shadow:
         inset 0 0 0 2px rgba(0,0,0,.16),
         0 18px 40px rgba(0,0,0,.35);
     }
-
-    /* faint preview image (hint) */
     .preview{
       position:absolute;inset:0;
-      background-size:cover;
-      background-position:center;
+      background-size:cover;background-position:center;
       filter: grayscale(1) contrast(1.05);
-      opacity:.20;
+      opacity:.18;
       pointer-events:none;
     }
 
     .cells{
-      position:absolute; inset:0;
+      position:absolute;inset:0;
       display:grid;
-      gap:6px;
+      gap:8px;
       padding:10px;
+      z-index:2;
     }
-
     .cell{
       border-radius:14px;
       border:2px dashed rgba(0,0,0,.18);
       background: rgba(255,255,255,.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
       position:relative;
       overflow:hidden;
       transition: transform .08s ease, border-color .15s ease, background .15s ease;
+      touch-action:none;
     }
-
     .cell.over{
       border-color: rgba(96,165,250,.75);
       background: rgba(96,165,250,.10);
       transform: scale(1.01);
     }
-
     .cell.filled{
       border-style:solid;
       border-color: rgba(34,197,94,.35);
       background: rgba(34,197,94,.06);
     }
 
-    /* ===== TRAY ===== */
-    .trayBody{padding:12px;}
+    /* ✅ TRAY */
+    .trayBody{padding:12px}
     .trayGrid{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
@@ -202,7 +167,7 @@
       .trayGrid{grid-template-columns: repeat(4, 1fr);}
     }
 
-    /* ===== PIECES ===== */
+    /* ✅ PIECES */
     .piece{
       width:100%;
       aspect-ratio:1/1;
@@ -216,14 +181,14 @@
         inset 0 0 0 2px rgba(0,0,0,.10),
         0 10px 18px rgba(0,0,0,.35);
       cursor:grab;
-      position:relative;
-      transform: translateZ(0);
-      transition: transform .08s ease, filter .15s ease;
+      user-select:none;
+      -webkit-user-drag:none;
+      touch-action:none;
+      transition: transform .08s ease, filter .15s ease, opacity .15s ease;
     }
     .piece:active{cursor:grabbing; transform: scale(.98);}
-    .piece.dragging{opacity:.65; filter:brightness(1.05);}
+    .piece.dragging{opacity:.60; filter:brightness(1.06);}
 
-    /* ===== PIECE ON BOARD SHOULD FIT CELL EXACTLY ===== */
     .cell .piece{
       width:100%;
       height:100%;
@@ -231,23 +196,450 @@
       border-radius:12px;
       box-shadow:
         inset 0 0 0 2px rgba(0,0,0,.10),
-        0 10px 16px rgba(0,0,0,.25);
+        0 10px 16px rgba(0,0,0,.22);
     }
 
-    /* ===== STATUS / TOAST ===== */
-    .statusBar{
-      margin-top:12px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      color:var(--muted);
-      font-size:12px;
-    }
-
+    /* ✅ TOAST */
     .toast{
       position:fixed;
       left:50%;
       bottom:18px;
       transform:translateX(-50%);
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(0,0,0,.70);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);
+      font-weight:900;
+      box-shadow:var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      z-index:999;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <button class="btn secondary" id="imgPrev"><span class="e">⬅️</span>Image</button>
+      <button class="btn" id="imgNext">Image<span class="e">➡️</span></button>
+
+      <button class="btn dark active" id="mode2x2"><span class="e">🧩</span>2×2</button>
+      <button class="btn dark" id="mode3x2"><span class="e">🧩</span>3×2</button>
+
+      <button class="btn warn" id="shuffleBtn"><span class="e">🔀</span>Shuffle</button>
+      <button class="btn" id="hintBtn"><span class="e">👀</span>Hint</button>
+      <button class="btn secondary" id="resetBtn"><span class="e">♻️</span>Reset</button>
+    </div>
+
+    <div class="stage">
+      <div class="grid">
+        <!-- LEFT: BOARD -->
+        <div class="left">
+          <div class="card">
+            <div class="cardHead">
+              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <span class="chip">Puzzle: <span class="kbd" id="imgLabel">star.png</span></span>
+                <span class="chip">Size: <span class="kbd" id="sizeLabel">2×2</span></span>
+                <span class="chip">Placed: <span class="kbd" id="placedLabel">0/4</span></span>
+              </div>
+              <span class="chip">Tip: Drag pieces into the matching slots ✨</span>
+            </div>
+
+            <div class="boardWrap">
+              <div class="board" id="board">
+                <div class="preview" id="preview"></div>
+                <div class="cells" id="cells"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px;">
+            <div>Touch-friendly: works on phones, tablets, and mouse.</div>
+            <div><span class="kbd">Hint</span> shows the full picture behind the slots.</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: TRAY -->
+        <div class="right">
+          <div class="card">
+            <div class="cardHead">
+              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <span class="chip">Pieces</span>
+                <span class="chip">Drag from tray → board</span>
+              </div>
+            </div>
+            <div class="trayBody">
+              <div class="trayGrid" id="tray"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">Nice!</div>
+  </div>
+
+<script>
+/* ==========================
+   Salam Adventures Puzzle
+   - Uses local images:
+     star.png, balloon.png, salam.png
+   - Modes: 2x2 and 3x2
+   - Pointer-based dragging (mouse + touch)
+   - Real snapping into cells
+   - Hint overlay
+========================== */
+
+const IMAGES = [
+  { name:"star.png",    src:"star.png" },
+  { name:"balloon.png", src:"balloon.png" },
+  { name:"salam.png",   src:"salam.png" }
+];
+
+let state = {
+  imgIndex: 0,
+  cols: 2,
+  rows: 2,
+  hint: true,
+  placed: 0,
+  total: 4,
+};
+
+const el = {
+  imgLabel: document.getElementById("imgLabel"),
+  sizeLabel: document.getElementById("sizeLabel"),
+  placedLabel: document.getElementById("placedLabel"),
+  cells: document.getElementById("cells"),
+  tray: document.getElementById("tray"),
+  preview: document.getElementById("preview"),
+  board: document.getElementById("board"),
+  toast: document.getElementById("toast"),
+  mode2x2: document.getElementById("mode2x2"),
+  mode3x2: document.getElementById("mode3x2"),
+};
+
+function showToast(text){
+  el.toast.textContent = text;
+  el.toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>el.toast.classList.remove("show"), 900);
+}
+
+function setMode(cols, rows){
+  state.cols = cols;
+  state.rows = rows;
+  state.total = cols * rows;
+
+  el.mode2x2.classList.toggle("active", cols===2 && rows===2);
+  el.mode3x2.classList.toggle("active", cols===3 && rows===2);
+
+  el.sizeLabel.textContent = `${cols}×${rows}`;
+  buildPuzzle(true);
+}
+
+function setImage(idx){
+  state.imgIndex = (idx + IMAGES.length) % IMAGES.length;
+  buildPuzzle(true);
+}
+
+function shuffleArray(arr){
+  for (let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildPuzzle(hardReset=false){
+  const img = IMAGES[state.imgIndex];
+  el.imgLabel.textContent = img.name;
+
+  // preview background (hint)
+  el.preview.style.backgroundImage = `url('${img.src}')`;
+  el.preview.style.opacity = state.hint ? "0.18" : "0";
+
+  // grid setup
+  el.cells.style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
+  el.cells.style.gridTemplateRows = `repeat(${state.rows}, 1fr)`;
+
+  // clear
+  el.cells.innerHTML = "";
+  el.tray.innerHTML = "";
+  state.placed = 0;
+  updatePlaced();
+
+  // create cells
+  for (let i=0;i<state.total;i++){
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.dataset.slot = String(i);
+    el.cells.appendChild(cell);
+  }
+
+  // create pieces list (shuffled)
+  const pieceOrder = shuffleArray([...Array(state.total)].map((_,i)=>i));
+
+  pieceOrder.forEach((pieceIndex)=>{
+    const piece = document.createElement("div");
+    piece.className = "piece";
+    piece.dataset.piece = String(pieceIndex); // correct slot index
+
+    // crop math: each piece is a window into the full image
+    const c = state.cols, r = state.rows;
+    const x = pieceIndex % c;
+    const y = Math.floor(pieceIndex / c);
+
+    piece.style.backgroundImage = `url('${img.src}')`;
+    piece.style.setProperty("--bgSize", `${c*100}% ${r*100}%`);
+    piece.style.setProperty("--bgPos", `${(x/(c-1||1))*100}% ${(y/(r-1||1))*100}%`);
+
+    // touch/mouse drag
+    piece.addEventListener("pointerdown", onPieceDown);
+
+    el.tray.appendChild(piece);
+  });
+
+  // make tray columns adapt slightly with mode
+  el.tray.style.gridTemplateColumns = (state.cols===3 ? "repeat(3,1fr)" : "repeat(2,1fr)");
+  if (window.matchMedia("(max-width: 860px)").matches){
+    el.tray.style.gridTemplateColumns = "repeat(4,1fr)";
+  }
+
+  if (hardReset) showToast("New puzzle!");
+}
+
+function updatePlaced(){
+  el.placedLabel.textContent = `${state.placed}/${state.total}`;
+}
+
+/* ---------- Drag engine (pointer) ---------- */
+let drag = {
+  active:false,
+  piece:null,
+  startX:0, startY:0,
+  origParent:null,
+  origNext:null,
+  offsetX:0, offsetY:0,
+};
+
+function onPieceDown(e){
+  const piece = e.currentTarget;
+  e.preventDefault();
+
+  // if piece is inside a cell, allow dragging back out
+  drag.active = true;
+  drag.piece = piece;
+
+  const rect = piece.getBoundingClientRect();
+  drag.offsetX = e.clientX - rect.left;
+  drag.offsetY = e.clientY - rect.top;
+
+  // remember original placement
+  drag.origParent = piece.parentElement;
+  drag.origNext = piece.nextSibling;
+
+  // visual lift
+  piece.classList.add("dragging");
+  piece.setPointerCapture(e.pointerId);
+
+  // move to body overlay for smooth dragging
+  piece.style.position = "fixed";
+  piece.style.left = (e.clientX - drag.offsetX) + "px";
+  piece.style.top  = (e.clientY - drag.offsetY) + "px";
+  piece.style.width = rect.width + "px";
+  piece.style.height = rect.height + "px";
+  piece.style.zIndex = "9999";
+
+  document.body.appendChild(piece);
+
+  document.addEventListener("pointermove", onPieceMove, {passive:false});
+  document.addEventListener("pointerup", onPieceUp, {passive:false});
+  document.addEventListener("pointercancel", onPieceUp, {passive:false});
+}
+
+function onPieceMove(e){
+  if(!drag.active || !drag.piece) return;
+  e.preventDefault();
+
+  drag.piece.style.left = (e.clientX - drag.offsetX) + "px";
+  drag.piece.style.top  = (e.clientY - drag.offsetY) + "px";
+
+  // hover highlight on cells
+  const cell = getCellUnderPointer(e.clientX, e.clientY);
+  highlightCell(cell);
+}
+
+function onPieceUp(e){
+  if(!drag.active || !drag.piece) return;
+  e.preventDefault();
+
+  const piece = drag.piece;
+
+  // remove hover
+  highlightCell(null);
+
+  // drop into cell if valid
+  const cell = getCellUnderPointer(e.clientX, e.clientY);
+
+  let placed = false;
+  if (cell){
+    const slot = cell.dataset.slot;
+    const wants = piece.dataset.piece;
+
+    // only accept correct piece for that slot
+    if (slot === wants && !cell.querySelector(".piece")){
+      // snap into cell
+      snapIntoCell(piece, cell);
+      placed = true;
+      showToast("Perfect!");
+    } else {
+      showToast("Try another slot!");
+    }
+  }
+
+  if (!placed){
+    // return to tray (or original parent if it was already placed)
+    returnPiece(piece, drag.origParent, drag.origNext);
+  }
+
+  cleanupDrag(piece, e.pointerId);
+  recountPlaced();
+  checkWin();
+
+  document.removeEventListener("pointermove", onPieceMove);
+  document.removeEventListener("pointerup", onPieceUp);
+  document.removeEventListener("pointercancel", onPieceUp);
+}
+
+function cleanupDrag(piece, pointerId){
+  try{ piece.releasePointerCapture(pointerId); }catch(_){}
+  piece.classList.remove("dragging");
+  piece.style.position = "";
+  piece.style.left = "";
+  piece.style.top = "";
+  piece.style.width = "";
+  piece.style.height = "";
+  piece.style.zIndex = "";
+  drag.active=false;
+  drag.piece=null;
+  drag.origParent=null;
+  drag.origNext=null;
+}
+
+function returnPiece(piece, parent, next){
+  // restore normal styling
+  piece.style.position = "";
+  piece.style.left = "";
+  piece.style.top = "";
+  piece.style.width = "";
+  piece.style.height = "";
+  piece.style.zIndex = "";
+
+  piece.classList.remove("dragging");
+
+  // if returning from a cell, mark cell unfilled
+  const wasCell = parent && parent.classList && parent.classList.contains("cell");
+  if (wasCell){
+    parent.classList.remove("filled");
+  }
+
+  // prefer returning to tray if original parent is now gone
+  if (!parent || !parent.isConnected){
+    el.tray.appendChild(piece);
+    return;
+  }
+
+  if (next && next.isConnected && next.parentElement === parent){
+    parent.insertBefore(piece, next);
+  } else {
+    parent.appendChild(piece);
+  }
+}
+
+function snapIntoCell(piece, cell){
+  // restore from fixed overlay
+  piece.style.position = "";
+  piece.style.left = "";
+  piece.style.top = "";
+  piece.style.width = "";
+  piece.style.height = "";
+  piece.style.zIndex = "";
+  piece.classList.remove("dragging");
+
+  cell.appendChild(piece);
+  cell.classList.add("filled");
+}
+
+function getCellUnderPointer(x, y){
+  const els = document.elementsFromPoint(x, y);
+  return els.find(n => n && n.classList && n.classList.contains("cell")) || null;
+}
+
+function highlightCell(cell){
+  document.querySelectorAll(".cell.over").forEach(c=>c.classList.remove("over"));
+  if (cell) cell.classList.add("over");
+}
+
+function recountPlaced(){
+  const filled = [...document.querySelectorAll(".cell")].filter(c => c.querySelector(".piece")).length;
+  state.placed = filled;
+  updatePlaced();
+}
+
+function checkWin(){
+  if (state.placed === state.total){
+    showToast("🎉 Puzzle complete!");
+  }
+}
+
+/* ---------- Controls ---------- */
+document.getElementById("mode2x2").onclick = ()=>setMode(2,2);
+document.getElementById("mode3x2").onclick = ()=>setMode(3,2);
+
+document.getElementById("imgPrev").onclick = ()=>setImage(state.imgIndex-1);
+document.getElementById("imgNext").onclick = ()=>setImage(state.imgIndex+1);
+
+document.getElementById("shuffleBtn").onclick = ()=>{
+  // pull all pieces back to tray then shuffle order
+  [...document.querySelectorAll(".cell .piece")].forEach(p=>{
+    const cell = p.parentElement;
+    cell.classList.remove("filled");
+    el.tray.appendChild(p);
+  });
+  // shuffle tray children
+  const items = [...el.tray.children];
+  shuffleArray(items).forEach(n=>el.tray.appendChild(n));
+  recountPlaced();
+  showToast("Shuffled!");
+};
+
+document.getElementById("hintBtn").onclick = ()=>{
+  state.hint = !state.hint;
+  el.preview.style.opacity = state.hint ? "0.18" : "0";
+  showToast(state.hint ? "Hint ON" : "Hint OFF");
+};
+
+document.getElementById("resetBtn").onclick = ()=>{
+  buildPuzzle(true);
+};
+
+/* ---------- Image existence checks (helpful for 404 issues) ---------- */
+function verifyImages(){
+  IMAGES.forEach((img)=>{
+    const t = new Image();
+    t.onload = ()=>{};
+    t.onerror = ()=>{ showToast(`Missing file: ${img.src}`); };
+    t.src = img.src;
+  });
+}
+
+/* ---------- Start ---------- */
+setMode(2,2);
+verifyImages();
+</script>
+</body>
+</html>
