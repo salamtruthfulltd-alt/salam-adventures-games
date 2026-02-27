@@ -3,117 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduFree Hub | Learn & Play</title>
+    <title>EduFree Hub | Home</title>
     <style>
-        :root { --p: #4776E6; --s: #8E54E9; --g: #00b09b; --pink: #ff4081; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f0f4f8; overflow-x: hidden; }
+        /* 1. STYLING - High-End App Feel */
+        :root { --blue: #4A90E2; --purple: #9B51E0; --green: #27AE60; --pink: #EB5757; }
+        body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background: #F2F6FA; color: #333; -webkit-tap-highlight-color: transparent; }
         
-        /* Navigation */
-        nav { background: white; padding: 15px; display: flex; justify-content: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .nav-btn { border: none; background: none; font-weight: bold; color: var(--p); cursor: pointer; padding: 10px; border-radius: 10px; }
-        .nav-btn.active { background: var(--p); color: white; }
+        /* Navigation Bar */
+        nav { background: white; display: flex; justify-content: space-around; padding: 15px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
+        .nav-item { border: none; background: none; font-size: 16px; font-weight: bold; color: #888; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--blue); border-bottom: 3px solid var(--blue); padding-bottom: 5px; }
 
-        .section { display: none; padding: 20px; animation: fadeIn 0.5s; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Content Sections */
+        .page { display: none; padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Science Card Style */
-        .card { background: white; border-radius: 25px; padding: 20px; max-width: 400px; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; }
-        .card-img { width: 100%; height: 200px; border-radius: 20px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 80px; }
+        /* Card Graphics */
+        .card { background: white; border-radius: 24px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        .icon-box { font-size: 80px; margin-bottom: 15px; display: block; }
         
-        /* Emoji Game Style */
-        #game-box { height: 300px; display: flex; align-items: center; justify-content: center; font-size: 100px; position: relative; }
-        .bubble-wrap { width: 200px; height: 200px; border: 8px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .tray { display: flex; justify-content: center; gap: 10px; }
-        .big-btn { width: 80px; height: 80px; border-radius: 20px; border: none; font-size: 40px; cursor: pointer; background: white; box-shadow: 0 5px #ddd; }
-        .big-btn:active { transform: translateY(3px); box-shadow: 0 2px #ddd; }
+        /* Game Controls */
+        #bubble-zone { height: 250px; display: flex; align-items: center; justify-content: center; font-size: 110px; }
+        .bubble-circle { width: 220px; height: 220px; border: 10px solid #E0E0E0; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: white; transition: 0.3s; }
+        .popped { border-color: transparent; background: transparent; transform: scale(1.2); }
+        
+        .btn-row { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .action-btn { width: 85px; height: 85px; border-radius: 20px; border: none; font-size: 45px; cursor: pointer; background: white; box-shadow: 0 8px #DDD; }
+        .action-btn:active { transform: translateY(4px); box-shadow: 0 2px #DDD; }
+        .hidden { display: none !important; }
 
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<nav>
-    <button class="nav-btn active" onclick="show('home', this)">🏠 Hub</button>
-    <button class="nav-btn" onclick="show('science', this)">🔬 Science</button>
-    <button class="nav-btn" onclick="show('game', this)">🎮 Game</button>
-</nav>
+    <nav>
+        <button class="nav-item active" onclick="tab('home')">🏠 Hub</button>
+        <button class="nav-item" onclick="tab('science')">🔬 Science</button>
+        <button class="nav-item" onclick="tab('game')">🎮 Game</button>
+    </nav>
 
-<div id="home" class="section active">
-    <h1 style="text-align: center; color: var(--p);">Welcome to EduFree Hub</h1>
-    <p style="text-align: center;">Your free primary resource library.</p>
-    <div class="card">
-        <h3>Primary Maths Generator</h3>
-        <p>Coming Soon: Dynamic worksheet creator for English and Maths!</p>
+    <div id="home" class="page active">
+        <div class="card">
+            <span class="icon-box">📚</span>
+            <h2>Free Ebook Library</h2>
+            <p>Read amazing stories for English and Maths learning!</p>
+            <button class="action-btn" style="width:auto; height:auto; padding:10px 20px; font-size:18px; background:var(--blue); color:white; box-shadow:0 6px #2F80ED;">Open Library</button>
+        </div>
+        <div class="card">
+            <span class="icon-box">🔢</span>
+            <h2>Maths Generator</h2>
+            <p>Create instant worksheets for primary learners.</p>
+        </div>
     </div>
-</div>
 
-<div id="science" class="section">
-    <div class="card">
-        <div class="card-img" id="sci-img">🔭</div>
-        <h2 id="sci-title">Ready to Learn?</h2>
-        <p id="sci-desc">Click the button to generate a science topic.</p>
-        <button class="big-btn" style="width: auto; padding: 0 20px; font-size: 18px; background: var(--g); color: white;" onclick="genSci()">Generate Topic ✨</button>
+    <div id="science" class="page">
+        <div class="card">
+            <span id="sci-icon" class="icon-box">🌱</span>
+            <h2 id="sci-title">Plant Life</h2>
+            <p id="sci-text">Plants need sunlight and water to grow big and strong!</p>
+            <button class="action-btn" style="width:auto; height:auto; padding:15px 25px; font-size:20px; background:var(--green); color:white; box-shadow:0 6px #219653;" onclick="nextScience()">Next Discovery ✨</button>
+        </div>
     </div>
-</div>
 
-<div id="game" class="section">
-    <div id="game-box">
-        <div id="main-bubble" class="bubble-wrap">😢</div>
+    <div id="game" class="page">
+        <div id="bubble-zone">
+            <div id="bubble-target" class="bubble-circle">😢</div>
+        </div>
+        <div class="btn-row">
+            <button id="wand" class="action-btn" style="background:var(--purple); box-shadow:0 8px #7B1FA2;" onclick="popIt()">🪄</button>
+            <button id="gift1" class="action-btn hidden" style="background:var(--pink); box-shadow:0 8px #B71C1C;" onclick="feedIt('🍎')">🍎</button>
+            <button id="gift2" class="action-btn hidden" style="background:var(--pink); box-shadow:0 8px #B71C1C;" onclick="feedIt('🎁')">🎁</button>
+        </div>
     </div>
-    <div class="tray">
-        <button id="w1" class="big-btn" style="background: var(--s);" onclick="popEmoji()">🪄</button>
-        <button id="f1" class="big-btn hidden" style="background: var(--pink);" onclick="feedEmoji('🍎')">🍎</button>
-        <button id="f2" class="big-btn hidden" style="background: var(--pink);" onclick="feedEmoji('🎁')">🎁</button>
-    </div>
-</div>
 
-<script>
-    // Navigation Logic
-    function show(id, btn) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
+    <script>
+        // NAVIGATION FIX
+        function tab(name) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Remove active from nav buttons
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(name).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
 
-    // Science Logic
-    const sciTopics = [
-        { t: "The Solar System", d: "Eight planets orbit the Sun.", i: "🪐", f: "Earth is the only planet with life!" },
-        { t: "The Human Body", d: "Your heart pumps blood to your toes!", i: "❤️", f: "Your heart is the size of your fist." },
-        { t: "Gravity", d: "Gravity pulls everything down to Earth.", i: "🍏", f: "There is no gravity in deep space!" }
-    ];
-    function genSci() {
-        const item = sciTopics[Math.floor(Math.random()*sciTopics.length)];
-        document.getElementById('sci-title').innerText = item.t;
-        document.getElementById('sci-desc').innerText = item.d;
-        document.getElementById('sci-img').innerText = item.i;
-    }
+        // SCIENCE GENERATOR FIX
+        const sciData = [
+            { i: "🚀", t: "The Moon", p: "The moon travels around the Earth and shines at night!" },
+            { i: "⚡", t: "Electricity", p: "Electricity powers our lights and toys. Be safe!" },
+            { i: "🦴", t: "The Skeleton", p: "Your bones are like a frame that holds your body up." },
+            { i: "🌱", t: "Plant Life", p: "Plants need sunlight and water to grow big and strong!" }
+        ];
+        let sciIndex = 0;
+        function nextScience() {
+            sciIndex = (sciIndex + 1) % sciData.length;
+            document.getElementById('sci-icon').innerText = sciData[sciIndex].i;
+            document.getElementById('sci-title').innerText = sciData[sciIndex].t;
+            document.getElementById('sci-text').innerText = sciData[sciIndex].p;
+        }
 
-    // Game Logic
-    let isPopped = false;
-    function popEmoji() {
-        if(isPopped) return;
-        isPopped = true;
-        const b = document.getElementById('main-bubble');
-        b.style.border = "none"; b.style.background = "none"; b.innerText = "😮";
-        document.getElementById('w1').classList.add('hidden');
-        document.getElementById('f1').classList.remove('hidden');
-        document.getElementById('f2').classList.remove('hidden');
-    }
-    function feedEmoji(item) {
-        const b = document.getElementById('main-bubble');
-        b.innerText = "😄";
-        setTimeout(() => {
-            b.innerText = "😢";
-            b.style.border = "8px solid white"; b.style.background = "rgba(255,255,255,0.5)";
-            isPopped = false;
-            document.getElementById('w1').classList.remove('hidden');
-            document.getElementById('f1').classList.add('hidden');
-            document.getElementById('f2').classList.add('hidden');
-        }, 2000);
-    }
-</script>
+        // GAME LOGIC FIX
+        const bubble = document.getElementById('bubble-target');
+        const wand = document.getElementById('wand');
+        const g1 = document.getElementById('gift1');
+        const g2 = document.getElementById('gift2');
 
+        function popIt() {
+            bubble.classList.add('popped');
+            bubble.innerText = "😮";
+            wand.classList.add('hidden');
+            g1.classList.remove('hidden');
+            g2.classList.remove('hidden');
+        }
+
+        function feedIt(item) {
+            bubble.innerText = "😄";
+            setTimeout(() => {
+                bubble.innerText = "😢";
+                bubble.classList.remove('popped');
+                wand.classList.remove('hidden');
+                g1.classList.add('hidden');
+                g2.classList.add('hidden');
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
