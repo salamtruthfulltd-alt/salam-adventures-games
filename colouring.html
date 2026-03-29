@@ -174,7 +174,7 @@
       </div>
 
       <div class="status">
-        <div>Paint = tap a section to colour it · Fill = same section fill · FX = tap/drag · Erase removes paint + FX</div>
+        <div>Paint = fill one section · Fill = fill the whole picture · FX = tap/drag · Erase removes paint + FX</div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <span class="kbd" id="pageLabel">Page 1</span>
           <span class="kbd" id="toolLabel">Tool: Paint</span>
@@ -199,7 +199,7 @@
       <div class="panelHead">
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
           <span class="chip">Colour: <span class="kbd" id="colourChip">#2563eb</span></span>
-          <span class="chip">Brush: <span class="kbd" id="brushChip">Section Fill</span></span>
+          <span class="chip">Mode: <span class="kbd" id="brushChip">Section Fill</span></span>
           <span class="chip">FX: <span class="kbd" id="fxChip">Stars</span></span>
           <span class="chip">SFX: <b id="sfxChip">On</b></span>
         </div>
@@ -213,7 +213,7 @@
       <div class="panelBody">
         <div class="card">
           <h3>🎨 Colours</h3>
-          <p class="hint">Pick a colour for section colouring and FX tint.</p>
+          <p class="hint">Pick a colour for section fill, full-page fill, and FX tint.</p>
           <div class="swatches" id="swatches"></div>
 
           <div class="sliders">
@@ -236,14 +236,14 @@
         </div>
 
         <div class="card">
-          <h3>🖌️ Colouring Mode</h3>
-          <p class="hint">Paint now colours the whole tapped section instead of free drawing.</p>
+          <h3>🖌️ Colouring</h3>
+          <p class="hint">Paint fills one tapped section. Fill colours the whole picture.</p>
 
           <div class="gridBtns" id="brushGrid">
-            <button class="mini active" data-brush="section"><span class="e">🎨</span>Section Fill</button>
+            <button class="mini active" id="sectionModeBtn"><span class="e">🧩</span>Section</button>
+            <button class="mini" id="fullModeBtn"><span class="e">🖼️</span>Whole Page</button>
             <button class="mini" id="glowBtn"><span class="e">💫</span>Glow</button>
             <button class="mini" id="rainbowBtn"><span class="e">🌈</span>Rainbow</button>
-            <button class="mini" id="paintInfoBtn"><span class="e">🖍️</span>Smart Paint</button>
           </div>
 
           <div class="fxPanel" id="fxPanel" style="margin-top:10px;">
@@ -307,6 +307,8 @@ const rand=(a,b)=>Math.random()*(b-a)+a;
 
 const pageLabel = document.getElementById("pageLabel");
 const toolLabel = document.getElementById("toolLabel");
+const brushChip = document.getElementById("brushChip");
+const fxPanel=document.getElementById("fxPanel");
 
 const stars=[];
 const bubbles=[];
@@ -377,12 +379,9 @@ function loadPage(i){
 baseImage.onload=()=>{ drawBaseImage(); clearAll(); };
 
 let tool="paint";
-let brush="section";
 let glow=false;
 let rainbow=false;
 let fxType="stars";
-
-const fxPanel=document.getElementById("fxPanel");
 
 function setTool(t){
   tool=t;
@@ -394,6 +393,12 @@ function setTool(t){
   eraseToolBtn.classList.toggle("active", t==="erase");
 
   fxPanel.classList.toggle("show", t==="fx");
+
+  brushChip.textContent =
+    t==="paint" ? "Section Fill" :
+    t==="fill" ? "Whole Page Fill" :
+    t==="erase" ? "Erase" :
+    "FX";
 }
 
 const paintToolBtn=document.getElementById("paintToolBtn");
@@ -466,36 +471,13 @@ function buildSwatches(){
 }
 buildSwatches();
 
-const brushChip=document.getElementById("brushChip");
-const brushGrid=document.getElementById("brushGrid");
+document.getElementById("sectionModeBtn").onclick=()=>setTool("paint");
+document.getElementById("fullModeBtn").onclick=()=>setTool("fill");
+
 const glowBtn=document.getElementById("glowBtn");
 const rainbowBtn=document.getElementById("rainbowBtn");
-const paintInfoBtn=document.getElementById("paintInfoBtn");
-
-function setBrush(b){
-  brush=b;
-  brushChip.textContent = "Section Fill";
-  [...brushGrid.querySelectorAll("[data-brush]")].forEach(btn=>{
-    btn.classList.toggle("active", btn.dataset.brush===b);
-  });
-}
-setBrush("section");
-
-glowBtn.onclick=()=>{
-  glow=!glow;
-  glowBtn.classList.toggle("active",glow);
-  setTool("paint");
-};
-rainbowBtn.onclick=()=>{
-  rainbow=!rainbow;
-  rainbowBtn.classList.toggle("active",rainbow);
-  setTool("paint");
-};
-paintInfoBtn.onclick=()=>{
-  setTool("paint");
-  paintInfoBtn.classList.add("active");
-  setTimeout(()=>paintInfoBtn.classList.remove("active"), 350);
-};
+glowBtn.onclick=()=>{glow=!glow; glowBtn.classList.toggle("active",glow);};
+rainbowBtn.onclick=()=>{rainbow=!rainbow; rainbowBtn.classList.toggle("active",rainbow);};
 
 const fxChip=document.getElementById("fxChip");
 const fxGrid=document.getElementById("fxGrid");
@@ -580,17 +562,19 @@ function hexToRgb(hex){
   return [(v>>16)&255,(v>>8)&255,v&255];
 }
 function luminance(r,g,b){ return 0.2126*r + 0.7152*g + 0.0722*b; }
-function closeCol(r,g,b, tr,tg,tb, tol){
-  return Math.abs(r-tr)<=tol && Math.abs(g-tg)<=tol && Math.abs(b-tb)<=tol;
+
+function getActiveColour(){
+  return rainbow ? rainbowColor() : colour;
 }
+
 function applyGlowToPaintImageData(imgData){
   if (!glow) return imgData;
   const w = imgData.width;
   const h = imgData.height;
   const src = imgData.data;
   const copy = new Uint8ClampedArray(src);
-
   const radius = 2;
+
   for (let y=0; y<h; y++){
     for (let x=0; x<w; x++){
       const i=(y*w+x)*4;
@@ -617,7 +601,8 @@ function applyGlowToPaintImageData(imgData){
   }
   return imgData;
 }
-function fillFromBG(x,y, fillHex){
+
+function fillSectionFromBG(x, y, fillHex){
   const w=bgCanvas.width,h=bgCanvas.height;
   if (x<0||y<0||x>=w||y>=h) return;
 
@@ -625,47 +610,76 @@ function fillFromBG(x,y, fillHex){
   const bd=bgImg.data;
 
   const i0=(y*w+x)*4;
-  const tr=bd[i0], tg=bd[i0+1], tb=bd[i0+2], ta=bd[i0+3];
-  if (ta===0) return;
-  if (luminance(tr,tg,tb)<55) return;
+  const sr=bd[i0], sg=bd[i0+1], sb=bd[i0+2], sa=bd[i0+3];
+  if (sa===0) return;
 
-  let targetColour = fillHex;
-  if (rainbow){
-    targetColour = rainbowColor();
-  }
-  const [fr,fgc,fbc]=hexToRgb(targetColour);
+  const startLum = luminance(sr,sg,sb);
+  if (startLum < 170) return;
 
+  const [fr,fg,fb]=hexToRgb(fillHex);
   const paintImg=paint.getImageData(0,0,w,h);
   const pd=paintImg.data;
 
-  const tol=30;
   const stack=[[x,y]];
   const seen=new Uint8Array(w*h);
-  const MAX=w*h*0.6;
-  let filled=0;
+  const tolerance=55;
 
   while(stack.length){
-    const [px,py]=stack.pop();
-    if (px<0||py<0||px>=w||py>=h) continue;
-    const idx=py*w+px;
+    const [cx,cy]=stack.pop();
+    if (cx<0||cy<0||cx>=w||cy>=h) continue;
+
+    const idx=cy*w+cx;
     if (seen[idx]) continue;
     seen[idx]=1;
 
-    const bi=idx*4;
-    const r=bd[bi], g=bd[bi+1], b=bd[bi+2], a=bd[bi+3];
+    const i=idx*4;
+    const r=bd[i], g=bd[i+1], b=bd[i+2], a=bd[i+3];
     if (a===0) continue;
-    if (luminance(r,g,b)<55) continue;
-    if (!closeCol(r,g,b,tr,tg,tb,tol)) continue;
 
-    pd[bi]=fr;
-    pd[bi+1]=fgc;
-    pd[bi+2]=fbc;
-    pd[bi+3]=Math.round(255 * brushOpacity);
+    const lum=luminance(r,g,b);
+    if (lum < 155) continue;
 
-    filled++;
-    if (filled>MAX) break;
+    if (
+      Math.abs(r-sr) > tolerance ||
+      Math.abs(g-sg) > tolerance ||
+      Math.abs(b-sb) > tolerance
+    ) continue;
 
-    stack.push([px-1,py],[px+1,py],[px,py-1],[px,py+1]);
+    pd[i]=fr;
+    pd[i+1]=fg;
+    pd[i+2]=fb;
+    pd[i+3]=Math.round(255 * brushOpacity);
+
+    stack.push([cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]);
+  }
+
+  applyGlowToPaintImageData(paintImg);
+  paint.putImageData(paintImg,0,0);
+}
+
+function fillWholeImage(fillHex){
+  const w = bgCanvas.width;
+  const h = bgCanvas.height;
+
+  const bgImg = bg.getImageData(0,0,w,h);
+  const bd = bgImg.data;
+  const paintImg = paint.getImageData(0,0,w,h);
+  const pd = paintImg.data;
+  const [fr,fg,fb] = hexToRgb(fillHex);
+
+  for(let i=0;i<bd.length;i+=4){
+    const r=bd[i], g=bd[i+1], b=bd[i+2], a=bd[i+3];
+    if (a===0) continue;
+
+    const lum = luminance(r,g,b);
+
+    // fill bright interior, leave dark outlines alone
+    if (lum >= 165){
+      pd[i]=fr;
+      pd[i+1]=fg;
+      pd[i+2]=fb;
+      pd[i+3]=Math.round(255 * brushOpacity);
+    }
   }
 
   applyGlowToPaintImageData(paintImg);
@@ -746,7 +760,7 @@ function placeFX(x,y){
   const base = brushSize * 0.55;
   const strength = fxStrength;
   const scat = fxScatter;
-  const tint = (colour==="#ffffff") ? "#fde68a" : colour;
+  const tint = (getActiveColour()==="#ffffff") ? "#fde68a" : getActiveColour();
 
   if (fxType==="stars"){
     const sSize = base*(0.9+strength*1.3);
@@ -857,9 +871,15 @@ paintCanvas.addEventListener("pointerdown",(e)=>{
   ensureAudio();
   const p=getPos(e);
 
-  if (tool==="fill" || tool==="paint"){
+  if (tool==="paint"){
     pushUndo();
-    fillFromBG(Math.floor(p.x), Math.floor(p.y), colour);
+    fillSectionFromBG(Math.floor(p.x), Math.floor(p.y), getActiveColour());
+    return;
+  }
+
+  if (tool==="fill"){
+    pushUndo();
+    fillWholeImage(getActiveColour());
     return;
   }
 
@@ -908,10 +928,6 @@ paintCanvas.addEventListener("pointermove",(e)=>{
       lastFX=p;
     }
     last=p;
-    return;
-  }
-
-  if (tool==="paint" || tool==="fill"){
     return;
   }
 });
