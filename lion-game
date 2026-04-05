@@ -1,16 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lion's Adventure: Drag and Drop Hats!</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background-color: #f0f8ff; /* Light, friendly background */
+        }
+        .game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            border: 2px solid #ccc;
+            background-color: #fff;
+            overflow: hidden; /* Keep everything inside */
+        }
+        #lion-base {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px; /* Adjust based on your lion's size */
+            height: auto;
+            z-index: 1; /* Lion is behind the hats */
+        }
+        .hats-inventory {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 10; /* Inventory is in front */
+        }
+        .draggable-hat {
+            width: 80px; /* Adjust hat size */
+            height: auto;
+            cursor: grab;
+            user-select: none; /* Prevent text selection while dragging */
+        }
+        .draggable-hat:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
 <body>
-  <h1>Lion's Adventure: Drag and Drop Hats!</h1>
 
-  <div class="game-container">
-    <img src="lion.png" id="lion-base" alt="Friendly Lion Cub">
+    <h1>Lion's Adventure: Drag and Drop Hats!</h1>
 
-    <div class="hats-inventory">
-      <img src="safari.png" class="draggable-hat" id="hat-safari" alt="Explorer Hat">
-      <img src="helmet.png" class="draggable-hat" id="hat-helmet" alt="Astronaut Helmet">
-      <img src="crown.png"  class="draggable-hat" id="hat-crown"  alt="Royal Crown">
-      <img src="party.png"  class="draggable-hat" id="hat-party"  alt="Party Hat">
-      <img src="scarf.png"  class="draggable-hat" id="hat-scarf"  alt="Red Scarf">
+    <div class="game-container">
+        <img src="lion.png" id="lion-base" alt="Friendly Lion Cub Base">
+
+        <div class="hats-inventory">
+            <img src="crown.png"  class="draggable-hat" id="hat-crown"  alt="Royal Crown">
+            <img src="helmet.png" class="draggable-hat" id="hat-helmet" alt="Astronaut Helmet">
+            <img src="party.png"  class="draggable-hat" id="hat-party"  alt="Party Hat">
+        </div>
     </div>
-  </div>
 
-  </body>
+    <script>
+        // Simple Drag and Drop Logic for our 3 hats
+        const hats = document.querySelectorAll('.draggable-hat');
+        const container = document.querySelector('.game-container');
+
+        hats.forEach(hat => {
+            let isDragging = false;
+            let offset = { x: 0, y: 0 };
+
+            hat.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                // Calculate the mouse offset relative to the top-left of the hat
+                const rect = hat.getBoundingClientRect();
+                offset = {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+                hat.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                // Important: Update the position relative to the game-container
+                const containerRect = container.getBoundingClientRect();
+                let x = e.clientX - containerRect.left - offset.x;
+                let y = e.clientY - containerRect.top - offset.y;
+
+                // (Optional) Add bounds-checking here to keep hats in the box
+
+                hat.style.left = x + 'px';
+                hat.style.top = y + 'px';
+                hat.style.position = 'absolute'; // Ensure it can be positioned
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                hat.style.cursor = 'grab';
+            });
+        });
+    </script>
+
+</body>
+</html>
