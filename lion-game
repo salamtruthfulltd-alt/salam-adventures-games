@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures - Lion Creator</title>
+    <style>
+        body { font-family: 'Comic Sans MS', sans-serif; text-align: center; background: #6a1b9a; color: white; margin: 0; overflow: hidden; }
+        #game-container { position: relative; width: 600px; height: 400px; margin: 20px auto; border: 5px solid #ffca28; border-radius: 15px; background: url('back.jpg') center/cover; overflow: hidden; }
+        .base-lion { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 250px; pointer-events: none; }
+        .draggable { position: absolute; cursor: move; width: 80px; z-index: 10; touch-action: none; }
+        .menu { background: rgba(0,0,0,0.5); padding: 10px; display: flex; justify-content: center; gap: 20px; }
+        .menu img { width: 50px; cursor: pointer; border: 2px solid white; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>🦁 Create Your Adventure Friend! 🦁</h2>
+    <p>Drag the items onto the Lion!</p>
+
+    <div id="game-container">
+        <img src="lion.png" class="base-lion" id="lion">
+        
+        <img src="hat.png" class="draggable" style="top: 20px; left: 20px;" id="item1">
+        <img src="eyes.png" class="draggable" style="top: 20px; left: 120px;" id="item2">
+    </div>
+
+    <script>
+        // Simple Drag and Drop Script
+        const draggables = document.querySelectorAll('.draggable');
+
+        draggables.forEach(item => {
+            let isDragging = false;
+
+            item.addEventListener('mousedown', (e) => startDrag(e, item));
+            item.addEventListener('touchstart', (e) => startDrag(e, item), {passive: false});
+
+            function startDrag(e, el) {
+                isDragging = true;
+                let clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                let clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                
+                let shiftX = clientX - el.getBoundingClientRect().left;
+                let shiftY = clientY - el.getBoundingClientRect().top;
+
+                function moveAt(pageX, pageY) {
+                    el.style.left = pageX - shiftX - gameContainer.getBoundingClientRect().left + 'px';
+                    el.style.top = pageY - shiftY - gameContainer.getBoundingClientRect().top + 'px';
+                }
+
+                function onMouseMove(event) {
+                    if (!isDragging) return;
+                    let pX = event.type === 'touchmove' ? event.touches[0].pageX : event.pageX;
+                    let pY = event.type === 'touchmove' ? event.touches[0].pageY : event.pageY;
+                    moveAt(pX, pY);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('touchmove', onMouseMove, {passive: false});
+
+                el.onmouseup = el.ontouchend = function() {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                };
+            }
+
+            item.ondragstart = function() { return false; };
+        });
+
+        const gameContainer = document.getElementById('game-container');
+    </script>
+</body>
+</html>
