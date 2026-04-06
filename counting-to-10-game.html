@@ -173,6 +173,7 @@
       justify-content: center;
       padding: 8px;
       overflow: hidden;
+      position: relative;
     }
 
     .fruit-btn:hover { transform: scale(1.04); }
@@ -333,7 +334,7 @@
 
     <h1>Counting To 10 Game For Kids</h1>
     <p class="subheading">
-      Tap the fruit, hear the number, and count all the way to the end.
+      Tap the fruit, hear what number you are on, and count all the way to the end.
     </p>
 
     <div class="game-shell">
@@ -387,14 +388,54 @@
     let currentLevel = "easy";
 
     const fruits = [
-      { name: "Apples", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34e.png" },
-      { name: "Bananas", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34c.png" },
-      { name: "Strawberries", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f353.png" },
-      { name: "Oranges", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34a.png" },
-      { name: "Grapes", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f347.png" },
-      { name: "Watermelons", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f349.png" },
-      { name: "Pineapples", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34d.png" },
-      { name: "Cherries", img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f352.png" }
+      {
+        singular: "apple",
+        plural: "apples",
+        display: "Apples",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34e.png"
+      },
+      {
+        singular: "banana",
+        plural: "bananas",
+        display: "Bananas",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34c.png"
+      },
+      {
+        singular: "strawberry",
+        plural: "strawberries",
+        display: "Strawberries",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f353.png"
+      },
+      {
+        singular: "orange",
+        plural: "oranges",
+        display: "Oranges",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34a.png"
+      },
+      {
+        singular: "grape",
+        plural: "grapes",
+        display: "Grapes",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f347.png"
+      },
+      {
+        singular: "watermelon",
+        plural: "watermelons",
+        display: "Watermelons",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f349.png"
+      },
+      {
+        singular: "pineapple",
+        plural: "pineapples",
+        display: "Pineapples",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34d.png"
+      },
+      {
+        singular: "cherry",
+        plural: "cherries",
+        display: "Cherries",
+        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f352.png"
+      }
     ];
 
     const praiseWords = [
@@ -432,6 +473,10 @@
       document.getElementById("totalNumber").textContent = total;
     }
 
+    function getFruitWord(count, fruit) {
+      return count === 1 ? fruit.singular : fruit.plural;
+    }
+
     function pickVoice() {
       const voices = window.speechSynthesis.getVoices();
       if (!voices.length) return null;
@@ -443,16 +488,25 @@
       );
     }
 
-    function speak(text, rate = 0.9, pitch = 1.06) {
+    function speakText(text, rate = 0.78, pitch = 1.03) {
       if (!window.speechSynthesis) return;
       window.speechSynthesis.cancel();
+
       const utterance = new SpeechSynthesisUtterance(String(text));
       utterance.lang = "en-GB";
       utterance.rate = rate;
       utterance.pitch = pitch;
+      utterance.volume = 1;
+
       if (!selectedVoice) selectedVoice = pickVoice();
       if (selectedVoice) utterance.voice = selectedVoice;
+
       window.speechSynthesis.speak(utterance);
+    }
+
+    function speakCount(count, fruit) {
+      const fruitWord = getFruitWord(count, fruit);
+      speakText(`${count} ${fruitWord}`, 0.76, 1.02);
     }
 
     function showBubbleWord(word) {
@@ -480,7 +534,7 @@
 
       const img = document.createElement("img");
       img.src = currentFruit.img;
-      img.alt = currentFruit.name;
+      img.alt = currentFruit.display;
       fruit.appendChild(img);
 
       fruit.addEventListener("click", function () {
@@ -490,20 +544,22 @@
         updatePanels();
         fruit.classList.add("gone");
 
-        document.getElementById("message").textContent = count;
+        const fruitWord = getFruitWord(count, currentFruit);
+        document.getElementById("message").textContent = `${count} ${fruitWord}`;
         showBubbleWord(randomPraise());
-        speak(`Number ${count}`);
+        speakCount(count, currentFruit);
 
         const rect = fruit.getBoundingClientRect();
         showNumberPop(rect.left + rect.width / 2 - 10, rect.top + 8, count);
 
         if (count === total) {
           setTimeout(() => {
+            const totalWord = getFruitWord(total, currentFruit);
             document.getElementById("instructionText").textContent = "You Did It!";
-            document.getElementById("message").textContent = `Amazing! You Counted ${total}!`;
+            document.getElementById("message").textContent = `Amazing! ${total} ${totalWord}!`;
             document.getElementById("stars").textContent = "⭐ ⭐ ⭐";
             showBubbleWord("Amazing!");
-            speak(`Amazing counting! You counted ${total}!`, 0.88, 1.04);
+            speakText(`Amazing counting! You counted ${total} ${totalWord}!`, 0.76, 1.02);
           }, 220);
         }
       });
@@ -531,7 +587,7 @@
       bubble.classList.remove("show");
 
       instructionText.textContent = "Tap Each Fruit And Count Out Loud!";
-      fruitName.textContent = `Today’s Fruit: ${currentFruit.name}`;
+      fruitName.textContent = `Today’s Fruit: ${currentFruit.display}`;
       updatePanels();
 
       for (let i = 0; i < total; i++) {
@@ -539,7 +595,7 @@
       }
 
       setTimeout(() => {
-        speak(`Let’s count the ${currentFruit.name.toLowerCase()}`, 0.88, 1.02);
+        speakText(`Let’s count the ${currentFruit.plural}`, 0.76, 1.0);
       }, 250);
     }
 
