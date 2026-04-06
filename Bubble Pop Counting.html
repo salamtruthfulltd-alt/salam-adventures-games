@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Bubble Pop Counting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root { --water: #0ea5e9; --bubble: rgba(255,255,255,0.3); }
+        
+        .game-card {
+            width: 100%;
+            max-width: 320px;
+            margin: 10px auto;
+            font-family: 'Fredoka One', cursive;
+            background: #0c4a6e;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        /* The Aquarium Screen */
+        #aquarium {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(#38bdf8, #0284c7);
+            border: 4px solid #1e293b;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .bubble {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: var(--bubble);
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s, opacity 0.3s;
+            box-shadow: inset -5px -5px 10px rgba(255,255,255,0.2);
+            user-select: none;
+        }
+
+        .bubble:active { transform: scale(0.8); }
+        
+        .pop-effect {
+            position: absolute;
+            width: 50px; height: 50px;
+            border: 2px solid white;
+            border-radius: 50%;
+            animation: popOut 0.3s ease-out forwards;
+        }
+
+        @keyframes popOut {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .ui-text { color: #bae6fd; font-size: 0.8rem; margin: 8px 0; letter-spacing: 1px; }
+        #next-num { color: #fbbf24; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div class="ui-text">POP IN ORDER: <span id="next-num">1</span></div>
+    
+    <div id="aquarium">
+        </div>
+
+    <div class="ui-text" style="font-size: 0.7rem; opacity: 0.8;">
+        Bubble Pop Math • Kindergarten SEO Learning Tool
+    </div>
+</div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playPop(freq) {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = freq; g.gain.value = 0.1;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        o.stop(audioCtx.currentTime + 0.1);
+    }
+
+    let expected = 1;
+    const aquarium = document.getElementById('aquarium');
+    const display = document.getElementById('next-num');
+    const bubbles = [];
+
+    function spawnBubbles() {
+        aquarium.innerHTML = '';
+        expected = 1;
+        display.innerText = expected;
+        bubbles.length = 0;
+
+        for (let i = 1; i <= 10; i++) {
+            const b = document.createElement('div');
+            b.className = 'bubble';
+            b.innerText = i;
+            
+            // Random positions
+            const x = Math.random() * (aquarium.clientWidth - 60);
+            const y = Math.random() * (aquarium.clientHeight - 60);
+            
+            // Movement vectors
+            const vx = (Math.random() - 0.5) * 2;
+            const vy = (Math.random() - 0.5) * 2;
+
+            b.style.left = x + 'px';
+            b.style.top = y + 'px';
+            
+            b.onclick = () => handlePop(i, b);
+            
+            aquarium.appendChild(b);
+            bubbles.push({ el: b, x, y, vx, vy });
+        }
+    }
+
+    function handlePop(val, el) {
+        if (val === expected) {
+            playPop(400 + (val * 100));
+            createEffect(el.offsetLeft, el.offsetTop);
+            el.style.opacity = '0';
+            el.style.pointerEvents = 'none';
+            expected++;
+            
+            if (expected > 10) {
+                display.innerText = "WIN! 🎉";
+                setTimeout(spawnBubbles, 2000);
+            } else {
+                display.innerText = expected;
+            }
+        } else {
+            // Wrong number - Shake and Reset
+            playPop(150);
+            aquarium.style.background = '#ef4444';
+            setTimeout(() => {
+                aquarium.style.background = 'linear-gradient(#38bdf8, #0284c7)';
+                spawnBubbles();
+            }, 300);
+        }
+    }
+
+    function createEffect(x, y) {
+        const e = document.createElement('div');
+        e.className = 'pop-effect';
+        e.style.left = x + 'px'; e.style.top = y + 'px';
+        aquarium.appendChild(e);
+        setTimeout(() => e.remove(), 300);
+    }
+
+    function animate() {
+        bubbles.forEach(b => {
+            if (b.el.style.opacity === '0') return;
+
+            b.x += b.vx;
+            b.y += b.vy;
+
+            // Bounce off walls
+            if (b.x <= 0 || b.x >= aquarium.clientWidth - 55) b.vx *= -1;
+            if (b.y <= 0 || b.y >= aquarium.clientHeight - 55) b.vy *= -1;
+
+            b.el.style.left = b.x + 'px';
+            b.el.style.top = b.y + 'px';
+        });
+        requestAnimationFrame(animate);
+    }
+
+    spawnBubbles();
+    animate();
+</script>
+</body>
+</html>
