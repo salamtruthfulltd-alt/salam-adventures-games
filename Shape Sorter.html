@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape Sorter: 1-5 Math</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #f8fafc; --primary: #6366f1; }
+        body { margin: 0; background: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Fredoka One', cursive; }
+
+        .game-card { 
+            width: 100%; max-width: 320px; background: white; padding: 20px; 
+            border-radius: 30px; border: 6px solid var(--primary); text-align: center;
+            box-shadow: 0 12px 0 #4338ca; position: relative; touch-action: none;
+        }
+
+        /* The "Goal" Bin */
+        #shape-bin {
+            width: 160px; height: 120px; border: 4px dashed var(--primary);
+            margin: 0 auto 20px; border-radius: 20px; background: #eef2ff;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+            gap: 5px; padding: 10px; position: relative;
+        }
+
+        /* Shape Styles */
+        .shape { width: 45px; height: 45px; position: absolute; cursor: grab; z-index: 10; }
+        
+        .circle { background: #ef4444; border-radius: 50%; }
+        .square { background: #3b82f6; border-radius: 4px; }
+        .triangle { 
+            background: none !important; width: 0; height: 0; 
+            border-left: 23px solid transparent; border-right: 23px solid transparent; 
+            border-bottom: 40px solid #22c55e; 
+        }
+
+        .placed { pointer-events: none; position: static !important; transform: scale(0.6) !important; }
+
+        .tray { height: 140px; background: #f1f5f9; border-radius: 20px; position: relative; border: 2px solid #cbd5e1; }
+        .instruction { font-size: 1.1rem; color: #1e1b4b; margin-bottom: 10px; }
+        .count-tag { font-size: 0.9rem; margin-top: 10px; color: #6366f1; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div class="instruction">Put 5 <span id="target-name" style="text-decoration:underline">Shapes</span> in the Box!</div>
+    
+    <div id="shape-bin"></div>
+
+    <div class="tray" id="tray"></div>
+
+    <div class="count-tag">SHAPES PLACED: <span id="cur-count">0</span> / 5</div>
+</div>
+
+<script>
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    const shapes = ['circle', 'square', 'triangle'];
+    let targetShape = '';
+    let count = 0;
+
+    function playDing(f) {
+        if (audio.state === 'suspended') audio.resume();
+        const o=audio.createOscillator(), g=audio.createGain();
+        o.type='sine'; o.frequency.value=f; g.gain.value=0.1;
+        o.connect(g); g.connect(audio.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+0.3);
+        o.stop(audio.currentTime+0.3);
+    }
+
+    function init() {
+        count = 0;
+        document.getElementById('cur-count').innerText = count;
+        document.getElementById('shape-bin').innerHTML = '';
+        const tray = document.getElementById('tray');
+        tray.innerHTML = '';
+
+        // Pick a random shape to look for
+        targetShape = shapes[Math.floor(Math.random() * shapes.length)];
+        document.getElementById('target-name').innerText = targetShape.toUpperCase() + 'S';
+        document.getElementById('target-name').style.color = (targetShape === 'circle' ? '#ef4444' : targetShape === 'square' ? '#3b82f6' : '#22c55e');
+
+        // Spawn 8 shapes total (mixed types)
+        for(let i=0; i<8; i++) {
+            const s = document.createElement('div');
+            const type = (i < 5) ? targetShape : shapes.filter(x => x !== targetShape)[Math.floor(Math.random()*2)];
+            s.className = `shape ${type}`;
+            s.dataset.type = type;
+            s.style.left = Math.random() * 240 + 'px';
+            s.style.top = Math.random() * 80 + 'px';
+            s.onpointerdown = startDrag;
+            tray.appendChild(s);
+        }
+    }
+
+    function startDrag(e) {
+        const el = e.target; el.setPointerCapture(e.pointerId);
+        const sX = e.clientX, sY = e.clientY, oX = el.offsetLeft, oY = el.offsetTop;
+
+        const onMove = (me) => {
+            el.style.left = (oX + (me.clientX - sX)) + 'px';
+            el.style.top = (oY + (me.clientY - sY)) + 'px';
+        };
+
+        const onUp = (ue) => {
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerup', onUp);
+            const r = document.getElementById('shape-bin').getBoundingClientRect();
+            
+            if (ue.clientX > r.left && ue.clientX < r.right && ue.clientY > r.top && ue.clientY < r.bottom) {
+                if(el.dataset.type === targetShape) {
+                    placeShape(el);
+                } else {
+                    playDing(150); // Low sound for wrong shape
+                    el.style.top = '10px';
+                }
+            } else {
+                el.style.top = '10px';
+            }
+        };
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerup', onUp);
+    }
+
+    function placeShape(el) {
+        count++;
+        document.getElementById('cur-count').innerText = count;
+        el.classList.add('placed');
+        document.getElementById('shape-bin').appendChild(el);
+        playDing(400 + (count * 100));
+
+        if(count === 5) {
+            playDing(800);
+            setTimeout(() => { alert("FANTASTIC! 🌟"); init(); }, 500);
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
