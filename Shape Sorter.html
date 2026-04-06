@@ -3,67 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shape Quest: Level Up Counting</title>
+    <title>Mixed Mystery: Shape Collector</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f8fafc; --primary: #6366f1; --success: #22c55e; }
-        body { margin: 0; background: #334155; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Fredoka One', cursive; overflow: hidden; }
+        :root { --bg: #fdf4ff; --primary: #86198f; --accent: #f5d0fe; }
+        body { margin: 0; background: #701a75; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Fredoka One', cursive; overflow: hidden; }
 
         .game-card { 
             width: 100%; max-width: 340px; background: white; padding: 20px; 
-            border-radius: 35px; border: 6px solid var(--primary); text-align: center;
-            box-shadow: 0 15px 0 #312e81; position: relative; touch-action: none;
+            border-radius: 35px; border: 6px solid var(--accent); text-align: center;
+            box-shadow: 0 15px 0 #4a044e; position: relative; touch-action: none;
         }
 
-        /* Level Indicator */
-        .level-badge { background: #e0e7ff; color: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
-
-        /* The Collector Bin */
-        #shape-bin {
-            width: 180px; height: 100px; border: 4px dashed #94a3b8;
-            margin: 0 auto 20px; border-radius: 25px; background: #f1f5f9;
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-            gap: 5px; padding: 10px; position: relative; transition: 0.3s;
+        .recipe-box {
+            background: var(--accent); padding: 10px; border-radius: 20px;
+            margin-bottom: 15px; display: flex; justify-content: center; gap: 15px;
+            border: 2px dashed var(--primary);
         }
 
-        .bin-active { border-color: var(--success) !important; background: #f0fdf4 !important; transform: scale(1.05); }
+        .recipe-item { font-size: 0.9rem; color: var(--primary); display: flex; flex-direction: column; align-items: center; }
+        .recipe-count { font-size: 1.2rem; margin-bottom: 2px; }
 
-        /* Shape CSS */
-        .shape { width: 45px; height: 45px; position: absolute; cursor: grab; z-index: 10; user-select: none; }
+        #collection-zone {
+            width: 200px; height: 100px; background: #faf5ff; border: 4px solid #d8b4fe;
+            margin: 0 auto 15px; border-radius: 20px; position: relative;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; overflow: hidden;
+        }
+
+        .shape { width: 40px; height: 40px; position: absolute; cursor: grab; z-index: 10; transition: transform 0.1s; }
         
-        .circle { background: #ef4444; border-radius: 50%; }
-        .square { background: #3b82f6; border-radius: 6px; }
-        .triangle { 
-            background: none !important; width: 0; height: 0; 
-            border-left: 23px solid transparent; border-right: 23px solid transparent; 
-            border-bottom: 40px solid #facc15; 
+        /* Shape Visuals */
+        .star { 
+            background: #facc15; 
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
         }
+        .triangle { 
+            background: #22c55e; 
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .square { background: #3b82f6; border-radius: 4px; }
 
-        .placed { pointer-events: none; position: static !important; transform: scale(0.6) !important; animation: pop 0.3s ease-out; }
-        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(0.6); } }
+        .placed { pointer-events: none; position: static !important; transform: scale(0.6) !important; margin: -5px; }
 
-        .tray { height: 160px; background: #f8fafc; border-radius: 25px; position: relative; border: 3px solid #cbd5e1; overflow: hidden; }
-        .instruction { font-size: 1.2rem; color: #1e1b4b; margin-bottom: 10px; }
+        .tray { height: 180px; background: #fdf4ff; border-radius: 20px; position: relative; border: 2px solid #f5d0fe; overflow: hidden; }
+        .level-text { color: #a21caf; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="game-card">
-    <div id="lvl-text" class="level-badge">LEVEL 1: EASY</div>
-    <div class="instruction">Find 5 <span id="target-name">Shapes</span></div>
+    <div id="recipe" class="recipe-box">
+        </div>
     
-    <div id="shape-bin"></div>
+    <div id="collection-zone"></div>
     <div class="tray" id="tray"></div>
-
-    <div style="margin-top:15px; color:#64748b; font-size:0.9rem">STARS: <span id="cur-count" style="color:var(--primary)">0</span> / 5</div>
+    <div id="level-indicator" class="level-text">LEVEL 1: MIXED COUNTING</div>
 </div>
 
 <script>
     const audio = new (window.AudioContext || window.webkitAudioContext)();
-    const shapeTypes = ['circle', 'square', 'triangle'];
     let level = 1;
-    let targetShape = '';
-    let count = 0;
+    let currentRecipe = {};
+    let collected = {};
     let shapesInPlay = [];
 
     function playTone(f, dur=0.2) {
@@ -76,75 +77,77 @@
     }
 
     function init() {
-        count = 0;
-        shapesInPlay = [];
-        document.getElementById('cur-count').innerText = count;
-        document.getElementById('shape-bin').innerHTML = '';
-        document.getElementById('shape-bin').classList.remove('bin-active');
         const tray = document.getElementById('tray');
-        tray.innerHTML = '';
+        const recipeEl = document.getElementById('recipe');
+        const zone = document.getElementById('collection-zone');
+        tray.innerHTML = ''; recipeEl.innerHTML = ''; zone.innerHTML = '';
+        shapesInPlay = [];
+        
+        // Define targets based on your request
+        currentRecipe = { triangle: 2, star: 1, square: 3 };
+        collected = { triangle: 0, star: 0, square: 0 };
+        const totalToCollect = 6; // 2+1+3
 
-        // Set Level Difficulty
-        const lvlBadge = document.getElementById('lvl-text');
-        if(level === 1) lvlBadge.innerText = "LEVEL 1: EASY";
-        else if(level === 2) lvlBadge.innerText = "LEVEL 2: MIXED";
-        else lvlBadge.innerText = "LEVEL 3: MOVING!";
+        // Display Recipe
+        for (const [shape, qty] of Object.entries(currentRecipe)) {
+            const item = document.createElement('div');
+            item.className = 'recipe-item';
+            item.innerHTML = `<span class="recipe-count" id="count-${shape}">0/${qty}</span><div class="shape ${shape}" style="position:static; transform:scale(0.5)"></div>`;
+            recipeEl.appendChild(item);
+        }
 
-        // Pick Target
-        targetShape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-        const nameEl = document.getElementById('target-name');
-        nameEl.innerText = targetShape.toUpperCase() + 'S';
-        nameEl.style.color = (targetShape === 'circle' ? '#ef4444' : targetShape === 'square' ? '#3b82f6' : '#eab308');
+        // Spawn logic: Spawn required + extra distractors as level increases
+        const spawnCount = totalToCollect + (level * 2);
+        const types = ['triangle', 'star', 'square'];
 
-        // Spawn logic
-        const totalToSpawn = level === 1 ? 5 : 10;
-        for(let i=0; i < totalToSpawn; i++) {
+        for(let i=0; i < spawnCount; i++) {
             const s = document.createElement('div');
-            let type;
-            if(level === 1) type = targetShape;
-            else type = i < 5 ? targetShape : shapeTypes.filter(x => x !== targetShape)[Math.floor(Math.random()*2)];
-
+            const type = types[i % 3];
             s.className = `shape ${type}`;
             s.dataset.type = type;
-            s.style.left = Math.random() * 250 + 'px';
-            s.style.top = Math.random() * 100 + 'px';
             
             const data = {
                 el: s,
-                x: Math.random() * 250,
-                y: Math.random() * 100,
-                vx: (Math.random() - 0.5) * (level === 3 ? 3 : 0),
-                vy: (Math.random() - 0.5) * (level === 3 ? 3 : 0),
+                x: Math.random() * 260,
+                y: Math.random() * 120,
+                vx: (Math.random() - 0.5) * (level - 1),
+                vy: (Math.random() - 0.5) * (level - 1),
+                rot: 0,
+                vr: (Math.random() - 0.5) * (level * 2),
                 active: true
             };
 
+            s.style.left = data.x + 'px';
+            s.style.top = data.y + 'px';
             s.onpointerdown = (e) => startDrag(e, data);
             tray.appendChild(s);
             shapesInPlay.push(data);
         }
-        if(level === 3) requestAnimationFrame(updatePhysics);
+        if(level > 1) requestAnimationFrame(updatePhysics);
     }
 
     function updatePhysics() {
-        if(level !== 3) return;
         shapesInPlay.forEach(s => {
             if(!s.active) return;
-            s.x += s.vx; s.y += s.vy;
-            if(s.x < 0 || s.x > 260) s.vx *= -1;
-            if(s.y < 0 || s.y > 110) s.vy *= -1;
+            s.x += s.vx; s.y += s.vy; s.rot += s.vr;
+            if(s.x < 0 || s.x > 280) s.vx *= -1;
+            if(s.y < 0 || s.y > 140) s.vy *= -1;
             s.el.style.left = s.x + 'px';
             s.el.style.top = s.y + 'px';
+            s.el.style.transform = `rotate(${s.rot}deg)`;
         });
-        requestAnimationFrame(updatePhysics);
+        if(level > 1) requestAnimationFrame(updatePhysics);
     }
 
     function startDrag(e, data) {
         const el = data.el;
-        data.active = false; // Stop physics while dragging
+        data.active = false;
         el.setPointerCapture(e.pointerId);
         const sX = e.clientX, sY = e.clientY, oX = el.offsetLeft, oY = el.offsetTop;
 
         const onMove = (me) => {
+            el.style.left = (oX + (me.clientX - sX)) + 'px';
+            el.style.top = (oY + (me.clientY - startY)) + 'px'; // Note: simplified Y
             el.style.left = (oX + (me.clientX - sX)) + 'px';
             el.style.top = (oY + (me.clientY - sY)) + 'px';
         };
@@ -152,34 +155,38 @@
         const onUp = (ue) => {
             el.removeEventListener('pointermove', onMove);
             el.removeEventListener('pointerup', onUp);
-            const bin = document.getElementById('shape-bin');
-            const r = bin.getBoundingClientRect();
+            const r = document.getElementById('collection-zone').getBoundingClientRect();
             
             if (ue.clientX > r.left && ue.clientX < r.right && ue.clientY > r.top && ue.clientY < r.bottom) {
-                if(el.dataset.type === targetShape) {
-                    count++;
-                    document.getElementById('cur-count').innerText = count;
+                const type = el.dataset.type;
+                if(collected[type] < currentRecipe[type]) {
+                    collected[type]++;
+                    document.getElementById(`count-${type}`).innerText = `${collected[type]}/${currentRecipe[type]}`;
                     el.classList.add('placed');
-                    bin.appendChild(el);
-                    bin.classList.add('bin-active');
-                    setTimeout(() => bin.classList.remove('bin-active'), 300);
-                    playTone(400 + (count * 100));
-
-                    if(count === 5) {
-                        playTone(800, 0.4);
-                        level = level < 3 ? level + 1 : 1;
-                        setTimeout(init, 1500);
-                    }
+                    el.style.transform = 'scale(0.6)';
+                    document.getElementById('collection-zone').appendChild(el);
+                    playTone(400 + (Object.values(collected).reduce((a,b)=>a+b) * 100));
+                    checkWin();
                 } else {
-                    playTone(100, 0.3); // Error sound
+                    playTone(150); // Too many!
                     data.active = true;
                 }
             } else {
-                data.active = true; // Resume physics
+                data.active = true;
             }
         };
         el.addEventListener('pointermove', onMove);
         el.addEventListener('pointerup', onUp);
+    }
+
+    function checkWin() {
+        const win = Object.keys(currentRecipe).every(k => collected[k] === currentRecipe[k]);
+        if(win) {
+            playTone(800, 0.5);
+            level++;
+            document.getElementById('level-indicator').innerText = `LEVEL ${level}: GETTING HARDER!`;
+            setTimeout(init, 2000);
+        }
     }
 
     init();
