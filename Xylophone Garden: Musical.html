@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylophone Garden: Musical 1-5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #fdf4ff; --border: #701a75; }
+        body { margin: 0; background: #fae8ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        .game-app { 
+            width: 100%; max-width: 320px; font-family: 'Fredoka One', cursive; 
+            background: var(--bg); padding: 20px; border-radius: 30px; border: 5px solid var(--border);
+            position: relative; touch-action: none; text-align: center; box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+
+        /* The Xylophone Bars */
+        .xylo-container { 
+            display: flex; flex-direction: column; gap: 8px; align-items: center; 
+            margin: 20px 0; padding: 15px; background: #f5d0fe; border-radius: 20px;
+        }
+
+        .bar {
+            height: 35px; border-radius: 10px; border: 3px solid rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem; transition: transform 0.2s;
+        }
+        /* Gradient bars sizing */
+        .bar-1 { width: 90%; background: #ef4444; }
+        .bar-2 { width: 80%; background: #f97316; }
+        .bar-3 { width: 70%; background: #facc15; }
+        .bar-4 { width: 60%; background: #22c55e; }
+        .bar-5 { width: 50%; background: #3b82f6; }
+
+        .flower {
+            width: 45px; height: 45px; position: absolute; cursor: grab;
+            display: flex; align-items: center; justify-content: center; font-size: 30px;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); z-index: 10;
+        }
+        .flower:active { transform: scale(1.2); }
+        .planted { pointer-events: none; position: relative !important; left: 0 !important; top: 0 !important; transform: scale(0.8); }
+
+        .target-text { color: var(--border); font-size: 1.4rem; margin-bottom: 10px; }
+        #grass { height: 100px; position: relative; background: #f0abfc; border-radius: 15px; margin-top: 15px; overflow: hidden; }
+    </style>
+</head>
+<body>
+
+<div class="game-app">
+    <div class="target-text">Plant 5 Sound Flowers!</div>
+    
+    <div class="xylo-container">
+        <div id="bar-1" class="bar bar-1" data-num="1">1</div>
+        <div id="bar-2" class="bar bar-2" data-num="2">2</div>
+        <div id="bar-3" class="bar bar-3" data-num="3">3</div>
+        <div id="bar-4" class="bar bar-4" data-num="4">4</div>
+        <div id="bar-5" class="bar bar-5" data-num="5">5</div>
+    </div>
+
+    <div id="grass"></div>
+    <div style="margin-top:10px; font-size:0.8rem; color:#a21caf;">DRAG COLORS TO NUMBERS</div>
+</div>
+
+<script>
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [261.63, 293.66, 329.63, 349.23, 392.00]; // C4 to G4
+
+    function playNote(freq, dur=0.4) {
+        const o=audio.createOscillator(), g=audio.createGain();
+        o.type='sine'; o.frequency.value=freq; g.gain.value=0.1;
+        o.connect(g); g.connect(audio.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+dur);
+        o.stop(audio.currentTime+dur);
+    }
+
+    let plantedCount = 0;
+    const grass = document.getElementById('grass');
+
+    function init() {
+        plantedCount = 0;
+        grass.innerHTML = '';
+        const colors = ['#ef4444','#f97316','#facc15','#22c55e','#3b82f6'];
+        
+        // Clear bars
+        document.querySelectorAll('.bar').forEach(b => {
+            b.style.filter = 'grayscale(0.8)';
+            b.innerText = b.dataset.num;
+        });
+
+        // Create 5 unique flowers
+        for(let i=1; i<=5; i++) {
+            const f = document.createElement('div');
+            f.className = 'flower'; f.innerText = '🌸';
+            f.style.color = colors[i-1];
+            f.style.left = (20 + (i-1)*50) + 'px';
+            f.style.top = '25px';
+            f.dataset.num = i;
+            f.onpointerdown = startDrag;
+            grass.appendChild(f);
+        }
+    }
+
+    function startDrag(e) {
+        const el = e.target; el.setPointerCapture(e.pointerId);
+        const startX = e.clientX, startY = e.clientY, origX = el.offsetLeft, origY = el.offsetTop;
+
+        const onMove = (me) => {
+            el.style.left = (origX + (me.clientX - startX)) + 'px';
+            el.style.top = (origY + (me.clientY - startY)) + 'px';
+        };
+
+        const onUp = (ue) => {
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerup', onUp);
+            
+            const targetBar = document.getElementById(`bar-${el.dataset.num}`);
+            const tRect = targetBar.getBoundingClientRect();
+            
+            if (ue.clientX > tRect.left && ue.clientX < tRect.right && 
+                ue.clientY > tRect.top && ue.clientY < tRect.bottom) {
+                plant(el, targetBar);
+            } else {
+                el.style.left = (20 + (el.dataset.num-1)*50) + 'px';
+                el.style.top = '25px';
+            }
+        };
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerup', onUp);
+    }
+
+    function plant(flower, bar) {
+        plantedCount++;
+        flower.classList.add('planted');
+        bar.innerText = '';
+        bar.appendChild(flower);
+        bar.style.filter = 'none';
+        bar.style.transform = 'scale(1.05)';
+        setTimeout(() => bar.style.transform = 'scale(1)', 200);
+        
+        playNote(notes[flower.dataset.num - 1]);
+
+        if(plantedCount === 5) {
+            setTimeout(winCelebration, 500);
+        }
+    }
+
+    function winCelebration() {
+        notes.forEach((n, i) => {
+            setTimeout(() => {
+                playNote(n, 0.6);
+                document.getElementById(`bar-${i+1}`).style.transform = 'scale(1.1)';
+                setTimeout(() => document.getElementById(`bar-${i+1}`).style.transform = 'scale(1)', 200);
+            }, i * 200);
+        });
+        setTimeout(init, 3000);
+    }
+
+    init();
+</script>
+</body>
+</html>
