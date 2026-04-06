@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Counting to 10 Game for Kids</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DD5B9L9ZCR"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-DD5B9L9ZCR');
+</script>
+
+<style>
+body {
+  text-align: center;
+  font-family: Arial;
+  background: #f0f8ff;
+}
+h1 { font-size: 32px; }
+#game {
+  margin-top: 20px;
+}
+.item {
+  font-size: 50px;
+  margin: 10px;
+  cursor: pointer;
+}
+#message {
+  font-size: 30px;
+  margin-top: 20px;
+}
+button {
+  padding: 10px 20px;
+  font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Counting to 10 Game</h1>
+<p>Tap each item and count along!</p>
+
+<div id="game"></div>
+<div id="message"></div>
+<button onclick="startGame()">Start Game</button>
+
+<script>
+let count = 0;
+let total = 0;
+
+function startGame() {
+  const game = document.getElementById("game");
+  const message = document.getElementById("message");
+
+  game.innerHTML = "";
+  message.innerHTML = "";
+
+  count = 0;
+  total = Math.floor(Math.random() * 10) + 1;
+
+  for (let i = 0; i < total; i++) {
+    let item = document.createElement("span");
+    item.innerHTML = "🍎";
+    item.className = "item";
+    item.onclick = function() {
+      this.style.visibility = "hidden";
+      count++;
+      speak(count);
+
+      if (count === total) {
+        message.innerHTML = "Great job! 🎉 You counted " + total;
+      }
+    };
+    game.appendChild(item);
+  }
+}
+
+function speak(number) {
+  let speech = new SpeechSynthesisUtterance(number.toString());
+  speech.lang = "en-US";
+  window.speechSynthesis.speak(speech);
+}
+</script>
+
+</body>
+</html>
