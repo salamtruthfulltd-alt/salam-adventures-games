@@ -3,60 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Catcher: Put 5 Stars on the Moon</title>
+    <title>Star Catcher: Encouragement Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
-        :root { --night: #0f172a; --star: #fef08a; --moon: #f8fafc; }
+        :root { --night: #0f172a; --star-color: #facc15; --circle-color: #f8fafc; }
+        body { margin: 0; background: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+
         .game-app { 
-            width: 100%; max-width: 320px; margin: 10px auto; 
-            font-family: 'Fredoka One', cursive; background: var(--night); 
-            padding: 20px; border-radius: 30px; border: 5px solid #334155;
-            position: relative; touch-action: none; overflow: hidden; text-align: center;
+            width: 100%; max-width: 340px; font-family: 'Fredoka One', cursive; 
+            background: var(--night); padding: 25px; border-radius: 35px; border: 6px solid #334155;
+            position: relative; touch-action: none; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.5);
         }
 
-        /* The Full Moon Drop Zone (Replaced Crescent) */
-        #moon-target {
-            width: 130px; height: 130px; background: var(--moon);
-            border-radius: 50%; margin: 0 auto 25px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 35px rgba(255,255,255,0.4);
-            font-size: 50px; position: relative;
+        #target-circle {
+            width: 150px; height: 150px; background: var(--circle-color); border-radius: 50%; 
+            margin: 0 auto 25px; position: relative; box-shadow: 0 0 40px rgba(255,255,255,0.3);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .star {
-            font-size: 45px; cursor: grab; position: absolute;
-            user-select: none; touch-action: none; z-index: 10;
-            filter: drop-shadow(0 0 10px #facc15);
+            width: 45px; height: 45px; background: var(--star-color);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            position: absolute; cursor: grab; user-select: none; touch-action: none; z-index: 10;
         }
         
-        .star:active { transform: scale(1.3); cursor: grabbing; }
-        .caught { pointer-events: none; opacity: 0.5; transform: scale(0.6) !important; }
+        .caught { 
+            pointer-events: none; position: absolute !important; transform: scale(0.6) !important;
+            filter: drop-shadow(0 0 8px gold);
+            animation: shimmer 1s infinite alternate;
+        }
 
-        .ui-label { color: #94a3b8; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; }
-        .target-text { color: var(--star); font-size: 1.8rem; margin: 0 0 15px 0; }
-        .counter { color: white; font-size: 1.2rem; margin-top: 20px; }
-        
-        /* Celebration Sparkle */
-        .sparkle {
-            position: absolute; width: 5px; height: 5px; background: white;
-            border-radius: 50%; animation: burst 0.6s ease-out forwards;
+        @keyframes shimmer { from { filter: brightness(1) drop-shadow(0 0 5px gold); } to { filter: brightness(1.3) drop-shadow(0 0 12px white); } }
+
+        .confetti {
+            position: absolute; width: 8px; height: 8px; z-index: 100;
+            animation: fall 2s ease-out forwards;
         }
-        @keyframes burst { 
-            0% { transform: scale(1); opacity: 1; } 
-            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; } 
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(250px) rotate(720deg); opacity: 0; }
         }
+
+        .target-text { color: var(--star-color); font-size: 1.6rem; margin: 0 0 15px 0; line-height: 1.2; }
+        .counter { color: white; font-size: 1.1rem; margin-top: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
 <div class="game-app">
-    <div class="ui-label">Magic Goal</div>
-    <div class="target-text">Put 5 Stars on the Moon</div>
-    
-    <div id="moon-target">🌕</div>
-
-    <div id="sky" style="height: 160px; position: relative; background: rgba(255,255,255,0.05); border-radius: 20px;">
-        </div>
-
-    <div class="counter">STARS: <span id="current-count" style="color:var(--star)">0</span></div>
+    <div class="target-text">Place 5 Stars Inside the Circle</div>
+    <div id="target-circle"></div>
+    <div id="sky-area" style="height: 160px; position: relative; background: rgba(255,255,255,0.03); border-radius: 20px; border: 2px dashed #334155;"></div>
+    <div class="counter">STARS: <span id="current-count" style="color:var(--star-color)">0</span> / 5</div>
 </div>
+
+<script>
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playSound(f, type='sine', dur=0.3, vol=0.1) {
+        const o=audio.createOscillator(), g=audio.createGain();
+        o.type=type; o.frequency.value=f; g.gain.value=vol;
+        o.connect(g); g.connect(audio.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime+dur);
+        o.stop(audio.currentTime+dur);
+    }
+
+    function playEncouragement(isSuccess, count=0) {
+        if(isSuccess) {
+            // Rising chime for "Good job!"
+            playSound(400 + (count * 100), 'sine', 0.4, 0.15);
+            setTimeout(() => playSound(600 + (count * 100), 'sine', 0.2, 0.1), 50);
+        } else {
+            // Gentle low "Try again" bloop
+            playSound(200, 'triangle', 0.3, 0.05);
+        }
+    }
+
+    function playBigWin() {
+        // Grand finale clapping and cheering synth
+        for(let i=0; i<20; i++) {
+            setTimeout(() => {
+                playSound(500 + Math.random()*800, 'sine', 0.15, 0.04);
+                if(i % 2 === 0) playSound(150, 'sawtooth', 0.1, 0.02); // tiny "clap" sound
+            }, i * 70);
+        }
+    }
+
+    const goal=5; let has=0;
+    const sky = document.getElementById('sky-area');
+    const circle = document.getElementById('target-circle');
+
+    function init() {
+        has = 0; document.getElementById('current-count').innerText = has;
+        sky.innerHTML = ''; circle.innerHTML = '';
+        circle.style.transform = "scale(1)";
+        for(let i=0; i<6; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.left = Math.random() * 240 + 'px';
+            s.style.top = Math.random() * 100 + 'px';
+            s.onpointerdown = startDrag;
+            sky.appendChild(s);
+        }
+    }
+
+    function startDrag(e) {
+        const el = e.target; el.setPointerCapture(e.pointerId);
+        const startX = e.clientX, startY = e.clientY, origX = el.offsetLeft, origY = el.offsetTop;
+        
+        // Grab sound
+        playSound(800, 'sine', 0.05, 0.02);
+
+        const onMove = (me) => {
+            el.style.left = (origX + (me.clientX - startX)) + 'px';
+            el.style.top = (origY + (me.clientY - startY)) + 'px';
+        };
+
+        const onUp = (ue) => {
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerup', onUp);
+            const mRect = circle.getBoundingClientRect();
+            
+            if (ue.clientX > mRect.left && ue.clientX < mRect.right && ue.clientY > mRect.top && ue.clientY < mRect.bottom) {
+                placeStar(el, ue.clientX - mRect.left, ue.clientY - mRect.top);
+            } else {
+                playEncouragement(false);
+                el.style.left = Math.random() * 240 + 'px'; el.style.top = Math.random() * 100 + 'px';
+            }
+        };
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerup', onUp);
+    }
+
+    function placeStar(el, dropX, dropY) {
+        has++;
+        document.getElementById('current-count').innerText = has;
+        el.classList.add('caught');
+        circle.appendChild(el);
+        el.style.left = (dropX - 15) + 'px'; el.style.top = (dropY - 15) + 'px';
+        
+        // Dynamic encouragement sound
+        playEncouragement(true, has);
+
+        if(has === goal) {
+            circle.style.transform = "scale(1.2)";
+            playBigWin();
+            makeConfetti();
+            setTimeout(init, 3500);
+        }
+    }
+
+    function makeConfetti() {
+        const colors = ['#facc15', '#4ade80', '#60a5fa', '#f87171', '#c084fc'];
+        for(let i=0; i<50; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.background = colors[Math.floor(Math.random()*colors.length)];
+            c.style.left = Math.random() * 100 + '%';
+            c.style.top = '-20px';
+            document.querySelector('.game-app').appendChild(c);
+            setTimeout(() => c.remove(), 2000);
+        }
+    }
+    init();
+</script>
+</body>
+</html>
