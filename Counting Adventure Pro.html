@@ -3,203 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counting Quest Mini</title>
+    <title>Counting Quest Micro</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --cabinet: #2563eb;
-            --screen-bg: #f0f9ff;
-            --text: #0c4a6e;
-        }
-
-        /* Responsive Wrapper for Website Integration */
-        .game-wrapper {
-            max-width: 500px; /* Compact width */
-            margin: 20px auto;
+        :root { --blue: #2563eb; --dark: #1e293b; --bg: #f0f9ff; }
+        
+        /* The Wrapper: Set this to 100% if putting in a small div, or 350px for a sidebar */
+        .game-widget {
+            width: 100%;
+            max-width: 350px; 
+            margin: 10px auto;
             font-family: 'Nunito', sans-serif;
-            text-align: center;
+            user-select: none;
         }
 
-        .seo-mini {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
+        /* Arcade Casing */
+        .arcade-card {
+            background: var(--blue);
+            border-radius: 24px;
+            padding: 12px;
+            border-bottom: 6px solid #1d4ed8;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
-        /* Compact Arcade Cabinet */
-        .arcade-mini {
-            background: var(--cabinet);
-            border-radius: 30px;
-            padding: 15px;
-            border: 6px solid #1d4ed8;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            position: relative;
-        }
-
-        .screen-mini {
-            background: var(--screen-bg);
-            border: 8px solid #1e293b;
-            border-radius: 15px;
-            height: 380px; /* Fixed height for consistency */
+        /* Fixed Game Screen */
+        .screen {
+            background: var(--bg);
+            border: 6px solid var(--dark);
+            border-radius: 16px;
+            height: 320px;
+            position: relative; /* Keeps pop-ups inside */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px;
+            justify-content: space-around;
             overflow: hidden;
+            padding: 10px;
         }
 
-        .target-num {
-            font-family: 'Fredoka One', cursive;
-            font-size: 4rem;
-            color: #2563eb;
-            margin: 0;
+        .target-display {
+            text-align: center;
+            line-height: 1;
         }
 
-        .item-grid {
+        .target-display span { font-size: 0.7rem; color: #64748b; font-weight: 900; display: block; }
+        .target-display h1 { font-family: 'Fredoka One'; font-size: 3.5rem; color: var(--blue); margin: 0; }
+
+        .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
+            gap: 6px;
             width: 100%;
         }
 
         .item {
-            font-size: 35px;
+            font-size: 32px;
             cursor: pointer;
-            transition: 0.1s;
-            user-select: none;
+            text-align: center;
+            transition: transform 0.1s;
         }
 
-        .item.collected { 
-            opacity: 0.1; 
-            pointer-events: none; 
-            transform: scale(0.5);
+        .item.done { opacity: 0.1; pointer-events: none; transform: scale(0.7); }
+
+        /* Buttons */
+        .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+        .btn {
+            flex: 1; padding: 10px; border: none; border-radius: 15px;
+            font-family: 'Fredoka One'; color: white; cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2); font-size: 0.9rem;
         }
+        .btn-go { background: #22c55e; }
+        .btn-no { background: #ef4444; }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
 
-        .controls-mini {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-mini {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 20px;
-            font-family: 'Fredoka One';
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-        }
-
-        .btn-green { background: #22c55e; }
-        .btn-red { background: #ef4444; }
-        .btn-mini:active { transform: translateY(3px); box-shadow: none; }
-
-        .count-pop {
+        /* Pop-up animation restricted to screen */
+        .pop {
             position: absolute;
             font-family: 'Fredoka One';
             color: #fbbf24;
             pointer-events: none;
-            animation: popUp 0.5s ease-out forwards;
-            z-index: 10;
+            animation: up 0.5s ease-out forwards;
+            font-size: 1.5rem;
         }
-
-        @keyframes popUp { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.5); } }
+        @keyframes up { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-40px); } }
+        
+        .seo-tag { font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<div class="game-wrapper">
-    <div class="seo-mini">
-        <strong style="color:#2563eb">Counting Quest:</strong> An interactive 1-10 math game for preschoolers. Practice number recognition and motor skills!
-    </div>
+<div class="game-widget">
+    <div class="arcade-card">
+        <div class="screen" id="stage">
+            <div class="target-display">
+                <span>COLLECT</span>
+                <h1 id="num">?</h1>
+            </div>
 
-    <div class="arcade-mini">
-        <div class="screen-mini" id="gameScreen">
-            <div style="font-size: 0.8rem; font-weight: 900; color: #64748b;">COLLECT EXACTLY:</div>
-            <h1 class="target-num" id="target">?</h1>
+            <div class="grid" id="box"></div>
             
-            <div class="item-grid" id="grid"></div>
-            
-            <div style="font-weight: 900; color: #1e293b;">
-                COUNTED: <span id="liveCount" style="color:#2563eb">0</span>
+            <div style="font-weight: 900; font-size: 0.8rem;">
+                COUNT: <span id="cur" style="color:var(--blue)">0</span>
             </div>
         </div>
 
-        <div class="controls-mini">
-            <button class="btn-mini btn-red" onclick="resetGame()">RESET</button>
-            <button class="btn-mini btn-green" onclick="checkFinal()">SUBMIT</button>
+        <div class="btn-row">
+            <button class="btn btn-no" onclick="reset()">CLR</button>
+            <button class="btn btn-go" onclick="check()">SUBMIT</button>
         </div>
     </div>
-
-    <div class="seo-mini" style="margin-top:15px; font-size:0.8rem">
-        Levels & Sounds Included • Fun Early Numeracy Tool • No Download Required
-    </div>
+    <div class="seo-tag"><b>Counting Quest:</b> Early Math Learning Game</div>
 </div>
 
 <script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playNote(freq, type = 'sine', vol = 0.05, duration = 0.1) {
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        g.gain.setValueAtTime(vol, audioCtx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(g); g.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + duration);
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(f, t='sine') {
+        const o=audio.createOscillator(), g=audio.createGain();
+        o.type=t; o.frequency.value=f; g.gain.value=0.05;
+        o.connect(g); g.connect(audio.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+0.1);
+        o.stop(audio.currentTime+0.1);
     }
 
-    const state = { target: 0, count: 0, emojis: ['🍎', '🐸', '🚀', '🐱', '🍦', '🐼'] };
+    let goal=0, has=0;
+    const icons = ['🍎','⭐','🐸','🚀','🐱','🍦'];
 
-    function initLevel() {
-        state.target = Math.floor(Math.random() * 8) + 2;
-        state.count = 0;
-        const emoji = state.emojis[Math.floor(Math.random() * state.emojis.length)];
-        document.getElementById('target').textContent = state.target;
-        document.getElementById('liveCount').textContent = "0";
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '';
-        for (let i = 0; i < 10; i++) {
-            const el = document.createElement('div');
-            el.className = 'item'; el.textContent = emoji;
-            el.onclick = (e) => handleItemClick(e, el);
-            grid.appendChild(el);
+    function start() {
+        goal = Math.floor(Math.random()*9)+2;
+        has = 0;
+        const icon = icons[Math.floor(Math.random()*icons.length)];
+        document.getElementById('num').innerText = goal;
+        document.getElementById('cur').innerText = "0";
+        const b = document.getElementById('box');
+        b.innerHTML = '';
+        for(let i=0; i<10; i++) {
+            const d = document.createElement('div');
+            d.className='item'; d.innerText=icon;
+            d.onclick=(e)=>hit(e, d);
+            b.appendChild(d);
         }
     }
 
-    function handleItemClick(e, el) {
-        if (el.classList.contains('collected')) return;
-        state.count++;
-        el.classList.add('collected');
-        document.getElementById('liveCount').textContent = state.count;
-        playNote(300 + (state.count * 50));
+    function hit(e, d) {
+        if(d.classList.contains('done')) return;
+        has++;
+        d.classList.add('done');
+        document.getElementById('cur').innerText = has;
+        beep(300+(has*40));
         
-        const pop = document.createElement('div');
-        pop.className = 'count-pop'; pop.textContent = state.count;
-        pop.style.left = (e.clientX - 15) + 'px'; pop.style.top = (e.clientY - 30) + 'px';
-        document.body.appendChild(pop);
-        setTimeout(() => pop.remove(), 500);
+        // Pop-up logic relative to the screen container
+        const p = document.createElement('div');
+        p.className='pop'; p.innerText=has;
+        const rect = document.getElementById('stage').getBoundingClientRect();
+        p.style.left = (e.clientX - rect.left - 10) + 'px';
+        p.style.top = (e.clientY - rect.top - 20) + 'px';
+        document.getElementById('stage').appendChild(p);
+        setTimeout(()=>p.remove(), 500);
     }
 
-    function resetGame() { playNote(200, 'sawtooth'); initLevel(); }
+    function reset() { beep(200,'sawtooth'); start(); }
 
-    function checkFinal() {
-        const s = document.getElementById('gameScreen');
-        if (state.count === state.target) {
-            playNote(523); setTimeout(() => playNote(783), 100);
-            s.style.background = '#dcfce7';
-            setTimeout(() => { s.style.background = '#f0f9ff'; initLevel(); }, 600);
+    function check() {
+        const s = document.getElementById('stage');
+        if(has === goal) {
+            beep(500); setTimeout(()=>beep(800), 100);
+            s.style.background='#dcfce7';
+            setTimeout(()=>{s.style.background='#f0f9ff'; start();}, 600);
         } else {
-            playNote(100, 'sawtooth');
-            s.style.background = '#fee2e2';
-            setTimeout(() => { s.style.background = '#f0f9ff'; resetGame(); }, 600);
+            beep(100,'sawtooth');
+            s.style.background='#fee2e2';
+            setTimeout(()=>{s.style.background='#f0f9ff'; reset();}, 600);
         }
     }
 
-    initLevel();
+    start();
 </script>
 </body>
 </html>
