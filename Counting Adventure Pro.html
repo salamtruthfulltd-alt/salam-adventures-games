@@ -3,239 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counting Quest: Fit-to-Screen Edition</title>
+    <title>Counting Quest Mini</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800&display=swap" rel="stylesheet">
     <style>
         :root {
             --cabinet: #2563eb;
-            --screen-border: #1e293b;
             --screen-bg: #f0f9ff;
-            --btn-red: #ef4444;
-            --btn-green: #22c55e;
             --text: #0c4a6e;
         }
 
-        body {
-            margin: 0;
-            height: 100vh;
-            background: #0f172a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Responsive Wrapper for Website Integration */
+        .game-wrapper {
+            max-width: 500px; /* Compact width */
+            margin: 20px auto;
             font-family: 'Nunito', sans-serif;
-            overflow: hidden; /* Prevents scrollbars */
-        }
-
-        /* Responsive Arcade Cabinet */
-        .arcade-container {
-            width: 95%;
-            max-width: 800px; /* Limits width on ultra-wide screens */
-            height: 95vh; /* Scales based on screen height */
-            max-height: 850px; /* Prevents it from becoming gargantuan */
-            background: var(--cabinet);
-            border-radius: 40px;
-            border: 8px solid #1d4ed8;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        .marquee {
             text-align: center;
-            background: #1e293b;
-            margin: -20px -20px 15px -20px;
-            padding: 10px;
-            border-radius: 32px 32px 0 0;
-            color: #fbbf24;
-            font-family: 'Fredoka One', cursive;
-            font-size: clamp(1.2rem, 4vh, 2rem); /* Fluid typography */
-            border-bottom: 4px solid #fbbf24;
         }
 
-        .screen {
-            flex: 1;
-            background: var(--screen-bg);
-            border: 10px solid var(--screen-border);
-            border-radius: 20px;
+        .seo-mini {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        /* Compact Arcade Cabinet */
+        .arcade-mini {
+            background: var(--cabinet);
+            border-radius: 30px;
+            padding: 15px;
+            border: 6px solid #1d4ed8;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             position: relative;
+        }
+
+        .screen-mini {
+            background: var(--screen-bg);
+            border: 8px solid #1e293b;
+            border-radius: 15px;
+            height: 380px; /* Fixed height for consistency */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            padding: 10px;
             overflow: hidden;
-            padding: 10px;
         }
 
-        .stats {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 15px;
-            font-size: clamp(0.9rem, 2vh, 1.2rem);
-            color: var(--text);
-            box-sizing: border-box;
-        }
-
-        .target-number {
+        .target-num {
             font-family: 'Fredoka One', cursive;
-            font-size: clamp(4rem, 15vh, 7rem);
-            margin: 0;
+            font-size: 4rem;
             color: #2563eb;
+            margin: 0;
         }
 
-        .play-area {
-            flex: 1;
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
             width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
         }
 
         .item {
-            font-size: clamp(40px, 8vh, 70px);
+            font-size: 35px;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: 0.1s;
             user-select: none;
         }
 
         .item.collected { 
-            opacity: 0.15; 
+            opacity: 0.1; 
             pointer-events: none; 
-            transform: scale(0.6);
-            filter: grayscale(1);
+            transform: scale(0.5);
         }
 
-        .control-deck {
-            height: 15%;
-            min-height: 80px;
+        .controls-mini {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
             gap: 10px;
+            margin-top: 15px;
         }
 
-        .joystick-btn {
+        .btn-mini {
             flex: 1;
-            max-width: 200px;
-            height: 60%;
+            padding: 12px;
             border: none;
-            border-radius: 30px;
-            font-family: 'Fredoka One', cursive;
-            font-size: clamp(0.8rem, 2vh, 1.2rem);
+            border-radius: 20px;
+            font-family: 'Fredoka One';
             color: white;
             cursor: pointer;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
-            transition: 0.1s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
         }
 
-        .btn-clear { background: var(--btn-red); }
-        .btn-submit { background: var(--btn-green); }
-        
-        .joystick-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
-        }
-
-        #counter-msg {
-            font-size: clamp(1rem, 3vh, 1.5rem);
-            color: #1e293b;
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
+        .btn-green { background: #22c55e; }
+        .btn-red { background: #ef4444; }
+        .btn-mini:active { transform: translateY(3px); box-shadow: none; }
 
         .count-pop {
             position: absolute;
             font-family: 'Fredoka One';
-            font-size: 3rem;
             color: #fbbf24;
             pointer-events: none;
-            animation: floatUp 0.6s ease-out forwards;
-            z-index: 100;
+            animation: popUp 0.5s ease-out forwards;
+            z-index: 10;
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100px); opacity: 0; }
-        }
+        @keyframes popUp { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.5); } }
     </style>
 </head>
 <body>
 
-<div class="arcade-container">
-    <div class="marquee">COUNTING QUEST</div>
+<div class="game-wrapper">
+    <div class="seo-mini">
+        <strong style="color:#2563eb">Counting Quest:</strong> An interactive 1-10 math game for preschoolers. Practice number recognition and motor skills!
+    </div>
 
-    <div class="screen" id="mainScreen">
-        <div class="stats">
-            <div>LVL: <span id="lvl">1</span></div>
-            <div>SCORE: <span id="score">0</span></div>
+    <div class="arcade-mini">
+        <div class="screen-mini" id="gameScreen">
+            <div style="font-size: 0.8rem; font-weight: 900; color: #64748b;">COLLECT EXACTLY:</div>
+            <h1 class="target-num" id="target">?</h1>
+            
+            <div class="item-grid" id="grid"></div>
+            
+            <div style="font-weight: 900; color: #1e293b;">
+                COUNTED: <span id="liveCount" style="color:#2563eb">0</span>
+            </div>
         </div>
 
-        <div style="text-align:center">
-            <div style="font-size: 0.9rem; font-weight: bold; color: #64748b;">COLLECT EXACTLY:</div>
-            <h1 class="target-number" id="target">?</h1>
-        </div>
-
-        <div class="play-area" id="grid"></div>
-        
-        <div id="counter-msg">
-            COUNTED: <span id="liveCount">0</span>
+        <div class="controls-mini">
+            <button class="btn-mini btn-red" onclick="resetGame()">RESET</button>
+            <button class="btn-mini btn-green" onclick="checkFinal()">SUBMIT</button>
         </div>
     </div>
 
-    <div class="control-deck">
-        <button class="joystick-btn btn-clear" onclick="resetGame()">RESET</button>
-        <button class="joystick-btn btn-submit" onclick="checkFinal()">SUBMIT</button>
+    <div class="seo-mini" style="margin-top:15px; font-size:0.8rem">
+        Levels & Sounds Included • Fun Early Numeracy Tool • No Download Required
     </div>
 </div>
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    function playNote(freq, type = 'sine', vol = 0.1, duration = 0.1) {
+    function playNote(freq, type = 'sine', vol = 0.05, duration = 0.1) {
         const osc = audioCtx.createOscillator();
         const g = audioCtx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         g.gain.setValueAtTime(vol, audioCtx.currentTime);
         g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(g);
-        g.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
     }
 
-    const state = {
-        level: 1,
-        score: 0,
-        target: 0,
-        count: 0,
-        emojis: ['🍎', '⭐️', '🐸', '🚀', '🐱', '🍦', '🐼', '🦖']
-    };
+    const state = { target: 0, count: 0, emojis: ['🍎', '🐸', '🚀', '🐱', '🍦', '🐼'] };
 
     function initLevel() {
-        state.target = Math.floor(Math.random() * 9) + 2; // Target 2-10
+        state.target = Math.floor(Math.random() * 8) + 2;
         state.count = 0;
         const emoji = state.emojis[Math.floor(Math.random() * state.emojis.length)];
-        
         document.getElementById('target').textContent = state.target;
-        document.getElementById('lvl').textContent = state.level;
-        document.getElementById('score').textContent = state.score;
         document.getElementById('liveCount').textContent = "0";
-        
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
-        
-        // Always 10 items to challenge them
         for (let i = 0; i < 10; i++) {
             const el = document.createElement('div');
-            el.className = 'item';
-            el.textContent = emoji;
+            el.className = 'item'; el.textContent = emoji;
             el.onclick = (e) => handleItemClick(e, el);
             grid.appendChild(el);
         }
@@ -243,52 +172,34 @@
 
     function handleItemClick(e, el) {
         if (el.classList.contains('collected')) return;
-        
         state.count++;
         el.classList.add('collected');
         document.getElementById('liveCount').textContent = state.count;
-        
-        playNote(300 + (state.count * 60), 'triangle', 0.1, 0.2);
+        playNote(300 + (state.count * 50));
         
         const pop = document.createElement('div');
-        pop.className = 'count-pop';
-        pop.textContent = state.count;
-        pop.style.left = e.clientX - 25 + 'px';
-        pop.style.top = e.clientY - 50 + 'px';
+        pop.className = 'count-pop'; pop.textContent = state.count;
+        pop.style.left = (e.clientX - 15) + 'px'; pop.style.top = (e.clientY - 30) + 'px';
         document.body.appendChild(pop);
-        setTimeout(() => pop.remove(), 600);
+        setTimeout(() => pop.remove(), 500);
     }
 
-    function resetGame() {
-        playNote(200, 'sawtooth', 0.1, 0.2);
-        initLevel();
-    }
+    function resetGame() { playNote(200, 'sawtooth'); initLevel(); }
 
     function checkFinal() {
-        const screen = document.getElementById('mainScreen');
+        const s = document.getElementById('gameScreen');
         if (state.count === state.target) {
-            playNote(523, 'sine', 0.1, 0.1);
-            setTimeout(() => playNote(783, 'sine', 0.2, 0.3), 150);
-            
-            state.score += (state.level * 10);
-            state.level++;
-            screen.style.background = '#dcfce7';
-            setTimeout(() => {
-                screen.style.background = 'var(--screen-bg)';
-                initLevel();
-            }, 800);
+            playNote(523); setTimeout(() => playNote(783), 100);
+            s.style.background = '#dcfce7';
+            setTimeout(() => { s.style.background = '#f0f9ff'; initLevel(); }, 600);
         } else {
-            playNote(100, 'sawtooth', 0.2, 0.4);
-            screen.style.background = '#fee2e2';
-            setTimeout(() => {
-                screen.style.background = 'var(--screen-bg)';
-                resetGame();
-            }, 600);
+            playNote(100, 'sawtooth');
+            s.style.background = '#fee2e2';
+            setTimeout(() => { s.style.background = '#f0f9ff'; resetGame(); }, 600);
         }
     }
 
     initLevel();
 </script>
-
 </body>
 </html>
