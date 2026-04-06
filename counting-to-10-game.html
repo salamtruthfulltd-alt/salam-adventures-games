@@ -2,610 +2,454 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Counting To 10 Game For Kids | Free Preschool Number Game</title>
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DD5B9L9ZCR"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-DD5B9L9ZCR');
-  </script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Counting to 10 Fruit Game for Kids</title>
   <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Trebuchet MS", "Comic Sans MS", Arial, sans-serif;
-      background: linear-gradient(180deg, #dff7ff 0%, #fff8dc 100%);
-      color: #24324a;
-      text-align: center;
-      overflow-x: hidden;
+    :root{
+      --bg1:#fff7f0;
+      --bg2:#eef9ff;
+      --card:#ffffff;
+      --ink:#17324d;
+      --muted:#5b7083;
+      --accent:#ff8a3d;
+      --accent2:#6fcbff;
+      --good:#32c671;
+      --shadow:0 18px 40px rgba(23,50,77,.14);
+      --radius:28px;
     }
 
-    .page {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 14px 10px 24px;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
     }
 
-    .top-badge {
-      display: inline-block;
-      background: #fff;
-      color: #ff7a00;
-      padding: 7px 14px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 13px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-      margin-bottom: 10px;
+    .game{
+      width:min(860px,100%);
+      background:rgba(255,255,255,.78);
+      backdrop-filter:blur(8px);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      padding:18px;
+      border:1px solid rgba(255,255,255,.8);
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 4vw, 38px);
-      line-height: 1.08;
-      color: #16407d;
-      text-shadow: 0 2px 0 #fff;
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
     }
 
-    .subheading {
-      max-width: 620px;
-      margin: 0 auto 14px;
-      font-size: clamp(14px, 2.3vw, 18px);
-      line-height: 1.4;
-      color: #49617e;
-      font-weight: 700;
+    .pill{
+      background:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      box-shadow:0 8px 20px rgba(23,50,77,.08);
+      font-weight:700;
+      font-size:14px;
     }
 
-    .game-shell {
-      background: rgba(255,255,255,0.95);
-      border: 3px solid #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 12px 30px rgba(37,72,120,0.14);
-      padding: 14px 12px 18px;
-      overflow: hidden;
+    .hero{
+      background:linear-gradient(135deg,#fff,#f5fbff);
+      border-radius:var(--radius);
+      padding:18px;
+      text-align:center;
+      margin-bottom:14px;
+      box-shadow:0 10px 25px rgba(23,50,77,.06);
     }
 
-    .top-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 12px;
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(28px,4vw,44px);
+      line-height:1.05;
     }
 
-    .panel {
-      min-width: 130px;
-      background: linear-gradient(180deg, #ffffff, #f4fbff);
-      border-radius: 18px;
-      padding: 10px 12px;
-      box-shadow: 0 7px 14px rgba(0,0,0,0.07);
+    .subtitle{
+      margin:0;
+      font-size:clamp(16px,2.2vw,20px);
+      color:var(--muted);
+      font-weight:700;
     }
 
-    .panel-label {
-      margin-bottom: 5px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      font-weight: 900;
-      color: #6e819b;
+    .board{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
     }
 
-    .panel-value {
-      font-size: clamp(20px, 3vw, 30px);
-      font-weight: 900;
-      color: #ff4d87;
+    .panel{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:0 10px 25px rgba(23,50,77,.08);
     }
 
-    .panel-value.blue {
-      color: #1a72db;
+    .fruit-stage{
+      min-height:340px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:16px;
+      position:relative;
+      overflow:hidden;
     }
 
-    .instruction {
-      font-size: clamp(17px, 2.8vw, 24px);
-      font-weight: 900;
-      color: #ff7a00;
-      margin: 8px 0 4px;
+    .fruit-stage::before,
+    .fruit-stage::after{
+      content:"";
+      position:absolute;
+      width:130px;
+      height:130px;
+      border-radius:50%;
+      opacity:.18;
+      filter:blur(6px);
+      z-index:0;
     }
 
-    .fruit-name {
-      margin-bottom: 12px;
-      font-size: clamp(15px, 2.5vw, 19px);
-      font-weight: 900;
-      color: #13a06c;
+    .fruit-stage::before{background:#ffd6b5; top:-25px; left:-25px;}
+    .fruit-stage::after{background:#c9eeff; bottom:-25px; right:-25px;}
+
+    .count-bubble,
+    .fruit-grid,
+    .sentence,
+    .tap-btn{position:relative; z-index:1;}
+
+    .count-bubble{
+      min-width:150px;
+      padding:14px 18px;
+      background:linear-gradient(135deg,#ffefe2,#fff6ef);
+      border-radius:24px;
+      text-align:center;
+      box-shadow:0 8px 18px rgba(255,138,61,.18);
     }
 
-    .level-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
+    .count-bubble .big{
+      font-size:clamp(38px,6vw,58px);
+      font-weight:900;
+      line-height:1;
+      color:#ff7b21;
     }
 
-    .level-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 14px;
-      font-weight: 900;
-      cursor: pointer;
-      color: #16407d;
-      background: #eaf6ff;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    .count-bubble .small{
+      font-size:16px;
+      font-weight:800;
+      color:var(--muted);
+      margin-top:4px;
     }
 
-    .level-btn.active {
-      color: white;
-      background: linear-gradient(180deg, #1aa7ff, #0f74d8);
+    .fruit-grid{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(42px, 1fr));
+      gap:10px;
+      width:100%;
+      max-width:360px;
+      justify-items:center;
+      align-items:center;
     }
 
-    .game-area {
-      min-height: 210px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 8px;
-      border-radius: 20px;
-      background: linear-gradient(180deg, #fbfeff, #eefaff);
-      border: 2px dashed #bce6ff;
-      margin-bottom: 12px;
-      position: relative;
+    .fruit{
+      font-size:clamp(34px,5vw,50px);
+      transform:scale(.2);
+      opacity:0;
+      animation:pop .35s ease forwards;
+      filter:drop-shadow(0 4px 4px rgba(0,0,0,.10));
+      user-select:none;
     }
 
-    .fruit-btn {
-      width: 78px;
-      height: 78px;
-      border: none;
-      border-radius: 20px;
-      background: linear-gradient(180deg, #ffffff, #fff0f6);
-      box-shadow: 0 8px 14px rgba(0,0,0,0.10);
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-      overflow: hidden;
-      position: relative;
+    @keyframes pop{
+      to{transform:scale(1); opacity:1;}
     }
 
-    .fruit-btn:hover { transform: scale(1.04); }
-    .fruit-btn:active { transform: scale(0.94); }
-
-    .fruit-btn.gone {
-      opacity: 0.14;
-      transform: scale(0.8);
-      pointer-events: none;
+    .sentence{
+      text-align:center;
+      font-size:clamp(22px,2.7vw,32px);
+      font-weight:900;
+      line-height:1.25;
     }
 
-    .fruit-btn img {
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      pointer-events: none;
-      user-select: none;
-      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.08));
+    .sentence span{color:#ff7b21}
+
+    .tap-btn{
+      appearance:none;
+      border:none;
+      border-radius:24px;
+      padding:18px 22px;
+      font-size:clamp(22px,3vw,30px);
+      font-weight:900;
+      width:100%;
+      cursor:pointer;
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),#ffb14f);
+      box-shadow:0 12px 24px rgba(255,138,61,.35);
+      transition:transform .08s ease, box-shadow .2s ease;
     }
 
-    .message {
-      min-height: 44px;
-      font-size: clamp(22px, 3.7vw, 32px);
-      color: #1c944a;
-      font-weight: 900;
-      margin-bottom: 4px;
+    .tap-btn:hover{transform:translateY(-2px)}
+    .tap-btn:active{transform:translateY(2px) scale(.98)}
+
+    .side h2{
+      margin:0 0 12px;
+      font-size:24px;
     }
 
-    .bubble-word {
-      min-height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 8px;
+    .steps{
+      display:grid;
+      gap:10px;
+      margin-bottom:14px;
     }
 
-    .bubble-pill {
-      display: inline-block;
-      padding: 9px 18px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #ff8fca, #ff5f93);
-      color: white;
-      font-size: clamp(18px, 3vw, 26px);
-      font-weight: 900;
-      box-shadow: 0 9px 14px rgba(255,95,147,0.26);
-      transform: scale(0.88);
-      opacity: 0;
-      transition: all 0.22s ease;
+    .step{
+      border-radius:20px;
+      padding:12px 14px;
+      background:linear-gradient(135deg,#f9fdff,#f3f9ff);
+      font-weight:800;
+      color:var(--muted);
     }
 
-    .bubble-pill.show {
-      opacity: 1;
-      transform: scale(1);
+    .controls{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
     }
 
-    .stars {
-      min-height: 28px;
-      font-size: 24px;
-      margin-bottom: 10px;
+    .secondary{
+      appearance:none;
+      border:none;
+      border-radius:18px;
+      padding:14px 16px;
+      background:linear-gradient(135deg,#6fcbff,#89ddff);
+      color:#08314d;
+      font-size:18px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 10px 20px rgba(111,203,255,.25);
     }
 
-    .button-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
+    .secondary.alt{
+      background:linear-gradient(135deg,#76da9e,#b7f0c8);
+      color:#0f4a29;
     }
 
-    .game-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-size: 15px;
-      font-weight: 900;
-      color: #fff;
-      cursor: pointer;
-      box-shadow: 0 8px 14px rgba(0,0,0,0.11);
-      transition: transform 0.15s ease;
+    .tiny{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+      font-weight:700;
     }
 
-    .game-btn:hover { transform: translateY(-1px); }
-
-    .start-btn {
-      background: linear-gradient(180deg, #ff9800, #ff5d5d);
+    .celebrate{
+      animation:bounce .6s ease;
     }
 
-    .play-again-btn {
-      background: linear-gradient(180deg, #2ecc71, #129a57);
+    @keyframes bounce{
+      0%,100%{transform:translateY(0)}
+      30%{transform:translateY(-8px)}
+      55%{transform:translateY(0)}
+      75%{transform:translateY(-4px)}
     }
 
-    .helper-text {
-      font-size: 14px;
-      color: #556b88;
-      margin-top: 12px;
-      font-weight: 700;
-    }
-
-    .number-pop {
-      position: fixed;
-      font-size: 30px;
-      font-weight: 900;
-      color: #ff7a00;
-      text-shadow: 0 2px 0 #fff;
-      pointer-events: none;
-      z-index: 9999;
-      animation: popUp 0.8s ease forwards;
-    }
-
-    @keyframes popUp {
-      0% {
-        opacity: 0;
-        transform: translateY(10px) scale(0.55);
-      }
-      20% {
-        opacity: 1;
-        transform: translateY(-8px) scale(1.12);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-42px) scale(1);
-      }
-    }
-
-    @media (max-width: 560px) {
-      .page {
-        padding: 10px 8px 18px;
-      }
-
-      .game-shell {
-        padding: 12px 8px 14px;
-      }
-
-      .fruit-btn {
-        width: 68px;
-        height: 68px;
-      }
-
-      .fruit-btn img {
-        width: 48px;
-        height: 48px;
-      }
-
-      .panel {
-        min-width: 110px;
-        padding: 8px 10px;
-      }
-
-      .game-area {
-        gap: 10px;
-        min-height: 190px;
-      }
+    @media (max-width: 760px){
+      .board{grid-template-columns:1fr}
+      .fruit-grid{grid-template-columns:repeat(5, minmax(40px, 1fr));}
+      .game{padding:14px}
+      .panel,.hero{padding:16px}
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="top-badge">🍓 Free Preschool Maths Game</div>
-
-    <h1>Counting To 10 Game For Kids</h1>
-    <p class="subheading">
-      Tap the fruit, hear what number you are on, and count all the way to the end.
-    </p>
-
-    <div class="game-shell">
-      <div class="top-row">
-        <div class="panel">
-          <div class="panel-label">Current Number</div>
-          <div class="panel-value" id="currentNumber">0</div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-label">Fruit To Count</div>
-          <div class="panel-value blue" id="totalNumber">0</div>
-        </div>
-      </div>
-
-      <div class="level-row">
-        <button class="level-btn active" onclick="setLevel('easy', this)">Easy</button>
-        <button class="level-btn" onclick="setLevel('medium', this)">Medium</button>
-        <button class="level-btn" onclick="setLevel('hard', this)">Hard</button>
-      </div>
-
-      <div class="instruction" id="instructionText">Press Start And Count The Fruit!</div>
-      <div class="fruit-name" id="fruitName">Today’s Fruit: Apples</div>
-
-      <div class="game-area" id="gameArea"></div>
-
-      <div class="message" id="message"></div>
-
-      <div class="bubble-word">
-        <span class="bubble-pill" id="bubblePill">Amazing!</span>
-      </div>
-
-      <div class="stars" id="stars"></div>
-
-      <div class="button-row">
-        <button class="game-btn start-btn" onclick="startGame()">Start Game</button>
-        <button class="game-btn play-again-btn" onclick="startGame()">Play Again</button>
-      </div>
-
-      <div class="helper-text">
-        Play again for a new fruit and a new counting challenge.
-      </div>
+  <main class="game">
+    <div class="topbar">
+      <div class="pill">🎯 Counting to 10</div>
+      <div class="pill" id="fruitName">🍎 Apples</div>
+      <div class="pill" id="progress">Number 0 of 10</div>
     </div>
-  </div>
+
+    <section class="hero">
+      <h1>Tap and Count the Fruit! 🍓🍌🍎</h1>
+      <p class="subtitle">Press the big button. Hear the number. See the fruit. Count all the way to 10!</p>
+    </section>
+
+    <section class="board">
+      <div class="panel fruit-stage">
+        <div class="count-bubble" id="countBubble">
+          <div class="big" id="bigNumber">0</div>
+          <div class="small" id="numberWord">Ready to start?</div>
+        </div>
+
+        <div class="fruit-grid" id="fruitGrid" aria-live="polite"></div>
+
+        <div class="sentence" id="sentence">Press the button to begin ✨</div>
+
+        <button class="tap-btn" id="tapBtn" aria-label="Tap to count fruit">Tap for the next number</button>
+      </div>
+
+      <aside class="panel side">
+        <h2>How to Play 🌟</h2>
+        <div class="steps">
+          <div class="step">1. Tap the button.</div>
+          <div class="step">2. Listen to the number.</div>
+          <div class="step">3. Count the fruit on the screen.</div>
+          <div class="step">4. Reach 10 and celebrate!</div>
+        </div>
+
+        <div class="controls">
+          <button class="secondary" id="repeatBtn">🔊 Say it again</button>
+          <button class="secondary alt" id="resetBtn">🔄 Start over</button>
+        </div>
+
+        <p class="tiny">
+          This uses your device voice, so it should say things naturally like “1 banana” and “2 bananas”. At 10 it celebrates with “Amazing! Well done! Fantastic!”
+        </p>
+      </aside>
+    </section>
+  </main>
 
   <script>
+    const items = [
+      { singular: 'apple', plural: 'apples', emoji: '🍎' },
+      { singular: 'banana', plural: 'bananas', emoji: '🍌' },
+      { singular: 'orange', plural: 'oranges', emoji: '🍊' },
+      { singular: 'strawberry', plural: 'strawberries', emoji: '🍓' },
+      { singular: 'pear', plural: 'pears', emoji: '🍐' },
+      { singular: 'grape', plural: 'grapes', emoji: '🍇' },
+      { singular: 'cherry', plural: 'cherries', emoji: '🍒' },
+      { singular: 'watermelon', plural: 'watermelons', emoji: '🍉' }
+    ];
+
+    const words = ['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+    const praiseWords = ['Amazing!', 'Well done!', 'Fantastic!'];
+
     let count = 0;
-    let total = 0;
-    let currentFruit = null;
-    let selectedVoice = null;
-    let currentLevel = "easy";
+    let currentItem = randomItem();
 
-    const fruits = [
-      {
-        singular: "apple",
-        plural: "apples",
-        display: "Apples",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34e.png"
-      },
-      {
-        singular: "banana",
-        plural: "bananas",
-        display: "Bananas",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34c.png"
-      },
-      {
-        singular: "strawberry",
-        plural: "strawberries",
-        display: "Strawberries",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f353.png"
-      },
-      {
-        singular: "orange",
-        plural: "oranges",
-        display: "Oranges",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34a.png"
-      },
-      {
-        singular: "grape",
-        plural: "grapes",
-        display: "Grapes",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f347.png"
-      },
-      {
-        singular: "watermelon",
-        plural: "watermelons",
-        display: "Watermelons",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f349.png"
-      },
-      {
-        singular: "pineapple",
-        plural: "pineapples",
-        display: "Pineapples",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f34d.png"
-      },
-      {
-        singular: "cherry",
-        plural: "cherries",
-        display: "Cherries",
-        img: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f352.png"
+    const fruitGrid = document.getElementById('fruitGrid');
+    const bigNumber = document.getElementById('bigNumber');
+    const numberWord = document.getElementById('numberWord');
+    const sentence = document.getElementById('sentence');
+    const fruitName = document.getElementById('fruitName');
+    const progress = document.getElementById('progress');
+    const countBubble = document.getElementById('countBubble');
+    const tapBtn = document.getElementById('tapBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const repeatBtn = document.getElementById('repeatBtn');
+
+    tapBtn.addEventListener('click', nextCount);
+    resetBtn.addEventListener('click', resetGame);
+    repeatBtn.addEventListener('click', repeatSpeech);
+
+    updateUI();
+
+    function randomItem() {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function pluralName(n, item) {
+      return n === 1 ? item.singular : item.plural;
+    }
+
+    function chooseVoice() {
+      const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+      return voices.find(v => /google uk english female|microsoft libby online|microsoft hazel|samantha|zira/i.test(v.name))
+        || voices.find(v => /en-GB|en_GB/i.test(v.lang))
+        || voices.find(v => /en/i.test(v.lang))
+        || null;
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 0.92;
+      utter.pitch = 1.0;
+      utter.volume = 1;
+      const preferred = chooseVoice();
+      if (preferred) utter.voice = preferred;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function buildSpeech() {
+      if (count === 0) return 'Let us start counting.';
+      if (count === 10) {
+        return `${count} ${pluralName(count, currentItem)}. Amazing! Well done! Fantastic!`;
       }
-    ];
-
-    const praiseWords = [
-      "Amazing!",
-      "Brilliant!",
-      "Super!",
-      "Fantastic!",
-      "Wow!",
-      "Great Job!"
-    ];
-
-    function setLevel(level, btn) {
-      currentLevel = level;
-      document.querySelectorAll(".level-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      startGame();
+      return `${count} ${pluralName(count, currentItem)}`;
     }
 
-    function randomFruit() {
-      return fruits[Math.floor(Math.random() * fruits.length)];
+    function updateFruitGrid() {
+      fruitGrid.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const fruit = document.createElement('div');
+        fruit.className = 'fruit';
+        fruit.textContent = currentItem.emoji;
+        fruit.style.animationDelay = `${i * 60}ms`;
+        fruitGrid.appendChild(fruit);
+      }
     }
 
-    function randomPraise() {
-      return praiseWords[Math.floor(Math.random() * praiseWords.length)];
+    function updateUI() {
+      bigNumber.textContent = count;
+      numberWord.textContent = count === 0 ? 'Ready to start?' : words[count].toUpperCase();
+      fruitName.textContent = `${currentItem.emoji} ${currentItem.plural.charAt(0).toUpperCase() + currentItem.plural.slice(1)}`;
+      progress.textContent = `Number ${count} of 10`;
+      updateFruitGrid();
+
+      if (count === 0) {
+        sentence.innerHTML = 'Press the button to begin ✨';
+        tapBtn.textContent = 'Tap for the next number';
+      } else if (count === 10) {
+        sentence.innerHTML = `<span>${count}</span> ${pluralName(count, currentItem)}<br>Amazing! Well done! Fantastic! 🎉`;
+        tapBtn.textContent = 'Play again';
+      } else {
+        sentence.innerHTML = `<span>${count}</span> ${pluralName(count, currentItem)}`;
+        tapBtn.textContent = 'Tap for the next number';
+      }
+
+      countBubble.classList.remove('celebrate');
+      void countBubble.offsetWidth;
+      if (count === 10) {
+        countBubble.classList.add('celebrate');
+      }
     }
 
-    function randomTotal() {
-      if (currentLevel === "easy") return Math.floor(Math.random() * 3) + 1;
-      if (currentLevel === "medium") return Math.floor(Math.random() * 3) + 4;
-      return Math.floor(Math.random() * 4) + 7;
+    function nextCount() {
+      if (count >= 10) {
+        count = 0;
+        currentItem = randomItem();
+        updateUI();
+        speak('Let us start counting.');
+        return;
+      }
+
+      count += 1;
+      updateUI();
+      speak(buildSpeech());
     }
 
-    function updatePanels() {
-      document.getElementById("currentNumber").textContent = count;
-      document.getElementById("totalNumber").textContent = total;
-    }
-
-    function getFruitWord(count, fruit) {
-      return count === 1 ? fruit.singular : fruit.plural;
-    }
-
-    function pickVoice() {
-      const voices = window.speechSynthesis.getVoices();
-      if (!voices.length) return null;
-      return (
-        voices.find(v => /female|samantha|zira|google uk english female|hazel|libby|aria/i.test(v.name)) ||
-        voices.find(v => /en-GB/i.test(v.lang)) ||
-        voices.find(v => /en/i.test(v.lang)) ||
-        voices[0]
-      );
-    }
-
-    function speakText(text, rate = 0.78, pitch = 1.03) {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(String(text));
-      utterance.lang = "en-GB";
-      utterance.rate = rate;
-      utterance.pitch = pitch;
-      utterance.volume = 1;
-
-      if (!selectedVoice) selectedVoice = pickVoice();
-      if (selectedVoice) utterance.voice = selectedVoice;
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function speakCount(count, fruit) {
-      const fruitWord = getFruitWord(count, fruit);
-      speakText(`${count} ${fruitWord}`, 0.76, 1.02);
-    }
-
-    function showBubbleWord(word) {
-      const bubble = document.getElementById("bubblePill");
-      bubble.textContent = word;
-      bubble.classList.remove("show");
-      void bubble.offsetWidth;
-      bubble.classList.add("show");
-    }
-
-    function showNumberPop(x, y, number) {
-      const pop = document.createElement("div");
-      pop.className = "number-pop";
-      pop.textContent = number;
-      pop.style.left = x + "px";
-      pop.style.top = y + "px";
-      document.body.appendChild(pop);
-      setTimeout(() => pop.remove(), 800);
-    }
-
-    function createFruitButton() {
-      const fruit = document.createElement("button");
-      fruit.className = "fruit-btn";
-      fruit.type = "button";
-
-      const img = document.createElement("img");
-      img.src = currentFruit.img;
-      img.alt = currentFruit.display;
-      fruit.appendChild(img);
-
-      fruit.addEventListener("click", function () {
-        if (fruit.classList.contains("gone")) return;
-
-        count++;
-        updatePanels();
-        fruit.classList.add("gone");
-
-        const fruitWord = getFruitWord(count, currentFruit);
-        document.getElementById("message").textContent = `${count} ${fruitWord}`;
-        showBubbleWord(randomPraise());
-        speakCount(count, currentFruit);
-
-        const rect = fruit.getBoundingClientRect();
-        showNumberPop(rect.left + rect.width / 2 - 10, rect.top + 8, count);
-
-        if (count === total) {
-          setTimeout(() => {
-            const totalWord = getFruitWord(total, currentFruit);
-            document.getElementById("instructionText").textContent = "You Did It!";
-            document.getElementById("message").textContent = `Amazing! ${total} ${totalWord}!`;
-            document.getElementById("stars").textContent = "⭐ ⭐ ⭐";
-            showBubbleWord("Amazing!");
-            speakText(`Amazing counting! You counted ${total} ${totalWord}!`, 0.76, 1.02);
-          }, 220);
-        }
-      });
-
-      return fruit;
-    }
-
-    function startGame() {
-      const gameArea = document.getElementById("gameArea");
-      const message = document.getElementById("message");
-      const stars = document.getElementById("stars");
-      const instructionText = document.getElementById("instructionText");
-      const fruitName = document.getElementById("fruitName");
-      const bubble = document.getElementById("bubblePill");
-
-      window.speechSynthesis.cancel();
-
+    function resetGame() {
       count = 0;
-      total = randomTotal();
-      currentFruit = randomFruit();
-
-      gameArea.innerHTML = "";
-      message.textContent = "";
-      stars.textContent = "";
-      bubble.classList.remove("show");
-
-      instructionText.textContent = "Tap Each Fruit And Count Out Loud!";
-      fruitName.textContent = `Today’s Fruit: ${currentFruit.display}`;
-      updatePanels();
-
-      for (let i = 0; i < total; i++) {
-        gameArea.appendChild(createFruitButton());
-      }
-
-      setTimeout(() => {
-        speakText(`Let’s count the ${currentFruit.plural}`, 0.76, 1.0);
-      }, 250);
+      currentItem = randomItem();
+      updateUI();
+      speak('Let us start again.');
     }
 
-    if (window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        selectedVoice = pickVoice();
-      };
+    function repeatSpeech() {
+      speak(buildSpeech());
     }
 
-    startGame();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {};
+    }
   </script>
 </body>
 </html>
