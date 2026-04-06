@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Catcher: Count to 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root { --night: #0f172a; --star: #fef08a; --moon: #f8fafc; }
+        .game-app { 
+            width: 100%; max-width: 320px; margin: 10px auto; 
+            font-family: 'Fredoka One', cursive; background: var(--night); 
+            padding: 20px; border-radius: 30px; border: 5px solid #334155;
+            position: relative; touch-action: none; overflow: hidden; text-align: center;
+        }
+
+        /* The Magic Moon (Drop Zone) */
+        #moon-target {
+            width: 120px; height: 120px; background: var(--moon);
+            border-radius: 50%; margin: 0 auto 30px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(255,255,255,0.4);
+            font-size: 50px; position: relative;
+        }
+
+        .star {
+            font-size: 45px; cursor: grab; position: absolute;
+            user-select: none; touch-action: none; z-index: 10;
+            filter: drop-shadow(0 0 10px #facc15);
+        }
+        
+        .star:active { transform: scale(1.3); cursor: grabbing; }
+        .caught { pointer-events: none; opacity: 0.5; transform: scale(0.5) !important; }
+
+        .ui-label { color: #94a3b8; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; }
+        .target-text { color: var(--star); font-size: 1.8rem; margin: 0 0 15px 0; }
+        .counter { color: white; font-size: 1.2rem; margin-top: 20px; }
+        
+        /* Celebration Sparkle */
+        .sparkle {
+            position: absolute; width: 5px; height: 5px; background: white;
+            border-radius: 50%; animation: burst 0.6s ease-out forwards;
+        }
+        @keyframes burst { 
+            0% { transform: scale(1); opacity: 1; } 
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; } 
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-app">
+    <div class="ui-label">Magic Goal</div>
+    <div class="target-text">Catch <span id="goal-num">0</span> Stars</div>
+    
+    <div id="moon-target">🌙</div>
+
+    <div id="sky" style="height: 160px; position: relative; background: rgba(255,255,255,0.05); border-radius: 20px;">
+        </div>
+
+    <div class="counter">STARS: <span id="current-count" style="color:var(--star)">0</span></div>
+</div>
+
+<script>
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(f) {
+        const o=audio.createOscillator(), g=audio.createGain();
+        o.type='sine'; o.frequency.value=f; g.gain.value=0.1;
+        o.connect(g); g.connect(audio.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+0.3);
+        o.stop(audio.currentTime+0.3);
+    }
+
+    let goal=0, has=0;
+    const sky = document.getElementById('sky');
+    const moon = document.getElementById('moon-target');
+
+    function init() {
+        goal = Math.floor(Math.random()*4)+2; // Always between 2 and 5
+        has = 0;
+        document.getElementById('goal-num').innerText = goal;
+        document.getElementById('current-count').innerText = has;
+        sky.innerHTML = '';
+        moon.innerText = '🌙';
+
+        for(let i=0; i<6; i++) {
+            const s = document.createElement('div');
+            s.className = 'star'; s.innerText = '⭐';
+            s.style.left = Math.random() * 220 + 'px';
+            s.style.top = Math.random() * 100 + 'px';
+            s.onpointerdown = startDrag;
+            sky.appendChild(s);
+        }
+    }
+
+    function startDrag(e) {
+        const el = e.target;
+        el.setPointerCapture(e.pointerId);
+        const startX = e.clientX, startY = e.clientY;
+        const origX = el.offsetLeft, origY = el.offsetTop;
+
+        const onMove = (me) => {
+            el.style.left = (origX + (me.clientX - startX)) + 'px';
+            el.style.top = (origY + (me.clientY - startY)) + 'px';
+        };
+
+        const onUp = (ue) => {
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerup', onUp);
+            
+            const mRect = moon.getBoundingClientRect();
+            if (ue.clientX > mRect.left && ue.clientX < mRect.right && 
+                ue.clientY > mRect.top && ue.clientY < mRect.bottom) {
+                catchStar(el);
+            } else {
+                el.style.left = Math.random() * 220 + 'px';
+                el.style.top = Math.random() * 100 + 'px';
+            }
+        };
+
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerup', onUp);
+    }
+
+    function catchStar(el) {
+        has++;
+        document.getElementById('current-count').innerText = has;
+        el.classList.add('caught');
+        moon.appendChild(el);
+        el.style.position = "absolute";
+        el.style.left = "35px"; el.style.top = "35px";
+        
+        playTone(400 + (has * 100));
+        makeSparkles();
+
+        if(has === goal) {
+            moon.innerText = '🤩';
+            playTone(800);
+            setTimeout(() => { init(); }, 1500);
+        } else if (has > goal) {
+            moon.innerText = '😵';
+            playTone(150);
+            setTimeout(init, 1000);
+        }
+    }
+
+    function makeSparkles() {
+        for(let i=0; i<8; i++) {
+            const s = document.createElement('div');
+            s.className = 'sparkle';
+            s.style.setProperty('--x', (Math.random()*100 - 50) + 'px');
+            s.style.setProperty('--y', (Math.random()*100 - 50) + 'px');
+            s.style.left = '60px'; s.style.top = '60px';
+            moon.appendChild(s);
+            setTimeout(()=>s.remove(), 600);
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
