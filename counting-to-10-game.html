@@ -1,455 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Counting to 10 Fruit Game for Kids</title>
-  <style>
-    :root{
-      --bg1:#fff7f0;
-      --bg2:#eef9ff;
-      --card:#ffffff;
-      --ink:#17324d;
-      --muted:#5b7083;
-      --accent:#ff8a3d;
-      --accent2:#6fcbff;
-      --good:#32c671;
-      --shadow:0 18px 40px rgba(23,50,77,.14);
-      --radius:28px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mini Counting Game</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:transparent;
+}
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      color:var(--ink);
-      background:linear-gradient(180deg,var(--bg1),var(--bg2));
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
+.game{
+  width:100%;
+  max-width:420px;
+  margin:auto;
+  padding:10px;
+  border-radius:20px;
+  background:#ffffff;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  text-align:center;
+}
 
-    .game{
-      width:min(860px,100%);
-      background:rgba(255,255,255,.78);
-      backdrop-filter:blur(8px);
-      border-radius:32px;
-      box-shadow:var(--shadow);
-      padding:18px;
-      border:1px solid rgba(255,255,255,.8);
-    }
+h1{
+  font-size:20px;
+  margin:6px 0;
+}
 
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-    }
+.count{
+  font-size:32px;
+  font-weight:900;
+  color:#ff7b21;
+}
 
-    .pill{
-      background:#fff;
-      border-radius:999px;
-      padding:10px 14px;
-      box-shadow:0 8px 20px rgba(23,50,77,.08);
-      font-weight:700;
-      font-size:14px;
-    }
+.fruits{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  margin:10px 0;
+}
 
-    .hero{
-      background:linear-gradient(135deg,#fff,#f5fbff);
-      border-radius:var(--radius);
-      padding:18px;
-      text-align:center;
-      margin-bottom:14px;
-      box-shadow:0 10px 25px rgba(23,50,77,.06);
-    }
+.fruit{
+  font-size:26px;
+}
 
-    h1{
-      margin:0 0 8px;
-      font-size:clamp(28px,4vw,44px);
-      line-height:1.05;
-    }
+.text{
+  font-size:18px;
+  font-weight:800;
+  margin:6px 0;
+}
 
-    .subtitle{
-      margin:0;
-      font-size:clamp(16px,2.2vw,20px);
-      color:var(--muted);
-      font-weight:700;
-    }
+button{
+  width:100%;
+  padding:12px;
+  font-size:18px;
+  font-weight:900;
+  border:none;
+  border-radius:14px;
+  background:#ff8a3d;
+  color:#fff;
+  cursor:pointer;
+}
 
-    .board{
-      display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:16px;
-    }
-
-    .panel{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow:0 10px 25px rgba(23,50,77,.08);
-    }
-
-    .fruit-stage{
-      min-height:340px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      gap:16px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .fruit-stage::before,
-    .fruit-stage::after{
-      content:"";
-      position:absolute;
-      width:130px;
-      height:130px;
-      border-radius:50%;
-      opacity:.18;
-      filter:blur(6px);
-      z-index:0;
-    }
-
-    .fruit-stage::before{background:#ffd6b5; top:-25px; left:-25px;}
-    .fruit-stage::after{background:#c9eeff; bottom:-25px; right:-25px;}
-
-    .count-bubble,
-    .fruit-grid,
-    .sentence,
-    .tap-btn{position:relative; z-index:1;}
-
-    .count-bubble{
-      min-width:150px;
-      padding:14px 18px;
-      background:linear-gradient(135deg,#ffefe2,#fff6ef);
-      border-radius:24px;
-      text-align:center;
-      box-shadow:0 8px 18px rgba(255,138,61,.18);
-    }
-
-    .count-bubble .big{
-      font-size:clamp(38px,6vw,58px);
-      font-weight:900;
-      line-height:1;
-      color:#ff7b21;
-    }
-
-    .count-bubble .small{
-      font-size:16px;
-      font-weight:800;
-      color:var(--muted);
-      margin-top:4px;
-    }
-
-    .fruit-grid{
-      display:grid;
-      grid-template-columns:repeat(5, minmax(42px, 1fr));
-      gap:10px;
-      width:100%;
-      max-width:360px;
-      justify-items:center;
-      align-items:center;
-    }
-
-    .fruit{
-      font-size:clamp(34px,5vw,50px);
-      transform:scale(.2);
-      opacity:0;
-      animation:pop .35s ease forwards;
-      filter:drop-shadow(0 4px 4px rgba(0,0,0,.10));
-      user-select:none;
-    }
-
-    @keyframes pop{
-      to{transform:scale(1); opacity:1;}
-    }
-
-    .sentence{
-      text-align:center;
-      font-size:clamp(22px,2.7vw,32px);
-      font-weight:900;
-      line-height:1.25;
-    }
-
-    .sentence span{color:#ff7b21}
-
-    .tap-btn{
-      appearance:none;
-      border:none;
-      border-radius:24px;
-      padding:18px 22px;
-      font-size:clamp(22px,3vw,30px);
-      font-weight:900;
-      width:100%;
-      cursor:pointer;
-      color:#fff;
-      background:linear-gradient(135deg,var(--accent),#ffb14f);
-      box-shadow:0 12px 24px rgba(255,138,61,.35);
-      transition:transform .08s ease, box-shadow .2s ease;
-    }
-
-    .tap-btn:hover{transform:translateY(-2px)}
-    .tap-btn:active{transform:translateY(2px) scale(.98)}
-
-    .side h2{
-      margin:0 0 12px;
-      font-size:24px;
-    }
-
-    .steps{
-      display:grid;
-      gap:10px;
-      margin-bottom:14px;
-    }
-
-    .step{
-      border-radius:20px;
-      padding:12px 14px;
-      background:linear-gradient(135deg,#f9fdff,#f3f9ff);
-      font-weight:800;
-      color:var(--muted);
-    }
-
-    .controls{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .secondary{
-      appearance:none;
-      border:none;
-      border-radius:18px;
-      padding:14px 16px;
-      background:linear-gradient(135deg,#6fcbff,#89ddff);
-      color:#08314d;
-      font-size:18px;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:0 10px 20px rgba(111,203,255,.25);
-    }
-
-    .secondary.alt{
-      background:linear-gradient(135deg,#76da9e,#b7f0c8);
-      color:#0f4a29;
-    }
-
-    .tiny{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.45;
-      font-weight:700;
-    }
-
-    .celebrate{
-      animation:bounce .6s ease;
-    }
-
-    @keyframes bounce{
-      0%,100%{transform:translateY(0)}
-      30%{transform:translateY(-8px)}
-      55%{transform:translateY(0)}
-      75%{transform:translateY(-4px)}
-    }
-
-    @media (max-width: 760px){
-      .board{grid-template-columns:1fr}
-      .fruit-grid{grid-template-columns:repeat(5, minmax(40px, 1fr));}
-      .game{padding:14px}
-      .panel,.hero{padding:16px}
-    }
-  </style>
+button:active{
+  transform:scale(0.98);
+}
+</style>
 </head>
 <body>
-  <main class="game">
-    <div class="topbar">
-      <div class="pill">🎯 Counting to 10</div>
-      <div class="pill" id="fruitName">🍎 Apples</div>
-      <div class="pill" id="progress">Number 0 of 10</div>
-    </div>
 
-    <section class="hero">
-      <h1>Tap and Count the Fruit! 🍓🍌🍎</h1>
-      <p class="subtitle">Press the big button. Hear the number. See the fruit. Count all the way to 10!</p>
-    </section>
+<div class="game">
+  <h1>Tap & Count 🍎</h1>
+  <div class="count" id="count">0</div>
+  <div class="fruits" id="fruits"></div>
+  <div class="text" id="text">Start counting!</div>
+  <button onclick="next()">Tap</button>
+</div>
 
-    <section class="board">
-      <div class="panel fruit-stage">
-        <div class="count-bubble" id="countBubble">
-          <div class="big" id="bigNumber">0</div>
-          <div class="small" id="numberWord">Ready to start?</div>
-        </div>
+<script>
+const items = [
+ {s:'banana',p:'bananas',e:'🍌'},
+ {s:'apple',p:'apples',e:'🍎'},
+ {s:'orange',p:'oranges',e:'🍊'},
+ {s:'cherry',p:'cherries',e:'🍒'}
+];
 
-        <div class="fruit-grid" id="fruitGrid" aria-live="polite"></div>
+let count=0;
+let item=random();
 
-        <div class="sentence" id="sentence">Press the button to begin ✨</div>
+function random(){
+ return items[Math.floor(Math.random()*items.length)];
+}
 
-        <button class="tap-btn" id="tapBtn" aria-label="Tap to count fruit">Tap for the next number</button>
-      </div>
+function speak(t){
+ if(!window.speechSynthesis) return;
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(t);
+ u.rate=0.9;
+ speechSynthesis.speak(u);
+}
 
-      <aside class="panel side">
-        <h2>How to Play 🌟</h2>
-        <div class="steps">
-          <div class="step">1. Tap the button.</div>
-          <div class="step">2. Listen to the number.</div>
-          <div class="step">3. Count the fruit on the screen.</div>
-          <div class="step">4. Reach 10 and celebrate!</div>
-        </div>
+function update(){
+ document.getElementById('count').innerText=count;
+ const grid=document.getElementById('fruits');
+ grid.innerHTML='';
 
-        <div class="controls">
-          <button class="secondary" id="repeatBtn">🔊 Say it again</button>
-          <button class="secondary alt" id="resetBtn">🔄 Start over</button>
-        </div>
+ for(let i=0;i<count;i++){
+  const f=document.createElement('div');
+  f.className='fruit';
+  f.innerText=item.e;
+  grid.appendChild(f);
+ }
 
-        <p class="tiny">
-          This uses your device voice, so it should say things naturally like “1 banana” and “2 bananas”. At 10 it celebrates with “Amazing! Well done! Fantastic!”
-        </p>
-      </aside>
-    </section>
-  </main>
+ if(count===0){
+  text.innerText='Start counting!';
+ }else if(count===10){
+  text.innerText=`${count} ${item.p} - Amazing! Well done! Fantastic! 🎉`;
+ }else{
+  text.innerText=`${count} ${count===1?item.s:item.p}`;
+ }
+}
 
-  <script>
-    const items = [
-      { singular: 'apple', plural: 'apples', emoji: '🍎' },
-      { singular: 'banana', plural: 'bananas', emoji: '🍌' },
-      { singular: 'orange', plural: 'oranges', emoji: '🍊' },
-      { singular: 'strawberry', plural: 'strawberries', emoji: '🍓' },
-      { singular: 'pear', plural: 'pears', emoji: '🍐' },
-      { singular: 'grape', plural: 'grapes', emoji: '🍇' },
-      { singular: 'cherry', plural: 'cherries', emoji: '🍒' },
-      { singular: 'watermelon', plural: 'watermelons', emoji: '🍉' }
-    ];
+function next(){
+ if(count>=10){
+  count=0;
+  item=random();
+ }else{
+  count++;
+ }
+ update();
 
-    const words = ['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
-    const praiseWords = ['Amazing!', 'Well done!', 'Fantastic!'];
+ if(count===10){
+  speak(`${count} ${item.p}. Amazing! Well done! Fantastic!`);
+ }else{
+  speak(`${count} ${count===1?item.s:item.p}`);
+ }
+}
 
-    let count = 0;
-    let currentItem = randomItem();
+update();
+</script>
 
-    const fruitGrid = document.getElementById('fruitGrid');
-    const bigNumber = document.getElementById('bigNumber');
-    const numberWord = document.getElementById('numberWord');
-    const sentence = document.getElementById('sentence');
-    const fruitName = document.getElementById('fruitName');
-    const progress = document.getElementById('progress');
-    const countBubble = document.getElementById('countBubble');
-    const tapBtn = document.getElementById('tapBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const repeatBtn = document.getElementById('repeatBtn');
-
-    tapBtn.addEventListener('click', nextCount);
-    resetBtn.addEventListener('click', resetGame);
-    repeatBtn.addEventListener('click', repeatSpeech);
-
-    updateUI();
-
-    function randomItem() {
-      return items[Math.floor(Math.random() * items.length)];
-    }
-
-    function pluralName(n, item) {
-      return n === 1 ? item.singular : item.plural;
-    }
-
-    function chooseVoice() {
-      const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-      return voices.find(v => /google uk english female|microsoft libby online|microsoft hazel|samantha|zira/i.test(v.name))
-        || voices.find(v => /en-GB|en_GB/i.test(v.lang))
-        || voices.find(v => /en/i.test(v.lang))
-        || null;
-    }
-
-    function speak(text) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.rate = 0.92;
-      utter.pitch = 1.0;
-      utter.volume = 1;
-      const preferred = chooseVoice();
-      if (preferred) utter.voice = preferred;
-      window.speechSynthesis.speak(utter);
-    }
-
-    function buildSpeech() {
-      if (count === 0) return 'Let us start counting.';
-      if (count === 10) {
-        return `${count} ${pluralName(count, currentItem)}. Amazing! Well done! Fantastic!`;
-      }
-      return `${count} ${pluralName(count, currentItem)}`;
-    }
-
-    function updateFruitGrid() {
-      fruitGrid.innerHTML = '';
-      for (let i = 0; i < count; i++) {
-        const fruit = document.createElement('div');
-        fruit.className = 'fruit';
-        fruit.textContent = currentItem.emoji;
-        fruit.style.animationDelay = `${i * 60}ms`;
-        fruitGrid.appendChild(fruit);
-      }
-    }
-
-    function updateUI() {
-      bigNumber.textContent = count;
-      numberWord.textContent = count === 0 ? 'Ready to start?' : words[count].toUpperCase();
-      fruitName.textContent = `${currentItem.emoji} ${currentItem.plural.charAt(0).toUpperCase() + currentItem.plural.slice(1)}`;
-      progress.textContent = `Number ${count} of 10`;
-      updateFruitGrid();
-
-      if (count === 0) {
-        sentence.innerHTML = 'Press the button to begin ✨';
-        tapBtn.textContent = 'Tap for the next number';
-      } else if (count === 10) {
-        sentence.innerHTML = `<span>${count}</span> ${pluralName(count, currentItem)}<br>Amazing! Well done! Fantastic! 🎉`;
-        tapBtn.textContent = 'Play again';
-      } else {
-        sentence.innerHTML = `<span>${count}</span> ${pluralName(count, currentItem)}`;
-        tapBtn.textContent = 'Tap for the next number';
-      }
-
-      countBubble.classList.remove('celebrate');
-      void countBubble.offsetWidth;
-      if (count === 10) {
-        countBubble.classList.add('celebrate');
-      }
-    }
-
-    function nextCount() {
-      if (count >= 10) {
-        count = 0;
-        currentItem = randomItem();
-        updateUI();
-        speak('Let us start counting.');
-        return;
-      }
-
-      count += 1;
-      updateUI();
-      speak(buildSpeech());
-    }
-
-    function resetGame() {
-      count = 0;
-      currentItem = randomItem();
-      updateUI();
-      speak('Let us start again.');
-    }
-
-    function repeatSpeech() {
-      speak(buildSpeech());
-    }
-
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => {};
-    }
-  </script>
 </body>
 </html>
