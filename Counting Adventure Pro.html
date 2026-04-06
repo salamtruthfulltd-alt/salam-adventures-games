@@ -3,302 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counting Adventure Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
+    <title>Counting Adventure: Mega Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #1e293b;
-            --machine: #334155;
-            --screen: #7dd3fc;
-            --accent: #fbbf24;
-            --success: #4ade80;
-            --error: #f87171;
+            --cabinet: #2563eb;
+            --screen-border: #1e293b;
+            --screen-bg: #f0f9ff;
+            --btn-red: #ef4444;
+            --btn-green: #22c55e;
+            --text: #0c4a6e;
         }
 
         body {
             margin: 0;
             height: 100vh;
+            background: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: var(--bg);
             font-family: 'Nunito', sans-serif;
             overflow: hidden;
         }
 
-        /* Arcade Casing */
-        .arcade-casing {
-            width: 450px;
-            background: var(--machine);
-            padding: 30px;
-            border-radius: 40px 40px 15px 15px;
-            box-shadow: 0 20px 0 #1e293b, inset 0 5px 10px rgba(255,255,255,0.2);
-            position: relative;
-            border: 8px solid #475569;
-        }
-
-        .header-panel {
+        /* Giant Arcade Cabinet Casing */
+        .arcade-container {
+            width: 95vw;
+            height: 90vh;
+            max-width: 1000px;
+            background: var(--cabinet);
+            border-radius: 50px 50px 20px 20px;
+            border: 12px solid #1d4ed8;
+            box-shadow: 0 0 0 10px #1e293b, 0 30px 60px rgba(0,0,0,0.8);
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            color: white;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 2px;
+            flex-direction: column;
+            padding: 40px;
+            position: relative;
         }
 
-        /* Game Screen */
-        .game-screen {
-            background: var(--screen);
-            height: 350px;
-            border-radius: 20px;
-            border: 10px solid #0f172a;
+        /* Marquee / Top Panel */
+        .marquee {
+            text-align: center;
+            background: #1e293b;
+            margin: -40px -40px 30px -40px;
+            padding: 20px;
+            border-radius: 40px 40px 0 0;
+            color: #fbbf24;
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px #fbbf24;
+            border-bottom: 5px solid #fbbf24;
+        }
+
+        /* The Big Screen */
+        .screen {
+            flex: 1;
+            background: var(--screen-bg);
+            border: 15px solid var(--screen-border);
+            border-radius: 30px;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-around;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
             overflow: hidden;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+        }
+
+        .stats {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        .target-zone {
+            text-align: center;
+            margin-top: 40px;
         }
 
         .target-number {
             font-family: 'Fredoka One', cursive;
-            font-size: 80px;
-            color: #0369a1;
+            font-size: 120px;
             margin: 0;
-            text-shadow: 4px 4px 0px rgba(255,255,255,0.5);
-            animation: bounce 2s infinite;
+            color: #2563eb;
+            line-height: 1;
         }
 
-        .instruction {
-            color: #0c4a6e;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
-
-        /* Item Grid */
-        .item-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            padding: 10px;
+        /* The Interaction Area */
+        .play-area {
+            width: 90%;
+            height: 250px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
         }
 
         .item {
-            font-size: 40px;
+            font-size: 80px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: grayscale(1) opacity(0.3);
+            transition: transform 0.1s, opacity 0.2s;
             user-select: none;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
         }
 
-        .item.active {
-            filter: grayscale(0) opacity(1);
-            transform: scale(1.2);
+        /* Animation for pressing */
+        .item:active { transform: scale(0.8); }
+        .item.collected { 
+            opacity: 0.2; 
+            pointer-events: none; 
+            transform: translateY(-50px) scale(0.5);
+            filter: grayscale(1);
         }
 
-        .item:active {
-            transform: scale(0.9);
-        }
-
-        /* Controls */
-        .controls {
+        /* Buttons / Control Deck */
+        .control-deck {
+            height: 120px;
             margin-top: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
 
-        .btn {
-            padding: 15px;
+        .joystick-btn {
+            width: 200px;
+            height: 70px;
             border: none;
-            border-radius: 15px;
+            border-radius: 35px;
             font-family: 'Fredoka One', cursive;
-            font-size: 18px;
+            font-size: 1.5rem;
+            color: white;
             cursor: pointer;
             text-transform: uppercase;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.3);
             transition: all 0.1s;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
         }
 
-        .btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        .btn-clear { background: var(--btn-red); }
+        .btn-submit { background: var(--btn-green); }
+        
+        .joystick-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
         }
 
-        .btn-submit { background: var(--success); color: #064e3b; }
-        .btn-reset { background: var(--error); color: #7f1d1d; }
-
-        /* Animations */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .confetti {
+        /* Floating feedback */
+        .count-pop {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background: red;
-            animation: fall 3s linear forwards;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(400px) rotate(360deg); opacity: 0; }
-        }
-
-        .level-up-flash {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: white;
-            opacity: 0;
+            font-family: 'Fredoka One';
+            font-size: 4rem;
+            color: #fbbf24;
             pointer-events: none;
-            z-index: 10;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-150px); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="arcade-casing">
-    <div class="header-panel">
-        <div>Level: <span id="level-val">1</span></div>
-        <div>Score: <span id="score-val">0</span></div>
-    </div>
+<div class="arcade-container">
+    <div class="marquee">COUNTING QUEST</div>
 
-    <div class="game-screen" id="screen">
-        <div class="level-up-flash" id="flash"></div>
-        <p class="instruction">Can you find...</p>
-        <h1 class="target-number" id="target">?</h1>
+    <div class="screen" id="mainScreen">
+        <div class="stats">
+            <div>LEVEL: <span id="lvl">1</span></div>
+            <div>STARS: <span id="score">0</span></div>
+        </div>
+
+        <div class="target-zone">
+            <div style="font-size: 1.2rem; font-weight: bold;">FIND EXACTLY:</div>
+            <h1 class="target-number" id="target">?</h1>
+        </div>
+
+        <div class="play-area" id="grid"></div>
         
-        <div class="item-grid" id="grid"></div>
+        <div id="counter-msg" style="font-size: 2rem; color: #1e293b; font-weight: 900;">
+            Current Count: <span id="liveCount">0</span>
+        </div>
     </div>
 
-    <div class="controls">
-        <button class="btn btn-reset" onclick="resetCount()">Clear</button>
-        <button class="btn btn-submit" onclick="checkAnswer()">Submit</button>
+    <div class="control-deck">
+        <button class="joystick-btn btn-clear" onclick="resetGame()">TRY AGAIN</button>
+        <button class="joystick-btn btn-submit" onclick="checkFinal()">SUBMIT</button>
     </div>
 </div>
 
 <script>
-    // Sound Engine (Web Audio API)
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    function playSound(freq, type, duration) {
+    function playNote(freq, type = 'sine', vol = 0.1, duration = 0.1) {
         const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        const g = audioCtx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        g.gain.setValueAtTime(vol, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
     }
 
-    const sounds = {
-        click: () => playSound(400 + (state.currentCount * 50), 'sine', 0.1),
-        win: () => {
-            playSound(523.25, 'square', 0.1);
-            setTimeout(() => playSound(659.25, 'square', 0.1), 100);
-            setTimeout(() => playSound(783.99, 'square', 0.3), 200);
-        },
-        error: () => playSound(150, 'sawtooth', 0.3),
-        reset: () => playSound(300, 'sine', 0.1)
-    };
-
-    // Game Logic
     const state = {
         level: 1,
         score: 0,
         target: 0,
-        currentCount: 0,
-        emoji: ['🍎', '⭐️', '🐸', '🚀', '🐱', '🍦', '🐼', '🦖']
+        count: 0,
+        emojis: ['🦁', '🐙', '🦖', '🦄', '🐝', '🍩', '🍔', '🚀']
     };
 
     function initLevel() {
         state.target = Math.floor(Math.random() * 10) + 1;
-        state.currentCount = 0;
-        const currentEmoji = state.emoji[Math.floor(Math.random() * state.emoji.length)];
+        state.count = 0;
+        const emoji = state.emojis[Math.floor(Math.random() * state.emojis.length)];
         
         document.getElementById('target').textContent = state.target;
-        document.getElementById('level-val').textContent = state.level;
-        document.getElementById('score-val').textContent = state.score;
+        document.getElementById('lvl').textContent = state.level;
+        document.getElementById('score').textContent = state.score;
+        document.getElementById('liveCount').textContent = "0";
         
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         
-        for (let i = 1; i <= 10; i++) {
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.textContent = currentEmoji;
-            div.dataset.index = i;
-            div.onclick = () => selectTo(i);
-            grid.appendChild(div);
+        // Always generate 10 items so they have to count carefully
+        for (let i = 0; i < 10; i++) {
+            const el = document.createElement('div');
+            el.className = 'item';
+            el.textContent = emoji;
+            el.onclick = (e) => handleItemClick(e, el);
+            grid.appendChild(el);
         }
     }
 
-    function selectTo(num) {
-        state.currentCount = num;
-        sounds.click();
-        const items = document.querySelectorAll('.item');
-        items.forEach((item, idx) => {
-            if (idx < num) item.classList.add('active');
-            else item.classList.remove('active');
-        });
+    function handleItemClick(e, el) {
+        if (el.classList.contains('collected')) return;
+        
+        state.count++;
+        el.classList.add('collected');
+        document.getElementById('liveCount').textContent = state.count;
+        
+        // Sound pitch increases with count
+        playNote(300 + (state.count * 60), 'triangle', 0.15, 0.2);
+        
+        // Visual Pop
+        const pop = document.createElement('div');
+        pop.className = 'count-pop';
+        pop.textContent = state.count;
+        pop.style.left = e.clientX - 50 + 'px';
+        pop.style.top = e.clientY - 100 + 'px';
+        document.body.appendChild(pop);
+        setTimeout(() => pop.remove(), 800);
     }
 
-    function resetCount() {
-        state.currentCount = 0;
-        sounds.reset();
-        document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
+    function resetGame() {
+        playNote(200, 'sawtooth', 0.1, 0.2);
+        initLevel();
     }
 
-    function checkAnswer() {
-        if (state.currentCount === state.target) {
-            handleWin();
+    function checkFinal() {
+        if (state.count === state.target) {
+            // Success
+            playNote(523, 'sine', 0.1, 0.1);
+            setTimeout(() => playNote(659, 'sine', 0.1, 0.1), 100);
+            setTimeout(() => playNote(783, 'sine', 0.2, 0.3), 200);
+            
+            state.score += (state.level * 10);
+            state.level++;
+            
+            document.getElementById('mainScreen').style.background = '#dcfce7';
+            setTimeout(() => {
+                document.getElementById('mainScreen').style.background = 'var(--screen-bg)';
+                initLevel();
+            }, 1000);
         } else {
-            handleLoss();
+            // Fail
+            playNote(100, 'sawtooth', 0.2, 0.5);
+            document.getElementById('mainScreen').style.background = '#fee2e2';
+            setTimeout(() => {
+                document.getElementById('mainScreen').style.background = 'var(--screen-bg)';
+                resetGame();
+            }, 800);
         }
     }
 
-    function handleWin() {
-        sounds.win();
-        state.score += 10;
-        state.level++;
-        
-        // Visual feedback
-        const flash = document.getElementById('flash');
-        flash.style.opacity = '0.8';
-        setTimeout(() => flash.style.opacity = '0', 200);
-        
-        createConfetti();
-        
-        setTimeout(initLevel, 1000);
-    }
-
-    function handleLoss() {
-        sounds.error();
-        const screen = document.getElementById('screen');
-        screen.style.borderColor = 'var(--error)';
-        setTimeout(() => screen.style.borderColor = '#0f172a', 500);
-        resetCount();
-    }
-
-    function createConfetti() {
-        for (let i = 0; i < 30; i++) {
-            const c = document.createElement('div');
-            c.className = 'confetti';
-            c.style.left = Math.random() * 100 + '%';
-            c.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-            c.style.transform = `rotate(${Math.random() * 360}deg)`;
-            document.getElementById('screen').appendChild(c);
-            setTimeout(() => c.remove(), 3000);
-        }
-    }
-
-    // Start
+    // Start Game
     initLevel();
 </script>
 
