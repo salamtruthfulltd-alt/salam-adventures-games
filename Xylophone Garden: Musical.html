@@ -3,107 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylophone Garden: Musical 1-5</title>
+    <title>Xylophone Garden Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #fdf4ff; --border: #701a75; }
-        body { margin: 0; background: #fae8ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-
-        .game-app { 
-            width: 100%; max-width: 320px; font-family: 'Fredoka One', cursive; 
-            background: var(--bg); padding: 20px; border-radius: 30px; border: 5px solid var(--border);
-            position: relative; touch-action: none; text-align: center; box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        .game-widget { 
+            width: 100%; max-width: 320px; margin: 10px auto; font-family: 'Fredoka One', cursive; 
+            background: var(--bg); padding: 15px; border-radius: 30px; border: 5px solid var(--border);
+            text-align: center; touch-action: none; position: relative;
         }
 
-        /* The Xylophone Bars */
-        .xylo-container { 
-            display: flex; flex-direction: column; gap: 8px; align-items: center; 
-            margin: 20px 0; padding: 15px; background: #f5d0fe; border-radius: 20px;
+        .xylo-frame { 
+            display: flex; flex-direction: column; gap: 6px; align-items: center; 
+            margin: 15px 0; padding: 10px; background: #f5d0fe; border-radius: 20px;
         }
 
         .bar {
-            height: 35px; border-radius: 10px; border: 3px solid rgba(0,0,0,0.1);
+            height: 38px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1);
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 1.2rem; transition: transform 0.2s;
+            color: white; font-size: 1.4rem; transition: 0.2s; opacity: 0.5;
         }
-        /* Gradient bars sizing */
-        .bar-1 { width: 90%; background: #ef4444; }
-        .bar-2 { width: 80%; background: #f97316; }
-        .bar-3 { width: 70%; background: #facc15; }
-        .bar-4 { width: 60%; background: #22c55e; }
-        .bar-5 { width: 50%; background: #3b82f6; }
+        
+        /* Each bar gets its own color and specific width */
+        #b1 { width: 95%; background: #ef4444; }
+        #b2 { width: 85%; background: #f97316; }
+        #b3 { width: 75%; background: #facc15; }
+        #b4 { width: 65%; background: #22c55e; }
+        #b5 { width: 55%; background: #3b82f6; }
+
+        .active-bar { opacity: 1 !important; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,255,255,0.8); }
+
+        .flower-tray { height: 80px; position: relative; background: #f0abfc; border-radius: 15px; margin-top: 10px; }
 
         .flower {
             width: 45px; height: 45px; position: absolute; cursor: grab;
-            display: flex; align-items: center; justify-content: center; font-size: 30px;
-            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); z-index: 10;
+            font-size: 32px; display: flex; align-items: center; justify-content: center;
+            z-index: 10; transition: transform 0.1s;
         }
-        .flower:active { transform: scale(1.2); }
-        .planted { pointer-events: none; position: relative !important; left: 0 !important; top: 0 !important; transform: scale(0.8); }
+        .flower:active { cursor: grabbing; transform: scale(1.2); }
+        .planted { display: none; } /* Hide the original once moved into the bar */
 
-        .target-text { color: var(--border); font-size: 1.4rem; margin-bottom: 10px; }
-        #grass { height: 100px; position: relative; background: #f0abfc; border-radius: 15px; margin-top: 15px; overflow: hidden; }
+        .msg { font-size: 0.75rem; color: #a21caf; margin-top: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="game-app">
-    <div class="target-text">Plant 5 Sound Flowers!</div>
+<div class="game-widget">
+    <div style="color:var(--border); font-size:1.3rem;">Xylophone Garden</div>
     
-    <div class="xylo-container">
-        <div id="bar-1" class="bar bar-1" data-num="1">1</div>
-        <div id="bar-2" class="bar bar-2" data-num="2">2</div>
-        <div id="bar-3" class="bar bar-3" data-num="3">3</div>
-        <div id="bar-4" class="bar bar-4" data-num="4">4</div>
-        <div id="bar-5" class="bar bar-5" data-num="5">5</div>
+    <div class="xylo-frame">
+        <div id="b1" class="bar" data-id="1">1</div>
+        <div id="b2" class="bar" data-id="2">2</div>
+        <div id="b3" class="bar" data-id="3">3</div>
+        <div id="b4" class="bar" data-id="4">4</div>
+        <div id="b5" class="bar" data-id="5">5</div>
     </div>
 
-    <div id="grass"></div>
-    <div style="margin-top:10px; font-size:0.8rem; color:#a21caf;">DRAG COLORS TO NUMBERS</div>
+    <div class="flower-tray" id="tray"></div>
+    <div class="msg">MATCH THE COLORS TO THE BARS!</div>
 </div>
 
 <script>
     const audio = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [261.63, 293.66, 329.63, 349.23, 392.00]; // C4 to G4
+    const notes = [261.63, 293.66, 329.63, 349.23, 392.00]; // C, D, E, F, G
 
-    function playNote(freq, dur=0.4) {
+    function playNote(f) {
+        if (audio.state === 'suspended') audio.resume();
         const o=audio.createOscillator(), g=audio.createGain();
-        o.type='sine'; o.frequency.value=freq; g.gain.value=0.1;
+        o.type='sine'; o.frequency.value=f; g.gain.value=0.1;
         o.connect(g); g.connect(audio.destination);
-        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+dur);
-        o.stop(audio.currentTime+dur);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+0.5);
+        o.stop(audio.currentTime+0.5);
     }
 
-    let plantedCount = 0;
-    const grass = document.getElementById('grass');
+    let score = 0;
+    const tray = document.getElementById('tray');
 
     function init() {
-        plantedCount = 0;
-        grass.innerHTML = '';
-        const colors = ['#ef4444','#f97316','#facc15','#22c55e','#3b82f6'];
+        score = 0;
+        tray.innerHTML = '';
+        const emojis = ['🌹', '🍊', '🌻', '🌿', '💧']; // Colors: Red, Orange, Yellow, Green, Blue
         
-        // Clear bars
         document.querySelectorAll('.bar').forEach(b => {
-            b.style.filter = 'grayscale(0.8)';
-            b.innerText = b.dataset.num;
+            b.classList.remove('active-bar');
+            b.innerText = b.dataset.id;
         });
 
-        // Create 5 unique flowers
         for(let i=1; i<=5; i++) {
             const f = document.createElement('div');
-            f.className = 'flower'; f.innerText = '🌸';
-            f.style.color = colors[i-1];
-            f.style.left = (20 + (i-1)*50) + 'px';
-            f.style.top = '25px';
-            f.dataset.num = i;
+            f.className = 'flower'; 
+            f.innerText = emojis[i-1];
+            f.style.left = (15 + (i-1)*55) + 'px';
+            f.style.top = '15px';
+            f.dataset.id = i;
             f.onpointerdown = startDrag;
-            grass.appendChild(f);
+            tray.appendChild(f);
         }
     }
 
     function startDrag(e) {
-        const el = e.target; el.setPointerCapture(e.pointerId);
-        const startX = e.clientX, startY = e.clientY, origX = el.offsetLeft, origY = el.offsetTop;
+        const el = e.target;
+        el.setPointerCapture(e.pointerId);
+        const startX = e.clientX, startY = e.clientY;
+        const origX = el.offsetLeft, origY = el.offsetTop;
 
         const onMove = (me) => {
             el.style.left = (origX + (me.clientX - startX)) + 'px';
@@ -114,46 +116,34 @@
             el.removeEventListener('pointermove', onMove);
             el.removeEventListener('pointerup', onUp);
             
-            const targetBar = document.getElementById(`bar-${el.dataset.num}`);
-            const tRect = targetBar.getBoundingClientRect();
+            const targetBar = document.getElementById(`b${el.dataset.id}`);
+            const rect = targetBar.getBoundingClientRect();
             
-            if (ue.clientX > tRect.left && ue.clientX < tRect.right && 
-                ue.clientY > tRect.top && ue.clientY < tRect.bottom) {
-                plant(el, targetBar);
+            // Checking if drop is inside the correct color bar
+            if (ue.clientX > rect.left && ue.clientX < rect.right && 
+                ue.clientY > rect.top && ue.clientY < rect.bottom) {
+                
+                score++;
+                playNote(notes[el.dataset.id - 1]);
+                targetBar.innerText = el.innerText;
+                targetBar.classList.add('active-bar');
+                el.remove();
+
+                if(score === 5) {
+                    setTimeout(() => {
+                        notes.forEach((n, idx) => setTimeout(() => playNote(n), idx * 150));
+                        setTimeout(init, 2000);
+                    }, 500);
+                }
             } else {
-                el.style.left = (20 + (el.dataset.num-1)*50) + 'px';
-                el.style.top = '25px';
+                // Return to tray
+                el.style.left = (15 + (el.dataset.id-1)*55) + 'px';
+                el.style.top = '15px';
             }
         };
+
         el.addEventListener('pointermove', onMove);
         el.addEventListener('pointerup', onUp);
-    }
-
-    function plant(flower, bar) {
-        plantedCount++;
-        flower.classList.add('planted');
-        bar.innerText = '';
-        bar.appendChild(flower);
-        bar.style.filter = 'none';
-        bar.style.transform = 'scale(1.05)';
-        setTimeout(() => bar.style.transform = 'scale(1)', 200);
-        
-        playNote(notes[flower.dataset.num - 1]);
-
-        if(plantedCount === 5) {
-            setTimeout(winCelebration, 500);
-        }
-    }
-
-    function winCelebration() {
-        notes.forEach((n, i) => {
-            setTimeout(() => {
-                playNote(n, 0.6);
-                document.getElementById(`bar-${i+1}`).style.transform = 'scale(1.1)';
-                setTimeout(() => document.getElementById(`bar-${i+1}`).style.transform = 'scale(1)', 200);
-            }, i * 200);
-        });
-        setTimeout(init, 3000);
     }
 
     init();
