@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Counting Animals Game</title>
+    <meta name="description" content="Free interactive counting game for kids. Count adorable animals and click the correct number. Builds early maths skills and number recognition.">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .game-container {
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 20px 20px 25px 20px;
+            transition: all 0.2s;
+        }
+        /* Header with logo */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .logo-img {
+            height: 45px;
+            width: auto;
+            max-width: 120px;
+        }
+        .brand-text {
+            line-height: 1.1;
+        }
+        .brand-salam {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .game-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        /* Game area */
+        .question-area {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c5a2e;
+            background: #fef4e6;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+        .animals-area {
+            background: #fefaf0;
+            border-radius: 28px;
+            padding: 20px 15px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px solid #f0e2cc;
+            min-height: 180px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+        .animal-icon {
+            font-size: 48px;
+            display: inline-block;
+            animation: bounce 0.3s ease;
+        }
+        @keyframes bounce {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .option-btn {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 14px 8px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            font-family: inherit;
+        }
+        .option-btn:hover {
+            background: #e0910f;
+            transform: scale(1.02);
+        }
+        .option-btn:active {
+            transform: scale(0.98);
+        }
+        .score-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #eef3fc;
+            padding: 10px 15px;
+            border-radius: 40px;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .message {
+            text-align: center;
+            padding: 10px;
+            background: #eef3fc;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .next-btn {
+            background: #2c5a2e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.1s;
+        }
+        .next-btn:hover {
+            background: #1f4421;
+        }
+        .restart-btn {
+            background: #f5a623;
+            margin-top: 5px;
+        }
+        .restart-btn:hover {
+            background: #e0910f;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Print support */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .option-btn, .next-btn, .restart-btn, .game-badge {
+                display: none;
+            }
+            .animals-area {
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-text">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="game-badge">🐘 Counting Game</div>
+    </div>
+
+    <div id="gameContent">
+        <!-- Dynamic content loaded by JS -->
+    </div>
+</div>
+
+<script>
+    // Animal themes with cute icons
+    const animalSets = [
+        { name: "safari", animals: ["🐘", "🦒", "🦁", "🦓", "🐒", "🦛"] },
+        { name: "farm", animals: ["🐮", "🐷", "🐔", "🐑", "🐴", "🦆"] },
+        { name: "pets", animals: ["🐶", "🐱", "🐰", "🐹", "🐠", "🐦"] },
+        { name: "jungle", animals: ["🐸", "🦜", "🐍", "🐅", "🦧", "🦚"] }
+    ];
+
+    let currentSet = [...animalSets[0].animals];
+    let currentCount = 0;
+    let currentQuestion = 0;
+    let score = 0;
+    let questions = [];
+    let waitingForNext = false;
+
+    // Generate random questions
+    function generateQuestions(count = 8) {
+        const qs = [];
+        for (let i = 0; i < count; i++) {
+            const animal = currentSet[Math.floor(Math.random() * currentSet.length)];
+            const correctNum = Math.floor(Math.random() * 8) + 1; // 1 to 8
+            qs.push({
+                animal: animal,
+                correct: correctNum,
+                options: generateOptions(correctNum)
+            });
+        }
+        return qs;
+    }
+
+    function generateOptions(correct) {
+        let opts = [correct];
+        while (opts.length < 3) {
+            let candidate = correct + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 2) + 1);
+            if (candidate < 1) candidate = correct + 1;
+            if (candidate > 10) candidate = correct - 1;
+            if (candidate < 1) candidate = 2;
+            if (candidate > 10) candidate = 9;
+            if (!opts.includes(candidate)) opts.push(candidate);
+        }
+        // shuffle options
+        for (let i = opts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        return opts;
+    }
+
+    function renderAnimals(count, animalIcon) {
+        let animalsHtml = '';
+        for (let i = 0; i < count; i++) {
+            animalsHtml += `<span class="animal-icon">${animalIcon}</span>`;
+        }
+        return animalsHtml;
+    }
+
+    function updateGame() {
+        if (currentQuestion >= questions.length) {
+            // Game finished
+            const message = score === questions.length ? "🎉 PERFECT SCORE! Amazing! 🎉" : `📊 Game Over! You scored ${score} out of ${questions.length}`;
+            document.getElementById('gameContent').innerHTML = `
+                <div class="question-area">
+                    <div class="question-text">🏆 Game Complete!</div>
+                </div>
+                <div class="score-area">
+                    <span>⭐ Final Score</span>
+                    <span>${score} / ${questions.length}</span>
+                </div>
+                <div class="message">${message}</div>
+                <button class="next-btn restart-btn" id="restartGameBtn">🔄 Play Again</button>
+            `;
+            document.getElementById('restartGameBtn')?.addEventListener('click', () => startNewGame());
+            return;
+        }
+
+        const q = questions[currentQuestion];
+        const animalsHtml = renderAnimals(q.correct, q.animal);
+        
+        const html = `
+            <div class="question-area">
+                <div class="question-text">🔢 How many ${q.animal} do you see?</div>
+            </div>
+            <div class="animals-area" id="animalsArea">
+                ${animalsHtml}
+            </div>
+            <div class="options">
+                ${q.options.map(num => `<button class="option-btn" data-value="${num}">${num}</button>`).join('')}
+            </div>
+            <div class="score-area">
+                <span>🎯 Question ${currentQuestion + 1}/${questions.length}</span>
+                <span>⭐ Score: ${score}</span>
+            </div>
+            <div class="message" id="gameMessage">🐘 Count the animals and click the correct number!</div>
+        `;
+        
+        document.getElementById('gameContent').innerHTML = html;
+        
+        // Add event listeners to option buttons
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (waitingForNext) return;
+                const selected = parseInt(btn.dataset.value);
+                const isCorrect = (selected === q.correct);
+                
+                const msgDiv = document.getElementById('gameMessage');
+                if (isCorrect) {
+                    score++;
+                    msgDiv.innerHTML = '✅ Correct! Well done! 🎉';
+                    msgDiv.style.background = '#d9f0e1';
+                } else {
+                    msgDiv.innerHTML = `❌ Oops! There were ${q.correct} ${q.animal}s. Next time!`;
+                    msgDiv.style.background = '#ffe0e0';
+                }
+                
+                // Update score display
+                const scoreSpan = document.querySelector('.score-area span:last-child');
+                if (scoreSpan) scoreSpan.innerHTML = `⭐ Score: ${score}`;
+                
+                // Disable buttons temporarily
+                waitingForNext = true;
+                document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+                
+                // Auto advance to next question
+                setTimeout(() => {
+                    currentQuestion++;
+                    waitingForNext = false;
+                    updateGame();
+                }, 1200);
+            });
+        });
+    }
+
+    function startNewGame() {
+        // Randomly select an animal theme
+        const randomTheme = animalSets[Math.floor(Math.random() * animalSets.length)];
+        currentSet = [...randomTheme.animals];
+        questions = generateQuestions(8);
+        currentQuestion = 0;
+        score = 0;
+        waitingForNext = false;
+        updateGame();
+    }
+
+    // Initialize the game
+    startNewGame();
+</script>
+</body>
+</html>
