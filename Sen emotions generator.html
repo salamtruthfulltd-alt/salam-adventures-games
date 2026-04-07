@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | SEN Emotion Recognition Worksheet Generator</title>
+    <meta name="description" content="Free printable emotion recognition worksheets for autistic children. Learn to identify feelings and practice coping strategies. Customisable for SEN learners.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+
+        .brand-name {
+            line-height: 1.1;
+        }
+
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+
+        .sen-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #4a6741;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .emotion-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .emotion-btn {
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .emotion-btn.selected {
+            background: #2c5a2e;
+            color: white;
+            border-color: #2c5a2e;
+        }
+
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #e0910f;
+        }
+
+        /* Worksheet */
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .name-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #ddd;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .name-line span {
+            border-bottom: 1px solid #ccc;
+            min-width: 180px;
+            display: inline-block;
+        }
+
+        .emotion-page {
+            margin-bottom: 35px;
+            page-break-inside: avoid;
+            background: #fefaf0;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #eee2ce;
+        }
+
+        .emotion-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+        }
+
+        .emotion-icon {
+            font-size: 48px;
+        }
+
+        .emotion-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c5a2e;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #f5a623;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .feeling-check {
+            background: #fff4e6;
+            padding: 12px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        .check-item {
+            display: inline-block;
+            width: 45%;
+            margin: 5px 0;
+            font-size: 13px;
+        }
+
+        .check-item input {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .coping-strategies {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        .strategy-item {
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .draw-area {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .draw-box {
+            border: 2px dashed #ccc;
+            height: 120px;
+            width: 100%;
+            border-radius: 16px;
+            margin-top: 8px;
+            background: white;
+        }
+
+        .draw-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 20px;
+            font-size: 13px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .print-btn:hover {
+            background: #1f4421;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .sen-badge {
+                display: none;
+            }
+            .worksheet {
+                border: none;
+                padding: 10px;
+            }
+            .emotion-page {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                border: 1px solid #eee;
+            }
+            .draw-box {
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="sen-badge">
+            😊 SEN Emotions
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="control-group">
+            <label>😊 Choose emotions</label>
+            <div class="emotion-buttons" id="emotionButtons">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+        <div class="control-group">
+            <label>📋 Include "How do you feel?"</label>
+            <select id="includeFeeling">
+                <option value="yes" selected>How do you feel? ✅</option>
+                <option value="no">Hide feeling check</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🆘 Include coping strategies</label>
+            <select id="includeCoping">
+                <option value="yes" selected>Coping strategies ✅</option>
+                <option value="no">Hide coping strategies</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ Generate Worksheet</button>
+    </div>
+
+    <!-- Worksheet area -->
+    <div id="worksheetArea" class="worksheet">
+        <!-- Filled by JavaScript -->
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+</div>
+
+<script>
+    const emotions = [
+        { 
+            name: 'Happy', icon: '😊', 
+            feelings: ['I feel happy', 'I feel like smiling', 'I have lots of energy'], 
+            strategies: ['Share your happiness', 'Draw a picture', 'Help someone else'] 
+        },
+        { 
+            name: 'Sad', icon: '😢', 
+            feelings: ['I feel sad', 'I feel like crying', 'I feel tired'], 
+            strategies: ['Talk to someone', 'Hug a toy', 'Listen to music'] 
+        },
+        { 
+            name: 'Angry', icon: '😡', 
+            feelings: ['I feel angry', 'I feel hot', 'I feel like shouting'], 
+            strategies: ['Breathe deeply', 'Squeeze a pillow', 'Take a break'] 
+        },
+        { 
+            name: 'Scared', icon: '😨', 
+            feelings: ['I feel scared', 'My heart beats fast', 'I want to hide'], 
+            strategies: ['Ask for help', 'Hold something soft', 'Count to 10'] 
+        },
+        { 
+            name: 'Tired', icon: '😴', 
+            feelings: ['I feel tired', 'My eyes feel heavy', 'I want to rest'], 
+            strategies: ['Rest for 5 minutes', 'Drink water', 'Stretch'] 
+        },
+        { 
+            name: 'Calm', icon: '😌', 
+            feelings: ['I feel calm', 'My body feels relaxed', 'My mind is quiet'], 
+            strategies: ['Keep breathing slowly', 'Enjoy the calm', 'Smile'] 
+        },
+        { 
+            name: 'Worried', icon: '😟', 
+            feelings: ['I feel worried', 'My tummy feels funny', 'My thoughts are busy'], 
+            strategies: ['Talk to a grown-up', 'Squeeze a stress ball', 'Draw your worry'] 
+        },
+        { 
+            name: 'Excited', icon: '🤩', 
+            feelings: ['I feel excited', 'I want to jump', 'I have a big smile'], 
+            strategies: ['Take a deep breath', 'Jump 5 times', 'Share your excitement'] 
+        }
+    ];
+
+    let selectedEmotions = ['Happy', 'Sad', 'Angry'];
+
+    function buildEmotionButtons() {
+        const container = document.getElementById('emotionButtons');
+        container.innerHTML = '';
+        emotions.forEach(emotion => {
+            const btn = document.createElement('button');
+            btn.textContent = `${emotion.icon} ${emotion.name}`;
+            btn.className = 'emotion-btn';
+            if (selectedEmotions.includes(emotion.name)) {
+                btn.classList.add('selected');
+            }
+            btn.onclick = () => {
+                if (selectedEmotions.includes(emotion.name)) {
+                    selectedEmotions = selectedEmotions.filter(e => e !== emotion.name);
+                    btn.classList.remove('selected');
+                } else {
+                    if (selectedEmotions.length < 6) {
+                        selectedEmotions.push(emotion.name);
+                        btn.classList.add('selected');
+                    }
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function generateWorksheet() {
+        const includeFeeling = document.getElementById('includeFeeling').value === 'yes';
+        const includeCoping = document.getElementById('includeCoping').value === 'yes';
+        
+        if (selectedEmotions.length === 0) {
+            selectedEmotions = ['Happy'];
+        }
+        
+        const container = document.getElementById('worksheetArea');
+        
+        let html = `
+            <div class="name-line">
+                <div>Name: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+                <div>Date: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+            </div>
+        `;
+        
+        for (let i = 0; i < selectedEmotions.length; i++) {
+            const emotionName = selectedEmotions[i];
+            const emotion = emotions.find(e => e.name === emotionName);
+            if (!emotion) continue;
+            
+            html += `<div class="emotion-page">`;
+            html += `<div class="emotion-header">`;
+            html += `<div class="emotion-icon">${emotion.icon}</div>`;
+            html += `<div class="emotion-name">${emotion.name}</div>`;
+            html += `</div>`;
+            
+            // How do you feel? section
+            if (includeFeeling) {
+                html += `<div class="section-title">💭 How do you feel?</div>`;
+                html += `<div class="feeling-check">`;
+                emotion.feelings.forEach(feeling => {
+                    html += `<div class="check-item">
+                        <input type="checkbox"> ${feeling}
+                    </div>`;
+                });
+                html += `<div class="check-item">
+                        <input type="checkbox"> I feel: <span style="border-bottom:1px solid #ccc; display:inline-block; width:100px;"></span>
+                    </div>`;
+                html += `</div>`;
+            }
+            
+            // Coping strategies section
+            if (includeCoping) {
+                html += `<div class="section-title">🆘 What helps me feel better?</div>`;
+                html += `<div class="coping-strategies">`;
+                emotion.strategies.forEach(strategy => {
+                    html += `<div class="strategy-item">
+                        🔹 ${strategy}
+                    </div>`;
+                });
+                html += `<div class="strategy-item">
+                        🔹 Something else: <span style="border-bottom:1px solid #ccc; display:inline-block; width:150px;"></span>
+                    </div>`;
+                html += `</div>`;
+            }
+            
+            // Draw your face section
+            html += `<div class="section-title">🎨 Draw your ${emotion.name} face</div>`;
+            html += `<div class="draw-area">
+                <div class="draw-box"></div>
+                <div class="draw-label">Draw how your face looks when you feel ${emotion.name}</div>
+            </div>`;
+            
+            html += `</div>`;
+        }
+        
+        html += `<div class="instruction-box">
+            💡 <strong>How to use:</strong> ① Tick how you feel ② Choose a strategy that helps ③ Draw your face ④ Talk with a teacher, parent, or therapist
+        </div>`;
+        
+        container.innerHTML = html;
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateWorksheet);
+    
+    buildEmotionButtons();
+    window.addEventListener('load', generateWorksheet);
+</script>
+</body>
+</html>
