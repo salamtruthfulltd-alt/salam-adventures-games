@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salam Adventures | Certificate Generator – Printable Achievement Awards</title>
-    <meta name="description" content="Free printable achievement certificates for kids. Reward maths mastery, memory skills, creativity, and more. Personalise with child's name and download as PDF.">
+    <meta name="description" content="Free printable achievement certificates for kids. Personalise with child's name and share on Facebook, Pinterest, or WhatsApp. Perfect for parents and teachers.">
     <style>
         * {
             box-sizing: border-box;
@@ -20,7 +20,7 @@
             align-items: center;
         }
         .container {
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
             margin: 0 auto;
             background: white;
@@ -222,6 +222,47 @@
         .date {
             text-align: right;
         }
+        /* Social Share Buttons */
+        .share-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #f0e2cc;
+        }
+        .share-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #5a4a2e;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .share-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+        .share-fb { background: #1877f2; }
+        .share-pinterest { background: #e60023; }
+        .share-wa { background: #25d366; }
+        .share-twitter { background: #1da1f2; }
         .print-btn {
             background: #2c5a2e;
             margin-top: 15px;
@@ -244,7 +285,7 @@
                 padding: 0;
                 margin: 0;
             }
-            .controls, .print-btn, .instruction, .badge, .header button {
+            .controls, .print-btn, .instruction, .badge, .header button, .share-section {
                 display: none;
             }
             .container {
@@ -340,9 +381,20 @@
         </div>
     </div>
 
+    <!-- SOCIAL SHARE BUTTONS -->
+    <div class="share-section">
+        <div class="share-title">📢 Share this achievement on social media!</div>
+        <div class="share-buttons">
+            <button class="share-btn share-fb" id="shareFbBtn">📘 Facebook</button>
+            <button class="share-btn share-pinterest" id="sharePinterestBtn">📌 Pinterest</button>
+            <button class="share-btn share-wa" id="shareWaBtn">💬 WhatsApp</button>
+            <button class="share-btn share-twitter" id="shareTwitterBtn">🐦 Twitter</button>
+        </div>
+    </div>
+
     <button class="print-btn" onclick="window.print()">🖨️ Print Certificate / Save as PDF</button>
     <div class="instruction">
-        🏆 Celebrate every milestone! Print this certificate or save as PDF. Share on social media to make your child's achievement extra special!
+        🏆 Celebrate every milestone! Print, save as PDF, or share on social media. Every share helps more families discover Salam Adventures!
     </div>
 </div>
 
@@ -384,7 +436,7 @@
     const formattedDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
     document.getElementById('certDate').value = formattedDate;
 
-    function updateCertificate() {
+    function getCurrentCertificateData() {
         const childName = document.getElementById('childName').value || "Little Learner";
         const achievementType = document.getElementById('achievementType').value;
         const customTitle = document.getElementById('customTitle').value;
@@ -399,17 +451,52 @@
             achievementDesc = `For outstanding achievement in ${customTitle.trim()}!`;
         }
 
-        document.getElementById('displayName').innerText = childName;
-        document.getElementById('displayAchievement').innerText = achievementTitle;
-        document.getElementById('displayDescription').innerHTML = achievementDesc;
+        return { childName, achievementTitle, achievementDesc, personalMsg, certDate };
+    }
+
+    function updateCertificate() {
+        const data = getCurrentCertificateData();
         
-        if (personalMsg.trim()) {
-            document.getElementById('displayCustomMsg').innerHTML = `✨ "${personalMsg.trim()}" ✨`;
+        document.getElementById('displayName').innerText = data.childName;
+        document.getElementById('displayAchievement').innerText = data.achievementTitle;
+        document.getElementById('displayDescription').innerHTML = data.achievementDesc;
+        
+        if (data.personalMsg.trim()) {
+            document.getElementById('displayCustomMsg').innerHTML = `✨ "${data.personalMsg.trim()}" ✨`;
         } else {
             document.getElementById('displayCustomMsg').innerHTML = '';
         }
         
-        document.getElementById('displayDate').innerHTML = `<div>Date: ${certDate}</div>`;
+        document.getElementById('displayDate').innerHTML = `<div>Date: ${data.certDate}</div>`;
+    }
+
+    // Generate share text
+    function getShareText() {
+        const data = getCurrentCertificateData();
+        return `🎉 Congratulations ${data.childName}! 🎉\n\nEarned: ${data.achievementTitle}\n${data.personalMsg ? '"' + data.personalMsg + '"' : ''}\n\nCreated with Salam Adventures — free learning games and printables for kids!\n\n👉 Visit: salamadventures.com`;
+    }
+
+    // Share functions
+    function shareOnFacebook() {
+        const url = encodeURIComponent(window.location.href);
+        const quote = encodeURIComponent(getShareText());
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareOnPinterest() {
+        const url = encodeURIComponent(window.location.href);
+        const description = encodeURIComponent(getShareText());
+        window.open(`https://pinterest.com/pin/create/button/?url=${url}&description=${description}`, '_blank', 'width=600,height=400');
+    }
+
+    function shareOnWhatsApp() {
+        const text = encodeURIComponent(getShareText() + "\n\n" + window.location.href);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    function shareOnTwitter() {
+        const text = encodeURIComponent(getShareText());
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank', 'width=600,height=400');
     }
 
     // Show/hide custom input
@@ -446,6 +533,12 @@
     document.getElementById('personalMessage').addEventListener('input', updateCertificate);
     document.getElementById('certDate').addEventListener('input', updateCertificate);
     document.getElementById('customTitle').addEventListener('input', updateCertificate);
+    
+    // Share buttons
+    document.getElementById('shareFbBtn').addEventListener('click', shareOnFacebook);
+    document.getElementById('sharePinterestBtn').addEventListener('click', shareOnPinterest);
+    document.getElementById('shareWaBtn').addEventListener('click', shareOnWhatsApp);
+    document.getElementById('shareTwitterBtn').addEventListener('click', shareOnTwitter);
 
     // Initial update
     updateCertificate();
