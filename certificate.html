@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Certificate Generator – Printable Achievement Awards</title>
+    <meta name="description" content="Free printable achievement certificates for kids. Reward maths mastery, memory skills, creativity, and more. Personalise with child's name and download as PDF.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard SE', cursive, sans-serif;
+            background: linear-gradient(145deg, #e8f0e8, #d4e0d4);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 750px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 48px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+            padding: 20px 25px 30px;
+            border: 1px solid #ffe0b5;
+        }
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 3px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .logo-img {
+            height: 55px;
+            width: auto;
+            max-width: 140px;
+            background: #fdf8ed;
+            border-radius: 30px;
+            padding: 5px 10px;
+        }
+        .brand-salam {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        /* Controls */
+        .controls {
+            background: #f9f5eb;
+            padding: 18px 20px;
+            border-radius: 28px;
+            margin-bottom: 25px;
+        }
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .control-group {
+            flex: 1;
+            min-width: 160px;
+        }
+        .control-group label {
+            display: block;
+            font-weight: bold;
+            font-size: 12px;
+            color: #5a4a2e;
+            margin-bottom: 5px;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #e0910f;
+            transform: scale(1.02);
+        }
+        .btn-green {
+            background: #2c5a2e;
+        }
+        .btn-green:hover {
+            background: #1f4421;
+        }
+        /* Certificate Preview */
+        .certificate-preview {
+            background: #fffef8;
+            border: 2px dashed #f0e2cc;
+            border-radius: 32px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .certificate {
+            background: white;
+            border: 8px solid #f5a623;
+            border-radius: 32px;
+            padding: 35px 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .certificate::before {
+            content: "🏆";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+        .certificate-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .certificate-logo {
+            font-size: 48px;
+            margin-bottom: 5px;
+        }
+        .certificate-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #2c5a2e;
+            letter-spacing: 2px;
+            margin: 10px 0;
+        }
+        .certificate-subtitle {
+            font-size: 18px;
+            color: #f5a623;
+            border-top: 2px solid #f5a623;
+            border-bottom: 2px solid #f5a623;
+            display: inline-block;
+            padding: 5px 20px;
+        }
+        .certificate-body {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .awarded-to {
+            font-size: 18px;
+            color: #5a4a2e;
+        }
+        .child-name {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a2a3a;
+            border-bottom: 3px dotted #f5a623;
+            display: inline-block;
+            padding: 0 20px;
+            margin: 10px 0;
+            font-family: 'Comic Neue', cursive;
+        }
+        .achievement-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c5a2e;
+            margin: 20px 0;
+        }
+        .description {
+            font-size: 16px;
+            color: #666;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+        .certificate-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+        }
+        .signature {
+            text-align: center;
+        }
+        .signature-line {
+            width: 180px;
+            border-top: 1px solid #333;
+            margin-top: 30px;
+            margin-bottom: 5px;
+        }
+        .date {
+            text-align: right;
+        }
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+        }
+        .instruction {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .instruction, .badge, .header button {
+                display: none;
+            }
+            .container {
+                padding: 0;
+                box-shadow: none;
+            }
+            .certificate-preview {
+                padding: 0;
+                border: none;
+            }
+            .certificate {
+                border: 4px solid #f5a623;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div>
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="badge">🏆 Certificate Generator</div>
+    </div>
+
+    <div class="controls">
+        <div class="control-row">
+            <div class="control-group">
+                <label>👧 Child's Name</label>
+                <input type="text" id="childName" placeholder="e.g., Little Learner" value="Little Learner">
+            </div>
+            <div class="control-group">
+                <label>🏅 Achievement Type</label>
+                <select id="achievementType">
+                    <option value="maths">Maths Master</option>
+                    <option value="memory">Memory Champion</option>
+                    <option value="creative">Creative Storyteller</option>
+                    <option value="handwriting">Handwriting Hero</option>
+                    <option value="emotion">Emotion Explorer</option>
+                    <option value="game">Arcade Champion</option>
+                    <option value="custom">Custom Achievement</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-row" id="customRow" style="display:none;">
+            <div class="control-group">
+                <label>✏️ Custom Achievement Title</label>
+                <input type="text" id="customTitle" placeholder="e.g., Super Speller, Puzzle Master">
+            </div>
+        </div>
+        <div class="control-row">
+            <div class="control-group">
+                <label>📝 Personal Message (optional)</label>
+                <input type="text" id="personalMessage" placeholder="e.g., For counting to 100!">
+            </div>
+            <div class="control-group">
+                <label>📅 Date</label>
+                <input type="text" id="certDate" value="">
+            </div>
+        </div>
+        <div class="control-row">
+            <button id="updatePreviewBtn">✨ Update Preview</button>
+            <button id="randomBtn" class="btn-green">🎲 Random Certificate</button>
+        </div>
+    </div>
+
+    <div class="certificate-preview">
+        <div class="certificate" id="certificate">
+            <div class="certificate-header">
+                <div class="certificate-logo">🌟 Salam Adventures 🌟</div>
+                <div class="certificate-title">CERTIFICATE</div>
+                <div class="certificate-subtitle">OF ACHIEVEMENT</div>
+            </div>
+            <div class="certificate-body">
+                <div class="awarded-to">This certificate is proudly awarded to</div>
+                <div class="child-name" id="displayName">Little Learner</div>
+                <div class="achievement-text" id="displayAchievement">Maths Master</div>
+                <div class="description" id="displayDescription">For amazing counting skills and number recognition!</div>
+                <div class="description" id="displayCustomMsg" style="margin-top:10px; font-style:italic;"></div>
+            </div>
+            <div class="certificate-footer">
+                <div class="signature">
+                    <div class="signature-line"></div>
+                    <div>Teacher / Parent</div>
+                </div>
+                <div class="date" id="displayDate">
+                    <div>Date: _____________</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Print Certificate / Save as PDF</button>
+    <div class="instruction">
+        🏆 Celebrate every milestone! Print this certificate or save as PDF. Share on social media to make your child's achievement extra special!
+    </div>
+</div>
+
+<script>
+    // Achievement data
+    const achievements = {
+        maths: {
+            title: "Maths Master",
+            description: "For amazing counting skills and number recognition!"
+        },
+        memory: {
+            title: "Memory Champion",
+            description: "For excellent memory and matching skills!"
+        },
+        creative: {
+            title: "Creative Storyteller",
+            description: "For wonderful imagination and creative writing!"
+        },
+        handwriting: {
+            title: "Handwriting Hero",
+            description: "For neat, careful, and beautiful handwriting!"
+        },
+        emotion: {
+            title: "Emotion Explorer",
+            description: "For understanding feelings and helping others!"
+        },
+        game: {
+            title: "Arcade Champion",
+            description: "For high scores and fast reflexes in our arcade games!"
+        },
+        custom: {
+            title: "Custom Achievement",
+            description: "For outstanding effort and achievement!"
+        }
+    };
+
+    // Set today's date
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('certDate').value = formattedDate;
+
+    function updateCertificate() {
+        const childName = document.getElementById('childName').value || "Little Learner";
+        const achievementType = document.getElementById('achievementType').value;
+        const customTitle = document.getElementById('customTitle').value;
+        const personalMsg = document.getElementById('personalMessage').value;
+        const certDate = document.getElementById('certDate').value || formattedDate;
+
+        let achievementTitle = achievements[achievementType].title;
+        let achievementDesc = achievements[achievementType].description;
+
+        if (achievementType === 'custom' && customTitle.trim()) {
+            achievementTitle = customTitle.trim();
+            achievementDesc = `For outstanding achievement in ${customTitle.trim()}!`;
+        }
+
+        document.getElementById('displayName').innerText = childName;
+        document.getElementById('displayAchievement').innerText = achievementTitle;
+        document.getElementById('displayDescription').innerHTML = achievementDesc;
+        
+        if (personalMsg.trim()) {
+            document.getElementById('displayCustomMsg').innerHTML = `✨ "${personalMsg.trim()}" ✨`;
+        } else {
+            document.getElementById('displayCustomMsg').innerHTML = '';
+        }
+        
+        document.getElementById('displayDate').innerHTML = `<div>Date: ${certDate}</div>`;
+    }
+
+    // Show/hide custom input
+    function toggleCustomInput() {
+        const achievementType = document.getElementById('achievementType').value;
+        const customRow = document.getElementById('customRow');
+        customRow.style.display = achievementType === 'custom' ? 'flex' : 'none';
+        updateCertificate();
+    }
+
+    // Random certificate
+    function randomCertificate() {
+        const names = ["Leo", "Maya", "Aarav", "Sophia", "Oliver", "Zara", "Ethan", "Lily", "Noah", "Aisha", "Sam", "Bella", "Max", "Ella", "Liam"];
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        const randomAchievements = ["maths", "memory", "creative", "handwriting", "emotion", "game"];
+        const randomAch = randomAchievements[Math.floor(Math.random() * randomAchievements.length)];
+        const messages = ["Keep shining! 🌟", "So proud of you! 🎉", "Amazing work! 👏", "You're a star! ⭐", "Incredible effort! 💪"];
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+
+        document.getElementById('childName').value = randomName;
+        document.getElementById('achievementType').value = randomAch;
+        document.getElementById('personalMessage').value = randomMsg;
+        document.getElementById('customTitle').value = "";
+        
+        toggleCustomInput();
+        updateCertificate();
+    }
+
+    // Event listeners
+    document.getElementById('updatePreviewBtn').addEventListener('click', updateCertificate);
+    document.getElementById('randomBtn').addEventListener('click', randomCertificate);
+    document.getElementById('achievementType').addEventListener('change', toggleCustomInput);
+    document.getElementById('childName').addEventListener('input', updateCertificate);
+    document.getElementById('personalMessage').addEventListener('input', updateCertificate);
+    document.getElementById('certDate').addEventListener('input', updateCertificate);
+    document.getElementById('customTitle').addEventListener('input', updateCertificate);
+
+    // Initial update
+    updateCertificate();
+    toggleCustomInput();
+</script>
+</body>
+</html>
