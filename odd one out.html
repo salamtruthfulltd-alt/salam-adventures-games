@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Odd One Out Game</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 20px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .logo-img { height: 50px; width: auto; max-width: 150px; }
+        .brand-salam { font-size: 22px; font-weight: 800; color: #2c5a2e; }
+        .brand-adventures { font-size: 16px; font-weight: 600; color: #f5a623; }
+        .game-badge { margin-left: auto; background: #f0f2f5; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: bold; color: #e0910f; }
+        .question-area { text-align: center; padding: 30px; background: #fefaf0; border-radius: 24px; margin: 20px 0; }
+        .items { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; margin: 20px 0; }
+        .item-card { background: white; border: 2px solid #eee2ce; border-radius: 20px; padding: 20px; font-size: 48px; cursor: pointer; transition: 0.1s; min-width: 100px; text-align: center; }
+        .item-card:hover { transform: scale(1.05); border-color: #f5a623; }
+        .score { text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0; }
+        .message { text-align: center; padding: 12px; background: #eef3fc; border-radius: 16px; margin-top: 15px; }
+        .next-btn { background: #2c5a2e; color: white; border: none; padding: 12px 24px; border-radius: 40px; font-size: 16px; cursor: pointer; margin-top: 10px; width: 100%; }
+        @media print { .controls, button, .item-card, .next-btn { display: none; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="game-badge">🎮 Odd One Out</div>
+    </div>
+    <div id="gameArea"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save</button>
+</div>
+<script>
+    const puzzles = [
+        { items: ['🐶', '🐱', '🐭', '🍎'], correct: 3, explanation: "🍎 is a fruit, the others are animals" },
+        { items: ['✈️', '🚗', '🚲', '🐟'], correct: 3, explanation: "🐟 lives in water, the others are vehicles" },
+        { items: ['🍎', '🍌', '🥕', '🍊'], correct: 2, explanation: "🥕 is a vegetable, the others are fruits" },
+        { items: ['🟥', '🟦', '🟩', '🐱'], correct: 3, explanation: "🐱 is an animal, the others are colours" },
+        { items: ['😊', '😂', '😢', '🌟'], correct: 3, explanation: "🌟 is a star, the others are faces" }
+    ];
+    let currentIdx = 0, score = 0;
+    function loadPuzzle() {
+        const p = puzzles[currentIdx];
+        const html = `
+            <div class="question-area"><div class="question-text">🔍 Which one is the odd one out?</div></div>
+            <div class="items">${p.items.map((item, idx) => `<div class="item-card" data-idx="${idx}">${item}</div>`).join('')}</div>
+            <div class="score">⭐ Score: ${score}/${puzzles.length}</div>
+            <div class="message" id="msg">Click on the item that doesn't belong!</div>
+        `;
+        document.getElementById('gameArea').innerHTML = html;
+        document.querySelectorAll('.item-card').forEach(card => card.addEventListener('click', (e) => checkAnswer(parseInt(e.currentTarget.dataset.idx))));
+    }
+    function checkAnswer(selected) {
+        const p = puzzles[currentIdx];
+        const isCorrect = (selected === p.correct);
+        if (isCorrect) { score++; document.getElementById('msg').innerHTML = `✅ Correct! ${p.explanation}`; }
+        else { document.getElementById('msg').innerHTML = `❌ Oops! The odd one is ${p.items[p.correct]}. ${p.explanation}`; }
+        currentIdx++;
+        if (currentIdx < puzzles.length) { setTimeout(loadPuzzle, 1500); }
+        else { document.getElementById('gameArea').innerHTML = `<div class="question-area"><div class="question-text">🎉 Game Over! Final score: ${score}/${puzzles.length}</div><button class="next-btn" id="restartBtn">Play Again</button></div>`; document.getElementById('restartBtn')?.addEventListener('click', () => { currentIdx = 0; score = 0; loadPuzzle(); }); }
+    }
+    loadPuzzle();
+</script>
+</body>
+</html>
