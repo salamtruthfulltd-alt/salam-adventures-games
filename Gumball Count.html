@@ -22,7 +22,7 @@
         }
 
         .game-card {
-            width: 300px; height: 420px; background: white; 
+            width: 300px; height: 440px; background: white; 
             padding: 20px; border-radius: 35px; border: 6px solid var(--red);
             box-shadow: 0 8px 0 var(--dark); display: flex; 
             flex-direction: column; align-items: center; position: relative;
@@ -31,19 +31,19 @@
         .status-msg { color: var(--red); font-size: 1.3rem; margin-bottom: 10px; height: 1.6rem; }
 
         #globe {
-            width: 140px; height: 140px; background: rgba(226, 232, 240, 0.4); 
+            width: 150px; height: 150px; background: rgba(226, 232, 240, 0.4); 
             border: 3px solid #cbd5e1; border-radius: 50%; 
             position: relative; overflow: hidden;
         }
 
         .base {
-            width: 90px; height: 35px; background: var(--red);
+            width: 100px; height: 40px; background: var(--red);
             margin: -15px 0 20px 0; border-radius: 5px 5px 25px 25px;
             border-bottom: 5px solid var(--dark); z-index: 5;
         }
 
         .tray-bg { 
-            width: 100%; height: 75px; background: #fee2e2; 
+            width: 100%; height: 80px; background: #fee2e2; 
             border-radius: 18px; border: 2px dashed #fca5a5;
             position: relative;
         }
@@ -106,19 +106,17 @@
         document.querySelectorAll('.gumball').forEach(b => b.remove());
         msg.innerText = "Count to 5!";
         
-        // Calculate dynamic spacing to ensure they fit in the box
-        const trayWidth = trayArea.clientWidth; 
-        const ballSize = 38;
-        const availableSpace = trayWidth - ballSize - 20; // 20 for internal padding
-        const step = availableSpace / 5; 
+        // Dynamic spacing logic: (Box Width - Padding - Ball Width) / (Balls - 1)
+        const boxWidth = trayArea.clientWidth - 20; 
+        const step = boxWidth / 5; 
 
         for(let i = 0; i < 6; i++) {
             const b = document.createElement('div');
             b.className = 'gumball';
             b.style.background = colors[i];
-            // Use Tray Area relative positioning for the start
+            // Position relative to the center of the tray
             b.style.left = (10 + (i * step)) + 'px';
-            b.style.top = '338px'; 
+            b.style.top = '340px'; 
             b.onpointerdown = pickup;
             stage.appendChild(b);
         }
@@ -133,8 +131,9 @@
         const stageRect = stage.getBoundingClientRect();
         const globeRect = globe.getBoundingClientRect();
         
-        const targetX = globeRect.left - stageRect.left + (globeRect.width / 2);
-        const targetY = globeRect.top - stageRect.top + (globeRect.height / 2);
+        // Center point of the globe on the screen
+        const globeCenterX = globeRect.left + (globeRect.width / 2);
+        const globeCenterY = globeRect.top + (globeRect.height / 2);
 
         const moving = (ev) => {
             const x = ev.clientX - stageRect.left - 19;
@@ -147,18 +146,21 @@
             b.removeEventListener('pointermove', moving);
             b.removeEventListener('pointerup', dropping);
             
-            const ballCenterX = ev.clientX - stageRect.left;
-            const ballCenterY = ev.clientY - stageRect.top;
-            const distance = Math.hypot(ballCenterX - targetX, ballCenterY - targetY);
+            // MATH: Is the finger position (where the ball is) close to the globe center?
+            const distance = Math.hypot(ev.clientX - globeCenterX, ev.clientY - globeCenterY);
 
-            // Detection check
-            if (distance < 75) {
+            // Distance threshold (80px is half the globe width + wiggle room)
+            if (distance < 80) {
                 count++;
                 b.onpointerdown = null;
                 b.style.zIndex = "10";
                 
-                b.style.left = (targetX - 19 + (Math.random() * 40 - 20)) + 'px';
-                b.style.top = (targetY + 20 - (Math.floor((count-1)/2) * 22)) + 'px';
+                // Set final resting place relative to stage
+                const finalX = (globeRect.left - stageRect.left) + 25 + (Math.random() * 60);
+                const finalY = (globeRect.top - stageRect.top) + 80 - (Math.floor((count-1)/2) * 25);
+                
+                b.style.left = finalX + 'px';
+                b.style.top = finalY + 'px';
                 
                 playPop(300 + (count * 100));
                 
@@ -168,7 +170,7 @@
                     setTimeout(reset, 3500);
                 }
             } else {
-                reset(); 
+                reset(); // Return all balls to start positions
             }
         };
 
