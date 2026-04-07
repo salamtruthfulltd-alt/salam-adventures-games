@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEN Generator Widget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background: transparent; }
+        .sen-font { letter-spacing: 0.03em; line-height: 1.6; font-size: 1.1rem; }
+        .dyslexia-bg { background-color: #fff9e6 !important; border: 2px solid #f2e4bb; }
+        /* Small scrollbar for the output */
+        #worksheetDisplay::-webkit-scrollbar { width: 6px; }
+        #worksheetDisplay::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-2">
+
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+        
+        <div class="bg-slate-900 px-4 py-3 text-white flex justify-between items-center">
+            <h2 class="text-sm font-semibold uppercase tracking-wider">SEN Worksheet AI</h2>
+            <span class="text-[10px] bg-indigo-500 px-2 py-0.5 rounded-full">v2.0</span>
+        </div>
+
+        <div class="p-4 space-y-4">
+            <input type="password" id="apiKey" placeholder="OpenAI Key (sk-...)" 
+                class="w-full text-sm p-2 border rounded bg-slate-50 focus:outline-indigo-500">
+
+            <div class="space-y-2">
+                <input type="text" id="topic" placeholder="Worksheet Topic..." 
+                    class="w-full p-2.5 border rounded-lg text-sm font-medium">
+                
+                <div class="flex gap-2">
+                    <select id="readingAge" class="w-1/2 p-2 text-xs border rounded bg-white">
+                        <option value="Primary">Reading: Easy</option>
+                        <option value="Intermediate" selected>Reading: Mid</option>
+                        <option value="Advanced">Reading: High</option>
+                    </select>
+                    <div class="w-1/2 flex items-center justify-center border rounded bg-slate-50">
+                        <label class="text-[11px] font-medium flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" id="dyslexiaMode" class="rounded"> Dyslexia Filter
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="generate()" id="genBtn" 
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-2.5 rounded-lg transition-all active:scale-95">
+                Generate Material
+            </button>
+
+            <div id="outputArea" class="hidden animate-in fade-in duration-500">
+                <div id="worksheetDisplay" 
+                    class="h-48 overflow-y-auto p-4 border rounded-lg bg-slate-50 text-sm text-slate-700 sen-font mb-3">
+                    </div>
+                <button onclick="downloadPDF()" 
+                    class="w-full border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function generate() {
+            const btn = document.getElementById('genBtn');
+            const key = document.getElementById('apiKey').value;
+            const topic = document.getElementById('topic').value;
+            const isDyslexia = document.getElementById('dyslexiaMode').checked;
+
+            if(!key || !topic) return alert("Fill in key and topic!");
+
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                    body: JSON.stringify({
+                        model: "gpt-4o-mini", // Faster and cheaper for small widgets
+                        messages: [{role: "user", content: `Create a SEN-friendly worksheet about ${topic}. Use bullet points and simple words. Include 2 check-box questions.`}]
+                    })
+                });
+
+                const data = await res.json();
+                const text = data.choices[0].message.content;
+
+                const display = document.getElementById('worksheetDisplay');
+                display.innerHTML = text.replace(/\n/g, '<br>');
+                
+                if(isDyslexia) display.classList.add('dyslexia-bg');
+                else display.classList.remove('dyslexia-bg');
+
+                document.getElementById('outputArea').classList.remove('hidden');
+            } catch (e) {
+                alert("Error! Check API key.");
+            } finally {
+                btn.innerText = "Generate Material";
+                btn.disabled = false;
+            }
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const content = document.getElementById('worksheetDisplay').innerText;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            doc.text(doc.splitTextToSize(content, 180), 15, 20);
+            doc.save("Worksheet.pdf");
+        }
+    </script>
+</body>
+</html>
