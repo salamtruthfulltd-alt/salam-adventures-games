@@ -3,78 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gumball Count 1-5</title>
+    <title>Gumball Count</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         :root { --red: #ef4444; --dark: #b91c1c; }
         
-        /* Stop the phone from bouncing or zooming */
         * { box-sizing: border-box; touch-action: none; user-select: none; -webkit-user-select: none; }
 
         body { 
             margin: 0; padding: 0; background: #fef2f2; 
             display: flex; justify-content: center; align-items: center; 
-            height: 100dvh; overflow: hidden; font-family: 'Fredoka One', cursive;
+            height: 100vh; height: 100dvh; overflow: hidden; font-family: 'Fredoka One', cursive;
         }
 
-        .game-card { 
-            width: 92vw; max-width: 340px; 
-            height: auto; max-height: 95dvh;
-            background: white; padding: 15px; 
-            border-radius: 30px; border: 5px solid var(--red);
-            display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 6px 0 var(--dark); position: relative;
+        /* The Box that keeps everything small enough for a phone */
+        .game-scaler {
+            width: 95vw;
+            max-width: 300px; /* Narrower for modern phones */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 12px;
+            border-radius: 25px;
+            border: 4px solid var(--red);
+            box-shadow: 0 5px 0 var(--dark);
         }
 
-        .title { color: var(--red); font-size: 1.1rem; margin-bottom: 8px; }
+        .title { color: var(--red); font-size: 1rem; margin-bottom: 5px; }
 
-        /* Globe scales based on screen width */
+        /* Smaller Globe to save vertical space */
         #globe {
-            width: 45vw; height: 45vw; max-width: 150px; max-height: 150px;
-            background: rgba(226, 232, 240, 0.4); 
+            width: 130px; height: 130px; 
+            background: rgba(226, 232, 240, 0.5); 
             border: 3px solid #cbd5e1; border-radius: 50%; 
             position: relative; overflow: hidden; z-index: 1;
         }
 
         .base {
-            width: 35%; height: 40px; background: var(--red);
-            margin: -12px 0 8px 0; border-radius: 5px 5px 25px 25px;
-            border-bottom: 5px solid var(--dark); z-index: 2;
+            width: 80px; height: 35px; background: var(--red);
+            margin: -10px 0 5px 0; border-radius: 5px 5px 20px 20px;
+            border-bottom: 4px solid var(--dark); z-index: 2;
         }
 
         #tray { 
-            width: 100%; height: 70px; background: #fee2e2; 
-            border-radius: 15px; position: relative;
-            border: 2px dashed #fca5a5; margin-top: auto;
+            width: 100%; height: 60px; background: #fee2e2; 
+            border-radius: 12px; position: relative;
+            border: 2px dashed #fca5a5;
         }
 
         .gumball {
-            width: 36px; height: 36px; border-radius: 50%; position: absolute;
-            z-index: 100; border: 2px solid rgba(0,0,0,0.1);
+            width: 30px; height: 30px; border-radius: 50%; position: absolute;
+            z-index: 100; border: 1.5px solid rgba(0,0,0,0.1);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
-            touch-action: none; cursor: grab;
+            cursor: grab;
         }
 
-        .hint { font-size: 0.7rem; color: #991b1b; margin-top: 5px; text-transform: uppercase; }
+        .hint { font-size: 0.6rem; color: #991b1b; margin-top: 5px; opacity: 0.8; }
     </style>
 </head>
 <body>
 
-<div class="game-card" id="gameArea">
+<div class="game-scaler" id="mainArea">
     <div class="title" id="status">Put 5 Gumballs in!</div>
     
     <div id="globe"></div>
     <div class="base"></div>
 
     <div id="tray"></div>
-    <div class="hint">Drag gumballs up to the machine</div>
+    <div class="hint">DRAG TO THE GLASS</div>
 </div>
 
 <script>
     const globe = document.getElementById('globe');
     const tray = document.getElementById('tray');
     const status = document.getElementById('status');
-    const gameArea = document.getElementById('gameArea');
+    const mainArea = document.getElementById('mainArea');
     const colors = ['#f87171', '#60a5fa', '#fbbf24', '#4ade80', '#c084fc', '#f472b6'];
     let count = 0;
 
@@ -84,16 +88,16 @@
         tray.innerHTML = '';
         status.innerText = "Put 5 Gumballs in!";
         
-        // Dynamic spacing based on the actual tray width on the phone
-        const trayWidth = tray.clientWidth;
-        const ballSpacing = (trayWidth - 40) / 5;
+        // Calculate tray width for gumball placement
+        const trayWidth = tray.clientWidth || 280;
+        const ballSpace = (trayWidth - 30) / 5;
 
         for(let i = 0; i < 6; i++) {
             const ball = document.createElement('div');
             ball.className = 'gumball';
             ball.style.background = colors[i];
-            ball.style.left = (5 + (i * ballSpacing)) + 'px';
-            ball.style.top = '15px';
+            ball.style.left = (5 + (i * ballSpace)) + 'px';
+            ball.style.top = '12px';
             
             ball.addEventListener('pointerdown', startDrag);
             tray.appendChild(ball);
@@ -103,20 +107,20 @@
     function startDrag(e) {
         const ball = e.target;
         ball.setPointerCapture(e.pointerId);
-        ball.style.zIndex = 1000;
-
-        const areaRect = gameArea.getBoundingClientRect();
+        
+        // Get the area bounds so gumballs stay inside the "box" logic
+        const areaRect = mainArea.getBoundingClientRect();
 
         function onMove(ev) {
-            // Center the ball on the finger/mouse
-            const x = ev.clientX - areaRect.left - 18;
-            const y = ev.clientY - areaRect.top - 18;
+            // Center gumball on touch point
+            const x = ev.clientX - areaRect.left - 15;
+            const y = ev.clientY - areaRect.top - 15;
             
             ball.style.left = x + 'px';
             ball.style.top = y + 'px';
             
-            // Append to main area while dragging to avoid tray clipping
-            if (ball.parentElement !== gameArea) gameArea.appendChild(ball);
+            // Move ball out of tray so it can go "over" the machine
+            if (ball.parentElement !== mainArea) mainArea.appendChild(ball);
         }
 
         function onUp(ev) {
@@ -125,7 +129,7 @@
 
             const gRect = globe.getBoundingClientRect();
             
-            // Did we drop it in the globe?
+            // Check if dropped in glass globe
             if (ev.clientX > gRect.left && ev.clientX < gRect.right && 
                 ev.clientY > gRect.top && ev.clientY < gRect.bottom) {
                 
@@ -133,21 +137,17 @@
                 globe.appendChild(ball);
                 ball.style.position = 'absolute';
                 
-                // Position relative to globe size (Physics simulation)
-                const gW = globe.clientWidth;
-                const gH = globe.clientHeight;
-                ball.style.left = (15 + Math.random() * (gW - 45)) + 'px';
-                ball.style.top = (gH - 40 - (Math.floor((count-1)/2) * 25)) + 'px';
-                
+                // Stack gumballs at the bottom of the globe
+                ball.style.left = (10 + Math.random() * 80) + 'px';
+                ball.style.top = (95 - (Math.floor((count-1)/2) * 22)) + 'px';
                 ball.removeEventListener('pointerdown', startDrag);
-                ball.style.zIndex = 10;
 
                 if(count === 5) {
-                    status.innerText = "YAY! YOU DID IT!";
-                    setTimeout(init, 3000);
+                    status.innerText = "GREAT JOB!";
+                    setTimeout(init, 2500);
                 }
             } else {
-                // If dropped outside, reset this round
+                // If you miss, reset the gumballs back to the tray
                 init();
             }
         }
@@ -156,9 +156,9 @@
         ball.addEventListener('pointerup', onUp);
     }
 
-    // Initialize after layout is solid
-    window.addEventListener('load', init);
-    window.addEventListener('resize', init);
+    // Initial setup
+    window.onload = init;
+    window.onresize = init;
 </script>
 
 </body>
