@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Salam Adventures | Whack-a-Animal</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; }
+        body {
+            background: linear-gradient(145deg, #2d6a4f, #1b4d3e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            font-family: 'Segoe UI', cursive;
+        }
+        .game-container {
+            max-width: 550px;
+            width: 100%;
+            background: #fdf8e7;
+            border-radius: 60px;
+            padding: 20px;
+            box-shadow: 0 20px 35px black;
+            border: 3px solid #ffcc66;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #2c5a2e;
+            margin: -20px -20px 15px -20px;
+            padding: 12px 20px;
+            border-radius: 50px 50px 30px 30px;
+        }
+        .logo-img { height: 45px; background: white; border-radius: 40px; padding: 4px 8px; }
+        .brand-salam { font-size: 20px; font-weight: 900; color: #ffd966; }
+        .game-badge { margin-left: auto; background: #ff9933; padding: 4px 12px; border-radius: 50px; font-weight: bold; }
+        .stats { display: flex; justify-content: space-between; background: #2e241f; padding: 10px 18px; border-radius: 50px; margin-bottom: 15px; color: #ffecb3; font-weight: bold; }
+        .holes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .hole { background: #6b4c3b; border-radius: 50%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 8px 0 #3e2a1f, 0 6px 10px black; cursor: pointer; font-size: 48px; transition: 0.05s linear; }
+        .hole:active { transform: scale(0.95); }
+        .message { text-align: center; background: #2b211b; padding: 10px; border-radius: 40px; color: #ffd966; margin-top: 15px; }
+        .timer-bar { height: 12px; background: #f5a623; border-radius: 20px; margin: 10px 0; transition: width 0.1s linear; }
+        @media print { .holes-grid, .timer-bar { display: none; } }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="game-badge">🔨 WHACK!</div>
+    </div>
+    <div class="stats"><span>🏆 SCORE: <span id="score">0</span></span><span>⏱️ TIME: <span id="timer">30</span>s</span></div>
+    <div class="timer-bar" id="timerBar" style="width:100%"></div>
+    <div class="holes-grid" id="holesGrid"></div>
+    <div class="message" id="msg">🔨 Tap the animals as they pop up! Quick!</div>
+</div>
+<script>
+    let score = 0, timeLeft = 30, activeInterval = null, gameActive = true;
+    const animals = ['🐵','🐸','🐧','🦊','🐰','🐱'];
+    let currentActive = null;
+    function updateUI() { document.getElementById('score').innerText = score; document.getElementById('timer').innerText = timeLeft; document.getElementById('timerBar').style.width = (timeLeft/30)*100 + '%'; }
+    function showRandomAnimal() {
+        if(!gameActive) return;
+        if(currentActive) document.querySelector(`.hole[data-idx="${currentActive}"]`).innerHTML = '';
+        const holes = document.querySelectorAll('.hole');
+        const idx = Math.floor(Math.random() * holes.length);
+        holes.forEach((h,i) => { if(i!==idx) h.innerHTML = ''; });
+        const animal = animals[Math.floor(Math.random() * animals.length)];
+        holes[idx].innerHTML = animal;
+        holes[idx].dataset.animal = animal;
+        currentActive = idx;
+        setTimeout(() => { if(gameActive && currentActive === idx) { holes[idx].innerHTML = ''; currentActive = null; } }, 900);
+    }
+    function initGame() {
+        const grid = document.getElementById('holesGrid');
+        grid.innerHTML = '';
+        for(let i=0;i<9;i++) { 
+            const hole = document.createElement('div'); 
+            hole.className = 'hole'; 
+            hole.dataset.idx = i; 
+            hole.addEventListener('click', () => {
+                if(!gameActive) return;
+                if(currentActive === i && hole.innerHTML !== '') {
+                    score++; updateUI();
+                    hole.innerHTML = '💥';
+                    setTimeout(() => { if(gameActive && currentActive === i) hole.innerHTML = ''; }, 100);
+                    currentActive = null;
+                    document.getElementById('msg').innerHTML = '🎯 WHACK! +1 point!';
+                    setTimeout(() => document.getElementById('msg').innerHTML = '🔨 Tap the animals as they pop up! Quick!', 300);
+                } else if(hole.innerHTML !== '') { document.getElementById('msg').innerHTML = '❌ Missed! Try again!'; }
+            });
+            grid.appendChild(hole);
+        }
+        const countdown = setInterval(() => {
+            if(!gameActive) return;
+            if(timeLeft <= 1) { gameActive = false; clearInterval(activeInterval); clearInterval(countdown); document.getElementById('msg').innerHTML = `🎉 GAME OVER! Final score: ${score} 🎉`; }
+            else { timeLeft--; updateUI(); }
+        }, 1000);
+        activeInterval = setInterval(() => { if(gameActive) showRandomAnimal(); }, 750);
+        updateUI();
+    }
+    initGame();
+</script>
+</body>
+</html>
