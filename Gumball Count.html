@@ -22,11 +22,11 @@
         }
 
         .game-card {
-            width: 90vw; max-width: 300px; 
+            width: 90vw; max-width: 290px; 
             background: white; padding: 15px; 
             border-radius: 30px; border: 5px solid var(--red);
             box-shadow: 0 6px 0 var(--dark); display: flex; 
-            flex-direction: column; align-items: center; position: relative;
+            flex-direction: column; align-items: center;
         }
 
         .status-msg { color: var(--red); font-size: 1.1rem; margin-bottom: 8px; }
@@ -40,22 +40,22 @@
 
         .base {
             width: 80px; height: 25px; background: var(--red);
-            margin: -8px 0 12px 0; border-radius: 5px 5px 20px 20px;
-            border-bottom: 4px solid var(--dark); z-index: 5;
+            margin: -8px 0 10px 0; border-radius: 5px 5px 20px 20px;
+            border-bottom: 4px solid var(--dark);
         }
 
         .tray-area { 
             width: 100%; height: 60px; background: #fee2e2; 
             border-radius: 15px; border: 2px dashed #fca5a5;
-            position: relative; overflow: visible; /* Allows balls to be dragged out */
+            position: relative; display: flex; align-items: center;
+            justify-content: space-evenly; padding: 0 5px;
         }
 
         .gumball {
-            width: 30px; height: 30px; border-radius: 50%; position: absolute;
-            z-index: 100; border: 2px solid rgba(0,0,0,0.1);
+            width: 30px; height: 30px; border-radius: 50%; 
+            position: relative; z-index: 100; border: 2px solid rgba(0,0,0,0.1);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
-            cursor: grab;
-            transition: transform 0.1s;
+            cursor: grab; flex-shrink: 0;
         }
 
         .btn-start {
@@ -106,74 +106,62 @@
 
     function reset() {
         count = 0;
-        document.querySelectorAll('.gumball').forEach(b => b.remove());
+        trayRef.innerHTML = '';
+        globe.innerHTML = '';
         msg.innerText = "Count to 5!";
         
-        const trayWidth = trayRef.clientWidth;
-        const spacing = (trayWidth - 40) / 5; 
-
-        for(let i = 0; i < 6; i++) {
+        colors.forEach(color => {
             const b = document.createElement('div');
             b.className = 'gumball';
-            b.style.background = colors[i];
-            
-            // Placed INSIDE the tray-area relative to its top-left
-            b.style.left = (5 + (i * spacing)) + 'px';
-            b.style.top = '13px'; 
+            b.style.background = color;
+            b.style.position = 'relative'; 
             b.onpointerdown = pickup;
             trayRef.appendChild(b);
-        }
+        });
     }
 
     function pickup(e) {
         if (audio.state === 'suspended') audio.resume();
         const b = e.target;
-        b.setPointerCapture(e.pointerId);
         
-        // When picked up, move to stage so it can go above everything
-        const rectBefore = b.getBoundingClientRect();
-        const stageRect = stage.getBoundingClientRect();
+        const rect = b.getBoundingClientRect();
+        const sRect = stage.getBoundingClientRect();
         
-        b.style.left = (rectBefore.left - stageRect.left) + 'px';
-        b.style.top = (rectBefore.top - stageRect.top) + 'px';
+        b.style.position = 'absolute';
+        b.style.left = (rect.left - sRect.left) + 'px';
+        b.style.top = (rect.top - sRect.top) + 'px';
         stage.appendChild(b);
         
+        b.setPointerCapture(e.pointerId);
         b.style.zIndex = "1000";
-        b.style.transform = "scale(1.2)";
-
-        const globeRect = globe.getBoundingClientRect();
-        const gx = globeRect.left + (globeRect.width / 2);
-        const gy = globeRect.top + (globeRect.height / 2);
 
         const moving = (ev) => {
-            const x = ev.clientX - stageRect.left - 15;
-            const y = ev.clientY - stageRect.top - 15;
-            b.style.left = x + 'px';
-            b.style.top = y + 'px';
+            b.style.left = (ev.clientX - sRect.left - 15) + 'px';
+            b.style.top = (ev.clientY - sRect.top - 15) + 'px';
         };
 
         const dropping = (ev) => {
             b.removeEventListener('pointermove', moving);
             b.removeEventListener('pointerup', dropping);
-            b.style.transform = "scale(1.0)";
             
+            const gRect = globe.getBoundingClientRect();
+            const gx = gRect.left + (gRect.width / 2);
+            const gy = gRect.top + (gRect.height / 2);
+            
+            // Check distance from center of touch to center of globe
             const dist = Math.hypot(ev.clientX - gx, ev.clientY - gy);
 
             if (dist < 70) {
                 count++;
                 b.onpointerdown = null;
                 b.style.zIndex = "10";
-                
-                // Nest into globe
                 globe.appendChild(b);
                 b.style.left = (15 + Math.random() * 60) + 'px';
                 b.style.top = (75 - (Math.floor((count-1)/2) * 18)) + 'px';
-                
                 playPop(300 + (count * 100));
                 
                 if(count === 5) {
                     msg.innerText = "GREAT JOB!";
-                    setTimeout(() => playPop(800), 200);
                     setTimeout(reset, 3000);
                 }
             } else {
