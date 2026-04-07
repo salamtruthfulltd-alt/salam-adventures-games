@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Comic Strip Creator with Characters</title>
+    <meta name="description" content="Free printable comic strip templates with pre-drawn characters. Create your own story with speech bubbles. Perfect for reluctant writers.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+        .brand-name {
+            line-height: 1.1;
+        }
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .fun-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #e0910f;
+        }
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .comic-grid {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .comic-panel {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 12px;
+            min-height: 220px;
+            position: relative;
+        }
+        .panel-number {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            font-size: 11px;
+            color: #999;
+        }
+        .panel-content {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .character-area {
+            width: 80px;
+            text-align: center;
+        }
+        .character-icon {
+            font-size: 64px;
+        }
+        .drawing-area {
+            flex: 1;
+            min-height: 120px;
+            background: #fefaf0;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+        }
+        .speech-bubble {
+            margin-top: 10px;
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            background: white;
+            min-height: 40px;
+            font-size: 12px;
+        }
+        .comic-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .by-line {
+            text-align: right;
+            font-size: 12px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+        }
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: center;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .fun-badge, .instruction-box {
+                display: none;
+            }
+            .worksheet {
+                border: none;
+                padding: 0;
+            }
+            .comic-panel {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="fun-badge">
+            📚 Comic Creator
+        </div>
+    </div>
+    <div class="controls">
+        <div class="control-group">
+            <label>📄 Panels</label>
+            <select id="panels">
+                <option value="3">3 panels</option>
+                <option value="4" selected>4 panels</option>
+                <option value="6">6 panels</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>👤 Characters</label>
+            <select id="characters">
+                <option value="none">Draw your own</option>
+                <option value="monster" selected>Friendly Monster</option>
+                <option value="robot">Robot</option>
+                <option value="kid">Kid</option>
+                <option value="cat">Cat</option>
+                <option value="dog">Dog</option>
+                <option value="alien">Alien</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>💬 Speech bubbles</label>
+            <select id="bubbles">
+                <option value="yes" selected>Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ New Comic</button>
+    </div>
+    <div id="worksheetArea" class="worksheet"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Create</button>
+    <div class="instruction-box">
+        🎨 Draw the background and action! Add speech bubbles to tell your story. 
+        <span id="characterHint">Characters are pre-drawn — just add details!</span>
+    </div>
+</div>
+<script>
+    const characterIcons = {
+        monster: '👾',
+        robot: '🤖',
+        kid: '🧒',
+        cat: '🐱',
+        dog: '🐶',
+        alien: '👽'
+    };
+    
+    const characterNames = {
+        monster: 'Monster',
+        robot: 'Robot',
+        kid: 'Kid',
+        cat: 'Cat',
+        dog: 'Dog',
+        alien: 'Alien'
+    };
+    
+    function generateComic() {
+        const panelCount = parseInt(document.getElementById('panels').value);
+        const characterChoice = document.getElementById('characters').value;
+        const includeBubbles = document.getElementById('bubbles').value === 'yes';
+        
+        let cols = panelCount === 3 ? 3 : (panelCount === 4 ? 2 : 3);
+        
+        let html = `<div class="comic-title">📖 My Comic Story</div>`;
+        html += `<div class="comic-grid" style="grid-template-columns: repeat(${cols}, 1fr);">`;
+        
+        for (let i = 1; i <= panelCount; i++) {
+            html += `<div class="comic-panel">
+                        <div class="panel-number">Panel ${i}</div>
+                        <div class="panel-content">`;
+            
+            if (characterChoice !== 'none') {
+                html += `<div class="character-area">
+                            <div class="character-icon">${characterIcons[characterChoice] || '😊'}</div>
+                            <div style="font-size: 9px; color:#888;">${characterNames[characterChoice] || 'Character'}</div>
+                         </div>`;
+                html += `<div class="drawing-area"></div>`;
+            } else {
+                html += `<div class="drawing-area" style="width:100%;"></div>`;
+            }
+            
+            html += `</div>`;
+            
+            if (includeBubbles) {
+                html += `<div class="speech-bubble">💬 _________________________</div>`;
+                if (i % 2 === 0 && panelCount > 3) {
+                    html += `<div class="speech-bubble">💭 _________________________</div>`;
+                }
+            } else {
+                html += `<div class="speech-bubble" style="border:none; background:#fefaf0;">_________________________________</div>`;
+            }
+            
+            html += `</div>`;
+        }
+        
+        html += `</div>`;
+        html += `<div class="by-line">Story by: _________________</div>`;
+        
+        document.getElementById('worksheetArea').innerHTML = html;
+        
+        const hint = document.getElementById('characterHint');
+        if (characterChoice !== 'none') {
+            hint.innerHTML = `Characters are pre-drawn (${characterNames[characterChoice]}) — draw the background, action, and add details!`;
+        } else {
+            hint.innerHTML = `Draw your own characters, background, and action! Let your imagination run wild.`;
+        }
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateComic);
+    window.addEventListener('load', generateComic);
+</script>
+</body>
+</html>
