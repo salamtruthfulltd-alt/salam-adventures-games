@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Memory Card Game Generator</title>
+    <meta name="description" content="Free printable memory card game for kids. Match pairs of animals, letters, numbers, or emojis. Build cognitive skills and visual memory.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+        .brand-name {
+            line-height: 1.1;
+        }
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .fun-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #e0910f;
+        }
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .card {
+            background: #fefaf0;
+            border: 2px solid #eee2ce;
+            border-radius: 16px;
+            padding: 20px 10px;
+            text-align: center;
+            font-size: 32px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .card.matched {
+            opacity: 0.5;
+            background: #d9f0e1;
+        }
+        .card.flipped {
+            background: #fff4e6;
+            border-color: #f5a623;
+        }
+        .card-back {
+            background: #2c5a2e;
+            color: white;
+            font-size: 24px;
+        }
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .print-view {
+            display: none;
+        }
+        @media print {
+            .controls, .print-btn, .fun-badge, .instruction-box, .card-back, .game-controls {
+                display: none;
+            }
+            .print-view {
+                display: block;
+            }
+            .card {
+                border: 1px solid #000;
+                page-break-inside: avoid;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .game-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="fun-badge">
+            🧠 Memory Match
+        </div>
+    </div>
+    <div class="controls">
+        <div class="control-group">
+            <label>🎴 Theme</label>
+            <select id="themeSelect">
+                <option value="animals">🐶 Animals</option>
+                <option value="emojis">😊 Emojis</option>
+                <option value="numbers">🔢 Numbers 1-8</option>
+                <option value="letters">🔤 Letters A-H</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📊 Pairs</label>
+            <select id="pairCount">
+                <option value="4">4 pairs (8 cards)</option>
+                <option value="6" selected>6 pairs (12 cards)</option>
+                <option value="8">8 pairs (16 cards)</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ New Game</button>
+    </div>
+    <div id="gameArea" class="worksheet"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print Cards</button>
+    <div class="instruction-box">
+        🎮 How to play: Flip two cards at a time to find matching pairs. For printable version, cut out cards and place face down.
+    </div>
+</div>
+<script>
+    const themes = {
+        animals: ['🐶', '🐱', '🐭', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧'],
+        emojis: ['😊', '😂', '🥰', '😎', '😢', '😡', '😱', '🥳', '😴', '🤔', '😍', '🥺', '🤪', '😇', '🥶', '🔥'],
+        numbers: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
+        letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+    };
+    
+    let gameCards = [];
+    let flippedIndexes = [];
+    let lockBoard = false;
+    let matchedPairs = 0;
+    
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    function generateCards() {
+        const theme = document.getElementById('themeSelect').value;
+        const pairCount = parseInt(document.getElementById('pairCount').value);
+        const items = themes[theme].slice(0, pairCount);
+        let deck = [];
+        for (let item of items) {
+            deck.push({ id: item, matched: false, flipped: false });
+            deck.push({ id: item, matched: false, flipped: false });
+        }
+        return shuffleArray(deck);
+    }
+    
+    function renderGame() {
+        const container = document.getElementById('gameArea');
+        let html = `
+            <div class="name-line" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <div>Player 1: <span style="border-bottom:1px solid #ccc; display:inline-block; width:150px;"></span></div>
+                <div>Player 2: <span style="border-bottom:1px solid #ccc; display:inline-block; width:150px;"></span></div>
+            </div>
+            <div class="cards-grid" id="cardsGrid">
+        `;
+        
+        for (let i = 0; i < gameCards.length; i++) {
+            const card = gameCards[i];
+            if (card.matched) {
+                html += `<div class="card matched" data-index="${i}">✅</div>`;
+            } else if (card.flipped) {
+                html += `<div class="card flipped" data-index="${i}">${card.id}</div>`;
+            } else {
+                html += `<div class="card card-back" data-index="${i}">?</div>`;
+            }
+        }
+        
+        html += `</div>
+            <div class="game-controls">
+                <button class="btn" id="resetGameBtn">🔄 Reset Game</button>
+            </div>
+            <div class="print-view" style="margin-top:20px;">
+                <hr>
+                <h4>📄 Printable Cards (Cut along lines)</h4>
+                <div class="cards-grid" style="grid-template-columns: repeat(4, 1fr);">
+        `;
+        
+        for (let i = 0; i < gameCards.length; i++) {
+            html += `<div class="card" style="border:1px solid #000; background:white;">${gameCards[i].id}</div>`;
+        }
+        
+        html += `</div><p style="text-align:center; margin-top:10px;">Cut out each card, place face down, and flip two at a time to find matches!</p></div>`;
+        
+        container.innerHTML = html;
+        
+        // Attach event listeners
+        document.querySelectorAll('.card:not(.matched)').forEach(card => {
+            if (!card.classList.contains('card-back')) return;
+            card.addEventListener('click', () => handleCardClick(parseInt(card.dataset.index)));
+        });
+        
+        const resetBtn = document.getElementById('resetGameBtn');
+        if (resetBtn) resetBtn.onclick = () => { resetGame(); };
+    }
+    
+    function handleCardClick(index) {
+        if (lockBoard) return;
+        if (gameCards[index].matched) return;
+        if (gameCards[index].flipped) return;
+        if (flippedIndexes.length === 2) return;
+        
+        gameCards[index].flipped = true;
+        flippedIndexes.push(index);
+        renderGame();
+        
+        if (flippedIndexes.length === 2) {
+            lockBoard = true;
+            const card1 = gameCards[flippedIndexes[0]];
+            const card2 = gameCards[flippedIndexes[1]];
+            
+            if (card1.id === card2.id) {
+                card1.matched = true;
+                card2.matched = true;
+                card1.flipped = false;
+                card2.flipped = false;
+                matchedPairs++;
+                flippedIndexes = [];
+                lockBoard = false;
+                renderGame();
+            } else {
+                setTimeout(() => {
+                    gameCards[flippedIndexes[0]].flipped = false;
+                    gameCards[flippedIndexes[1]].flipped = false;
+                    flippedIndexes = [];
+                    lockBoard = false;
+                    renderGame();
+                }, 800);
+            }
+        }
+    }
+    
+    function resetGame() {
+        gameCards = generateCards();
+        flippedIndexes = [];
+        lockBoard = false;
+        matchedPairs = 0;
+        renderGame();
+    }
+    
+    function newGame() {
+        gameCards = generateCards();
+        flippedIndexes = [];
+        lockBoard = false;
+        matchedPairs = 0;
+        renderGame();
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', newGame);
+    window.addEventListener('load', () => {
+        gameCards = generateCards();
+        renderGame();
+    });
+</script>
+</body>
+</html>
