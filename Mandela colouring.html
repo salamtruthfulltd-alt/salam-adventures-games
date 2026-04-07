@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Mandala Colouring Page Generator</title>
+    <meta name="description" content="Free printable mandala colouring pages. Generate infinite symmetrical patterns for relaxation and mindfulness.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+        .brand-name {
+            line-height: 1.1;
+        }
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .fun-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #e0910f;
+        }
+        .worksheet {
+            background: white;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .mandala-container {
+            display: inline-block;
+            margin: 20px auto;
+        }
+        .mandala-svg {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+        .print-btn:hover {
+            background: #1f4421;
+        }
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: center;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .fun-badge, .instruction-box {
+                display: none;
+            }
+            .worksheet {
+                border: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="fun-badge">
+            🎨 Fun Zone
+        </div>
+    </div>
+    <div class="controls">
+        <div class="control-group">
+            <label>🌸 Style</label>
+            <select id="style">
+                <option value="flower">Flower</option>
+                <option value="star" selected>Star</option>
+                <option value="geometric">Geometric</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🔢 Petals/Points</label>
+            <select id="petals">
+                <option value="4">4</option>
+                <option value="6" selected>6</option>
+                <option value="8">8</option>
+                <option value="12">12</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📐 Complexity</label>
+            <select id="complexity">
+                <option value="simple">Simple</option>
+                <option value="medium" selected>Medium</option>
+                <option value="intricate">Intricate</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ New Mandala</button>
+    </div>
+    <div id="worksheetArea" class="worksheet">
+        <div class="mandala-container" id="mandalaContainer"></div>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Colour</button>
+    <div class="instruction-box">
+        🖍️ Colour your mandala! Use bright colours, patterns, or shades. Great for mindfulness and relaxation.
+    </div>
+</div>
+<script>
+    function generateMandala() {
+        const style = document.getElementById('style').value;
+        const petals = parseInt(document.getElementById('petals').value);
+        const complexity = document.getElementById('complexity').value;
+        
+        let svgHtml = `<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" class="mandala-svg">`;
+        svgHtml += `<rect width="500" height="500" fill="white"/>`;
+        
+        const centerX = 250;
+        const centerY = 250;
+        const maxRadius = 220;
+        
+        const layers = complexity === 'simple' ? 2 : (complexity === 'medium' ? 3 : 4);
+        
+        for (let layer = 1; layer <= layers; layer++) {
+            const radius = (maxRadius / layers) * layer;
+            const petalCount = petals * layer;
+            
+            for (let i = 0; i < petalCount; i++) {
+                const angle = (i * 2 * Math.PI / petalCount);
+                let x1, y1, x2, y2;
+                
+                if (style === 'flower') {
+                    const innerRadius = radius * 0.4;
+                    const outerRadius = radius;
+                    x1 = centerX + innerRadius * Math.cos(angle);
+                    y1 = centerY + innerRadius * Math.sin(angle);
+                    x2 = centerX + outerRadius * Math.cos(angle);
+                    y2 = centerY + outerRadius * Math.sin(angle);
+                    const x3 = centerX + outerRadius * Math.cos(angle + 0.3);
+                    const y3 = centerY + outerRadius * Math.sin(angle + 0.3);
+                    svgHtml += `<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3}" fill="none" stroke="#333" stroke-width="1.5"/>`;
+                } 
+                else if (style === 'star') {
+                    const innerRadius = radius * 0.5;
+                    const outerRadius = radius;
+                    x1 = centerX + innerRadius * Math.cos(angle);
+                    y1 = centerY + innerRadius * Math.sin(angle);
+                    x2 = centerX + outerRadius * Math.cos(angle + Math.PI / petalCount);
+                    y2 = centerY + outerRadius * Math.sin(angle + Math.PI / petalCount);
+                    svgHtml += `<polygon points="${centerX},${centerY} ${x1},${y1} ${x2},${y2}" fill="none" stroke="#333" stroke-width="1.5"/>`;
+                }
+                else if (style === 'geometric') {
+                    const r1 = radius * 0.6;
+                    const r2 = radius;
+                    x1 = centerX + r1 * Math.cos(angle);
+                    y1 = centerY + r1 * Math.sin(angle);
+                    x2 = centerX + r2 * Math.cos(angle);
+                    y2 = centerY + r2 * Math.sin(angle);
+                    svgHtml += `<line x1="${centerX}" y1="${centerY}" x2="${x2}" y2="${y2}" stroke="#333" stroke-width="1"/>`;
+                    svgHtml += `<circle cx="${x1}" cy="${y1}" r="5" fill="none" stroke="#333" stroke-width="1"/>`;
+                }
+            }
+        }
+        
+        for (let r = 50; r <= maxRadius; r += 50) {
+            svgHtml += `<circle cx="${centerX}" cy="${centerY}" r="${r}" fill="none" stroke="#ccc" stroke-width="0.5"/>`;
+        }
+        
+        svgHtml += `<circle cx="${centerX}" cy="${centerY}" r="10" fill="#333"/>`;
+        svgHtml += `</svg>`;
+        
+        document.getElementById('mandalaContainer').innerHTML = svgHtml;
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateMandala);
+    window.addEventListener('load', generateMandala);
+</script>
+</body>
+</html>
