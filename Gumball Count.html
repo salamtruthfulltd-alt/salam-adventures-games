@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gumball Count Fix</title>
+    <title>Gumball Fun 1-5</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         :root { --red: #ef4444; --dark: #b91c1c; }
@@ -18,171 +18,162 @@
         #start-overlay {
             position: fixed; inset: 0; background: var(--red);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; color: white; cursor: pointer;
+            z-index: 9999; color: white;
         }
 
-        .game-box {
+        .game-card {
             width: 300px; height: 420px; background: white; 
-            padding: 15px; border-radius: 30px; border: 5px solid var(--red);
+            padding: 20px; border-radius: 35px; border: 6px solid var(--red);
             box-shadow: 0 8px 0 var(--dark); display: flex; 
             flex-direction: column; align-items: center; position: relative;
         }
 
-        .status-text { color: var(--red); font-size: 1.2rem; margin-bottom: 10px; height: 1.5rem; }
+        .status-msg { color: var(--red); font-size: 1.3rem; margin-bottom: 10px; height: 1.6rem; }
 
-        #globe-target {
-            width: 150px; height: 150px; background: rgba(226, 232, 240, 0.4); 
+        #globe {
+            width: 140px; height: 140px; background: rgba(226, 232, 240, 0.4); 
             border: 3px solid #cbd5e1; border-radius: 50%; 
             position: relative; overflow: hidden;
         }
 
-        .machine-base {
-            width: 100px; height: 40px; background: var(--red);
+        .base {
+            width: 90px; height: 35px; background: var(--red);
             margin: -15px 0 20px 0; border-radius: 5px 5px 25px 25px;
             border-bottom: 5px solid var(--dark); z-index: 5;
         }
 
         .tray-bg { 
-            width: 100%; height: 70px; background: #fee2e2; 
-            border-radius: 15px; border: 2px dashed #fca5a5;
+            width: 100%; height: 75px; background: #fee2e2; 
+            border-radius: 18px; border: 2px dashed #fca5a5;
+            position: relative;
         }
 
         .gumball {
             width: 38px; height: 38px; border-radius: 50%; position: absolute;
             z-index: 100; border: 2px solid rgba(0,0,0,0.1);
-            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
-            cursor: grab; transition: transform 0.1s;
+            box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2);
+            cursor: grab;
         }
-        
-        .in-machine { pointer-events: none; z-index: 10; }
 
         .btn-start {
-            padding: 15px 40px; font-size: 1.5rem; font-family: 'Fredoka One';
+            padding: 15px 45px; font-size: 1.6rem; font-family: 'Fredoka One';
             background: white; color: var(--red); border: none; border-radius: 50px;
-            box-shadow: 0 5px 0 var(--dark);
+            box-shadow: 0 6px 0 var(--dark); cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div id="start-overlay" onclick="launchGame()">
+<div id="start-overlay" onclick="boot()">
     <button class="btn-start">START GAME</button>
 </div>
 
-<div class="game-box" id="mainStage">
-    <div class="status-text" id="status">Put 5 Gumballs in!</div>
-    
-    <div id="globe-target"></div>
-    <div class="machine-base"></div>
-
-    <div class="tray-bg"></div>
+<div class="game-card" id="stage">
+    <div class="status-msg" id="msg">Put 5 Gumballs in!</div>
+    <div id="globe"></div>
+    <div class="base"></div>
+    <div class="tray-bg" id="trayArea"></div>
 </div>
 
 <script>
-    let audioCtx, count = 0;
+    let audio, count = 0;
     const colors = ['#f87171', '#60a5fa', '#fbbf24', '#4ade80', '#c084fc', '#f472b6'];
-    const stage = document.getElementById('mainStage');
-    const globe = document.getElementById('globe-target');
-    const status = document.getElementById('status');
+    const stage = document.getElementById('stage');
+    const globe = document.getElementById('globe');
+    const msg = document.getElementById('msg');
+    const trayArea = document.getElementById('trayArea');
 
-    function launchGame() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function boot() {
+        audio = new (window.AudioContext || window.webkitAudioContext)();
         document.getElementById('start-overlay').style.display = 'none';
-        spawnBalls();
+        reset();
     }
 
-    function playPop(freq) {
-        if (!audioCtx) return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    function playPop(f) {
+        if (!audio) return;
+        if (audio.state === 'suspended') audio.resume();
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.frequency.setValueAtTime(f, audio.currentTime);
+        o.frequency.exponentialRampToValueAtTime(20, audio.currentTime + 0.1);
+        g.gain.setValueAtTime(0.1, audio.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.1);
+        o.connect(g); g.connect(audio.destination);
+        o.start(); o.stop(audio.currentTime + 0.1);
     }
 
-    function spawnBalls() {
+    function reset() {
         count = 0;
-        // Clear only gumballs, keep the machine
         document.querySelectorAll('.gumball').forEach(b => b.remove());
-        status.innerText = "Count to 5!";
+        msg.innerText = "Count to 5!";
         
+        // Calculate dynamic spacing to ensure they fit in the box
+        const trayWidth = trayArea.clientWidth; 
+        const ballSize = 38;
+        const availableSpace = trayWidth - ballSize - 20; // 20 for internal padding
+        const step = availableSpace / 5; 
+
         for(let i = 0; i < 6; i++) {
-            const ball = document.createElement('div');
-            ball.className = 'gumball';
-            ball.style.background = colors[i];
-            // Initial position in tray area
-            ball.style.left = (20 + (i * 45)) + 'px';
-            ball.style.top = '335px'; 
-            
-            ball.addEventListener('pointerdown', startDragging);
-            stage.appendChild(ball);
+            const b = document.createElement('div');
+            b.className = 'gumball';
+            b.style.background = colors[i];
+            // Use Tray Area relative positioning for the start
+            b.style.left = (10 + (i * step)) + 'px';
+            b.style.top = '338px'; 
+            b.onpointerdown = pickup;
+            stage.appendChild(b);
         }
     }
 
-    function startDragging(e) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const ball = e.target;
-        ball.setPointerCapture(e.pointerId);
-        ball.style.transform = "scale(1.2)";
-        ball.style.zIndex = "1000";
+    function pickup(e) {
+        if (audio.state === 'suspended') audio.resume();
+        const b = e.target;
+        b.setPointerCapture(e.pointerId);
+        b.style.zIndex = "1000";
 
         const stageRect = stage.getBoundingClientRect();
+        const globeRect = globe.getBoundingClientRect();
+        
+        const targetX = globeRect.left - stageRect.left + (globeRect.width / 2);
+        const targetY = globeRect.top - stageRect.top + (globeRect.height / 2);
 
-        const onMove = (ev) => {
-            // Keep ball centered under finger
+        const moving = (ev) => {
             const x = ev.clientX - stageRect.left - 19;
             const y = ev.clientY - stageRect.top - 19;
-            ball.style.left = x + 'px';
-            ball.style.top = y + 'px';
+            b.style.left = x + 'px';
+            b.style.top = y + 'px';
         };
 
-        const onUp = (ev) => {
-            ball.removeEventListener('pointermove', onMove);
-            ball.removeEventListener('pointerup', onUp);
-            ball.style.transform = "scale(1.0)";
+        const dropping = (ev) => {
+            b.removeEventListener('pointermove', moving);
+            b.removeEventListener('pointerup', dropping);
             
-            const globeRect = globe.getBoundingClientRect();
-            
-            // Check if the drop point (finger release) is inside the globe
-            const isInside = (
-                ev.clientX > globeRect.left && 
-                ev.clientX < globeRect.right && 
-                ev.clientY > globeRect.top && 
-                ev.clientY < globeRect.bottom
-            );
+            const ballCenterX = ev.clientX - stageRect.left;
+            const ballCenterY = ev.clientY - stageRect.top;
+            const distance = Math.hypot(ballCenterX - targetX, ballCenterY - targetY);
 
-            if (isInside) {
+            // Detection check
+            if (distance < 75) {
                 count++;
-                ball.classList.add('in-machine');
-                ball.removeEventListener('pointerdown', startDragging);
+                b.onpointerdown = null;
+                b.style.zIndex = "10";
                 
-                // Final position inside the globe (relative to Stage)
-                const relativeLeft = (globeRect.left - stageRect.left) + 20 + (Math.random() * 70);
-                const relativeTop = (globeRect.top - stageRect.top) + 80 - (Math.floor((count-1)/2) * 25);
-                
-                ball.style.left = relativeLeft + 'px';
-                ball.style.top = relativeTop + 'px';
-                ball.style.zIndex = "10";
+                b.style.left = (targetX - 19 + (Math.random() * 40 - 20)) + 'px';
+                b.style.top = (targetY + 20 - (Math.floor((count-1)/2) * 22)) + 'px';
                 
                 playPop(300 + (count * 100));
-
+                
                 if(count === 5) {
-                    status.innerText = "YAY! 5 GUMBALLS!";
+                    msg.innerText = "5 GUMBALLS! GREAT JOB!";
                     setTimeout(() => playPop(800), 200);
-                    setTimeout(spawnBalls, 3000);
+                    setTimeout(reset, 3500);
                 }
             } else {
-                // Snap back to tray if missed
-                spawnBalls();
+                reset(); 
             }
         };
 
-        ball.addEventListener('pointermove', onMove);
-        ball.addEventListener('pointerup', onUp);
+        b.addEventListener('pointermove', moving);
+        b.addEventListener('pointerup', dropping);
     }
 </script>
 </body>
