@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Word Search Puzzle Generator</title>
+    <meta name="description" content="Free printable word search puzzles. Create your own custom word search or use random themes.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+        .brand-name {
+            line-height: 1.1;
+        }
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .fun-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+        select, input, textarea {
+            padding: 5px 10px;
+            border-radius: 12px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+        }
+        textarea {
+            width: 200px;
+            height: 60px;
+            resize: vertical;
+        }
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #e0910f;
+        }
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .wordsearch-grid {
+            display: inline-grid;
+            gap: 5px;
+            margin: 20px auto;
+            background: white;
+        }
+        .grid-cell {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            background: white;
+            text-transform: uppercase;
+        }
+        .word-list {
+            margin-top: 20px;
+            text-align: left;
+            display: inline-block;
+        }
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: center;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .fun-badge, .instruction-box {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="fun-badge">
+            🔍 Fun Zone
+        </div>
+    </div>
+    <div class="controls">
+        <div class="control-group">
+            <label>📏 Grid size</label>
+            <select id="gridSize">
+                <option value="8">8x8</option>
+                <option value="10" selected>10x10</option>
+                <option value="12">12x12</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📝 Theme</label>
+            <select id="theme">
+                <option value="animals">Animals</option>
+                <option value="fruits">Fruits</option>
+                <option value="space">Space</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>✏️ Custom words (comma separated)</label>
+            <textarea id="customWords" placeholder="cat, dog, bird, fish"></textarea>
+        </div>
+        <button id="generateBtn">✨ New Puzzle</button>
+    </div>
+    <div id="worksheetArea" class="worksheet"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Solve</button>
+    <div class="instruction-box">
+        🔎 Find all the words! They can be horizontal, vertical, or diagonal. Circle each word when you find it.
+    </div>
+</div>
+<script>
+    const wordThemes = {
+        animals: ['CAT', 'DOG', 'BIRD', 'FISH', 'BEAR', 'FROG', 'LION', 'DEER'],
+        fruits: ['APPLE', 'MANGO', 'GRAPE', 'BERRY', 'PEACH', 'PLUM', 'LEMON', 'KIWI'],
+        space: ['STAR', 'MOON', 'SUN', 'MARS', 'COMET', 'ROCKET', 'PLANET', 'ORBIT']
+    };
+    
+    function generateGrid(size, words) {
+        let grid = Array(size).fill().map(() => Array(size).fill(''));
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                grid[i][j] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+            }
+        }
+        return grid;
+    }
+    
+    function generateWordSearch() {
+        const size = parseInt(document.getElementById('gridSize').value);
+        const theme = document.getElementById('theme').value;
+        const customText = document.getElementById('customWords').value;
+        
+        let words = [];
+        if (theme === 'custom' && customText.trim()) {
+            words = customText.split(',').map(w => w.trim().toUpperCase());
+        } else {
+            words = [...wordThemes[theme]];
+        }
+        
+        const grid = generateGrid(size, words);
+        
+        let html = `<div><strong>🔍 Word Search Puzzle</strong></div>`;
+        html += `<div class="wordsearch-grid" style="grid-template-columns: repeat(${size}, 35px);">`;
+        
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                html += `<div class="grid-cell">${grid[i][j]}</div>`;
+            }
+        }
+        
+        html += `</div>`;
+        html += `<div class="word-list"><strong>📝 Find these words:</strong><br>${words.join(' · ')}</div>`;
+        
+        document.getElementById('worksheetArea').innerHTML = html;
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateWordSearch);
+    window.addEventListener('load', generateWordSearch);
+</script>
+</body>
+</html>
