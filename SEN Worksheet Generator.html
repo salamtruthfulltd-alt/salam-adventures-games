@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | SEN Worksheet Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 20px;
+            color: #1a2a3a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+            padding: 25px 30px 35px 30px;
+        }
+
+        /* Header with logo AND name */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 3px solid #f5a623;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .logo-img {
+            height: 80px;
+            width: auto;
+            max-width: 200px;
+        }
+
+        .brand-name {
+            line-height: 1.2;
+        }
+
+        .brand-salam {
+            font-size: 32px;
+            font-weight: 800;
+            color: #2c5a2e;
+            letter-spacing: 1px;
+        }
+
+        .brand-adventures {
+            font-size: 22px;
+            font-weight: 600;
+            color: #f5a623;
+            letter-spacing: 2px;
+        }
+
+        .sen-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #4a6741;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f9f5eb;
+            padding: 18px 22px;
+            border-radius: 28px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            font-size: 13px;
+            color: #5a4a2e;
+        }
+
+        select, input {
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 8px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #e0910f;
+            transform: scale(1.02);
+        }
+
+        /* Worksheet */
+        .worksheet {
+            background: #fffef8;
+            border: 2px solid #f0e2cc;
+            border-radius: 32px;
+            padding: 25px;
+            margin-top: 15px;
+        }
+
+        .target-area {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #fff4e6;
+            border-radius: 60px;
+        }
+
+        .target-label {
+            font-weight: bold;
+            font-size: 18px;
+            color: #3b5c2a;
+        }
+
+        .target-symbol {
+            font-size: 70px;
+            background: white;
+            display: inline-block;
+            padding: 10px 35px;
+            border-radius: 100px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #f5c48a;
+            margin-top: 8px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        .grid-item {
+            font-size: 38px;
+            background: #fefaf0;
+            border-radius: 20px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid #eee2ce;
+        }
+
+        .grid-item.selected {
+            background: #d9f0e1;
+            border-color: #2e7d64;
+            transform: scale(0.97);
+        }
+
+        .instruction {
+            font-size: 16px;
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 28px;
+            text-align: center;
+            margin-top: 20px;
+            color: #2c3e50;
+        }
+
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+        }
+
+        .print-btn:hover {
+            background: #1f4421;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 12px;
+            color: #9b8e7a;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, footer, .sen-badge {
+                display: none;
+            }
+            .worksheet {
+                border: 1px solid #ccc;
+                padding: 15px;
+            }
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ========== HEADER WITH LOGO + NAME ========== -->
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="sen-badge">
+            🌟 SEN Visual Worksheet
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="control-group">
+            <label>🎯 Grid Size</label>
+            <select id="gridSize">
+                <option value="16">4x4 (Easy)</option>
+                <option value="25" selected>5x5 (Standard)</option>
+                <option value="36">6x6 (Challenge)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🌀 Symbol Set</label>
+            <select id="symbolSet">
+                <option value="shapes">Shapes (● ■ ▲ ★)</option>
+                <option value="emoji">Emoji (😊 😢 😡 😲)</option>
+                <option value="animals" selected>Animals (🐶 🐱 🐭 🐰)</option>
+                <option value="letters">Letters (A B C D)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📊 Similarity Level</label>
+            <select id="difficulty">
+                <option value="easy">Easy (very different)</option>
+                <option value="medium" selected>Medium (similar shapes)</option>
+                <option value="hard">Hard (nearly identical)</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ Generate New Worksheet</button>
+    </div>
+
+    <!-- Worksheet area -->
+    <div id="worksheetArea" class="worksheet">
+        <!-- Filled by JavaScript -->
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <footer>Salam Adventures | SEN visual discrimination — Find & circle the matching symbol</footer>
+</div>
+
+<script>
+    const symbolSets = {
+        shapes: {
+            base: ['●', '■', '▲', '★'],
+            easy: { '●': '○', '■': '□', '▲': '△', '★': '☆' },
+            hard: { '●': '⬤', '■': '◼', '▲': '⭗', '★': '⭒' }
+        },
+        emoji: {
+            base: ['😊', '😢', '😡', '😲'],
+            easy: { '😊': '🙂', '😢': '😥', '😡': '😠', '😲': '😧' },
+            hard: { '😊': '😌', '😢': '😭', '😡': '🤬', '😲': '😮' }
+        },
+        animals: {
+            base: ['🐶', '🐱', '🐭', '🐰'],
+            easy: { '🐶': '🐕', '🐱': '🐈', '🐭': '🐁', '🐰': '🐇' },
+            hard: { '🐶': '🐩', '🐱': '🐆', '🐭': '🐹', '🐰': '🐇' }
+        },
+        letters: {
+            base: ['A', 'B', 'C', 'D'],
+            easy: { 'A': 'Λ', 'B': '8', 'C': '(', 'D': '|)' },
+            hard: { 'A': 'Δ', 'B': '♭', 'C': '©', 'D': 'Ⅾ' }
+        }
+    };
+
+    function generateWorksheet() {
+        const gridSize = parseInt(document.getElementById('gridSize').value);
+        const symbolSetName = document.getElementById('symbolSet').value;
+        const difficulty = document.getElementById('difficulty').value;
+        
+        const symbolLib = symbolSets[symbolSetName];
+        if (!symbolLib) return;
+        
+        const baseSymbols = symbolLib.base;
+        const targetSymbol = baseSymbols[Math.floor(Math.random() * baseSymbols.length)];
+        
+        let distractorPool;
+        if (difficulty === 'easy') {
+            distractorPool = baseSymbols.map(s => symbolLib.easy[s] || s);
+        } else if (difficulty === 'hard') {
+            distractorPool = baseSymbols.map(s => symbolLib.hard[s] || s);
+        } else {
+            distractorPool = [...baseSymbols];
+        }
+        
+        let cells = [];
+        const targetCount = Math.max(3, Math.floor(gridSize / 4));
+        
+        for (let i = 0; i < targetCount; i++) {
+            cells.push(targetSymbol);
+        }
+        
+        while (cells.length < gridSize) {
+            let possibleDistractors = distractorPool.filter(s => s !== targetSymbol);
+            if (possibleDistractors.length === 0) possibleDistractors = ['?'];
+            const randomDist = possibleDistractors[Math.floor(Math.random() * possibleDistractors.length)];
+            cells.push(randomDist);
+        }
+        
+        for (let i = cells.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cells[i], cells[j]] = [cells[j], cells[i]];
+        }
+        
+        const cols = Math.sqrt(gridSize);
+        const container = document.getElementById('worksheetArea');
+        
+        let html = `
+            <div class="target-area">
+                <div class="target-label">🎯 FIND & CIRCLE ALL THE MATCHING SYMBOLS</div>
+                <div class="target-symbol">${targetSymbol}</div>
+                <div style="font-size:14px; margin-top:8px;">Target symbol ↑</div>
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(${cols}, 1fr);">
+        `;
+        
+        for (let i = 0; i < cells.length; i++) {
+            html += `<div class="grid-item" data-symbol="${cells[i].replace(/"/g, '&quot;')}">${cells[i]}</div>`;
+        }
+        
+        html += `</div>
+            <div class="instruction">
+                ✏️ Instructions: Circle every ${targetSymbol} you see.<br>
+                👂 Teacher tip: Call out the symbol name for auditory reinforcement.
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.grid-item').forEach(el => {
+            el.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateWorksheet);
+    window.addEventListener('load', generateWorksheet);
+</script>
+</body>
+</html>
