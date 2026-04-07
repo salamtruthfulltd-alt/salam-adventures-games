@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Salam Adventures | Pop & Count - Arcade Game</title>
+    <meta name="description" content="Exciting arcade counting game for kids! Pop animal bubbles, count along, and earn glittering rewards. Fun sounds, animations, and timer action.">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard SE', cursive, sans-serif;
+            background: linear-gradient(145deg, #1a2f3f 0%, #0e1a26 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* Main game container - compact & arcade style */
+        .arcade-container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 248, 225, 0.95);
+            border-radius: 60px 60px 48px 48px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            padding: 18px 20px 25px;
+            border: 3px solid #ffd966;
+            transition: all 0.2s;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #2c5a2e;
+            margin: -18px -20px 15px -20px;
+            padding: 12px 20px;
+            border-radius: 50px 50px 30px 30px;
+            box-shadow: inset 0 -3px 0 #1a3a1c, 0 5px 12px rgba(0,0,0,0.2);
+        }
+        .logo-img {
+            height: 48px;
+            width: auto;
+            background: white;
+            border-radius: 40px;
+            padding: 4px 8px;
+        }
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffd966;
+            text-shadow: 2px 2px 0 #1f4421;
+        }
+        .brand-adventures {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff0b5;
+        }
+        .arcade-badge {
+            margin-left: auto;
+            background: #f5a623;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: #2c2b1f;
+            box-shadow: inset 0 -2px 0 #b4620a, 0 2px 6px black;
+            font-size: 14px;
+        }
+
+        /* Score + Timer Panel */
+        .stats-panel {
+            display: flex;
+            justify-content: space-between;
+            background: #2e241f;
+            padding: 12px 18px;
+            border-radius: 60px;
+            margin: 10px 0 20px;
+            color: #ffecb3;
+            font-weight: bold;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.5), 0 3px 0 #5f4c3c;
+        }
+        .score-box, .timer-box {
+            background: #000000aa;
+            padding: 5px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+        .score-box span, .timer-box span {
+            font-size: 14px;
+            margin-right: 8px;
+            color: #ffcd94;
+        }
+
+        /* Bubble Arena */
+        .bubble-arena {
+            background: radial-gradient(circle at 30% 20%, #9ad7f5, #3b8fc2);
+            border-radius: 70px;
+            padding: 25px 15px;
+            margin: 10px 0;
+            min-height: 320px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            box-shadow: inset 0 0 0 4px #ffe2a4, inset 0 0 0 8px #e6b422, 0 12px 28px black;
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+        .bubble {
+            background: radial-gradient(circle at 35% 35%, rgba(255,255,245,0.95), #ffe6b3);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+            box-shadow: 0 10px 0 #b97f10, 0 5px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: 0.05s linear;
+            animation: float 2s infinite ease-in-out;
+            transform-origin: center;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        .bubble:active {
+            transform: scale(0.85);
+            transition: 0.02s;
+        }
+        /* glitter class */
+        .glitter-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            font-size: 28px;
+            animation: glitterFly 0.6s ease-out forwards;
+        }
+        @keyframes glitterFly {
+            0% { opacity: 1; transform: scale(0.5) translate(0,0); }
+            100% { opacity: 0; transform: scale(1.5) translate(var(--dx, 30px), var(--dy, -50px)); }
+        }
+        /* question panel */
+        .question-card {
+            background: #ffefcf;
+            border-radius: 80px;
+            padding: 14px;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: inset 0 1px 4px white, 0 6px 0 #b98f4b;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 10px 0;
+        }
+        .arcade-btn {
+            background: linear-gradient(180deg, #f7b42c, #e07c1f);
+            border: none;
+            padding: 14px 0;
+            border-radius: 60px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 0 #914d00;
+            cursor: pointer;
+            transition: 0.07s linear;
+            box-shadow: 0 6px 0 #7a3e00;
+        }
+        .arcade-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7a3e00;
+        }
+        .next-area {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .next-btn {
+            background: #2c5a2e;
+            padding: 12px 24px;
+            font-size: 20px;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
+            color: #ffeaac;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #144217;
+            transition: 0.05s linear;
+        }
+        .next-btn:active { transform: translateY(2px); }
+        .hidden { display: none; }
+        .message-area {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 12px;
+            background: #2b211b;
+            padding: 8px;
+            border-radius: 40px;
+            color: #ffd966;
+        }
+        @media (max-width: 500px) {
+            .bubble { width: 65px; height: 65px; font-size: 42px; }
+            .arcade-btn { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="arcade-container" id="gameRoot">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="arcade-badge">🎮 ARCADE POP</div>
+    </div>
+    <div class="stats-panel">
+        <div class="score-box">🏆 <span>SCORE</span> <span id="scoreValue">0</span></div>
+        <div class="timer-box">⏱️ <span>TIME</span> <span id="timerValue">0</span></div>
+    </div>
+    <div id="dynamicGameArea"></div>
+</div>
+
+<script>
+    // ------------------------------
+    // ARCADE SOUND ENGINE (Web Audio)
+    // ------------------------------
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    function playPopSound() {
+        try {
+            if (!audioCtx) audioCtx = new AudioContext();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.2;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+            osc.stop(audioCtx.currentTime + 0.3);
+        } catch(e) { console.log("audio blocked"); }
+    }
+    function playCorrectChime() {
+        try {
+            if (!audioCtx) audioCtx = new AudioContext();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 523.25;
+            gain.gain.value = 0.15;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+            osc.stop(audioCtx.currentTime + 0.5);
+            setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.frequency.value = 659.25;
+                gain2.gain.value = 0.15;
+                osc2.start();
+                gain2.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.8);
+                osc2.stop(audioCtx.currentTime + 0.8);
+            }, 180);
+        } catch(e) {}
+    }
+
+    function createGlitter(x, y) {
+        for (let i = 0; i < 12; i++) {
+            const glitter = document.createElement('div');
+            glitter.className = 'glitter-burst';
+            glitter.innerHTML = ['✨','⭐','🌟','💎','⚡','🔶'][Math.floor(Math.random()*6)];
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 40 + Math.random() * 70;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist - 30;
+            glitter.style.left = (x - 15) + 'px';
+            glitter.style.top = (y - 15) + 'px';
+            glitter.style.setProperty('--dx', dx + 'px');
+            glitter.style.setProperty('--dy', dy + 'px');
+            document.body.appendChild(glitter);
+            setTimeout(() => glitter.remove(), 600);
+        }
+    }
+
+    // Game state
+    let currentQuestion = null;
+    let score = 0;
+    let timeLeft = 20;
+    let timerInterval = null;
+    let gameActive = true;
+    let currentBubbleCount = 0;
+    let waitingForAnswer = false;
+
+    const animals = ['🐘','🦒','🦁','🐒','🐧','🦊','🐸','🐝'];
+    function getRandomAnimal() { return animals[Math.floor(Math.random() * animals.length)]; }
+
+    function generateQuestion() {
+        const animal = getRandomAnimal();
+        const correctCount = Math.floor(Math.random() * 6) + 2; // 2 to 7 bubbles
+        return { animal, correctCount, options: generateOptions(correctCount) };
+    }
+
+    function generateOptions(correct) {
+        let opts = [correct];
+        while(opts.length < 3) {
+            let cand = correct + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 2) + 1);
+            if(cand < 1) cand = correct+1;
+            if(cand > 9) cand = correct-1;
+            if(!opts.includes(cand)) opts.push(cand);
+        }
+        return opts.sort(() => Math.random() - 0.5);
+    }
+
+    function renderBubbles(count, animal) {
+        let bubblesHtml = '';
+        for(let i=0; i<count; i++) {
+            bubblesHtml += `<div class="bubble" data-bubble-index="${i}">${animal}</div>`;
+        }
+        return bubblesHtml;
+    }
+
+    function attachBubbleEvents() {
+        document.querySelectorAll('.bubble').forEach(bubble => {
+            bubble.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if(!gameActive || waitingForAnswer) return;
+                playPopSound();
+                const rect = bubble.getBoundingClientRect();
+                createGlitter(rect.left + rect.width/2, rect.top + rect.height/2);
+                bubble.style.transform = 'scale(0)';
+                bubble.style.transition = '0.08s';
+                setTimeout(() => bubble.remove(), 80);
+                currentBubbleCount--;
+                if(currentBubbleCount === 0) {
+                    // all bubbles popped - correct answer automatically!
+                    waitingForAnswer = true;
+                    clearInterval(timerInterval);
+                    playCorrectChime();
+                    score++;
+                    document.getElementById('scoreValue').innerText = score;
+                    document.getElementById('gameMessage').innerHTML = '🎉✨ PERFECT POP! +1 POINT ✨🎉';
+                    document.getElementById('gameMessage').style.background = '#c8e6b5';
+                    // next question after delay
+                    setTimeout(() => {
+                        if(gameActive) loadNextRound();
+                    }, 1400);
+                } else {
+                    document.getElementById('gameMessage').innerHTML = `💥 POP! ${currentBubbleCount} more to go! 💥`;
+                }
+            });
+        });
+    }
+
+    function loadNextRound() {
+        if(!gameActive) return;
+        waitingForAnswer = false;
+        currentQuestion = generateQuestion();
+        currentBubbleCount = currentQuestion.correctCount;
+        const bubbleHtml = renderBubbles(currentQuestion.correctCount, currentQuestion.animal);
+        const optionsHtml = currentQuestion.options.map(opt => `<button class="arcade-btn opt-btn" data-val="${opt}">${opt}</button>`).join('');
+        
+        const html = `
+            <div class="question-card">🐣 POP <strong>${currentQuestion.correctCount}</strong> bubbles with ${currentQuestion.animal} ?</div>
+            <div class="bubble-arena" id="bubbleArena">
+                ${bubbleHtml}
+            </div>
+            <div class="options" id="optionsRow">
+                ${optionsHtml}
+            </div>
+            <div class="message-area" id="gameMessage">🎈 POP all the bubbles before time runs out! 🎈</div>
+            <div class="next-area"><button class="next-btn" id="nextLevelBtn">⏩ SKIP ➡️</button></div>
+        `;
+        document.getElementById('dynamicGameArea').innerHTML = html;
+        attachBubbleEvents();
+        document.querySelectorAll('.opt-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if(!gameActive || waitingForAnswer) return;
+                const val = parseInt(btn.dataset.val);
+                if(val === currentQuestion.correctCount) {
+                    // auto-win? but bubbles already popped, but we handle if they click correct before popping all: extra safeguard
+                    if(currentBubbleCount === 0) return;
+                    playCorrectChime();
+                    // manually complete the level: remove all bubbles at once
+                    document.querySelectorAll('.bubble').forEach(b => {
+                        const rect = b.getBoundingClientRect();
+                        createGlitter(rect.left+rect.width/2, rect.top+rect.height/2);
+                        b.remove();
+                    });
+                    currentBubbleCount = 0;
+                    clearInterval(timerInterval);
+                    score++;
+                    document.getElementById('scoreValue').innerText = score;
+                    document.getElementById('gameMessage').innerHTML = '🌈✨ AMAZING! +1 EXTRA ✨🌈';
+                    waitingForAnswer = true;
+                    setTimeout(() => loadNextRound(), 1300);
+                } else {
+                    document.getElementById('gameMessage').innerHTML = '❌ Wrong number! Keep popping the bubbles! ❌';
+                    playPopSound();
+                }
+            });
+        });
+        document.getElementById('nextLevelBtn').addEventListener('click', () => {
+            if(waitingForAnswer) return;
+            clearInterval(timerInterval);
+            loadNextRound();
+        });
+        startTimerForRound();
+    }
+
+    function startTimerForRound() {
+        timeLeft = 12;
+        document.getElementById('timerValue').innerText = timeLeft;
+        if(timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if(!gameActive) return;
+            if(timeLeft <= 1) {
+                clearInterval(timerInterval);
+                if(!waitingForAnswer && currentBubbleCount > 0) {
+                    gameActive = false;
+                    document.getElementById('gameMessage').innerHTML = '⏰ TIME\'S UP! GAME OVER ⏰';
+                    document.getElementById('dynamicGameArea').innerHTML += `<div style="text-align:center;margin-top:15px;"><button class="next-btn" id="restartArcadeBtn">🔄 RESTART ARCADE</button></div>`;
+                    document.getElementById('restartArcadeBtn')?.addEventListener('click', () => location.reload());
+                }
+            } else {
+                timeLeft--;
+                document.getElementById('timerValue').innerText = timeLeft;
+            }
+        }, 1000);
+    }
+
+    function initGame() {
+        gameActive = true;
+        score = 0;
+        document.getElementById('scoreValue').innerText = "0";
+        currentQuestion = generateQuestion();
+        currentBubbleCount = currentQuestion.correctCount;
+        const bubbleHtml = renderBubbles(currentQuestion.correctCount, currentQuestion.animal);
+        const optionsHtml = currentQuestion.options.map(opt => `<button class="arcade-btn opt-btn" data-val="${opt}">${opt}</button>`).join('');
+        const fullHtml = `
+            <div class="question-card">💥 POP <strong>${currentQuestion.correctCount}</strong> bubbles with ${currentQuestion.animal} !</div>
+            <div class="bubble-arena" id="bubbleArena">
+                ${bubbleHtml}
+            </div>
+            <div class="options" id="optionsRow">
+                ${optionsHtml}
+            </div>
+            <div class="message-area" id="gameMessage">🎈 Tap the bubbles! Pop them all fast! 🎈</div>
+            <div class="next-area"><button class="next-btn" id="nextLevelBtn">⏩ SKIP ➡️</button></div>
+        `;
+        document.getElementById('dynamicGameArea').innerHTML = fullHtml;
+        attachBubbleEvents();
+        document.querySelectorAll('.opt-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if(!gameActive || waitingForAnswer) return;
+                const val = parseInt(btn.dataset.val);
+                if(val === currentQuestion.correctCount && currentBubbleCount > 0) {
+                    playCorrectChime();
+                    document.querySelectorAll('.bubble').forEach(b => {
+                        const rect = b.getBoundingClientRect();
+                        createGlitter(rect.left+rect.width/2, rect.top+rect.height/2);
+                        b.remove();
+                    });
+                    currentBubbleCount = 0;
+                    clearInterval(timerInterval);
+                    score++;
+                    document.getElementById('scoreValue').innerText = score;
+                    document.getElementById('gameMessage').innerHTML = '✨ GLITTER BONUS! ✨';
+                    waitingForAnswer = true;
+                    setTimeout(() => loadNextRound(), 1300);
+                } else {
+                    document.getElementById('gameMessage').innerHTML = '❌ Not the right count! Keep popping! ❌';
+                    playPopSound();
+                }
+            });
+        });
+        document.getElementById('nextLevelBtn').addEventListener('click', () => {
+            if(waitingForAnswer) return;
+            clearInterval(timerInterval);
+            loadNextRound();
+        });
+        startTimerForRound();
+    }
+    initGame();
+</script>
+</body>
+</html>
