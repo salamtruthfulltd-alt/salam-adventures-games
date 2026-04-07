@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Sequence Memory Game</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 20px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .logo-img { height: 50px; width: auto; max-width: 150px; }
+        .brand-salam { font-size: 22px; font-weight: 800; color: #2c5a2e; }
+        .brand-adventures { font-size: 16px; font-weight: 600; color: #f5a623; }
+        .game-badge { margin-left: auto; background: #f0f2f5; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: bold; color: #e0910f; }
+        .sequence-area { text-align: center; padding: 20px; background: #fefaf0; border-radius: 24px; margin: 20px 0; }
+        .sequence-display { font-size: 48px; letter-spacing: 15px; font-weight: bold; }
+        .options { display: flex; gap: 15px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .seq-btn { background: #f5a623; border: none; padding: 15px 25px; font-size: 28px; border-radius: 20px; cursor: pointer; }
+        .seq-btn:hover { background: #e0910f; }
+        .score { text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0; }
+        .message { text-align: center; padding: 12px; background: #eef3fc; border-radius: 16px; margin-top: 15px; }
+        .next-btn { background: #2c5a2e; color: white; border: none; padding: 12px 24px; border-radius: 40px; font-size: 16px; cursor: pointer; margin-top: 10px; width: 100%; }
+        @media print { .controls, button, .seq-btn, .next-btn { display: none; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="game-badge">🎮 Sequence Memory</div>
+    </div>
+    <div id="gameArea"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save</button>
+</div>
+<script>
+    const symbols = ['🐶', '🐱', '🐭', '🐰'];
+    let sequence = [], playerSequence = [], level = 1, gameActive = false;
+    function showSequence() {
+        gameActive = false;
+        let i = 0;
+        const displayDiv = document.getElementById('sequenceDisplay');
+        function showNext() {
+            if (i < sequence.length) { displayDiv.innerText = sequence[i]; setTimeout(() => { displayDiv.innerText = '?'; i++; setTimeout(showNext, 400); }, 500); }
+            else { displayDiv.innerText = '⭐ Your turn!'; gameActive = true; playerSequence = []; }
+        }
+        showNext();
+    }
+    function playerTurn(choice) {
+        if (!gameActive) return;
+        playerSequence.push(choice);
+        if (playerSequence[playerSequence.length-1] !== sequence[playerSequence.length-1]) {
+            document.getElementById('msg').innerHTML = `❌ Game Over! You reached level ${level}. Play again!`;
+            gameActive = false;
+            document.getElementById('restartBtn')?.classList.remove('hidden');
+            return;
+        }
+        if (playerSequence.length === sequence.length) {
+            level++;
+            document.getElementById('msg').innerHTML = `✅ Correct! Next level ${level}`;
+            sequence.push(symbols[Math.floor(Math.random() * symbols.length)]);
+            gameActive = false;
+            setTimeout(() => showSequence(), 1000);
+        }
+    }
+    function startGame() {
+        sequence = [symbols[Math.floor(Math.random() * symbols.length)]];
+        level = 1;
+        gameActive = false;
+        renderUI();
+        setTimeout(() => showSequence(), 500);
+    }
+    function renderUI() {
+        const html = `
+            <div class="sequence-area"><div class="sequence-display" id="sequenceDisplay">⭐</div></div>
+            <div class="options">${symbols.map(s => `<button class="seq-btn" data-sym="${s}">${s}</button>`).join('')}</div>
+            <div class="score">🎯 Level: <span id="levelNum">${level}</span></div>
+            <div class="message" id="msg">Watch the sequence, then repeat it!</div>
+            <button class="next-btn hidden" id="restartBtn">Play Again</button>
+        `;
+        document.getElementById('gameArea').innerHTML = html;
+        document.querySelectorAll('.seq-btn').forEach(btn => btn.addEventListener('click', () => playerTurn(btn.dataset.sym)));
+        document.getElementById('restartBtn')?.addEventListener('click', startGame);
+    }
+    startGame();
+</script>
+</body>
+</html>
