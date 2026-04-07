@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&display=swap');
-        body { font-family: 'Quicksand', sans-serif; background-color: #f0f4f8; color: #1e293b; }
+        body { font-family: 'Quicksand', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .worksheet-area { font-size: 1.2rem; line-height: 1.8; letter-spacing: 0.02em; }
         @media print { .no-print { display: none; } .print-area { border: none !important; box-shadow: none !important; p: 0; } }
     </style>
@@ -16,14 +16,14 @@
 
     <div class="max-w-2xl mx-auto bg-white rounded-[2rem] shadow-2xl border border-indigo-100 overflow-hidden no-print">
         <div class="bg-indigo-600 p-8 text-white text-center">
-            <h1 class="text-3xl font-bold italic">BloomBuddy 🌸</h1>
+            <h1 class="text-3xl font-bold italic text-white">BloomBuddy 🌸</h1>
             <p class="text-xs uppercase tracking-[0.2em] font-bold opacity-80 mt-1 text-indigo-100">Special Educational Needs Support</p>
         </div>
 
         <div class="p-8 space-y-6">
             <div class="text-center">
                 <label class="block text-xs font-black text-indigo-400 uppercase mb-3 tracking-widest">What are we learning about?</label>
-                <input type="text" id="topic" placeholder="e.g. Friendly Animals or Brushing Teeth" 
+                <input type="text" id="topic" placeholder="e.g. Brushing Teeth or Crossing the Road" 
                     class="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-center text-xl font-bold outline-none focus:border-indigo-500 transition-all">
             </div>
 
@@ -40,15 +40,15 @@
 
     <div id="outputArea" class="hidden max-w-2xl mx-auto mt-10 p-10 bg-white rounded-[2rem] border-2 border-dashed border-slate-200 shadow-sm print-area">
         <div class="flex justify-between items-center mb-8 no-print border-b pb-4">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Student Worksheet</span>
-            <button onclick="window.print()" class="text-indigo-600 text-xs font-bold hover:underline font-sans">🖨️ PRINT / SAVE PDF</button>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest italic">Student Worksheet</span>
+            <button onclick="window.print()" class="text-indigo-600 text-xs font-bold hover:underline font-sans uppercase">🖨️ Print / Save PDF</button>
         </div>
         
         <div id="result" class="worksheet-area text-slate-800">
             </div>
 
         <div class="mt-12 text-center no-print border-t pt-6">
-            <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">BloomBuddy SEN System • 2026 Edition</p>
+            <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">BloomBuddy SEN System • Simply Adaptive</p>
         </div>
     </div>
 
@@ -60,43 +60,44 @@
             const result = document.getElementById('result');
             const output = document.getElementById('outputArea');
 
-            if (!topic) return alert("Please enter a topic!");
+            if (!topic) return alert("Please type a topic!");
 
             btn.disabled = true;
             status.classList.remove('hidden');
             output.classList.add('hidden');
 
             try {
-                // Using a direct public inference route that requires no keys for educational use
+                // Using the stable public inference route for education
                 const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 
-                        inputs: `<|system|>\nYou are a Special Needs Teacher. Use simple, literal language. No chatter.\n<|user|>\nCreate a worksheet about ${topic}. Include 3 simple steps and 2 Yes/No questions.\n<|assistant|>\n`,
-                        parameters: { max_new_tokens: 400, temperature: 0.1 }
+                        inputs: `<|system|>\nYou are a Special Needs Teacher. Use simple, literal language. No chatter. Provide a clear title.\n<|user|>\nCreate a short worksheet about ${topic}. Include 3 simple steps and 2 Yes/No questions.\n<|assistant|>\n`,
+                        parameters: { max_new_tokens: 450, temperature: 0.1 }
                     })
                 });
 
                 const data = await response.json();
 
-                if (data.error) {
-                    status.innerHTML = "🌸 BloomBuddy is waking up. Please click 'Create' again in 10 seconds!";
+                // If the server is sleeping, it needs a "wake up"
+                if (data.error && data.error.includes("loading")) {
+                    status.innerHTML = "🌸 BloomBuddy is waking up. Try clicking again in 10 seconds!";
                     btn.disabled = false;
                     return;
                 }
 
-                // Extracting text from the local model response
                 const fullText = data[0].generated_text;
                 const cleanText = fullText.split('<|assistant|>')[1] || fullText;
 
                 result.innerHTML = cleanText.trim().replace(/\n/g, "<br>");
                 output.classList.remove('hidden');
                 status.classList.add('hidden');
-                window.scrollTo({ top: output.offsetTop, behavior: 'smooth' });
+                
+                // Auto-scroll to the new worksheet
+                window.scrollTo({ top: output.offsetTop - 20, behavior: 'smooth' });
 
             } catch (error) {
-                console.error(error);
-                status.innerHTML = "⚠️ Connection sleepy. Please try one more time!";
+                status.innerHTML = "⚠️ Server is sleepy. Please click 'Create' once more!";
             } finally {
                 btn.disabled = false;
             }
