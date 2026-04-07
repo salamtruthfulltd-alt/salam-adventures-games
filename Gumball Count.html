@@ -12,7 +12,7 @@
         body { 
             margin: 0; padding: 0; background: #fef2f2; 
             display: flex; justify-content: center; align-items: center; 
-            height: 100dvh; overflow: hidden; font-family: 'Fredoka One', cursive;
+            height: 100dvh; width: 100vw; overflow: hidden; font-family: 'Fredoka One', cursive;
         }
 
         #start-overlay {
@@ -22,43 +22,45 @@
         }
 
         .game-card {
-            width: 280px; height: 380px; background: white; 
-            padding: 15px; border-radius: 30px; border: 5px solid var(--red);
-            box-shadow: 0 6px 0 var(--dark); display: flex; 
+            width: 90vw; max-width: 320px; 
+            background: white; padding: 20px; 
+            border-radius: 35px; border: 6px solid var(--red);
+            box-shadow: 0 8px 0 var(--dark); display: flex; 
             flex-direction: column; align-items: center; position: relative;
         }
 
-        .status-msg { color: var(--red); font-size: 1.1rem; margin-bottom: 8px; height: 1.4rem; }
+        .status-msg { color: var(--red); font-size: 1.2rem; margin-bottom: 10px; }
 
         #globe {
-            width: 125px; height: 125px; background: rgba(226, 232, 240, 0.4); 
+            width: 130px; height: 130px; 
+            background: rgba(226, 232, 240, 0.4); 
             border: 3px solid #cbd5e1; border-radius: 50%; 
             position: relative; overflow: hidden;
         }
 
         .base {
-            width: 85px; height: 30px; background: var(--red);
+            width: 90px; height: 30px; background: var(--red);
             margin: -10px 0 15px 0; border-radius: 5px 5px 20px 20px;
             border-bottom: 5px solid var(--dark); z-index: 5;
         }
 
-        .tray-bg { 
-            width: 100%; height: 65px; background: #fee2e2; 
-            border-radius: 15px; border: 2px dashed #fca5a5;
-            position: relative;
+        .tray-area { 
+            width: 100%; height: 75px; background: #fee2e2; 
+            border-radius: 20px; border: 2px dashed #fca5a5;
+            position: relative; margin-top: 10px;
         }
 
         .gumball {
-            width: 32px; height: 32px; border-radius: 50%; position: absolute;
+            width: 34px; height: 34px; border-radius: 50%; position: absolute;
             z-index: 100; border: 2px solid rgba(0,0,0,0.1);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
             cursor: grab;
         }
 
         .btn-start {
-            padding: 12px 35px; font-size: 1.4rem; font-family: 'Fredoka One';
+            padding: 15px 40px; font-size: 1.5rem; font-family: 'Fredoka One';
             background: white; color: var(--red); border: none; border-radius: 50px;
-            box-shadow: 0 4px 0 var(--dark); cursor: pointer;
+            box-shadow: 0 5px 0 var(--dark); cursor: pointer;
         }
     </style>
 </head>
@@ -69,10 +71,10 @@
 </div>
 
 <div class="game-card" id="stage">
-    <div class="status-msg" id="msg">Put 5 Gumballs in!</div>
+    <div class="status-msg" id="msg">Count to 5!</div>
     <div id="globe"></div>
     <div class="base"></div>
-    <div class="tray-bg" id="trayArea"></div>
+    <div class="tray-area" id="trayRef"></div>
 </div>
 
 <script>
@@ -81,7 +83,7 @@
     const stage = document.getElementById('stage');
     const globe = document.getElementById('globe');
     const msg = document.getElementById('msg');
-    const trayArea = document.getElementById('trayArea');
+    const trayRef = document.getElementById('trayRef');
 
     function boot() {
         audio = new (window.AudioContext || window.webkitAudioContext)();
@@ -106,16 +108,22 @@
         document.querySelectorAll('.gumball').forEach(b => b.remove());
         msg.innerText = "Count to 5!";
         
-        const trayWidth = trayArea.clientWidth; 
-        const step = (trayWidth - 40) / 5; // 40px padding/margin fix
+        const trayRect = trayRef.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        
+        // Calculate internal tray positions relative to the stage
+        const startX = trayRef.offsetLeft + 10;
+        const startY = trayRef.offsetTop + 18;
+        const spacing = (trayRef.clientWidth - 55) / 5; 
 
         for(let i = 0; i < 6; i++) {
             const b = document.createElement('div');
             b.className = 'gumball';
             b.style.background = colors[i];
-            // Positioned relative to the stage coordinate system
-            b.style.left = (20 + (i * step)) + 'px';
-            b.style.top = '300px'; 
+            
+            // Fixed: They are placed based on the tray's coordinates
+            b.style.left = (startX + (i * spacing)) + 'px';
+            b.style.top = startY + 'px'; 
             b.onpointerdown = pickup;
             stage.appendChild(b);
         }
@@ -129,14 +137,12 @@
 
         const stageRect = stage.getBoundingClientRect();
         const globeRect = globe.getBoundingClientRect();
-        
-        // Find Globe center relative to screen
         const gx = globeRect.left + (globeRect.width / 2);
         const gy = globeRect.top + (globeRect.height / 2);
 
         const moving = (ev) => {
-            const x = ev.clientX - stageRect.left - 16;
-            const y = ev.clientY - stageRect.top - 16;
+            const x = ev.clientX - stageRect.left - 17;
+            const y = ev.clientY - stageRect.top - 17;
             b.style.left = x + 'px';
             b.style.top = y + 'px';
         };
@@ -145,15 +151,13 @@
             b.removeEventListener('pointermove', moving);
             b.removeEventListener('pointerup', dropping);
             
-            // MATH: Radial distance from center of finger to center of globe
-            const distance = Math.hypot(ev.clientX - gx, ev.clientY - gy);
+            const dist = Math.hypot(ev.clientX - gx, ev.clientY - gy);
 
-            if (distance < 70) {
+            if (dist < 75) {
                 count++;
                 b.onpointerdown = null;
                 b.style.zIndex = "10";
                 
-                // Final resting place relative to stage
                 const finalX = (globeRect.left - stageRect.left) + 20 + (Math.random() * 50);
                 const finalY = (globeRect.top - stageRect.top) + 65 - (Math.floor((count-1)/2) * 20);
                 
@@ -163,12 +167,12 @@
                 playPop(300 + (count * 100));
                 
                 if(count === 5) {
-                    msg.innerText = "5 GUMBALLS! GREAT JOB!";
+                    msg.innerText = "GREAT JOB!";
                     setTimeout(() => playPop(800), 200);
-                    setTimeout(reset, 3500);
+                    setTimeout(reset, 3000);
                 }
             } else {
-                reset(); // Snap back
+                reset(); 
             }
         };
 
