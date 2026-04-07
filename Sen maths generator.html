@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | SEN Maths Worksheet Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+
+        .brand-name {
+            line-height: 1.1;
+        }
+
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+
+        .sen-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #4a6741;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #e0910f;
+        }
+
+        /* Worksheet */
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .name-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .name-line span {
+            border-bottom: 1px solid #ccc;
+            min-width: 150px;
+            display: inline-block;
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .question-card {
+            background: #fefaf0;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #eee2ce;
+        }
+
+        .question-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5a2e;
+            margin-bottom: 10px;
+        }
+
+        .visual-support {
+            font-size: 22px;
+            letter-spacing: 4px;
+            margin: 8px 0;
+            min-height: 50px;
+        }
+
+        .answer-line {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .answer-label {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .answer-space {
+            display: inline-block;
+            border-bottom: 1px solid #999;
+            min-width: 40px;
+            margin-left: 8px;
+        }
+
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .print-btn:hover {
+            background: #1f4421;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .sen-badge {
+                display: none;
+            }
+            .worksheet {
+                border: none;
+                padding: 0;
+            }
+            .question-card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="sen-badge">
+            ➕ SEN Maths
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="control-group">
+            <label>🔢 Operation</label>
+            <select id="operation">
+                <option value="count">Counting (How many?)</option>
+                <option value="add" selected>Addition (+)</option>
+                <option value="subtract">Subtraction (−)</option>
+                <option value="bonds">Number bonds to 10</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🔢 Number range</label>
+            <select id="numberRange">
+                <option value="5">0-5 (Easy)</option>
+                <option value="10" selected>0-10 (Medium)</option>
+                <option value="20">0-20 (Challenge)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🎨 Visual support</label>
+            <select id="visualSupport">
+                <option value="objects" selected>Objects (🐟 🍎 ⭐)</option>
+                <option value="fingers">Fingers (✋)</option>
+                <option value="tenframe">Ten frames</option>
+                <option value="none">Numbers only</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📋 Questions</label>
+            <select id="questionCount">
+                <option value="4">4 questions</option>
+                <option value="6" selected>6 questions</option>
+                <option value="8">8 questions</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ New Worksheet</button>
+    </div>
+
+    <!-- Worksheet area -->
+    <div id="worksheetArea" class="worksheet">
+        <!-- Filled by JavaScript -->
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+</div>
+
+<script>
+    const objectSets = {
+        animals: ['🐶', '🐱', '🐭', '🐰', '🐻', '🐼'],
+        fruits: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉'],
+        stars: ['⭐', '🌟', '✨', '⭐', '🌟', '✨']
+    };
+
+    function getRandomObjects(count) {
+        const set = objectSets.animals;
+        let result = [];
+        for (let i = 0; i < count; i++) {
+            result.push(set[Math.floor(Math.random() * set.length)]);
+        }
+        return result.join(' ');
+    }
+
+    function getTenFrame(num) {
+        let frames = '';
+        for (let i = 0; i < 10; i++) {
+            frames += (i < num) ? '⬛' : '⬜';
+            if (i === 4) frames += ' ';
+        }
+        return frames;
+    }
+
+    function getFingers(num) {
+        const fingerMap = {1: '☝️', 2: '✌️', 3: '🤟', 4: '🖖', 5: '🖐️', 6: '6️⃣', 7: '7️⃣', 8: '8️⃣', 9: '9️⃣', 10: '🔟'};
+        if (num <= 5) return fingerMap[num] || '?';
+        return `${fingerMap[5]} + ${fingerMap[num-5] || ''}`;
+    }
+
+    function generateWorksheet() {
+        const operation = document.getElementById('operation').value;
+        const maxNum = parseInt(document.getElementById('numberRange').value);
+        const visualType = document.getElementById('visualSupport').value;
+        const questionCount = parseInt(document.getElementById('questionCount').value);
+        
+        let questions = [];
+        
+        for (let i = 0; i < questionCount; i++) {
+            if (operation === 'count') {
+                let num = Math.floor(Math.random() * (maxNum + 1));
+                questions.push({ type: 'count', num: num });
+            }
+            else if (operation === 'add') {
+                let a = Math.floor(Math.random() * (maxNum + 1));
+                let b = Math.floor(Math.random() * (maxNum - a + 1));
+                questions.push({ type: 'add', a: a, b: b, answer: a + b });
+            }
+            else if (operation === 'subtract') {
+                let a = Math.floor(Math.random() * (maxNum + 1));
+                let b = Math.floor(Math.random() * (a + 1));
+                questions.push({ type: 'subtract', a: a, b: b, answer: a - b });
+            }
+            else if (operation === 'bonds') {
+                let a = Math.floor(Math.random() * 11);
+                let b = 10 - a;
+                questions.push({ type: 'bonds', a: a, b: b, answer: b });
+            }
+        }
+        
+        const container = document.getElementById('worksheetArea');
+        
+        let html = `
+            <div class="name-line">
+                <div>Name: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+                <div>Date: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+            </div>
+            <div class="questions-grid">
+        `;
+        
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+            let questionText = '';
+            let visualHtml = '';
+            
+            if (q.type === 'count') {
+                questionText = `How many?`;
+                if (visualType === 'objects') {
+                    visualHtml = `<div class="visual-support">${getRandomObjects(q.num)}</div>`;
+                } else if (visualType === 'fingers') {
+                    visualHtml = `<div class="visual-support">${getFingers(q.num)}</div>`;
+                } else if (visualType === 'tenframe') {
+                    visualHtml = `<div class="visual-support">${getTenFrame(q.num)}</div>`;
+                } else {
+                    visualHtml = `<div class="visual-support">${q.num === 0 ? '0' : '?'.repeat(q.num)}</div>`;
+                }
+            }
+            else if (q.type === 'add') {
+                questionText = `${q.a} + ${q.b} = ?`;
+                if (visualType === 'objects') {
+                    visualHtml = `<div class="visual-support">${getRandomObjects(q.a)} + ${getRandomObjects(q.b)}</div>`;
+                } else if (visualType === 'fingers') {
+                    visualHtml = `<div class="visual-support">${getFingers(q.a)} + ${getFingers(q.b)}</div>`;
+                } else if (visualType === 'tenframe') {
+                    visualHtml = `<div class="visual-support">${getTenFrame(q.a)}<br>+ ${getTenFrame(q.b)}</div>`;
+                } else {
+                    visualHtml = `<div class="visual-support"></div>`;
+                }
+            }
+            else if (q.type === 'subtract') {
+                questionText = `${q.a} - ${q.b} = ?`;
+                if (visualType === 'objects') {
+                    visualHtml = `<div class="visual-support">${getRandomObjects(q.a)}<br><span style="font-size:16px;">✖️ remove ${q.b}</span></div>`;
+                } else if (visualType === 'fingers') {
+                    visualHtml = `<div class="visual-support">${getFingers(q.a)} - ${getFingers(q.b)}</div>`;
+                } else {
+                    visualHtml = `<div class="visual-support"></div>`;
+                }
+            }
+            else if (q.type === 'bonds') {
+                questionText = `${q.a} + ___ = 10`;
+                if (visualType === 'objects') {
+                    visualHtml = `<div class="visual-support">${getRandomObjects(q.a)} + ? = ${getRandomObjects(10)}</div>`;
+                } else if (visualType === 'tenframe') {
+                    visualHtml = `<div class="visual-support">${getTenFrame(q.a)} + ? = ${getTenFrame(10)}</div>`;
+                } else {
+                    visualHtml = `<div class="visual-support"></div>`;
+                }
+            }
+            
+            html += `
+                <div class="question-card">
+                    <div class="question-text">${questionText}</div>
+                    ${visualHtml}
+                    <div class="answer-line">
+                        <span class="answer-label">Answer:</span>
+                        <span class="answer-space">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateWorksheet);
+    window.addEventListener('load', generateWorksheet);
+</script>
+</body>
+</html>
