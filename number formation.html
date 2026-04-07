@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Number of the Day Generator</title>
+    <meta name="description" content="Free Number of the Day worksheet generator. Build number sense with ten frames, drawing, writing, and one more/one less. Perfect for daily maths warm-up.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+        .brand-name {
+            line-height: 1.1;
+        }
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+        .fun-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #e0910f;
+        }
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #e0910f;
+        }
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .name-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+        .number-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .big-number {
+            font-size: 72px;
+            font-weight: 800;
+            color: #2c5a2e;
+            background: #fff0e0;
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 60px;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 12px;
+            background: #fefaf0;
+            border-radius: 20px;
+            border: 1px solid #eee2ce;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #f5a623;
+            margin-bottom: 12px;
+        }
+        .trace-number {
+            font-size: 48px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 8px;
+            color: #ccc;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+        .draw-area {
+            min-height: 80px;
+            border: 1px dashed #ccc;
+            border-radius: 16px;
+            margin-top: 8px;
+        }
+        .ten-frame {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .frame-cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .finger-icon {
+            font-size: 48px;
+            margin: 5px;
+        }
+        .one-more-box {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            padding: 8px;
+            background: #eef3fc;
+            border-radius: 16px;
+            margin: 5px;
+        }
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 15px;
+            font-size: 12px;
+            text-align: center;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .fun-badge, .instruction-box {
+                display: none;
+            }
+            .worksheet {
+                border: none;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="fun-badge">
+            🔢 Number of the Day
+        </div>
+    </div>
+    <div class="controls">
+        <div class="control-group">
+            <label>🔢 Choose number</label>
+            <select id="numberSelect">
+                <option value="random">Random (1-20)</option>
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                <option value="10" selected>10</option><option value="11">11</option><option value="12">12</option>
+                <option value="13">13</option><option value="14">14</option><option value="15">15</option>
+                <option value="16">16</option><option value="17">17</option><option value="18">18</option>
+                <option value="19">19</option><option value="20">20</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📋 Include sections</label>
+            <select id="sectionsSelect">
+                <option value="all">All sections</option>
+                <option value="basic">Basic only (write, draw, ten frame)</option>
+                <option value="advanced">Advanced (+ one more/less, word)</option>
+            </select>
+        </div>
+        <button id="generateBtn">✨ New Worksheet</button>
+    </div>
+    <div id="worksheetArea" class="worksheet"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="instruction-box">
+        🌟 Number of the Day — trace, draw, fill the ten frame, and explore one more/one less!
+    </div>
+</div>
+<script>
+    const numberWords = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+    
+    function getFingers(num) {
+        if (num === 1) return '☝️';
+        if (num === 2) return '✌️';
+        if (num === 3) return '🤟';
+        if (num === 4) return '🖖';
+        if (num === 5) return '🖐️';
+        if (num === 6) return '🖐️☝️';
+        if (num === 7) return '🖐️✌️';
+        if (num === 8) return '🖐️🤟';
+        if (num === 9) return '🖐️🖖';
+        if (num === 10) return '🖐️🖐️';
+        return '?'.repeat(num);
+    }
+    
+    function drawObjects(num) {
+        const objects = ['⭐', '🍎', '🐶', '🐱', '🐟', '🌸', '🚗', '🎈'];
+        let result = '';
+        for (let i = 0; i < num && i < 30; i++) {
+            result += objects[i % objects.length] + ' ';
+        }
+        return result;
+    }
+    
+    function generateTenFrame(num) {
+        let html = '<div class="ten-frame">';
+        for (let i = 0; i < 10; i++) {
+            if (i < num) {
+                html += '<div class="frame-cell">⬛</div>';
+            } else {
+                html += '<div class="frame-cell">⬜</div>';
+            }
+            if (i === 4) html += '<div style="width:8px;"></div>';
+        }
+        html += '</div>';
+        return html;
+    }
+    
+    function generateWorksheet() {
+        let number = parseInt(document.getElementById('numberSelect').value);
+        if (isNaN(number) || document.getElementById('numberSelect').value === 'random') {
+            number = Math.floor(Math.random() * 20) + 1;
+        }
+        const sections = document.getElementById('sectionsSelect').value;
+        
+        let html = `
+            <div class="name-line">
+                <div>Name: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+                <div>Date: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+            </div>
+            <div class="number-header">
+                <div class="big-number">${number}</div>
+                <div style="font-size:14px; margin-top:5px;">Number of the Day</div>
+            </div>
+        `;
+        
+        // Trace it
+        html += `<div class="section">
+            <div class="section-title">✍️ Trace the number</div>
+            <div class="trace-number">${number} ${number} ${number} ${number} ${number}</div>
+        </div>`;
+        
+        // Write it
+        html += `<div class="section">
+            <div class="section-title">📝 Write it on your own</div>
+            <div style="border-bottom:1px solid #ccc; height:50px;"></div>
+            <div style="border-bottom:1px solid #ccc; height:50px; margin-top:10px;"></div>
+            <div style="border-bottom:1px solid #ccc; height:50px; margin-top:10px;"></div>
+        </div>`;
+        
+        // Draw it
+        html += `<div class="section">
+            <div class="section-title">🎨 Draw ${number} objects</div>
+            <div style="font-size:28px; letter-spacing:6px;">${drawObjects(number)}</div>
+            <div class="draw-area"></div>
+        </div>`;
+        
+        // Ten frame
+        html += `<div class="section">
+            <div class="section-title">🟨 Fill the ten frame</div>
+            ${generateTenFrame(number)}
+        </div>`;
+        
+        // Fingers
+        html += `<div class="section">
+            <div class="section-title">✋ Show on fingers</div>
+            <div class="finger-icon">${getFingers(number)}</div>
+        </div>`;
+        
+        if (sections !== 'basic') {
+            // Number word
+            html += `<div class="section">
+                <div class="section-title">📖 Number word</div>
+                <div style="font-size:24px; font-weight:bold; color:#2c5a2e;">${numberWords[number] || ''}</div>
+                <div style="border-bottom:1px solid #ccc; width:200px; margin-top:8px;"></div>
+            </div>`;
+            
+            // One more / one less
+            html += `<div class="section">
+                <div class="section-title">➕ One more / One less</div>
+                <div>
+                    <span class="one-more-box">One less: ${number-1}</span>
+                    <span class="one-more-box">One more: ${number+1}</span>
+                </div>
+            </div>`;
+        }
+        
+        document.getElementById('worksheetArea').innerHTML = html;
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', generateWorksheet);
+    window.addEventListener('load', generateWorksheet);
+</script>
+</body>
+</html>
