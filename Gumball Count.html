@@ -26,7 +26,7 @@
             background: white; padding: 15px; 
             border-radius: 30px; border: 5px solid var(--red);
             box-shadow: 0 6px 0 var(--dark); display: flex; 
-            flex-direction: column; align-items: center;
+            flex-direction: column; align-items: center; position: relative;
         }
 
         .status-msg { color: var(--red); font-size: 1.1rem; margin-bottom: 8px; }
@@ -47,15 +47,13 @@
         .tray-area { 
             width: 100%; height: 60px; background: #fee2e2; 
             border-radius: 15px; border: 2px dashed #fca5a5;
-            position: relative; display: flex; align-items: center;
-            justify-content: space-evenly; padding: 0 5px;
         }
 
         .gumball {
             width: 30px; height: 30px; border-radius: 50%; 
-            position: relative; z-index: 100; border: 2px solid rgba(0,0,0,0.1);
+            position: absolute; z-index: 100; border: 2px solid rgba(0,0,0,0.1);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
-            cursor: grab; flex-shrink: 0;
+            cursor: grab;
         }
 
         .btn-start {
@@ -106,34 +104,40 @@
 
     function reset() {
         count = 0;
-        trayRef.innerHTML = '';
-        globe.innerHTML = '';
+        document.querySelectorAll('.gumball').forEach(b => b.remove());
         msg.innerText = "Count to 5!";
         
-        colors.forEach(color => {
+        const trayRect = trayRef.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        
+        // Calculate Tray position relative to the Stage
+        const startX = trayRef.offsetLeft + 8;
+        const startY = trayRef.offsetTop + 15;
+        const availSpace = trayRef.clientWidth - 45;
+        const step = availSpace / 5;
+
+        colors.forEach((color, i) => {
             const b = document.createElement('div');
             b.className = 'gumball';
             b.style.background = color;
-            b.style.position = 'relative'; 
+            // Balls live on the STAGE immediately to prevent jumping
+            b.style.left = (startX + (i * step)) + 'px';
+            b.style.top = startY + 'px';
             b.onpointerdown = pickup;
-            trayRef.appendChild(b);
+            stage.appendChild(b);
         });
     }
 
     function pickup(e) {
         if (audio.state === 'suspended') audio.resume();
         const b = e.target;
-        
-        const rect = b.getBoundingClientRect();
-        const sRect = stage.getBoundingClientRect();
-        
-        b.style.position = 'absolute';
-        b.style.left = (rect.left - sRect.left) + 'px';
-        b.style.top = (rect.top - sRect.top) + 'px';
-        stage.appendChild(b);
-        
         b.setPointerCapture(e.pointerId);
         b.style.zIndex = "1000";
+
+        const sRect = stage.getBoundingClientRect();
+        const gRect = globe.getBoundingClientRect();
+        const gx = gRect.left + (gRect.width / 2);
+        const gy = gRect.top + (gRect.height / 2);
 
         const moving = (ev) => {
             b.style.left = (ev.clientX - sRect.left - 15) + 'px';
@@ -144,22 +148,21 @@
             b.removeEventListener('pointermove', moving);
             b.removeEventListener('pointerup', dropping);
             
-            const gRect = globe.getBoundingClientRect();
-            const gx = gRect.left + (gRect.width / 2);
-            const gy = gRect.top + (gRect.height / 2);
-            
-            // Check distance from center of touch to center of globe
             const dist = Math.hypot(ev.clientX - gx, ev.clientY - gy);
 
             if (dist < 70) {
                 count++;
                 b.onpointerdown = null;
                 b.style.zIndex = "10";
-                globe.appendChild(b);
-                b.style.left = (15 + Math.random() * 60) + 'px';
-                b.style.top = (75 - (Math.floor((count-1)/2) * 18)) + 'px';
-                playPop(300 + (count * 100));
                 
+                // Final resting place math (staying on Stage coordinates)
+                const restX = (gRect.left - sRect.left) + 20 + (Math.random() * 50);
+                const restY = (gRect.top - sRect.top) + 65 - (Math.floor((count-1)/2) * 18);
+                
+                b.style.left = restX + 'px';
+                b.style.top = restY + 'px';
+                
+                playPop(300 + (count * 100));
                 if(count === 5) {
                     msg.innerText = "GREAT JOB!";
                     setTimeout(reset, 3000);
