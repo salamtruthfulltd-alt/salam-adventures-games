@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Quick Recall Game</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 20px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .logo-img { height: 50px; width: auto; max-width: 150px; }
+        .brand-salam { font-size: 22px; font-weight: 800; color: #2c5a2e; }
+        .brand-adventures { font-size: 16px; font-weight: 600; color: #f5a623; }
+        .game-badge { margin-left: auto; background: #f0f2f5; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: bold; color: #e0910f; }
+        .question-area { text-align: center; padding: 30px; background: #fefaf0; border-radius: 24px; margin: 20px 0; }
+        .question-text { font-size: 32px; font-weight: bold; color: #2c5a2e; }
+        .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+        .option-btn { background: #f5a623; color: white; border: none; padding: 20px; font-size: 24px; border-radius: 20px; cursor: pointer; transition: 0.1s; }
+        .option-btn:hover { transform: scale(1.02); background: #e0910f; }
+        .score { text-align: center; font-size: 18px; font-weight: bold; margin: 10px 0; }
+        .message { text-align: center; padding: 12px; background: #eef3fc; border-radius: 16px; margin-top: 15px; }
+        .next-btn { background: #2c5a2e; color: white; border: none; padding: 12px 24px; border-radius: 40px; font-size: 16px; cursor: pointer; margin-top: 10px; width: 100%; }
+        @media print { .controls, button, .next-btn { display: none; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="game-badge">🎮 Quick Recall</div>
+    </div>
+    <div id="gameArea"></div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save</button>
+</div>
+<script>
+    const questions = [
+        { q: "🐶 What sound does a dog make?", options: ["Meow", "Woof", "Moo", "Roar"], correct: 1 },
+        { q: "🍎 Which one is a fruit?", options: ["🥕", "🍎", "🥦", "🌽"], correct: 1 },
+        { q: "🔴 What colour is an apple?", options: ["Blue", "Green", "Red", "Yellow"], correct: 2 },
+        { q: "🐱 Which animal says 'meow'?", options: ["🐶", "🐮", "🐱", "🐭"], correct: 2 },
+        { q: "✈️ Which one flies in the sky?", options: ["🚗", "🚲", "✈️", "🚢"], correct: 2 }
+    ];
+    let currentQ = 0, score = 0;
+    function loadQuestion() {
+        const q = questions[currentQ];
+        const html = `
+            <div class="question-area"><div class="question-text">${q.q}</div></div>
+            <div class="options">${q.options.map((opt, idx) => `<button class="option-btn" data-idx="${idx}">${opt}</button>`).join('')}</div>
+            <div class="score">⭐ Score: ${score}/${questions.length}</div>
+            <div class="message" id="msg">Click the correct answer!</div>
+        `;
+        document.getElementById('gameArea').innerHTML = html;
+        document.querySelectorAll('.option-btn').forEach(btn => btn.addEventListener('click', (e) => checkAnswer(parseInt(e.target.dataset.idx))));
+    }
+    function checkAnswer(selected) {
+        const isCorrect = (selected === questions[currentQ].correct);
+        if (isCorrect) { score++; document.getElementById('msg').innerHTML = '✅ Correct! +1 point'; }
+        else { document.getElementById('msg').innerHTML = `❌ Oops! The correct answer was: ${questions[currentQ].options[questions[currentQ].correct]}`; }
+        currentQ++;
+        if (currentQ < questions.length) { setTimeout(loadQuestion, 1200); }
+        else { document.getElementById('gameArea').innerHTML = `<div class="question-area"><div class="question-text">🎉 Game Over! Your score: ${score}/${questions.length}</div><button class="next-btn" id="restartBtn">Play Again</button></div>`; document.getElementById('restartBtn')?.addEventListener('click', () => { currentQ = 0; score = 0; loadQuestion(); }); }
+    }
+    loadQuestion();
+</script>
+</body>
+</html>
