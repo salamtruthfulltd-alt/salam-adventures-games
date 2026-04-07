@@ -1,119 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local SEN AI Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .loading-bar { transition: width 0.3s ease; }
-        .dyslexia-font { font-family: 'Comic Sans MS', sans-serif; letter-spacing: 0.05em; line-height: 1.8; }
-    </style>
-</head>
-<body class="bg-transparent p-2">
+async function generateWorksheet() {
+    const topic = document.getElementById('topic').value;
+    const btn = document.getElementById('genBtn');
+    const display = document.getElementById('worksheetDisplay');
 
-    <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
-        <div class="bg-emerald-600 px-4 py-3 text-white flex justify-between items-center">
-            <h2 class="text-sm font-bold tracking-tight">LOCAL SEN GENERATOR</h2>
-            <span class="text-[10px] bg-white/20 px-2 py-1 rounded">No Key Required</span>
-        </div>
+    if (!topic) return alert("Enter a topic!");
 
-        <div class="p-4 space-y-4">
-            <div id="statusContainer" class="text-[11px] text-slate-500">
-                <div class="flex justify-between mb-1">
-                    <span id="statusText">AI Model: Ready to load</span>
-                    <span id="statusPercent">0%</span>
-                </div>
-                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                    <div id="progressBar" class="loading-bar bg-emerald-500 h-full w-0"></div>
-                </div>
-            </div>
+    btn.innerText = "Generating...";
+    display.innerHTML = "Asking the AI...";
+    document.getElementById('outputArea').classList.remove('hidden');
 
-            <div class="space-y-3">
-                <input type="text" id="topic" placeholder="Topic (e.g. Telling Time)" 
-                    class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                
-                <div class="flex items-center gap-2 px-1">
-                    <input type="checkbox" id="dyslexiaMode" class="w-4 h-4 rounded text-emerald-600">
-                    <label for="dyslexiaMode" class="text-xs font-medium text-slate-600">Dyslexia Spacing</label>
-                </div>
-            </div>
-
-            <button onclick="generateWorksheet()" id="genBtn" 
-                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-3 rounded-lg shadow-md transition-transform active:scale-95">
-                Build Worksheet
-            </button>
-
-            <div id="outputArea" class="hidden mt-4 border-t pt-4">
-                <div id="worksheetDisplay" class="max-h-60 overflow-y-auto p-4 bg-slate-50 rounded-lg text-sm text-slate-800">
-                    </div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import * as webllm from "https://esm.run/@mlc-ai/web-llm";
-
-        let engine;
-        const modelId = "Llama-3-8B-Instruct-v0.1-q4f16_1-MLC"; // Efficient model for browsers
-
-        window.generateWorksheet = async function() {
-            const topic = document.getElementById('topic').value;
-            const btn = document.getElementById('genBtn');
-            const display = document.getElementById('worksheetDisplay');
-            const statusText = document.getElementById('statusText');
-            const progressBar = document.getElementById('progressBar');
-            const statusPercent = document.getElementById('statusPercent');
-
-            if (!topic) return alert("Please enter a topic.");
-
-            btn.disabled = true;
-            btn.innerText = "Processing...";
-            document.getElementById('outputArea').classList.remove('hidden');
-            display.innerHTML = "Thinking...";
-
-            try {
-                // Initialize engine if not already done
-                if (!engine) {
-                    statusText.innerText = "Downloading AI (First time only)...";
-                    engine = await webllm.CreateMLCEngine(modelId, {
-                        initProgressCallback: (p) => {
-                            const progress = Math.round(p.progress * 100);
-                            progressBar.style.width = progress + "%";
-                            statusPercent.innerText = progress + "%";
-                        }
-                    });
-                    statusText.innerText = "AI Loaded & Running Locally";
-                }
-
-                const messages = [
-                    { role: "system", content: "You are a SEN teacher. Create a simple worksheet with 3 easy steps and 2 check-box questions. Use literal, clear language." },
-                    { role: "user", content: `Create a worksheet about ${topic}` }
-                ];
-
-                const chunks = await engine.chat.completions.create({ messages, stream: true });
-                
-                let fullText = "";
-                display.innerHTML = ""; // Clear "Thinking..."
-                
-                if (document.getElementById('dyslexiaMode').checked) {
-                    display.classList.add('dyslexia-font');
-                }
-
-                for await (const chunk of chunks) {
-                    const content = chunk.choices[0]?.delta?.content || "";
-                    fullText += content;
-                    display.innerHTML = fullText.replace(/\n/g, "<br>");
-                }
-
-            } catch (err) {
-                console.error(err);
-                display.innerHTML = "Error: This browser might not support WebGPU, or your hardware is busy.";
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Build Worksheet";
+    try {
+        // Using a free public model from Hugging Face (No Key Required for basic use)
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+            {
+                method: "POST",
+                body: JSON.stringify({ inputs: `Create a simple SEN worksheet about ${topic} with 3 steps.` }),
             }
-        };
-    </script>
-</body>
-</html>
+        );
+        const data = await response.json();
+        display.innerHTML = data[0].generated_text.replace(/\n/g, "<br>");
+    } catch (e) {
+        display.innerHTML = "Server busy. Try again in a moment!";
+    } finally {
+        btn.innerText = "Build Worksheet";
+    }
+}
