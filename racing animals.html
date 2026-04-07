@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Salam Adventures | Animal Race Clicker</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; }
+        body {
+            background: linear-gradient(145deg, #2b5e2b, #1a3b1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', cursive;
+        }
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            background: #fff3df;
+            border-radius: 60px;
+            padding: 20px;
+            box-shadow: 0 20px 35px black;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #2c5a2e;
+            margin: -20px -20px 15px -20px;
+            padding: 12px 20px;
+            border-radius: 50px 50px 30px 30px;
+        }
+        .logo-img { height: 45px; background: white; border-radius: 40px; padding: 4px 8px; }
+        .brand-salam { font-size: 20px; font-weight: 900; color: #ffd966; }
+        .game-badge { margin-left: auto; background: #ff9933; padding: 4px 12px; border-radius: 50px; }
+        .race-track { background: #8b6946; border-radius: 40px; padding: 20px; margin: 15px 0; }
+        .racer { display: flex; align-items: center; gap: 10px; background: #fef0cf; margin: 10px 0; padding: 10px; border-radius: 60px; }
+        .racer-emoji { font-size: 48px; width: 70px; text-align: center; }
+        .progress-bar { flex: 1; height: 30px; background: #ddd; border-radius: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: #f5a623; transition: width 0.05s linear; }
+        .click-btn { background: #f5a623; border: none; font-size: 24px; padding: 10px 25px; border-radius: 60px; cursor: pointer; font-weight: bold; width: 100%; margin: 10px 0; box-shadow: 0 5px 0 #b4620a; }
+        .click-btn:active { transform: translateY(2px); }
+        .message { text-align: center; background: #2b211b; padding: 10px; border-radius: 40px; color: #ffd966; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="game-badge">🏁 RACE</div>
+    </div>
+    <div class="race-track">
+        <div class="racer"><span class="racer-emoji">🐢</span><div class="progress-bar"><div class="progress-fill" id="playerFill"></div></div></div>
+        <div class="racer"><span class="racer-emoji">🐇</span><div class="progress-bar"><div class="progress-fill" id="cpuFill"></div></div></div>
+    </div>
+    <button class="click-btn" id="clickBtn">⚡ CLICK TO RUN! ⚡</button>
+    <div class="message" id="msg">Click fast to make your turtle win!</div>
+</div>
+<script>
+    let playerProgress = 0, cpuProgress = 0, gameActive = true, cpuInterval = null;
+    function updateBars() { document.getElementById('playerFill').style.width = playerProgress + '%'; document.getElementById('cpuFill').style.width = cpuProgress + '%'; }
+    function checkWinner() { if(playerProgress >= 100) { gameActive = false; clearInterval(cpuInterval); document.getElementById('msg').innerHTML = '🏆 YOU WIN! 🏆 Click refresh to play again'; } 
+    else if(cpuProgress >= 100) { gameActive = false; clearInterval(cpuInterval); document.getElementById('msg').innerHTML = '🐇 Rabbit wins! Click refresh to race again'; } }
+    document.getElementById('clickBtn').addEventListener('click', () => { if(gameActive) { playerProgress += 6; if(playerProgress>100) playerProgress=100; updateBars(); checkWinner(); } });
+    cpuInterval = setInterval(() => { if(gameActive) { cpuProgress += 2.2; if(cpuProgress>100) cpuProgress=100; updateBars(); checkWinner(); } }, 150);
+    updateBars();
+</script>
+</body>
+</html>
