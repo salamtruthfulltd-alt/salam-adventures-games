@@ -22,45 +22,46 @@
         }
 
         .game-card {
-            width: 90vw; max-width: 320px; 
-            background: white; padding: 20px; 
-            border-radius: 35px; border: 6px solid var(--red);
-            box-shadow: 0 8px 0 var(--dark); display: flex; 
+            width: 90vw; max-width: 300px; 
+            background: white; padding: 15px; 
+            border-radius: 30px; border: 5px solid var(--red);
+            box-shadow: 0 6px 0 var(--dark); display: flex; 
             flex-direction: column; align-items: center; position: relative;
         }
 
-        .status-msg { color: var(--red); font-size: 1.2rem; margin-bottom: 10px; }
+        .status-msg { color: var(--red); font-size: 1.1rem; margin-bottom: 8px; }
 
         #globe {
-            width: 130px; height: 130px; 
+            width: 120px; height: 120px; 
             background: rgba(226, 232, 240, 0.4); 
             border: 3px solid #cbd5e1; border-radius: 50%; 
             position: relative; overflow: hidden;
         }
 
         .base {
-            width: 90px; height: 30px; background: var(--red);
-            margin: -10px 0 15px 0; border-radius: 5px 5px 20px 20px;
-            border-bottom: 5px solid var(--dark); z-index: 5;
+            width: 80px; height: 25px; background: var(--red);
+            margin: -8px 0 12px 0; border-radius: 5px 5px 20px 20px;
+            border-bottom: 4px solid var(--dark); z-index: 5;
         }
 
         .tray-area { 
-            width: 100%; height: 75px; background: #fee2e2; 
-            border-radius: 20px; border: 2px dashed #fca5a5;
-            position: relative; margin-top: 10px;
+            width: 100%; height: 60px; background: #fee2e2; 
+            border-radius: 15px; border: 2px dashed #fca5a5;
+            position: relative; overflow: visible; /* Allows balls to be dragged out */
         }
 
         .gumball {
-            width: 34px; height: 34px; border-radius: 50%; position: absolute;
+            width: 30px; height: 30px; border-radius: 50%; position: absolute;
             z-index: 100; border: 2px solid rgba(0,0,0,0.1);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
             cursor: grab;
+            transition: transform 0.1s;
         }
 
         .btn-start {
-            padding: 15px 40px; font-size: 1.5rem; font-family: 'Fredoka One';
+            padding: 12px 35px; font-size: 1.4rem; font-family: 'Fredoka One';
             background: white; color: var(--red); border: none; border-radius: 50px;
-            box-shadow: 0 5px 0 var(--dark); cursor: pointer;
+            box-shadow: 0 4px 0 var(--dark); cursor: pointer;
         }
     </style>
 </head>
@@ -108,24 +109,19 @@
         document.querySelectorAll('.gumball').forEach(b => b.remove());
         msg.innerText = "Count to 5!";
         
-        const trayRect = trayRef.getBoundingClientRect();
-        const stageRect = stage.getBoundingClientRect();
-        
-        // Calculate internal tray positions relative to the stage
-        const startX = trayRef.offsetLeft + 10;
-        const startY = trayRef.offsetTop + 18;
-        const spacing = (trayRef.clientWidth - 55) / 5; 
+        const trayWidth = trayRef.clientWidth;
+        const spacing = (trayWidth - 40) / 5; 
 
         for(let i = 0; i < 6; i++) {
             const b = document.createElement('div');
             b.className = 'gumball';
             b.style.background = colors[i];
             
-            // Fixed: They are placed based on the tray's coordinates
-            b.style.left = (startX + (i * spacing)) + 'px';
-            b.style.top = startY + 'px'; 
+            // Placed INSIDE the tray-area relative to its top-left
+            b.style.left = (5 + (i * spacing)) + 'px';
+            b.style.top = '13px'; 
             b.onpointerdown = pickup;
-            stage.appendChild(b);
+            trayRef.appendChild(b);
         }
     }
 
@@ -133,16 +129,25 @@
         if (audio.state === 'suspended') audio.resume();
         const b = e.target;
         b.setPointerCapture(e.pointerId);
-        b.style.zIndex = "1000";
-
+        
+        // When picked up, move to stage so it can go above everything
+        const rectBefore = b.getBoundingClientRect();
         const stageRect = stage.getBoundingClientRect();
+        
+        b.style.left = (rectBefore.left - stageRect.left) + 'px';
+        b.style.top = (rectBefore.top - stageRect.top) + 'px';
+        stage.appendChild(b);
+        
+        b.style.zIndex = "1000";
+        b.style.transform = "scale(1.2)";
+
         const globeRect = globe.getBoundingClientRect();
         const gx = globeRect.left + (globeRect.width / 2);
         const gy = globeRect.top + (globeRect.height / 2);
 
         const moving = (ev) => {
-            const x = ev.clientX - stageRect.left - 17;
-            const y = ev.clientY - stageRect.top - 17;
+            const x = ev.clientX - stageRect.left - 15;
+            const y = ev.clientY - stageRect.top - 15;
             b.style.left = x + 'px';
             b.style.top = y + 'px';
         };
@@ -150,19 +155,19 @@
         const dropping = (ev) => {
             b.removeEventListener('pointermove', moving);
             b.removeEventListener('pointerup', dropping);
+            b.style.transform = "scale(1.0)";
             
             const dist = Math.hypot(ev.clientX - gx, ev.clientY - gy);
 
-            if (dist < 75) {
+            if (dist < 70) {
                 count++;
                 b.onpointerdown = null;
                 b.style.zIndex = "10";
                 
-                const finalX = (globeRect.left - stageRect.left) + 20 + (Math.random() * 50);
-                const finalY = (globeRect.top - stageRect.top) + 65 - (Math.floor((count-1)/2) * 20);
-                
-                b.style.left = finalX + 'px';
-                b.style.top = finalY + 'px';
+                // Nest into globe
+                globe.appendChild(b);
+                b.style.left = (15 + Math.random() * 60) + 'px';
+                b.style.top = (75 - (Math.floor((count-1)/2) * 18)) + 'px';
                 
                 playPop(300 + (count * 100));
                 
