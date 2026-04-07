@@ -3,172 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gumball Tiny</title>
+    <title>Gumball Count: 1-5 Fun</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ef4444; --dark: #b91c1c; }
-        * { box-sizing: border-box; touch-action: none; user-select: none; }
-        
+        :root { 
+            --glass: rgba(255,255,255,0.3); 
+            --machine-red: #ef4444; 
+            --machine-dark: #b91c1c;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none; /* Prevents scrolling while playing */
+        }
+
         body { 
-            margin: 0; padding: 0; background: #fef2f2; 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100dvh; overflow: hidden; font-family: 'Fredoka One', cursive;
+            margin: 0; 
+            background: #fef2f2; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+            font-family: 'Fredoka One', cursive;
+            user-select: none;
         }
 
-        #start {
-            position: fixed; inset: 0; background: var(--red);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 999; color: white;
+        /* Scaling Container: Keeps the game looking the same on all screens */
+        .viewport-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
         }
 
-        .card {
-            width: 210px; height: 240px; background: white; 
-            padding: 5px; border-radius: 20px; border: 4px solid var(--red);
-            box-shadow: 0 4px 0 var(--dark); display: flex; 
-            flex-direction: column; align-items: center; position: relative;
+        .game-card { 
+            width: 340px; /* Fixed logical width */
+            background: #fff; 
+            padding: 25px; 
+            border-radius: 40px; 
+            border: 6px solid var(--machine-red);
+            position: relative; 
+            text-align: center; 
+            box-shadow: 0 10px 0 var(--machine-dark);
+            transform-origin: center;
         }
-
-        .msg { color: var(--red); font-size: 0.7rem; margin-top: 2px; }
 
         #globe {
-            width: 70px; height: 70px; background: rgba(226, 232, 240, 0.5); 
-            border: 2px solid #cbd5e1; border-radius: 50%; 
-            margin-top: 5px; position: relative; overflow: hidden;
+            width: 200px; 
+            height: 200px; 
+            background: var(--glass); 
+            border: 4px solid #e2e8f0;
+            border-radius: 50%; 
+            margin: 0 auto 10px; 
+            position: relative;
+            overflow: hidden; 
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.05);
+            z-index: 1;
         }
 
         .base {
-            width: 45px; height: 15px; background: var(--red);
-            margin: -5px 0 5px 0; border-radius: 3px 3px 10px 10px;
-            border-bottom: 3px solid var(--dark); z-index: 5;
+            width: 130px; 
+            height: 70px; 
+            background: var(--machine-red);
+            margin: -20px auto 15px; 
+            border-radius: 10px 10px 40px 40px;
+            position: relative; 
+            z-index: 2; 
+            border-bottom: 8px solid var(--machine-dark);
+        }
+
+        .gumball {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            position: absolute;
+            cursor: grab; 
+            z-index: 10; 
+            border: 2px solid rgba(0,0,0,0.1);
+            box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2);
+        }
+
+        .gumball:active { transform: scale(1.1); cursor: grabbing; }
+        .in-globe { pointer-events: none; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        .target-text { 
+            color: var(--machine-red); 
+            font-size: 1.4rem; 
+            margin-bottom: 15px;
+            line-height: 1.2;
         }
 
         #tray { 
-            width: 100%; height: 30px; background: #fee2e2; 
-            border-radius: 8px; border: 1.5px dashed #fca5a5;
-            margin-top: auto; margin-bottom: 5px;
+            height: 80px; 
+            background: #fee2e2; 
+            border-radius: 20px; 
+            position: relative; 
+            margin-top: 10px; 
+            border: 3px dashed #fca5a5;
         }
 
-        .ball {
-            width: 18px; height: 18px; border-radius: 50%; position: absolute;
-            z-index: 100; border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: inset -1px -1px 2px rgba(0,0,0,0.2);
-            cursor: grab;
-        }
-
-        button {
-            padding: 10px 25px; font-size: 1.2rem; font-family: 'Fredoka One';
-            background: white; color: var(--red); border: none; border-radius: 50px;
-            box-shadow: 0 4px 0 var(--dark);
+        .hint {
+            margin-top: 12px; 
+            font-size: 0.9rem; 
+            color: #991b1b;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
 
-<div id="start" onclick="init()">
-    <button>PLAY</button>
-</div>
+<div class="viewport-wrapper">
+    <div class="game-card" id="gameCard">
+        <div class="target-text" id="instruction">Put 5 Gumballs in the Machine!</div>
+        
+        <div id="globe"></div>
+        <div class="base"></div>
 
-<div class="card" id="stage">
-    <div class="msg" id="msg">Count to 5!</div>
-    <div id="globe"></div>
-    <div class="base"></div>
-    <div id="tray"></div>
+        <div id="tray"></div>
+        <div class="hint">DRAG THE CANDY UP!</div>
+    </div>
 </div>
 
 <script>
-    let audio, count = 0;
-    const colors = ['#f87171', '#60a5fa', '#fbbf24', '#4ade80', '#c084fc', '#f472b6'];
-    const stage = document.getElementById('stage');
+    const card = document.getElementById('gameCard');
     const globe = document.getElementById('globe');
-    const msg = document.getElementById('msg');
     const tray = document.getElementById('tray');
+    const instruction = document.getElementById('instruction');
+    
+    let count = 0;
+    const colors = ['#f87171', '#60a5fa', '#fbbf24', '#4ade80', '#c084fc', '#f472b6'];
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Responsive Scaling Logic
+    function handleResize() {
+        const padding = 40;
+        const scale = Math.min(
+            window.innerWidth / (card.offsetWidth + padding),
+            window.innerHeight / (card.offsetHeight + padding),
+            1 // Don't scale up larger than original
+        );
+        card.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('load', handleResize);
+
+    function playPop(f) {
+        if (audio.state === 'suspended') audio.resume();
+        const o=audio.createOscillator(), g=audio.createGain();
+        o.type='sine'; o.frequency.setValueAtTime(f, audio.currentTime);
+        o.frequency.exponentialRampToValueAtTime(10, audio.currentTime + 0.1);
+        g.gain.setValueAtTime(0.1, audio.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.1);
+        o.connect(g); g.connect(audio.destination);
+        o.start(); o.stop(audio.currentTime + 0.1);
+    }
 
     function init() {
-        audio = new (window.AudioContext || window.webkitAudioContext)();
-        document.getElementById('start').style.display = 'none';
-        reset();
-    }
-
-    function pop() {
-        if (!audio) return;
-        if (audio.state === 'suspended') audio.resume();
-        const o = audio.createOscillator(), g = audio.createGain();
-        o.connect(g); g.connect(audio.destination);
-        o.frequency.setValueAtTime(440 + (count * 40), audio.currentTime);
-        g.gain.setValueAtTime(0.05, audio.currentTime);
-        o.start();
-        g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.1);
-        o.stop(audio.currentTime + 0.1);
-    }
-
-    function reset() {
-        count = 0;
-        document.querySelectorAll('.ball').forEach(b => b.remove());
-        msg.innerText = "Count to 5!";
+        count = 0; 
+        globe.innerHTML = ''; 
+        tray.innerHTML = '';
+        instruction.innerText = "Put 5 Gumballs in the Machine!";
         
-        // Exact pixel locking for the balls
-        const tx = tray.offsetLeft + 5;
-        const ty = tray.offsetTop + 6;
-        const spacing = 28; 
-
-        colors.forEach((c, i) => {
+        for(let i=0; i<6; i++) {
             const b = document.createElement('div');
-            b.className = 'ball';
-            b.style.background = c;
-            b.style.left = (tx + (i * spacing)) + 'px';
-            b.style.top = ty + 'px';
-            b.onpointerdown = grab;
-            stage.appendChild(b);
-        });
+            b.className = 'gumball';
+            b.style.background = colors[i];
+            // Space them out slightly better for fingers
+            b.style.left = (10 + (i * 46)) + 'px';
+            b.style.top = '18px';
+            b.onpointerdown = startDrag;
+            tray.appendChild(b);
+        }
     }
 
-    function grab(e) {
-        if (audio && audio.state === 'suspended') audio.resume();
-        const b = e.target;
-        b.setPointerCapture(e.pointerId);
-        b.style.zIndex = "1000";
+    function startDrag(e) {
+        const el = e.target;
+        el.setPointerCapture(e.pointerId);
+        
+        // Account for CSS scaling when calculating movement
+        const rect = card.getBoundingClientRect();
+        const scale = rect.width / card.offsetWidth;
 
-        const sr = stage.getBoundingClientRect();
-        const gr = globe.getBoundingClientRect();
-        const gx = gr.left + (gr.width / 2);
-        const gy = gr.top + (gr.height / 2);
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const origX = el.offsetLeft;
+        const origY = el.offsetTop;
 
-        const move = (ev) => {
-            b.style.left = (ev.clientX - sr.left - 9) + 'px';
-            b.style.top = (ev.clientY - sr.top - 9) + 'px';
+        const onMove = (me) => {
+            el.style.left = (origX + (me.clientX - startX) / scale) + 'px';
+            el.style.top = (origY + (me.clientY - startY) / scale) + 'px';
         };
 
-        const drop = (ev) => {
-            b.removeEventListener('pointermove', move);
-            b.removeEventListener('pointerup', drop);
+        const onUp = (ue) => {
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerup', onUp);
             
-            const d = Math.hypot(ev.clientX - gx, ev.clientY - gy);
-
-            if (d < 35) {
+            const gRect = globe.getBoundingClientRect();
+            
+            if (ue.clientX > gRect.left && ue.clientX < gRect.right && 
+                ue.clientY > gRect.top && ue.clientY < gRect.bottom) {
+                
                 count++;
-                b.onpointerdown = null;
-                b.style.zIndex = "10";
+                el.classList.add('in-globe');
+                globe.appendChild(el);
                 
-                // Absolute placement inside globe bounds
-                const finalX = (gr.left - sr.left) + 15 + (Math.random() * 25);
-                const finalY = (gr.top - sr.top) + 25 - (Math.floor((count-1)/2) * 10);
+                // Random positioning inside the globe
+                el.style.left = (30 + (Math.random() * 120)) + 'px';
+                el.style.top = (140 - (Math.floor((count-1)/3) * 35)) + 'px';
                 
-                b.style.left = finalX + 'px';
-                b.style.top = finalY + 'px';
-                
-                pop();
+                playPop(300 + (count * 100));
+
                 if(count === 5) {
-                    msg.innerText = "GREAT JOB!";
-                    setTimeout(reset, 3000);
+                    instruction.innerText = "YAY! GREAT JOB!";
+                    playPop(600); playPop(800);
+                    setTimeout(init, 3000);
                 }
             } else {
-                reset(); 
+                // Snap back to tray position
+                el.style.left = (origX) + 'px'; 
+                el.style.top = '18px';
             }
         };
-
-        b.addEventListener('pointermove', move);
-        b.addEventListener('pointerup', drop);
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerup', onUp);
     }
+
+    init();
+    handleResize(); // Initial call
 </script>
 </body>
 </html>
