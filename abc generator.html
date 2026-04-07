@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | SEN Handwriting Worksheet Generator</title>
+    <meta name="description" content="Free printable handwriting worksheets with dotted tracing letters, rainbow writing, and large spacing. Perfect for dyspraxia and fine motor delay.">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 10px;
+            color: #1a2a3a;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 15px 20px 20px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+        }
+
+        .brand-name {
+            line-height: 1.1;
+        }
+
+        .brand-salam {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+
+        .brand-adventures {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+
+        .sen-badge {
+            margin-left: auto;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #4a6741;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f9f5eb;
+            padding: 12px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #5a4a2e;
+        }
+
+        select, input {
+            padding: 5px 10px;
+            border-radius: 25px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            width: 140px;
+        }
+
+        .letter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .letter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid #ddd0b6;
+            background: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .letter-btn.selected {
+            background: #2c5a2e;
+            color: white;
+            border-color: #2c5a2e;
+        }
+
+        button {
+            background: #f5a623;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #e0910f;
+        }
+
+        /* Worksheet - LARGE SPACING */
+        .worksheet {
+            background: #fffef8;
+            border: 1px solid #f0e2cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .name-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #ddd;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .name-line span {
+            border-bottom: 1px solid #ccc;
+            min-width: 180px;
+            display: inline-block;
+        }
+
+        .letter-page {
+            margin-bottom: 35px;
+            page-break-inside: avoid;
+        }
+
+        .letter-header {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c5a2e;
+            margin-bottom: 15px;
+            border-left: 5px solid #f5a623;
+            padding-left: 15px;
+        }
+
+        /* Trace row - DOTTED LETTERS */
+        .trace-row {
+            margin-bottom: 20px;
+        }
+
+        .trace-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .dotted-letters {
+            font-family: 'Courier New', 'Segoe UI', monospace;
+            font-size: 52px;
+            font-weight: normal;
+            letter-spacing: 12px;
+            color: #aaa;
+            border-bottom: 2px dotted #ccc;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        /* Rainbow colours */
+        .rainbow-row {
+            margin-bottom: 20px;
+        }
+
+        .rainbow-letters {
+            font-family: 'Courier New', monospace;
+            font-size: 52px;
+            letter-spacing: 12px;
+            line-height: 1.4;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Practice lines - LARGE */
+        .practice-row {
+            margin-bottom: 20px;
+        }
+
+        .practice-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .blank-line {
+            border-bottom: 2px solid #ccc;
+            height: 70px;
+            margin-bottom: 15px;
+        }
+
+        .instruction-box {
+            background: #eef3fc;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 20px;
+            font-size: 13px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .print-btn {
+            background: #2c5a2e;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .print-btn:hover {
+            background: #1f4421;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls, .print-btn, .sen-badge {
+                display: none;
+            }
+            .worksheet {
+                border: none;
+                padding: 10px;
+            }
+            .letter-page {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .blank-line {
+                border-bottom: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
+        <div class="brand-name">
+            <div class="brand-salam">Salam</div>
+            <div class="brand-adventures">Adventures</div>
+        </div>
+        <div class="sen-badge">
+            ✍️ SEN Handwriting
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="control-group">
+            <label>🔤 Letter case</label>
+            <select id="letterCase">
+                <option value="lowercase" selected>Lowercase (a b c)</option>
+                <option value="uppercase">Uppercase (A B C)</option>
+                <option value="numbers">Numbers (1 2 3)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🎨 Rainbow writing</label>
+            <select id="rainbow">
+                <option value="no">No</option>
+                <option value="yes" selected>Yes (red, blue, green)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>✏️ Choose letters</label>
+            <div class="letter-buttons" id="letterButtons">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+        <button id="generateBtn">✨ Generate Worksheet</button>
+    </div>
+
+    <!-- Worksheet area -->
+    <div id="worksheetArea" class="worksheet">
+        <!-- Filled by JavaScript -->
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+</div>
+
+<script>
+    const lowercase = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    const uppercase = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
+    let selectedLetters = ['a', 'b', 'c'];
+
+    function buildLetterButtons() {
+        const container = document.getElementById('letterButtons');
+        const letterCase = document.getElementById('letterCase').value;
+        let letters = letterCase === 'lowercase' ? lowercase : (letterCase === 'uppercase' ? uppercase : numbers);
+        
+        container.innerHTML = '';
+        letters.forEach(letter => {
+            const btn = document.createElement('button');
+            btn.textContent = letter;
+            btn.className = 'letter-btn';
+            if (selectedLetters.includes(letter)) {
+                btn.classList.add('selected');
+            }
+            btn.onclick = () => {
+                if (selectedLetters.includes(letter)) {
+                    selectedLetters = selectedLetters.filter(l => l !== letter);
+                    btn.classList.remove('selected');
+                } else {
+                    if (selectedLetters.length < 6) {
+                        selectedLetters.push(letter);
+                        btn.classList.add('selected');
+                    }
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function generateDottedString(letter, count) {
+        let result = '';
+        for (let i = 0; i < count; i++) {
+            result += letter + ' ';
+        }
+        return result;
+    }
+
+    function generateRainbowString(letter, count) {
+        const colours = ['#e63946', '#457b9d', '#2a9d8f'];
+        let result = '';
+        for (let i = 0; i < count; i++) {
+            const colour = colours[i % colours.length];
+            result += `<span style="color:${colour};">${letter}</span> `;
+        }
+        return result;
+    }
+
+    function generateWorksheet() {
+        const letterCase = document.getElementById('letterCase').value;
+        const rainbowEnabled = document.getElementById('rainbow').value === 'yes';
+        
+        if (selectedLetters.length === 0) {
+            selectedLetters = ['a'];
+        }
+        
+        const container = document.getElementById('worksheetArea');
+        
+        let html = `
+            <div class="name-line">
+                <div>Name: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+                <div>Date: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+            </div>
+        `;
+        
+        for (let i = 0; i < selectedLetters.length; i++) {
+            const letter = selectedLetters[i];
+            
+            html += `<div class="letter-page">`;
+            html += `<div class="letter-header">Practice letter: ${letter}</div>`;
+            
+            // TRACE SECTION (dotted letters)
+            html += `<div class="trace-row">`;
+            html += `<div class="trace-label">✏️ Trace the dotted letters:</div>`;
+            html += `<div class="dotted-letters">${generateDottedString(letter, 6)}</div>`;
+            html += `</div>`;
+            
+            // RAINBOW SECTION (if enabled)
+            if (rainbowEnabled) {
+                html += `<div class="rainbow-row">`;
+                html += `<div class="trace-label">🌈 Rainbow writing (trace with 3 colours):</div>`;
+                html += `<div class="rainbow-letters">${generateRainbowString(letter, 6)}</div>`;
+                html += `</div>`;
+            }
+            
+            // COPY SECTION (blank lines)
+            html += `<div class="practice-row">`;
+            html += `<div class="practice-label">📝 Now write it yourself (${rainbowEnabled ? '4 times' : '6 times'}):</div>`;
+            const copyCount = rainbowEnabled ? 4 : 6;
+            for (let p = 0; p < copyCount; p++) {
+                html += `<div class="blank-line"></div>`;
+            }
+            html += `</div>`;
+            
+            html += `</div>`;
+        }
+        
+        html += `<div class="instruction-box">
+            💡 <strong>How to use:</strong> ① Trace the dotted letters   ${rainbowEnabled ? '② Rainbow write with red, blue, green   ' : ''} ${rainbowEnabled ? '③' : '②'} Write the letter on your own in the blank spaces
+        </div>`;
+        
+        container.innerHTML = html;
+    }
+    
+    document.getElementById('letterCase').addEventListener('change', () => {
+        selectedLetters = [];
+        buildLetterButtons();
+        generateWorksheet();
+    });
+    
+    document.getElementById('generateBtn').addEventListener('click', generateWorksheet);
+    
+    buildLetterButtons();
+    window.addEventListener('load', generateWorksheet);
+</script>
+</body>
+</html>
