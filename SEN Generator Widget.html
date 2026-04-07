@@ -3,48 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BloomBuddy | SEN Worksheet Generator</title>
+    <title>BloomBuddy | SEN Worksheet Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap');
-        body { font-family: 'Quicksand', sans-serif; background-color: #f0f9ff; }
-        .worksheet-font { font-size: 1.1rem; line-height: 1.8; letter-spacing: 0.02em; }
+        body { font-family: 'Quicksand', sans-serif; background-color: #f8fafc; }
+        .worksheet-area { font-size: 1.1rem; line-height: 1.7; letter-spacing: 0.02em; }
+        @media print { .no-print { display: none; } .print-area { border: none !important; box-shadow: none !important; p: 0; } }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 sm:p-8">
 
-    <div class="max-w-lg mx-auto bg-white rounded-3xl shadow-xl border border-blue-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold">BloomBuddy 🌸</h1>
-            <p class="text-sm opacity-90">Creating gentle, accessible learning for every child.</p>
+    <div class="max-w-xl mx-auto bg-white rounded-3xl shadow-xl border border-blue-100 overflow-hidden no-print">
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 text-white text-center">
+            <h1 class="text-3xl font-bold mb-1">BloomBuddy 🌸</h1>
+            <p class="text-sm opacity-90 font-medium">Gentle, accessible learning for every unique mind.</p>
         </div>
 
-        <div class="p-6 space-y-5">
-            <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 text-center">What are we learning about today?</label>
-                <input type="text" id="topic" placeholder="e.g. Friendly Dinosaurs or Making Toast" 
-                    class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-400 outline-none text-center transition-all">
+        <div class="p-6 space-y-6">
+            <div class="space-y-3">
+                <label class="block text-sm font-bold text-slate-600 text-center uppercase tracking-wider">What shall we explore today?</label>
+                <input type="text" id="topic" placeholder="e.g. Friendly Bees or Baking Cookies" 
+                    class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-purple-400 focus:ring-4 focus:ring-purple-100 outline-none text-center transition-all text-lg">
             </div>
 
             <button onclick="generate()" id="genBtn" 
-                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg transform transition active:scale-95">
-                ✨ Create Worksheet
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg transform transition active:scale-95 flex justify-center items-center gap-3">
+                <span>✨ Create My Worksheet</span>
             </button>
 
-            <div id="status" class="hidden text-center py-4 bg-blue-50 rounded-2xl animate-pulse">
-                <span class="text-blue-700 font-medium" id="statusText">BloomBuddy is thinking...</span>
-            </div>
-
-            <div id="outputArea" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Your Custom Worksheet:</span>
-                    <button onclick="window.print()" class="text-blue-600 text-xs font-bold hover:underline">🖨️ Print / Save PDF</button>
-                </div>
-                <div id="result" class="p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-slate-800 worksheet-font shadow-inner">
-                    </div>
-                <p class="text-[10px] text-slate-400 mt-4 text-center italic font-sans">Handcrafted by AI for unique learners.</p>
+            <div id="status" class="hidden text-center p-4 bg-indigo-50 rounded-2xl border border-indigo-100 animate-pulse">
+                <span class="text-indigo-700 font-bold" id="statusText">BloomBuddy is thinking...</span>
             </div>
         </div>
+    </div>
+
+    <div id="outputArea" class="hidden max-w-xl mx-auto mt-8 p-8 bg-white rounded-3xl border-2 border-dashed border-slate-200 print-area animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div class="flex justify-between items-center mb-6 no-print">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Student Worksheet</span>
+            <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full text-xs font-bold text-slate-600 transition-colors">
+                🖨️ Print / Save PDF
+            </button>
+        </div>
+        <div id="result" class="text-slate-800 worksheet-area font-medium">
+            </div>
+        <hr class="my-8 border-slate-100 no-print">
+        <p class="text-[10px] text-slate-300 text-center italic no-print font-sans">Created with BloomBuddy AI • Simply adaptive.</p>
     </div>
 
     <script>
@@ -56,55 +60,57 @@
             const output = document.getElementById('outputArea');
             const result = document.getElementById('result');
 
-            if (!topic) return alert("Please type a topic first!");
+            if (!topic) return alert("Please enter a topic first!");
 
-            // Reset UI
+            // UI Reset
             btn.disabled = true;
+            btn.classList.add('opacity-50');
             status.classList.remove('hidden');
             output.classList.add('hidden');
             statusText.innerText = "🌸 BloomBuddy is gathering ideas...";
 
             try {
-                // Using a more reliable "Serverless" endpoint
+                // Using a very small, fast model to reduce timeout errors
                 const response = await fetch(
-                    "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+                    "https://api-inference.huggingface.co/models/HuggingFaceTB/SmolLM2-1.7B-Instruct",
                     {
                         headers: { "Content-Type": "application/json" },
                         method: "POST",
                         body: JSON.stringify({ 
-                            inputs: `<|system|>\nYou are a supportive SEN teacher. Use simple, clear, literal language.\n<|user|>\nCreate a short worksheet about ${topic}. Include 3 simple steps and 2 Yes/No questions. Keep it very brief.\n<|assistant|>\n`,
-                            parameters: { max_new_tokens: 350, temperature: 0.3 }
+                            inputs: `<|user|>\nYou are a supportive SEN teacher. Create a simple worksheet about ${topic}. Use 3 short bullet points. Use easy words. Add two YES/NO questions. Keep it very brief.\n<|assistant|>\n`,
+                            parameters: { max_new_tokens: 300, temperature: 0.2 }
                         }),
                     }
                 );
 
                 const data = await response.json();
 
-                // Check for loading error
+                // If model is loading
                 if (data.error && data.error.includes("loading")) {
-                    statusText.innerText = "🌸 BloomBuddy is waking up! Try again in 10 seconds.";
+                    statusText.innerText = "😴 The AI is waking up. Please click again in 5 seconds!";
                     btn.disabled = false;
+                    btn.classList.remove('opacity-50');
                     return;
                 }
 
                 if (data[0] && data[0].generated_text) {
-                    // Extract only the AI's response
                     const fullText = data[0].generated_text;
-                    const resultText = fullText.split('<|assistant|>')[1] || fullText;
+                    const cleanText = fullText.split('<|assistant|>')[1] || fullText;
                     
-                    result.innerHTML = resultText.trim().replace(/\n/g, "<br>");
+                    result.innerHTML = cleanText.trim().replace(/\n/g, "<br>");
                     output.classList.remove('hidden');
                     status.classList.add('hidden');
+                    window.scrollTo({ top: output.offsetTop, behavior: 'smooth' });
                 } else {
-                    throw new Error("No data");
+                    throw new Error("No response from AI");
                 }
 
             } catch (error) {
                 console.error(error);
-                statusText.innerText = "⚠️ The AI is a bit busy. Please try once more!";
-                btn.disabled = false;
+                statusText.innerText = "⚠️ The server is sleepy. Please click 'Create' once more!";
             } finally {
                 btn.disabled = false;
+                btn.classList.remove('opacity-50');
                 btn.innerText = "✨ Create Another";
             }
         }
