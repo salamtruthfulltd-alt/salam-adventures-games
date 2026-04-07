@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Matching Pairs Game</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef4fa;
+            margin: 0;
+            padding: 20px;
+            color: #1a2a3a;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f5a623;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .logo-img { height: 50px; width: auto; max-width: 150px; }
+        .brand-salam { font-size: 22px; font-weight: 800; color: #2c5a2e; }
+        .brand-adventures { font-size: 16px; font-weight: 600; color: #f5a623; }
+        .game-badge { margin-left: auto; background: #f0f2f5; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: bold; color: #e0910f; }
+        .controls { background: #f9f5eb; padding: 12px 15px; border-radius: 20px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+        .control-group { display: flex; flex-direction: column; gap: 4px; }
+        .control-group label { font-weight: bold; font-size: 11px; color: #5a4a2e; }
+        select, button { padding: 6px 12px; border-radius: 25px; border: 1px solid #ddd0b6; background: white; font-size: 12px; cursor: pointer; }
+        button { background: #f5a623; color: white; border: none; font-weight: bold; }
+        button:hover { background: #e0910f; }
+        .game-stats { display: flex; justify-content: space-between; margin-bottom: 15px; padding: 10px; background: #eef3fc; border-radius: 16px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+        .card {
+            aspect-ratio: 1 / 1;
+            background: #2c5a2e;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card.flipped, .card.matched { background: #fff4e6; border: 2px solid #f5a623; }
+        .card.matched { opacity: 0.6; cursor: default; background: #d9f0e1; }
+        .message { text-align: center; padding: 12px; background: #eef3fc; border-radius: 16px; margin-top: 15px; font-weight: bold; }
+        .print-btn { background: #2c5a2e; margin-top: 15px; width: 100%; padding: 10px; font-size: 14px; }
+        @media print { .controls, .game-stats, .print-btn, .message, .card { break-inside: avoid; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Logo" class="logo-img" onerror="this.style.display='none';">
+        <div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div>
+        <div class="game-badge">🎮 Matching Pairs</div>
+    </div>
+    <div class="controls">
+        <div class="control-group"><label>🎴 Theme</label><select id="themeSelect"><option value="animals">🐶 Animals</option><option value="emojis">😊 Emojis</option><option value="fruits">🍎 Fruits</option></select></div>
+        <div class="control-group"><label>📊 Pairs</label><select id="pairSelect"><option value="4">4 pairs (8 cards)</option><option value="6" selected>6 pairs (12 cards)</option><option value="8">8 pairs (16 cards)</option></select></div>
+        <button id="newGameBtn">✨ New Game</button>
+    </div>
+    <div class="game-stats">
+        <span>🎯 Matches: <span id="matchCount">0</span></span>
+        <span>🔄 Moves: <span id="moveCount">0</span></span>
+    </div>
+    <div id="gameBoard" class="cards-grid"></div>
+    <div id="message" class="message">🎉 Flip cards to find matching pairs!</div>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save</button>
+</div>
+<script>
+    const themes = { animals: ['🐶','🐱','🐭','🐰','🦊','🐻','🐼','🐨'], emojis: ['😊','😂','🥰','😎','😢','😡','🥳','😴'], fruits: ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍒'] };
+    let cards = [], flipped = [], locked = false, matches = 0, moves = 0;
+    const themeSelect = document.getElementById('themeSelect');
+    const pairSelect = document.getElementById('pairSelect');
+    const gameBoard = document.getElementById('gameBoard');
+    const matchCountSpan = document.getElementById('matchCount');
+    const moveCountSpan = document.getElementById('moveCount');
+    const messageDiv = document.getElementById('message');
+
+    function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+    function initGame() {
+        const theme = themeSelect.value;
+        const pairCount = parseInt(pairSelect.value);
+        const items = themes[theme].slice(0, pairCount);
+        let deck = [];
+        items.forEach(item => { deck.push({ id: item, matched: false, flipped: false }); deck.push({ id: item, matched: false, flipped: false }); });
+        cards = shuffle(deck);
+        flipped = []; matches = 0; moves = 0; locked = false;
+        matchCountSpan.innerText = '0'; moveCountSpan.innerText = '0';
+        messageDiv.innerHTML = '🎴 Find all the matching pairs!';
+        renderBoard();
+    }
+
+    function renderBoard() {
+        const pairCount = parseInt(pairSelect.value);
+        const cols = pairCount === 4 ? 4 : (pairCount === 6 ? 4 : 4);
+        gameBoard.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        gameBoard.innerHTML = cards.map((card, idx) => {
+            if (card.matched) return `<div class="card matched">✅</div>`;
+            if (card.flipped) return `<div class="card flipped">${card.id}</div>`;
+            return `<div class="card" data-index="${idx}">?</div>`;
+        }).join('');
+        document.querySelectorAll('.card[data-index]').forEach(el => {
+            el.addEventListener('click', () => handleClick(parseInt(el.dataset.index)));
+        });
+    }
+
+    function handleClick(idx) {
+        if (locked) return;
+        if (cards[idx].matched || cards[idx].flipped) return;
+        cards[idx].flipped = true;
+        flipped.push(idx);
+        moves++;
+        moveCountSpan.innerText = moves;
+        renderBoard();
+        if (flipped.length === 2) {
+            locked = true;
+            const a = cards[flipped[0]], b = cards[flipped[1]];
+            if (a.id === b.id) {
+                a.matched = true; b.matched = true;
+                a.flipped = false; b.flipped = false;
+                matches++;
+                matchCountSpan.innerText = matches;
+                flipped = [];
+                locked = false;
+                renderBoard();
+                if (matches === parseInt(pairSelect.value)) messageDiv.innerHTML = '🎉 PERFECT! You won! 🎉';
+                else messageDiv.innerHTML = '✅ Match found! Keep going!';
+            } else {
+                setTimeout(() => {
+                    cards[flipped[0]].flipped = false;
+                    cards[flipped[1]].flipped = false;
+                    flipped = [];
+                    locked = false;
+                    renderBoard();
+                    messageDiv.innerHTML = '❌ Not a match. Try again!';
+                }, 700);
+            }
+        } else { messageDiv.innerHTML = '🔍 Find the matching pair...'; }
+    }
+    document.getElementById('newGameBtn').addEventListener('click', initGame);
+    initGame();
+</script>
+</body>
+</html>
