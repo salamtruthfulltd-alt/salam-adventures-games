@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salam Adventures | Mixed Literacy Master</title>
     <style>
         :root { --primary: #10b981; --secondary: #3b82f6; --accent: #f59e0b; --ink: #1f2937; }
@@ -18,16 +19,17 @@
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
             margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative;
+            box-sizing: border-box;
         }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; }
         .logo-img { width: 80px; height: auto; }
         
         .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 18px 0 8px; border-radius: 5px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; border-left: 4px solid var(--primary); }
 
         /* Grid Layouts */
-        .flex-row { display: flex; justify-content: space-between; gap: 20px; }
-        .column { flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
+        .flex-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .column { flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; min-width: 120px; }
         
         .word-tag { display: inline-block; padding: 4px 10px; background: #f3f4f6; border-radius: 15px; margin: 3px; font-size: 13px; font-weight: 600; }
         .blank-line { border-bottom: 1px solid #000; width: 100%; height: 25px; display: block; margin: 5px 0; }
@@ -35,7 +37,26 @@
         .abc-item { margin-bottom: 8px; font-size: 15px; }
         .dot-line { border-bottom: 1px dotted #cbd5e1; flex-grow: 1; margin: 0 10px; }
 
-        @media print { .controls { display: none; } body { background: white; padding: 0; } .page { box-shadow: none; border: none; margin: 0; width: 100%; } }
+        /* ensure print layout works perfectly */
+        @media print {
+            .controls { display: none !important; }
+            body { background: white; padding: 0; margin: 0; }
+            .page { 
+                box-shadow: none; 
+                border: none; 
+                margin: 0; 
+                width: 100%; 
+                padding: 15mm;
+                page-break-after: avoid;
+                break-inside: avoid;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            .blank-line, .dot-line { break-inside: avoid; }
+            .flex-row, .column { break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -63,11 +84,16 @@
         const mixedGrammar = [...nouns.slice(0,3), ...verbs.slice(0,3)].sort(() => 0.5 - Math.random());
         const shuffledABC = [...abcWords].sort(() => 0.5 - Math.random()).slice(0, 5);
         const shuffledOpposites = [...opposites].sort(() => 0.5 - Math.random());
+        // create a random ordering for right column opposites (paired with left words but shuffled visually)
+        const leftOpposites = shuffledOpposites.map(o => o.a);
+        const rightOpposites = shuffledOpposites.map(o => o.b);
+        // shuffle right column for matching challenge while preserving pair integrity visually
+        const shuffledRight = [...rightOpposites].sort(() => 0.5 - Math.random());
 
         page.innerHTML = `
             <div class="header">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'">
+                <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'" alt="Salam Adventures Logo">
                     <div>
                         <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
                         <p style="margin:0; font-size:13px; font-weight:bold; color:#64748b;">Mixed Literacy Expedition: Level 2</p>
@@ -96,12 +122,12 @@
 
             <div class="section-title">Part 2: Opposites Match</div>
             <p style="font-size:12px; margin:0 0 10px;">Draw a line to connect the words with opposite meanings.</p>
-            <div style="display:flex; justify-content:space-around; font-size:15px; font-weight:bold; padding:0 40px;">
-                <div style="line-height:2.5;">
-                    ${shuffledOpposites.map(o => `<div>${o.a} •</div>`).join('')}
+            <div style="display:flex; justify-content:space-around; font-size:15px; font-weight:bold; padding:0 20px; flex-wrap:wrap;">
+                <div style="line-height:2.5; min-width:100px;">
+                    ${leftOpposites.map(o => `<div>${o} •</div>`).join('')}
                 </div>
-                <div style="line-height:2.5;">
-                    ${[...shuffledOpposites].reverse().map(o => `<div>• ${o.b}</div>`).join('')}
+                <div style="line-height:2.5; min-width:100px;">
+                    ${shuffledRight.map(o => `<div>• ${o}</div>`).join('')}
                 </div>
             </div>
 
@@ -121,14 +147,15 @@
 
             <div class="section-title">Part 5: Sentence Builder</div>
             <p style="font-size:12px; margin:0 0 10px;">Write a sentence using one <b>Noun</b> and one <b>Verb</b> from Part 1.</p>
-            <div style="border: 1px solid #e5e7eb; height: 60px; border-radius: 8px; margin-top:5px; padding:10px; color:#cbd5e1;">__________________________________________________________________</div>
+            <div style="border: 1px solid #e5e7eb; height: 60px; border-radius: 8px; margin-top:5px; padding:10px; color:#9ca3af; background: #fefce8;">__________________________________________________________________</div>
 
-            <div style="position:absolute; bottom:10mm; left:15mm; right:15mm; text-align:center; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:10px;">
+            <div style="margin-top: 30px; text-align:center; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:12px;">
                 © Salam Adventures • Mixed Literacy Skills • Master the Journey!
             </div>
         `;
     }
 
+    // initial load: generate content so page is ready
     generate();
 </script>
 </body>
