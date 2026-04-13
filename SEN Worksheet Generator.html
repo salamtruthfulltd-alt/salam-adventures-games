@@ -26,7 +26,6 @@
             padding: 15px 20px 20px 20px;
         }
 
-        /* Header with logo AND name - COMPACT */
         .header {
             display: flex;
             align-items: center;
@@ -71,7 +70,6 @@
             color: #4a6741;
         }
 
-        /* Controls - COMPACT */
         .controls {
             background: #f9f5eb;
             padding: 12px 15px;
@@ -120,7 +118,33 @@
             background: #e0910f;
         }
 
-        /* Worksheet - COMPACT */
+        .generator-controls {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .step-btn {
+            background: #2c5a2e;
+            font-size: 11px;
+            padding: 6px 15px;
+        }
+
+        .step-btn:hover {
+            background: #1f4421;
+        }
+
+        .generator-status {
+            background: #e8f5e9;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2e7d32;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
         .worksheet {
             background: #fffef8;
             border: 1px solid #f0e2cc;
@@ -169,11 +193,13 @@
             text-align: center;
             cursor: pointer;
             border: 1px solid #eee2ce;
+            transition: all 0.2s;
         }
 
         .grid-item.selected {
             background: #d9f0e1;
             border-color: #2e7d64;
+            transform: scale(0.95);
         }
 
         .instruction {
@@ -198,7 +224,36 @@
             background: #1f4421;
         }
 
-        /* NO FOOTER */
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .progress-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .progress-step.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .progress-step.active {
+            background: #f5a623;
+            color: white;
+            transform: scale(1.1);
+        }
 
         @media print {
             body {
@@ -206,7 +261,7 @@
                 padding: 0;
                 margin: 0;
             }
-            .controls, .print-btn, .sen-badge {
+            .controls, .print-btn, .sen-badge, .generator-controls, .generator-status, .progress-indicator {
                 display: none;
             }
             .worksheet {
@@ -217,12 +272,15 @@
                 padding: 10px;
                 box-shadow: none;
             }
+            .grid-item.selected {
+                background: #d9f0e1;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Header with logo + name -->
     <div class="header">
         <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
         <div class="brand-name">
@@ -234,7 +292,11 @@
         </div>
     </div>
 
-    <!-- Controls -->
+    <!-- Generator Status Display -->
+    <div style="text-align: center;">
+        <div class="generator-status" id="generatorStatus">⚙️ Generator Ready</div>
+    </div>
+
     <div class="controls">
         <div class="control-group">
             <label>🎯 Grid</label>
@@ -261,7 +323,19 @@
                 <option value="hard">Hard</option>
             </select>
         </div>
-        <button id="generateBtn">✨ New</button>
+        <button id="generateBtn">✨ Generate All</button>
+        <div class="generator-controls">
+            <button id="stepBtn" class="step-btn">⚡ Next Step</button>
+            <button id="resetGenBtn" class="step-btn">🔄 Reset Gen</button>
+        </div>
+    </div>
+
+    <!-- Progress steps (visual generator tracking) -->
+    <div class="progress-indicator" id="progressIndicator">
+        <div class="progress-step" id="step1">1</div>
+        <div class="progress-step" id="step2">2</div>
+        <div class="progress-step" id="step3">3</div>
+        <div class="progress-step" id="step4">4</div>
     </div>
 
     <!-- Worksheet area -->
@@ -296,17 +370,18 @@
         }
     };
 
-    function generateWorksheet() {
-        const gridSize = parseInt(document.getElementById('gridSize').value);
-        const symbolSetName = document.getElementById('symbolSet').value;
-        const difficulty = document.getElementById('difficulty').value;
-        
+    // ============ JAVASCRIPT GENERATOR ============
+    function* worksheetGenerator(gridSize, symbolSetName, difficulty) {
         const symbolLib = symbolSets[symbolSetName];
         if (!symbolLib) return;
         
         const baseSymbols = symbolLib.base;
-        const targetSymbol = baseSymbols[Math.floor(Math.random() * baseSymbols.length)];
         
+        // Step 1: Select target symbol
+        const targetSymbol = baseSymbols[Math.floor(Math.random() * baseSymbols.length)];
+        yield { step: 1, message: `🎯 Target selected: "${targetSymbol}"`, targetSymbol, baseSymbols };
+        
+        // Step 2: Build distractor pool based on difficulty
         let distractorPool;
         if (difficulty === 'easy') {
             distractorPool = baseSymbols.map(s => symbolLib.easy[s] || s);
@@ -315,7 +390,9 @@
         } else {
             distractorPool = [...baseSymbols];
         }
+        yield { step: 2, message: `🌀 Distractors ready (${difficulty} mode)`, targetSymbol, distractorPool };
         
+        // Step 3: Build cells array
         let cells = [];
         const targetCount = Math.max(3, Math.floor(gridSize / 4));
         
@@ -329,30 +406,56 @@
             const randomDist = possibleDistractors[Math.floor(Math.random() * possibleDistractors.length)];
             cells.push(randomDist);
         }
+        yield { step: 3, message: `📦 Grid built with ${targetCount} targets`, targetSymbol, cells, distractorPool };
         
+        // Step 4: Shuffle cells
         for (let i = cells.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [cells[i], cells[j]] = [cells[j], cells[i]];
         }
+        yield { step: 4, message: `✨ Final shuffled worksheet ready!`, targetSymbol, cells, complete: true };
+    }
+
+    let currentGenerator = null;
+    let currentSettings = null;
+    let generatedData = null;
+
+    function updateProgress(step) {
+        for (let i = 1; i <= 4; i++) {
+            const stepEl = document.getElementById(`step${i}`);
+            if (i < step) {
+                stepEl.classList.add('completed');
+                stepEl.classList.remove('active');
+            } else if (i === step) {
+                stepEl.classList.add('active');
+                stepEl.classList.remove('completed');
+            } else {
+                stepEl.classList.remove('completed', 'active');
+            }
+        }
+    }
+
+    function renderWorksheetFromData(data) {
+        if (!data || !data.cells) return;
         
-        const cols = Math.sqrt(gridSize);
+        const cols = Math.sqrt(data.cells.length);
         const container = document.getElementById('worksheetArea');
         
         let html = `
             <div class="target-area">
                 <div class="target-label">🎯 FIND & CIRCLE ALL MATCHES</div>
-                <div class="target-symbol">${targetSymbol}</div>
+                <div class="target-symbol">${data.targetSymbol}</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(${cols}, 1fr);">
         `;
         
-        for (let i = 0; i < cells.length; i++) {
-            html += `<div class="grid-item" data-symbol="${cells[i].replace(/"/g, '&quot;')}">${cells[i]}</div>`;
+        for (let i = 0; i < data.cells.length; i++) {
+            html += `<div class="grid-item" data-symbol="${data.cells[i].replace(/"/g, '&quot;')}">${data.cells[i]}</div>`;
         }
         
         html += `</div>
             <div class="instruction">
-                ✏️ Circle every ${targetSymbol}
+                ✏️ Circle every ${data.targetSymbol}
             </div>
         `;
         
@@ -364,9 +467,94 @@
             });
         });
     }
+
+    function runFullGenerator() {
+        const gridSize = parseInt(document.getElementById('gridSize').value);
+        const symbolSetName = document.getElementById('symbolSet').value;
+        const difficulty = document.getElementById('difficulty').value;
+        
+        currentSettings = { gridSize, symbolSetName, difficulty };
+        const gen = worksheetGenerator(gridSize, symbolSetName, difficulty);
+        
+        let finalData = null;
+        let result = gen.next();
+        
+        while (!result.done) {
+            if (result.value.complete) {
+                finalData = result.value;
+                document.getElementById('generatorStatus').innerHTML = `✅ ${result.value.message}`;
+                updateProgress(4);
+            } else {
+                document.getElementById('generatorStatus').innerHTML = `⚡ ${result.value.message}`;
+                updateProgress(result.value.step);
+            }
+            result = gen.next();
+        }
+        
+        if (finalData) {
+            generatedData = finalData;
+            renderWorksheetFromData(finalData);
+        }
+    }
+
+    function nextGeneratorStep() {
+        const gridSize = parseInt(document.getElementById('gridSize').value);
+        const symbolSetName = document.getElementById('symbolSet').value;
+        const difficulty = document.getElementById('difficulty').value;
+        
+        // Check if settings changed or no generator exists
+        if (!currentGenerator || 
+            currentSettings?.gridSize !== gridSize || 
+            currentSettings?.symbolSetName !== symbolSetName || 
+            currentSettings?.difficulty !== difficulty) {
+            // Start new generator with current settings
+            currentSettings = { gridSize, symbolSetName, difficulty };
+            currentGenerator = worksheetGenerator(gridSize, symbolSetName, difficulty);
+            generatedData = null;
+        }
+        
+        const result = currentGenerator.next();
+        
+        if (!result.done) {
+            const stepData = result.value;
+            document.getElementById('generatorStatus').innerHTML = `⚡ ${stepData.message}`;
+            updateProgress(stepData.step);
+            
+            if (stepData.complete) {
+                generatedData = stepData;
+                renderWorksheetFromData(stepData);
+                document.getElementById('generatorStatus').innerHTML = `✅ ${stepData.message}`;
+                currentGenerator = null;
+            } else if (stepData.cells) {
+                // Partial render
+                generatedData = stepData;
+                renderWorksheetFromData(stepData);
+            }
+        } else {
+            document.getElementById('generatorStatus').innerHTML = `✅ Generator complete!`;
+            currentGenerator = null;
+        }
+    }
+
+    function resetGenerator() {
+        currentGenerator = null;
+        currentSettings = null;
+        generatedData = null;
+        updateProgress(0);
+        document.getElementById('generatorStatus').innerHTML = `🔄 Generator reset. Click "Next Step" or "Generate All"`;
+        // Clear worksheet or show placeholder
+        document.getElementById('worksheetArea').innerHTML = `<div style="text-align:center; padding:40px; color:#999;">Click "Generate All" or "Next Step" to create a worksheet</div>`;
+    }
+
+    // Event listeners
+    document.getElementById('generateBtn').addEventListener('click', runFullGenerator);
+    document.getElementById('stepBtn').addEventListener('click', nextGeneratorStep);
+    document.getElementById('resetGenBtn').addEventListener('click', resetGenerator);
     
-    document.getElementById('generateBtn').addEventListener('click', generateWorksheet);
-    window.addEventListener('load', generateWorksheet);
+    // Initial load
+    window.addEventListener('load', () => {
+        runFullGenerator();
+    });
 </script>
 </body>
 </html>
