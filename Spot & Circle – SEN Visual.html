@@ -212,32 +212,34 @@
             color: #2c3e50;
         }
 
-        .print-buttons {
+        .action-buttons {
             display: flex;
             gap: 10px;
             margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
         }
 
         .print-btn {
             background: #2c5a2e;
-            flex: 1;
-            padding: 10px;
-            font-size: 14px;
         }
 
-        .print-btn:hover {
-            background: #1f4421;
+        .copy-btn {
+            background: #3b82f6;
         }
 
-        .embed-print-btn {
-            background: #f5a623;
-            flex: 1;
-            padding: 10px;
-            font-size: 14px;
+        .download-btn {
+            background: #8b5cf6;
         }
 
-        .embed-print-btn:hover {
-            background: #e0910f;
+        .action-btn:hover {
+            opacity: 0.9;
         }
 
         .progress-indicator {
@@ -271,20 +273,40 @@
             transform: scale(1.1);
         }
 
-        /* Print-specific styles that work in embeds */
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c5a2e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 1000;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
         @media print {
             body {
                 background: white;
                 padding: 0;
                 margin: 0;
             }
-            .controls, .print-buttons, .sen-badge, .generator-controls, 
+            .controls, .action-buttons, .sen-badge, .generator-controls, 
             .generator-status, .progress-indicator, button {
                 display: none !important;
             }
             .worksheet {
-                border: 1px solid #ccc;
-                padding: 10px;
+                border: none;
+                padding: 0;
                 margin: 0;
             }
             .container {
@@ -295,10 +317,6 @@
             }
             .grid-item.selected {
                 background: #d9f0e1;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-            }
-            .target-symbol {
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
             }
@@ -366,10 +384,11 @@
         <!-- Filled by JavaScript -->
     </div>
 
-    <!-- TWO PRINT OPTIONS for embeds -->
-    <div class="print-buttons">
-        <button class="print-btn" onclick="printWorksheetStandard()">🖨️ Print Worksheet</button>
-        <button class="embed-print-btn" onclick="printWorksheetEmbed()">📄 Open Printable View</button>
+    <!-- THREE ACTION OPTIONS for embeds -->
+    <div class="action-buttons">
+        <button class="action-btn print-btn" onclick="printUsingBrowser()">🖨️ Print</button>
+        <button class="action-btn copy-btn" onclick="copyToClipboard()">📋 Copy Worksheet</button>
+        <button class="action-btn download-btn" onclick="downloadAsHTML()">💾 Download</button>
     </div>
 </div>
 
@@ -442,6 +461,16 @@
     let currentGenerator = null;
     let currentSettings = null;
     let generatedData = null;
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.remove();
+        }, 2000);
+    }
 
     function updateProgress(step) {
         for (let i = 1; i <= 4; i++) {
@@ -567,118 +596,166 @@
         document.getElementById('worksheetArea').innerHTML = `<div style="text-align:center; padding:40px; color:#999;">Click "Generate All" or "Next Step" to create a worksheet</div>`;
     }
 
-    // ============ FIXED PRINT FUNCTIONS FOR EMBEDS ============
-    function printWorksheetStandard() {
-        try {
-            window.print();
-        } catch(e) {
-            console.log('Standard print failed:', e);
-            printWorksheetEmbed();
-        }
+    // ============ PRINT FUNCTION THAT WORKS IN EMBEDS ============
+    function printUsingBrowser() {
+        // Method: Use browser's native print on the entire page
+        // This works because the print media query hides controls
+        window.print();
+        showToast('🖨️ Print dialog opened - check your browser');
     }
 
-    function printWorksheetEmbed() {
-        // Method 1: Create a new window with just the worksheet content
-        const printContent = document.getElementById('worksheetArea').cloneNode(true);
+    // ============ COPY TO CLIPBOARD ============
+    function copyToClipboard() {
+        const worksheetContent = document.getElementById('worksheetArea').cloneNode(true);
         const headerContent = document.querySelector('.header').cloneNode(true);
         
-        const printWindow = window.open('', '_blank', 'width=800,height=600,toolbar=yes,scrollbars=yes');
-        printWindow.document.write(`
+        const printContainer = document.createElement('div');
+        printContainer.appendChild(headerContent);
+        printContainer.appendChild(worksheetContent);
+        
+        // Add footer
+        const footer = document.createElement('p');
+        footer.style.textAlign = 'center';
+        footer.style.marginTop = '30px';
+        footer.style.fontSize = '10px';
+        footer.style.color = '#999';
+        footer.innerHTML = '© Salam Adventures • SEN Visual Discrimination • www.salamadventures.com';
+        printContainer.appendChild(footer);
+        
+        const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Salam Adventures - SEN Worksheet</title>
+                <title>Salam Adventures Worksheet</title>
                 <style>
-                    body {
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                        padding: 20px;
-                        margin: 0;
-                    }
-                    .header {
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        border-bottom: 2px solid #f5a623;
-                        padding-bottom: 12px;
-                        margin-bottom: 15px;
-                        flex-wrap: wrap;
-                    }
-                    .logo-img {
-                        height: 50px;
-                        width: auto;
-                    }
-                    .brand-salam {
-                        font-size: 22px;
-                        font-weight: 800;
-                        color: #2c5a2e;
-                    }
-                    .brand-adventures {
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: #f5a623;
-                    }
-                    .target-area {
-                        text-align: center;
-                        margin-bottom: 15px;
-                        padding: 8px;
-                        background: #fff4e6;
-                        border-radius: 40px;
-                    }
-                    .target-symbol {
-                        font-size: 48px;
-                        background: white;
-                        display: inline-block;
-                        padding: 5px 25px;
-                        border-radius: 60px;
-                        border: 1px solid #f5c48a;
-                    }
-                    .grid {
-                        display: grid;
-                        gap: 8px;
-                        justify-content: center;
-                        margin: 15px 0;
-                    }
-                    .grid-item {
-                        font-size: 28px;
-                        background: #fefaf0;
-                        border-radius: 12px;
-                        padding: 6px 4px;
-                        text-align: center;
-                        border: 1px solid #eee2ce;
-                    }
-                    .instruction {
-                        font-size: 12px;
-                        background: #eef3fc;
-                        padding: 8px;
-                        border-radius: 20px;
-                        text-align: center;
-                        margin-top: 12px;
-                    }
-                    @media print {
-                        body {
-                            padding: 0;
-                            margin: 0;
-                        }
-                        button { display: none; }
-                    }
+                    body { font-family: 'Segoe UI', sans-serif; padding: 20px; }
+                    .header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #f5a623; padding-bottom: 12px; margin-bottom: 15px; }
+                    .brand-salam { font-size: 22px; font-weight: 800; color: #2c5a2e; }
+                    .brand-adventures { font-size: 16px; font-weight: 600; color: #f5a623; }
+                    .target-area { text-align: center; margin-bottom: 15px; padding: 8px; background: #fff4e6; border-radius: 40px; }
+                    .target-symbol { font-size: 48px; display: inline-block; padding: 5px 25px; border-radius: 60px; border: 1px solid #f5c48a; }
+                    .grid { display: grid; gap: 8px; justify-content: center; margin: 15px 0; }
+                    .grid-item { font-size: 28px; text-align: center; padding: 6px; border: 1px solid #ddd; }
+                    .instruction { font-size: 12px; background: #eef3fc; padding: 8px; border-radius: 20px; text-align: center; }
                 </style>
             </head>
             <body>
-                ${headerContent.outerHTML}
-                ${printContent.outerHTML}
-                <p style="text-align:center; margin-top:30px; font-size:10px; color:#999;">
-                    © Salam Adventures • SEN Visual Discrimination • www.salamadventures.com
-                </p>
-                <script>
-                    window.onload = function() {
-                        window.print();
-                        setTimeout(function() { window.close(); }, 500);
-                    };
-                <\/script>
+                ${printContainer.innerHTML}
             </body>
             </html>
-        `);
-        printWindow.document.close();
+        `;
+        
+        navigator.clipboard.writeText(htmlContent).then(() => {
+            showToast('✅ Worksheet copied to clipboard! Paste anywhere (Word, Google Docs, Email)');
+        }).catch(() => {
+            showToast('❌ Could not copy. Try the Download button instead.');
+        });
+    }
+
+    // ============ DOWNLOAD AS HTML FILE ============
+    function downloadAsHTML() {
+        const worksheetContent = document.getElementById('worksheetArea').cloneNode(true);
+        const headerContent = document.querySelector('.header').cloneNode(true);
+        
+        const fullHtml = `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Salam Adventures - SEN Worksheet</title>
+            <style>
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    padding: 40px;
+                    max-width: 900px;
+                    margin: 0 auto;
+                }
+                .header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    border-bottom: 2px solid #f5a623;
+                    padding-bottom: 12px;
+                    margin-bottom: 15px;
+                    flex-wrap: wrap;
+                }
+                .brand-salam {
+                    font-size: 22px;
+                    font-weight: 800;
+                    color: #2c5a2e;
+                }
+                .brand-adventures {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #f5a623;
+                }
+                .target-area {
+                    text-align: center;
+                    margin-bottom: 15px;
+                    padding: 8px;
+                    background: #fff4e6;
+                    border-radius: 40px;
+                }
+                .target-symbol {
+                    font-size: 48px;
+                    background: white;
+                    display: inline-block;
+                    padding: 5px 25px;
+                    border-radius: 60px;
+                    border: 1px solid #f5c48a;
+                }
+                .grid {
+                    display: grid;
+                    gap: 8px;
+                    justify-content: center;
+                    margin: 15px 0;
+                }
+                .grid-item {
+                    font-size: 28px;
+                    background: #fefaf0;
+                    border-radius: 12px;
+                    padding: 6px 4px;
+                    text-align: center;
+                    border: 1px solid #eee2ce;
+                }
+                .instruction {
+                    font-size: 12px;
+                    background: #eef3fc;
+                    padding: 8px;
+                    border-radius: 20px;
+                    text-align: center;
+                    margin-top: 12px;
+                }
+                @media print {
+                    body { padding: 0; }
+                }
+            </style>
+        </head>
+        <body>
+            ${headerContent.outerHTML}
+            ${worksheetContent.outerHTML}
+            <p style="text-align:center; margin-top:30px; font-size:10px; color:#999;">
+                © Salam Adventures • SEN Visual Discrimination • www.salamadventures.com
+            </p>
+            <script>
+                // Auto-open print dialog when downloaded file is opened
+                if (window.matchMedia) {
+                    setTimeout(() => { window.print(); }, 500);
+                }
+            <\/script>
+        </body>
+        </html>`;
+        
+        const blob = new Blob([fullHtml], { type: 'text/html' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = `salam-worksheet-${Date.now()}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        showToast('💾 Worksheet downloaded! Open the file and press Ctrl+P to print');
     }
 
     // Event listeners
