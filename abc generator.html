@@ -521,8 +521,12 @@
     
     // Print function - WORKS RELIABLY
     function printWorksheet() {
-        window.print();
-    }
+  if (window.top !== window.self) {
+    window.open(window.location.href, "_blank");
+    return;
+  }
+  window.print();
+}
     
     // Event Listeners
     document.getElementById('letterStyle').addEventListener('change', () => {
