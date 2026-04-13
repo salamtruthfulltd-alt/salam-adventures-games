@@ -10,11 +10,16 @@
         
         .controls { 
             background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--primary);
-            max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center;
+            max-width: 800px; margin: 0 auto 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;
         }
         button { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-gen { background: var(--primary); color: white; }
+        .btn-step { background: var(--accent); color: white; }
         .btn-print { background: var(--secondary); color: white; }
+        .generator-status { 
+            background: #fef3c7; padding: 8px 15px; border-radius: 20px; font-size: 12px;
+            display: inline-block; margin: 0 auto; text-align: center;
+        }
 
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
@@ -27,7 +32,6 @@
         
         .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 18px 0 8px; border-radius: 5px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; border-left: 4px solid var(--primary); }
 
-        /* Grid Layouts */
         .flex-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
         .column { flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; min-width: 120px; }
         
@@ -35,68 +39,147 @@
         .blank-line { border-bottom: 1px solid #000; width: 100%; height: 25px; display: block; margin: 5px 0; }
         
         .abc-item { margin-bottom: 8px; font-size: 15px; }
-        .dot-line { border-bottom: 1px dotted #cbd5e1; flex-grow: 1; margin: 0 10px; }
 
-        /* ensure print layout works perfectly */
         @media print {
             .controls { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
-            .page { 
-                box-shadow: none; 
-                border: none; 
-                margin: 0; 
-                width: 100%; 
-                padding: 15mm;
-                page-break-after: avoid;
-                break-inside: avoid;
-            }
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            .blank-line, .dot-line { break-inside: avoid; }
-            .flex-row, .column { break-inside: avoid; }
+            .page { box-shadow: none; border: none; margin: 0; width: 100%; padding: 15mm; }
+            @page { size: A4; margin: 0; }
         }
     </style>
 </head>
 <body>
 
 <div class="controls">
-    <button class="btn-gen" onclick="generate()">✨ Randomize All Tasks</button>
+    <button class="btn-gen" onclick="generateFullPage()">✨ Generate Full Worksheet</button>
+    <button class="btn-step" onclick="nextGeneratorStep()">⚡ Next Generator Step</button>
     <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
+</div>
+
+<div style="text-align: center; margin-bottom: 10px;">
+    <span class="generator-status" id="generatorStatus">⚙️ Generator ready</span>
 </div>
 
 <div class="page" id="main-page"></div>
 
 <script>
-    const nouns = ["Apple", "Teacher", "London", "Cat", "Table"];
-    const verbs = ["Jump", "Sing", "Read", "Run", "Sleep"];
+    // ============ DATA SOURCES (like Python lists) ============
+    const nouns = ["Apple", "Teacher", "London", "Cat", "Table", "Dog", "School"];
+    const verbs = ["Jump", "Sing", "Read", "Run", "Sleep", "Write", "Draw"];
     const opposites = [
         {a: "Hot", b: "Cold"}, {a: "Fast", b: "Slow"}, 
-        {a: "Big", b: "Small"}, {a: "Up", b: "Down"}
+        {a: "Big", b: "Small"}, {a: "Up", b: "Down"},
+        {a: "Happy", b: "Sad"}, {a: "Day", b: "Night"}
     ];
-    const abcWords = ["Zebra", "Apple", "Monkey", "Glass", "Bird", "Yarn", "Ocean", "Kite"];
-
-    function generate() {
-        const page = document.getElementById('main-page');
+    const abcWords = ["Zebra", "Apple", "Monkey", "Glass", "Bird", "Yarn", "Ocean", "Kite", "Cat", "Dog"];
+    
+    // ============ JAVASCRIPT GENERATOR FUNCTION (yields each part) ============
+    function* worksheetGenerator() {
+        // Step 1: Randomize all data
+        const mixedGrammar = [...nouns.slice(0,4), ...verbs.slice(0,4)].sort(() => 0.5 - Math.random());
+        yield { part: 1, type: "Grammar Sort", data: mixedGrammar, message: "✅ Part 1 generated: Grammar words mixed!" };
         
-        // Randomize word lists
-        const mixedGrammar = [...nouns.slice(0,3), ...verbs.slice(0,3)].sort(() => 0.5 - Math.random());
         const shuffledABC = [...abcWords].sort(() => 0.5 - Math.random()).slice(0, 5);
-        const shuffledOpposites = [...opposites].sort(() => 0.5 - Math.random());
-        // create a random ordering for right column opposites (paired with left words but shuffled visually)
+        yield { part: 3, type: "Alphabetical Order", data: shuffledABC, message: "✅ Part 3 generated: New ABC words ready!" };
+        
+        const shuffledOpposites = [...opposites].sort(() => 0.5 - Math.random()).slice(0, 4);
         const leftOpposites = shuffledOpposites.map(o => o.a);
         const rightOpposites = shuffledOpposites.map(o => o.b);
-        // shuffle right column for matching challenge while preserving pair integrity visually
         const shuffledRight = [...rightOpposites].sort(() => 0.5 - Math.random());
+        yield { part: 2, type: "Opposites Match", left: leftOpposites, right: shuffledRight, message: "✅ Part 2 generated: New opposite pairs!" };
+        
+        // Final yield with complete data
+        yield { 
+            complete: true, 
+            mixedGrammar, shuffledABC, leftOpposites, shuffledRight,
+            message: "🎉 All parts generated! Worksheet ready to print."
+        };
+    }
 
+    let currentGenerator = null;
+    let lastData = null;
+
+    // Function to generate the FULL page (like your original)
+    function generateFullPage() {
+        // Reset and run the generator fully
+        const gen = worksheetGenerator();
+        let result = gen.next();
+        let finalData = null;
+        
+        while (!result.done) {
+            if (result.value.complete) {
+                finalData = result.value;
+            }
+            result = gen.next();
+        }
+        
+        if (finalData) {
+            renderWorksheet(finalData);
+            document.getElementById('generatorStatus').innerHTML = '✅ Full worksheet generated! ' + finalData.message;
+        }
+    }
+    
+    // Step through generator one yield at a time
+    function nextGeneratorStep() {
+        if (!currentGenerator || lastData?.complete) {
+            // Start new generator
+            currentGenerator = worksheetGenerator();
+            lastData = null;
+        }
+        
+        const result = currentGenerator.next();
+        
+        if (!result.done) {
+            const stepData = result.value;
+            if (stepData.complete) {
+                // Final step
+                renderWorksheet(stepData);
+                lastData = stepData;
+                document.getElementById('generatorStatus').innerHTML = '✨ ' + stepData.message;
+                currentGenerator = null;
+            } else {
+                // Partial step - show progress
+                document.getElementById('generatorStatus').innerHTML = `⚡ ${stepData.message} (${stepData.type}) - Click again for next part`;
+                
+                // Store partial data
+                if (!lastData) lastData = {};
+                if (stepData.part === 1) lastData.mixedGrammar = stepData.data;
+                if (stepData.part === 3) lastData.shuffledABC = stepData.data;
+                if (stepData.part === 2) {
+                    lastData.leftOpposites = stepData.left;
+                    lastData.shuffledRight = stepData.right;
+                }
+                
+                // Show partial worksheet
+                if (lastData.mixedGrammar || lastData.shuffledABC || lastData.leftOpposites) {
+                    renderWorksheet(lastData, true);
+                }
+            }
+        } else if (currentGenerator) {
+            document.getElementById('generatorStatus').innerHTML = '✅ Generator complete! Click "Generate Full" for new worksheet.';
+            currentGenerator = null;
+        }
+    }
+    
+    // Render the worksheet (same as your original render function)
+    function renderWorksheet(data, isPartial = false) {
+        const page = document.getElementById('main-page');
+        
+        const mixedGrammar = data.mixedGrammar || [...nouns.slice(0,4), ...verbs.slice(0,4)].sort(() => 0.5 - Math.random());
+        const shuffledABC = data.shuffledABC || [...abcWords].sort(() => 0.5 - Math.random()).slice(0, 5);
+        const leftOpposites = data.leftOpposites || opposites.slice(0,4).map(o => o.a);
+        const shuffledRight = data.shuffledRight || opposites.slice(0,4).map(o => o.b).sort(() => 0.5 - Math.random());
+        
         page.innerHTML = `
             <div class="header">
                 <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-                    <img src="./addition images/logo.png" class="logo-img" onerror="this.style.display='none'" alt="Salam Adventures Logo">
+                    <div style="width:80px; height:80px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:14px;">
+                        SALAM
+                    </div>
                     <div>
                         <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
                         <p style="margin:0; font-size:13px; font-weight:bold; color:#64748b;">Mixed Literacy Expedition: Level 2</p>
+                        ${isPartial ? '<p style="margin:5px 0 0; color:#f59e0b; font-size:11px;">⚠️ Partial generator view - click "Next Step" to add more</p>' : ''}
                     </div>
                 </div>
                 <div style="text-align:right; font-size:11px;">
@@ -112,11 +195,11 @@
             <div class="flex-row">
                 <div class="column">
                     <b style="color:var(--secondary)">NOUNS (Naming)</b>
-                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
+                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
                 </div>
                 <div class="column">
                     <b style="color:var(--primary)">VERBS (Action)</b>
-                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
+                    <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
                 </div>
             </div>
 
@@ -154,9 +237,9 @@
             </div>
         `;
     }
-
-    // initial load: generate content so page is ready
-    generate();
+    
+    // Initial load
+    generateFullPage();
 </script>
 </body>
 </html>
