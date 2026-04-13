@@ -212,16 +212,32 @@
             color: #2c3e50;
         }
 
+        .print-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
         .print-btn {
             background: #2c5a2e;
-            margin-top: 15px;
-            width: 100%;
+            flex: 1;
             padding: 10px;
             font-size: 14px;
         }
 
         .print-btn:hover {
             background: #1f4421;
+        }
+
+        .embed-print-btn {
+            background: #f5a623;
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .embed-print-btn:hover {
+            background: #e0910f;
         }
 
         .progress-indicator {
@@ -255,26 +271,36 @@
             transform: scale(1.1);
         }
 
+        /* Print-specific styles that work in embeds */
         @media print {
             body {
                 background: white;
                 padding: 0;
                 margin: 0;
             }
-            .controls, .print-btn, .sen-badge, .generator-controls, .generator-status, .progress-indicator {
-                display: none;
+            .controls, .print-buttons, .sen-badge, .generator-controls, 
+            .generator-status, .progress-indicator, button {
+                display: none !important;
             }
             .worksheet {
                 border: 1px solid #ccc;
                 padding: 10px;
+                margin: 0;
             }
             .container {
-                padding: 10px;
+                padding: 0;
+                margin: 0;
                 box-shadow: none;
+                max-width: 100%;
             }
             .grid-item.selected {
                 background: #d9f0e1;
                 print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            .target-symbol {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
             }
         }
     </style>
@@ -292,7 +318,6 @@
         </div>
     </div>
 
-    <!-- Generator Status Display -->
     <div style="text-align: center;">
         <div class="generator-status" id="generatorStatus">⚙️ Generator Ready</div>
     </div>
@@ -326,11 +351,10 @@
         <button id="generateBtn">✨ Generate All</button>
         <div class="generator-controls">
             <button id="stepBtn" class="step-btn">⚡ Next Step</button>
-            <button id="resetGenBtn" class="step-btn">🔄 Reset Gen</button>
+            <button id="resetGenBtn" class="step-btn">🔄 Reset</button>
         </div>
     </div>
 
-    <!-- Progress steps (visual generator tracking) -->
     <div class="progress-indicator" id="progressIndicator">
         <div class="progress-step" id="step1">1</div>
         <div class="progress-step" id="step2">2</div>
@@ -338,12 +362,15 @@
         <div class="progress-step" id="step4">4</div>
     </div>
 
-    <!-- Worksheet area -->
     <div id="worksheetArea" class="worksheet">
         <!-- Filled by JavaScript -->
     </div>
 
-    <button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+    <!-- TWO PRINT OPTIONS for embeds -->
+    <div class="print-buttons">
+        <button class="print-btn" onclick="printWorksheetStandard()">🖨️ Print Worksheet</button>
+        <button class="embed-print-btn" onclick="printWorksheetEmbed()">📄 Open Printable View</button>
+    </div>
 </div>
 
 <script>
@@ -377,11 +404,9 @@
         
         const baseSymbols = symbolLib.base;
         
-        // Step 1: Select target symbol
         const targetSymbol = baseSymbols[Math.floor(Math.random() * baseSymbols.length)];
         yield { step: 1, message: `🎯 Target selected: "${targetSymbol}"`, targetSymbol, baseSymbols };
         
-        // Step 2: Build distractor pool based on difficulty
         let distractorPool;
         if (difficulty === 'easy') {
             distractorPool = baseSymbols.map(s => symbolLib.easy[s] || s);
@@ -392,7 +417,6 @@
         }
         yield { step: 2, message: `🌀 Distractors ready (${difficulty} mode)`, targetSymbol, distractorPool };
         
-        // Step 3: Build cells array
         let cells = [];
         const targetCount = Math.max(3, Math.floor(gridSize / 4));
         
@@ -408,7 +432,6 @@
         }
         yield { step: 3, message: `📦 Grid built with ${targetCount} targets`, targetSymbol, cells, distractorPool };
         
-        // Step 4: Shuffle cells
         for (let i = cells.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [cells[i], cells[j]] = [cells[j], cells[i]];
@@ -423,14 +446,16 @@
     function updateProgress(step) {
         for (let i = 1; i <= 4; i++) {
             const stepEl = document.getElementById(`step${i}`);
-            if (i < step) {
-                stepEl.classList.add('completed');
-                stepEl.classList.remove('active');
-            } else if (i === step) {
-                stepEl.classList.add('active');
-                stepEl.classList.remove('completed');
-            } else {
-                stepEl.classList.remove('completed', 'active');
+            if (stepEl) {
+                if (i < step) {
+                    stepEl.classList.add('completed');
+                    stepEl.classList.remove('active');
+                } else if (i === step) {
+                    stepEl.classList.add('active');
+                    stepEl.classList.remove('completed');
+                } else {
+                    stepEl.classList.remove('completed', 'active');
+                }
             }
         }
     }
@@ -502,12 +527,10 @@
         const symbolSetName = document.getElementById('symbolSet').value;
         const difficulty = document.getElementById('difficulty').value;
         
-        // Check if settings changed or no generator exists
         if (!currentGenerator || 
             currentSettings?.gridSize !== gridSize || 
             currentSettings?.symbolSetName !== symbolSetName || 
             currentSettings?.difficulty !== difficulty) {
-            // Start new generator with current settings
             currentSettings = { gridSize, symbolSetName, difficulty };
             currentGenerator = worksheetGenerator(gridSize, symbolSetName, difficulty);
             generatedData = null;
@@ -526,7 +549,6 @@
                 document.getElementById('generatorStatus').innerHTML = `✅ ${stepData.message}`;
                 currentGenerator = null;
             } else if (stepData.cells) {
-                // Partial render
                 generatedData = stepData;
                 renderWorksheetFromData(stepData);
             }
@@ -542,8 +564,121 @@
         generatedData = null;
         updateProgress(0);
         document.getElementById('generatorStatus').innerHTML = `🔄 Generator reset. Click "Next Step" or "Generate All"`;
-        // Clear worksheet or show placeholder
         document.getElementById('worksheetArea').innerHTML = `<div style="text-align:center; padding:40px; color:#999;">Click "Generate All" or "Next Step" to create a worksheet</div>`;
+    }
+
+    // ============ FIXED PRINT FUNCTIONS FOR EMBEDS ============
+    function printWorksheetStandard() {
+        try {
+            window.print();
+        } catch(e) {
+            console.log('Standard print failed:', e);
+            printWorksheetEmbed();
+        }
+    }
+
+    function printWorksheetEmbed() {
+        // Method 1: Create a new window with just the worksheet content
+        const printContent = document.getElementById('worksheetArea').cloneNode(true);
+        const headerContent = document.querySelector('.header').cloneNode(true);
+        
+        const printWindow = window.open('', '_blank', 'width=800,height=600,toolbar=yes,scrollbars=yes');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Salam Adventures - SEN Worksheet</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        padding: 20px;
+                        margin: 0;
+                    }
+                    .header {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        border-bottom: 2px solid #f5a623;
+                        padding-bottom: 12px;
+                        margin-bottom: 15px;
+                        flex-wrap: wrap;
+                    }
+                    .logo-img {
+                        height: 50px;
+                        width: auto;
+                    }
+                    .brand-salam {
+                        font-size: 22px;
+                        font-weight: 800;
+                        color: #2c5a2e;
+                    }
+                    .brand-adventures {
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: #f5a623;
+                    }
+                    .target-area {
+                        text-align: center;
+                        margin-bottom: 15px;
+                        padding: 8px;
+                        background: #fff4e6;
+                        border-radius: 40px;
+                    }
+                    .target-symbol {
+                        font-size: 48px;
+                        background: white;
+                        display: inline-block;
+                        padding: 5px 25px;
+                        border-radius: 60px;
+                        border: 1px solid #f5c48a;
+                    }
+                    .grid {
+                        display: grid;
+                        gap: 8px;
+                        justify-content: center;
+                        margin: 15px 0;
+                    }
+                    .grid-item {
+                        font-size: 28px;
+                        background: #fefaf0;
+                        border-radius: 12px;
+                        padding: 6px 4px;
+                        text-align: center;
+                        border: 1px solid #eee2ce;
+                    }
+                    .instruction {
+                        font-size: 12px;
+                        background: #eef3fc;
+                        padding: 8px;
+                        border-radius: 20px;
+                        text-align: center;
+                        margin-top: 12px;
+                    }
+                    @media print {
+                        body {
+                            padding: 0;
+                            margin: 0;
+                        }
+                        button { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                ${headerContent.outerHTML}
+                ${printContent.outerHTML}
+                <p style="text-align:center; margin-top:30px; font-size:10px; color:#999;">
+                    © Salam Adventures • SEN Visual Discrimination • www.salamadventures.com
+                </p>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(function() { window.close(); }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
     }
 
     // Event listeners
