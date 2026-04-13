@@ -3,262 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | SEN Worksheet Generator</title>
+    <title>Salam Adventures | Memory Match Game</title>
     <style>
         * {
             box-sizing: border-box;
+            user-select: none;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #eef4fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
-            padding: 10px;
-            color: #1a2a3a;
+            padding: 20px;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 900px;
+        .game-container {
+            max-width: 800px;
             margin: 0 auto;
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            padding: 15px 20px 20px 20px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 20px;
         }
 
         .header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 2px solid #f5a623;
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .logo-img {
-            height: 50px;
-            width: auto;
-            max-width: 150px;
-        }
-
-        .brand-name {
-            line-height: 1.1;
-        }
-
-        .brand-salam {
-            font-size: 22px;
-            font-weight: 800;
-            color: #2c5a2e;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-adventures {
-            font-size: 16px;
-            font-weight: 600;
-            color: #f5a623;
-            letter-spacing: 1px;
-        }
-
-        .sen-badge {
-            margin-left: auto;
-            background: #f0f2f5;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #4a6741;
-        }
-
-        .controls {
-            background: #f9f5eb;
-            padding: 12px 15px;
-            border-radius: 20px;
+            justify-content: space-between;
+            border-bottom: 3px solid #f5a623;
+            padding-bottom: 15px;
             margin-bottom: 20px;
-            display: flex;
             flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
             gap: 12px;
-            align-items: flex-end;
         }
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .control-group label {
-            font-weight: bold;
-            font-size: 11px;
-            color: #5a4a2e;
-        }
-
-        select, input {
-            padding: 5px 10px;
-            border-radius: 25px;
-            border: 1px solid #ddd0b6;
-            background: white;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        button {
-            background: #f5a623;
-            color: white;
-            border: none;
-            padding: 6px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background: #e0910f;
-        }
-
-        .generator-controls {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-        }
-
-        .step-btn {
-            background: #2c5a2e;
-            font-size: 11px;
-            padding: 6px 15px;
-        }
-
-        .step-btn:hover {
-            background: #1f4421;
-        }
-
-        .generator-status {
-            background: #e8f5e9;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #2e7d32;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        .worksheet {
-            background: #fffef8;
-            border: 1px solid #f0e2cc;
-            border-radius: 20px;
-            padding: 15px;
-            margin-top: 10px;
-        }
-
-        .target-area {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 8px;
-            background: #fff4e6;
-            border-radius: 40px;
-        }
-
-        .target-label {
-            font-weight: bold;
-            font-size: 14px;
-            color: #3b5c2a;
-        }
-
-        .target-symbol {
-            font-size: 48px;
-            background: white;
-            display: inline-block;
-            padding: 5px 25px;
-            border-radius: 60px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #f5c48a;
-            margin-top: 5px;
-        }
-
-        .grid {
-            display: grid;
-            gap: 8px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-
-        .grid-item {
-            font-size: 28px;
-            background: #fefaf0;
-            border-radius: 12px;
-            padding: 6px 4px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid #eee2ce;
-            transition: all 0.2s;
-        }
-
-        .grid-item.selected {
-            background: #d9f0e1;
-            border-color: #2e7d64;
-            transform: scale(0.95);
-        }
-
-        .instruction {
-            font-size: 12px;
-            background: #eef3fc;
-            padding: 8px;
-            border-radius: 20px;
-            text-align: center;
-            margin-top: 12px;
-            color: #2c3e50;
-        }
-
-        .print-btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .print-btn {
-            background: #2c5a2e;
-            flex: 1;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .print-btn:hover {
-            background: #1f4421;
-        }
-
-        .progress-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin: 10px 0;
-        }
-
-        .progress-step {
-            width: 30px;
-            height: 30px;
+        .logo-circle {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border-radius: 50%;
-            background: #e0e0e0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            color: white;
             font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .brand-salam {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2c5a2e;
+        }
+
+        .brand-adventures {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+
+        .game-stats {
+            background: #f0fdf4;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .matches {
+            font-size: 14px;
             color: #666;
         }
 
-        .progress-step.completed {
-            background: #4caf50;
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f5a623 0%, #e0910f 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transform: scale(1);
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .card.flipped, .card.matched {
+            background: white;
+            border: 2px solid #10b981;
+            cursor: default;
+        }
+
+        .card.matched {
+            background: #d9f0e1;
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .card.flipped:hover, .card.matched:hover {
+            transform: scale(1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-new {
+            background: #10b981;
             color: white;
         }
 
-        .progress-step.active {
-            background: #f5a623;
+        .btn-new:hover {
+            background: #059669;
+        }
+
+        .btn-print {
+            background: #3b82f6;
             color: white;
-            transform: scale(1.1);
+        }
+
+        .btn-print:hover {
+            background: #2563eb;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 30px;
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: bold;
         }
 
         @media print {
@@ -267,297 +182,199 @@
                 padding: 0;
                 margin: 0;
             }
-            .controls, .print-btn-container, .sen-badge, .generator-controls, 
-            .generator-status, .progress-indicator, button, select, .control-group {
-                display: none !important;
-            }
-            .worksheet {
-                border: none;
-                padding: 0;
-                margin: 0;
-            }
-            .container {
-                padding: 0;
-                margin: 0;
+            .game-container {
                 box-shadow: none;
+                padding: 10px;
                 max-width: 100%;
             }
-            .grid-item.selected {
-                background: #d9f0e1;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+            .controls, .game-stats, .message, .btn-new, .btn-print {
+                display: none !important;
+            }
+            .card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .game-board {
+                gap: 8px;
+            }
+            .card.flipped, .card.matched {
+                border: 2px solid #333;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                font-size: 28px;
+            }
+            .game-board {
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="game-container">
     <div class="header">
-        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" alt="Salam Adventures Logo" class="logo-img" onerror="this.style.display='none';">
-        <div class="brand-name">
-            <div class="brand-salam">Salam</div>
-            <div class="brand-adventures">Adventures</div>
+        <div class="logo-area">
+            <div class="logo-circle">SA</div>
+            <div>
+                <div class="brand-salam">Salam</div>
+                <div class="brand-adventures">Adventures</div>
+            </div>
         </div>
-        <div class="sen-badge">
-            🌟 SEN
+        <div class="game-stats">
+            <div class="score" id="score">0</div>
+            <div class="matches">Matches</div>
         </div>
     </div>
 
-    <div style="text-align: center;">
-        <div class="generator-status" id="generatorStatus">⚙️ Generator Ready</div>
-    </div>
+    <div class="game-board" id="gameBoard"></div>
 
     <div class="controls">
-        <div class="control-group">
-            <label>🎯 Grid</label>
-            <select id="gridSize">
-                <option value="16">4x4</option>
-                <option value="25" selected>5x5</option>
-                <option value="36">6x6</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label>🌀 Symbols</label>
-            <select id="symbolSet">
-                <option value="shapes">Shapes</option>
-                <option value="emoji">Emoji</option>
-                <option value="animals" selected>Animals</option>
-                <option value="letters">Letters</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label>📊 Level</label>
-            <select id="difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium" selected>Medium</option>
-                <option value="hard">Hard</option>
-            </select>
-        </div>
-        <button id="generateBtn">✨ Generate All</button>
-        <div class="generator-controls">
-            <button id="stepBtn" class="step-btn">⚡ Next Step</button>
-            <button id="resetGenBtn" class="step-btn">🔄 Reset</button>
-        </div>
+        <button class="btn-new" onclick="resetGame()">🔄 New Game</button>
+        <button class="btn-print" onclick="printGame()">🖨️ Print Game Board</button>
     </div>
-
-    <div class="progress-indicator" id="progressIndicator">
-        <div class="progress-step" id="step1">1</div>
-        <div class="progress-step" id="step2">2</div>
-        <div class="progress-step" id="step3">3</div>
-        <div class="progress-step" id="step4">4</div>
-    </div>
-
-    <div id="worksheetArea" class="worksheet">
-        <!-- Filled by JavaScript -->
-    </div>
-
-    <!-- SINGLE PRINT BUTTON - Opens printer dialog directly -->
-    <div class="print-btn-container">
-        <button class="print-btn" onclick="window.print()">🖨️ Print Worksheet</button>
-    </div>
+    <div class="message" id="message">🐫 Match the pairs to win!</div>
 </div>
 
 <script>
-    const symbolSets = {
-        shapes: {
-            base: ['●', '■', '▲', '★'],
-            easy: { '●': '○', '■': '□', '▲': '△', '★': '☆' },
-            hard: { '●': '⬤', '■': '◼', '▲': '⭗', '★': '⭒' }
-        },
-        emoji: {
-            base: ['😊', '😢', '😡', '😲'],
-            easy: { '😊': '🙂', '😢': '😥', '😡': '😠', '😲': '😧' },
-            hard: { '😊': '😌', '😢': '😭', '😡': '🤬', '😲': '😮' }
-        },
-        animals: {
-            base: ['🐶', '🐱', '🐭', '🐰'],
-            easy: { '🐶': '🐕', '🐱': '🐈', '🐭': '🐁', '🐰': '🐇' },
-            hard: { '🐶': '🐩', '🐱': '🐆', '🐭': '🐹', '🐰': '🐇' }
-        },
-        letters: {
-            base: ['A', 'B', 'C', 'D'],
-            easy: { 'A': 'Λ', 'B': '8', 'C': '(', 'D': '|)' },
-            hard: { 'A': 'Δ', 'B': '♭', 'C': '©', 'D': 'Ⅾ' }
-        }
-    };
+    // Animal emojis for the game
+    const animals = ['🐶', '🐱', '🐭', '🐰', '🦊', '🐻', '🐼', '🐨'];
+    
+    let cards = [];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let lockBoard = false;
+    let score = 0;
 
-    function* worksheetGenerator(gridSize, symbolSetName, difficulty) {
-        const symbolLib = symbolSets[symbolSetName];
-        if (!symbolLib) return;
-        
-        const baseSymbols = symbolLib.base;
-        const targetSymbol = baseSymbols[Math.floor(Math.random() * baseSymbols.length)];
-        yield { step: 1, message: `🎯 Target selected`, targetSymbol };
-        
-        let distractorPool;
-        if (difficulty === 'easy') {
-            distractorPool = baseSymbols.map(s => symbolLib.easy[s] || s);
-        } else if (difficulty === 'hard') {
-            distractorPool = baseSymbols.map(s => symbolLib.hard[s] || s);
-        } else {
-            distractorPool = [...baseSymbols];
-        }
-        yield { step: 2, message: `🌀 Distractors ready`, targetSymbol, distractorPool };
-        
-        let cells = [];
-        const targetCount = Math.max(3, Math.floor(gridSize / 4));
-        
-        for (let i = 0; i < targetCount; i++) {
-            cells.push(targetSymbol);
-        }
-        
-        while (cells.length < gridSize) {
-            let possibleDistractors = distractorPool.filter(s => s !== targetSymbol);
-            if (possibleDistractors.length === 0) possibleDistractors = ['?'];
-            const randomDist = possibleDistractors[Math.floor(Math.random() * possibleDistractors.length)];
-            cells.push(randomDist);
-        }
-        yield { step: 3, message: `📦 Grid built`, targetSymbol, cells };
-        
-        for (let i = cells.length - 1; i > 0; i--) {
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [cells[i], cells[j]] = [cells[j], cells[i]];
+            [array[i], array[j]] = [array[j], array[i]];
         }
-        yield { step: 4, message: `✨ Worksheet ready!`, targetSymbol, cells, complete: true };
+        return array;
     }
 
-    let currentGenerator = null;
-    let currentSettings = null;
-    let generatedData = null;
+    function initGame() {
+        // Create pairs of cards
+        let cardPairs = [];
+        for (let i = 0; i < animals.length; i++) {
+            cardPairs.push({ id: i, symbol: animals[i], matched: false });
+            cardPairs.push({ id: i, symbol: animals[i], matched: false });
+        }
+        cards = shuffleArray(cardPairs);
+        matchedPairs = 0;
+        score = 0;
+        flippedCards = [];
+        lockBoard = false;
+        updateScore();
+        document.getElementById('message').innerHTML = '🐫 Match the pairs to win!';
+        renderBoard();
+    }
 
-    function updateProgress(step) {
-        for (let i = 1; i <= 4; i++) {
-            const stepEl = document.getElementById(`step${i}`);
-            if (stepEl) {
-                if (i < step) {
-                    stepEl.classList.add('completed');
-                    stepEl.classList.remove('active');
-                } else if (i === step) {
-                    stepEl.classList.add('active');
-                    stepEl.classList.remove('completed');
-                } else {
-                    stepEl.classList.remove('completed', 'active');
-                }
+    function renderBoard() {
+        const board = document.getElementById('gameBoard');
+        board.innerHTML = '';
+        
+        cards.forEach((card, index) => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            if (card.flipped || card.matched) {
+                cardElement.classList.add('flipped');
+                cardElement.innerHTML = card.symbol;
+            } else {
+                cardElement.innerHTML = '?';
             }
-        }
-    }
-
-    function renderWorksheetFromData(data) {
-        if (!data || !data.cells) return;
-        
-        const cols = Math.sqrt(data.cells.length);
-        const container = document.getElementById('worksheetArea');
-        
-        let html = `
-            <div class="target-area">
-                <div class="target-label">🎯 FIND & CIRCLE ALL MATCHES</div>
-                <div class="target-symbol">${data.targetSymbol}</div>
-            </div>
-            <div class="grid" style="grid-template-columns: repeat(${cols}, 1fr);">
-        `;
-        
-        for (let i = 0; i < data.cells.length; i++) {
-            html += `<div class="grid-item" data-symbol="${data.cells[i].replace(/"/g, '&quot;')}">${data.cells[i]}</div>`;
-        }
-        
-        html += `</div>
-            <div class="instruction">
-                ✏️ Circle every ${data.targetSymbol}
-            </div>
-        `;
-        
-        container.innerHTML = html;
-        
-        document.querySelectorAll('.grid-item').forEach(el => {
-            el.addEventListener('click', function() {
-                this.classList.toggle('selected');
-            });
+            if (card.matched) {
+                cardElement.classList.add('matched');
+            }
+            cardElement.onclick = () => flipCard(index);
+            board.appendChild(cardElement);
         });
     }
 
-    function runFullGenerator() {
-        const gridSize = parseInt(document.getElementById('gridSize').value);
-        const symbolSetName = document.getElementById('symbolSet').value;
-        const difficulty = document.getElementById('difficulty').value;
+    function flipCard(index) {
+        if (lockBoard) return;
+        if (cards[index].flipped) return;
+        if (cards[index].matched) return;
         
-        currentSettings = { gridSize, symbolSetName, difficulty };
-        const gen = worksheetGenerator(gridSize, symbolSetName, difficulty);
+        cards[index].flipped = true;
+        flippedCards.push(index);
+        renderBoard();
         
-        let finalData = null;
-        let result = gen.next();
-        
-        while (!result.done) {
-            if (result.value.complete) {
-                finalData = result.value;
-                document.getElementById('generatorStatus').innerHTML = `✅ Worksheet Ready`;
-                updateProgress(4);
-            } else {
-                document.getElementById('generatorStatus').innerHTML = `⚡ ${result.value.message}`;
-                updateProgress(result.value.step);
-            }
-            result = gen.next();
-        }
-        
-        if (finalData) {
-            generatedData = finalData;
-            renderWorksheetFromData(finalData);
+        if (flippedCards.length === 2) {
+            lockBoard = true;
+            setTimeout(checkMatch, 500);
         }
     }
 
-    function nextGeneratorStep() {
-        const gridSize = parseInt(document.getElementById('gridSize').value);
-        const symbolSetName = document.getElementById('symbolSet').value;
-        const difficulty = document.getElementById('difficulty').value;
+    function checkMatch() {
+        const card1 = cards[flippedCards[0]];
+        const card2 = cards[flippedCards[1]];
         
-        if (!currentGenerator || 
-            currentSettings?.gridSize !== gridSize || 
-            currentSettings?.symbolSetName !== symbolSetName || 
-            currentSettings?.difficulty !== difficulty) {
-            currentSettings = { gridSize, symbolSetName, difficulty };
-            currentGenerator = worksheetGenerator(gridSize, symbolSetName, difficulty);
-            generatedData = null;
-        }
-        
-        const result = currentGenerator.next();
-        
-        if (!result.done) {
-            const stepData = result.value;
-            document.getElementById('generatorStatus').innerHTML = `⚡ ${stepData.message}`;
-            updateProgress(stepData.step);
+        if (card1.id === card2.id && flippedCards[0] !== flippedCards[1]) {
+            // Match!
+            card1.matched = true;
+            card2.matched = true;
+            matchedPairs++;
+            score += 10;
+            updateScore();
             
-            if (stepData.complete) {
-                generatedData = stepData;
-                renderWorksheetFromData(stepData);
-                document.getElementById('generatorStatus').innerHTML = `✅ Worksheet Ready`;
-                currentGenerator = null;
-            } else if (stepData.cells) {
-                generatedData = stepData;
-                renderWorksheetFromData(stepData);
+            if (matchedPairs === animals.length) {
+                document.getElementById('message').innerHTML = '🎉 WINNER! Perfect Score! 🎉';
+            } else {
+                document.getElementById('message').innerHTML = '✅ Great match! +10 points';
+                setTimeout(() => {
+                    document.getElementById('message').innerHTML = '🐫 Keep matching!';
+                }, 1000);
             }
         } else {
-            document.getElementById('generatorStatus').innerHTML = `✅ Worksheet Ready`;
-            currentGenerator = null;
+            // No match
+            card1.flipped = false;
+            card2.flipped = false;
+            if (score > 0) {
+                score -= 2;
+                updateScore();
+            }
+            document.getElementById('message').innerHTML = '❌ Not a match! Try again';
+            setTimeout(() => {
+                document.getElementById('message').innerHTML = '🐫 Match the pairs to win!';
+            }, 1000);
         }
+        
+        flippedCards = [];
+        lockBoard = false;
+        renderBoard();
     }
 
-    function resetGenerator() {
-        currentGenerator = null;
-        currentSettings = null;
-        generatedData = null;
-        updateProgress(0);
-        document.getElementById('generatorStatus').innerHTML = `⚙️ Generator Ready`;
-        document.getElementById('worksheetArea').innerHTML = `<div style="text-align:center; padding:40px; color:#999;">Click "Generate All" to create a worksheet</div>`;
+    function updateScore() {
+        document.getElementById('score').innerHTML = score;
     }
 
-    // Event listeners
-    document.getElementById('generateBtn').addEventListener('click', runFullGenerator);
-    document.getElementById('stepBtn').addEventListener('click', nextGeneratorStep);
-    document.getElementById('resetGenBtn').addEventListener('click', resetGenerator);
-    
-    // Initial load
-    window.addEventListener('load', () => {
-        runFullGenerator();
-    });
+    function resetGame() {
+        initGame();
+    }
+
+    function printGame() {
+        // Temporarily show all cards for printing
+        const originalCards = JSON.parse(JSON.stringify(cards));
+        
+        // Reveal all cards for print
+        cards.forEach(card => {
+            card.flipped = true;
+        });
+        renderBoard();
+        
+        // Print
+        window.print();
+        
+        // Restore original state
+        cards = originalCards;
+        renderBoard();
+    }
+
+    // Start the game
+    initGame();
 </script>
 </body>
 </html>
