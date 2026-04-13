@@ -355,9 +355,13 @@
         initGame();
     }
 
-    function printGame() {
-        // Temporarily show all cards for printing
-        const originalCards = JSON.parse(JSON.stringify(cards));
+    function printWorksheet() {
+  if (window.top !== window.self) {
+    window.open(window.location.href, "_blank");
+    return;
+  }
+  window.print();
+}
         
         // Reveal all cards for print
         cards.forEach(card => {
