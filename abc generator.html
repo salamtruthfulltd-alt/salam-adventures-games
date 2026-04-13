@@ -243,12 +243,18 @@
             color: #2c3e50;
         }
 
+        .print-btn-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+
         .print-btn {
             background: #2c5a2e;
-            margin-top: 15px;
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            width: auto;
+            display: inline-block;
         }
 
         .print-btn:hover {
@@ -261,7 +267,7 @@
             .controls {
                 display: none !important;
             }
-            .print-btn {
+            .print-btn-container {
                 display: none !important;
             }
             .sen-badge {
@@ -373,7 +379,10 @@
     </div>
 
     <div id="worksheetArea" class="worksheet"></div>
-    <button class="print-btn" onclick="window.print(); return false;">🖨️ Print / PDF</button>
+    
+    <div class="print-btn-container">
+        <button class="print-btn" id="printButton">🖨️ Print Worksheet / Save as PDF</button>
+    </div>
 </div>
 
 <script>
@@ -580,6 +589,11 @@
         attachBonusTip();
     }
     
+    // FIXED: Print function that actually works
+    function handlePrint() {
+        window.print();
+    }
+    
     // Event listeners
     document.getElementById('letterCase').addEventListener('change', syncLetterCaseAndReset);
     document.getElementById('generateBtn').addEventListener('click', () => {
@@ -590,6 +604,12 @@
         generateWorksheetWithGenerators();
         attachBonusTip();
     });
+    
+    // Fix print button
+    const printBtn = document.getElementById('printButton');
+    if (printBtn) {
+        printBtn.addEventListener('click', handlePrint);
+    }
     
     // Initialize everything
     buildLetterButtons();
