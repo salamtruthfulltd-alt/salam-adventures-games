@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salam Adventures | Pictorial Maths Generator</title>
+  <meta name="description" content="Create printable pictorial addition and subtraction worksheets with easy, medium, and hard levels for children." />
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    :root{
+      --primary:#18b887;
+      --primary-dark:#11966f;
+      --accent:#f2a23a;
+      --blue:#4b89f0;
+      --ink:#213547;
+      --muted:#6b7a8c;
+      --paper:#fffdf8;
+      --line:#d9e3eb;
+      --soft:#edf8f4;
+      --cream:#f8f2e8;
+      --pink:#fff4f4;
+    }
+
+    body{
+      font-family:"Segoe UI", Arial, sans-serif;
+      background:linear-gradient(135deg,#eaf8f1 0%,#d8efe4 100%);
+      color:var(--ink);
+      padding:20px;
+    }
+
+    .toolbar{
+      max-width:1220px;
+      margin:0 auto 22px auto;
+      background:#fff;
+      border:1px solid rgba(24,184,135,.16);
+      border-radius:999px;
+      box-shadow:0 10px 24px rgba(0,0,0,.08);
+      padding:14px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .control-group{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    label{
+      font-size:13px;
+      font-weight:700;
+      color:#365067;
+    }
+
+    select{
+      border:1px solid #d9e5ec;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:14px;
+      background:#fff;
+      color:var(--ink);
+      outline:none;
+    }
+
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:11px 20px;
+      font-size:14px;
+      font-weight:800;
+      color:#fff;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn-main{
+      background:var(--primary);
+    }
+
+    .btn-main:hover{
+      background:var(--primary-dark);
+    }
+
+    .btn-alt{
+      background:var(--accent);
+    }
+
+    .btn-alt:hover{
+      background:#de8c20;
+    }
+
+    .btn-print{
+      background:var(--blue);
+    }
+
+    .btn-print:hover{
+      background:#2f74e8;
+    }
+
+    .status{
+      background:#f3f8fb;
+      color:var(--primary-dark);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .page{
+      width:210mm;
+      min-height:297mm;
+      margin:0 auto;
+      background:var(--paper);
+      border-radius:8px;
+      box-shadow:0 18px 38px rgba(0,0,0,.14);
+      padding:15mm 16mm 14mm;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      border-bottom:3px solid var(--primary);
+      padding-bottom:12px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+
+    .logo-wrap{
+      width:72px;
+      height:72px;
+      border-radius:16px;
+      overflow:hidden;
+      background:#f7fcfa;
+      border:1px solid #dceee7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+
+    .logo-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .brand h1{
+      color:var(--primary);
+      font-size:30px;
+      line-height:1;
+      margin-bottom:6px;
+    }
+
+    .brand p{
+      font-size:14px;
+      font-weight:700;
+      color:#64748b;
+    }
+
+    .meta{
+      min-width:240px;
+      font-size:13px;
+      font-weight:700;
+      color:#111;
+    }
+
+    .meta div{
+      margin:5px 0;
+    }
+
+    .fill-line{
+      display:inline-block;
+      min-width:120px;
+      border-bottom:2px solid #111;
+      transform:translateY(-2px);
+    }
+
+    .hero-box{
+      background:linear-gradient(180deg,#f7f2e8 0%,#fbf8f2 100%);
+      border:1.5px solid #f0c67b;
+      border-radius:16px;
+      padding:16px 18px;
+      margin-bottom:18px;
+    }
+
+    .hero-box .topline{
+      color:#d98a00;
+      font-size:13px;
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .hero-title{
+      font-size:24px;
+      font-weight:900;
+      color:#1f2f3d;
+      margin-bottom:6px;
+    }
+
+    .hero-sub{
+      font-size:14px;
+      color:#66788a;
+      font-weight:600;
+    }
+
+    .section{
+      margin-top:18px;
+    }
+
+    .section-title{
+      background:linear-gradient(90deg,#dff0ea 0%,#edf8f4 100%);
+      border-left:5px solid var(--primary);
+      color:var(--primary);
+      font-size:14px;
+      font-weight:900;
+      text-transform:uppercase;
+      padding:9px 14px;
+      margin-bottom:12px;
+    }
+
+    .sum-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    .sum-card{
+      background:#fcfcfd;
+      border:1px solid #dde6ed;
+      border-radius:18px;
+      padding:16px;
+      min-height:235px;
+    }
+
+    .sum-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+      gap:10px;
+    }
+
+    .sum-badge{
+      display:inline-block;
+      background:#eef7f3;
+      color:var(--primary-dark);
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .sum-badge.sub{
+      background:#fff5f5;
+      color:#cc5050;
+    }
+
+    .sum-number{
+      color:#789;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .equation{
+      font-size:28px;
+      font-weight:900;
+      color:#1e2f3c;
+      margin-bottom:14px;
+    }
+
+    .visual-wrap{
+      background:#f9fbfc;
+      border:1px solid #e0e8ef;
+      border-radius:16px;
+      padding:12px;
+      min-height:110px;
+    }
+
+    .visual-label{
+      font-size:12px;
+      font-weight:800;
+      color:#708399;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .picture-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin:8px 0 12px;
+      min-height:38px;
+    }
+
+    .counter{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:21px;
+      background:#fff;
+      border:1px solid #dbe6ee;
+    }
+
+    .operator-line{
+      font-size:14px;
+      font-weight:900;
+      color:var(--accent);
+      margin:6px 0 2px;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+
+    .sub-row{
+      background:var(--pink);
+      border:1px dashed #f1b4b4;
+      border-radius:12px;
+      padding:10px;
+      margin-top:8px;
+    }
+
+    .sub-row .visual-label{
+      color:#c65d5d;
+      margin-bottom:6px;
+    }
+
+    .answer-box{
+      margin-top:14px;
+      background:#fffefb;
+      border:1px dashed #b7c6d3;
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    .answer-label{
+      font-size:13px;
+      font-weight:800;
+      color:#547089;
+      margin-bottom:8px;
+    }
+
+    .answer-line{
+      height:30px;
+      border-bottom:2px solid #263340;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:14px;
+    }
+
+    .tip-card{
+      background:#fff;
+      border:1px solid #e0e8ef;
+      border-radius:16px;
+      padding:14px;
+      text-align:center;
+    }
+
+    .tip-card h4{
+      color:#2b465c;
+      font-size:14px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .tip-card p{
+      color:#6b7a8c;
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    footer{
+      margin-top:22px;
+      border-top:1px solid #e4ebf2;
+      padding-top:10px;
+      text-align:center;
+      font-size:10px;
+      color:#96a3b5;
+    }
+
+    @media print{
+      body{
+        background:#fff;
+        padding:0;
+      }
+      .toolbar{
+        display:none;
+      }
+      .page{
+        width:100%;
+        min-height:auto;
+        box-shadow:none;
+        padding:12mm;
+      }
+    }
+
+    @media (max-width: 900px){
+      .page{
+        width:100%;
+        min-height:auto;
+      }
+      .sum-grid,
+      .mini-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="control-group">
+      <label for="operationSelect">Operation</label>
+      <select id="operationSelect">
+        <option value="mixed" selected>Mixed</option>
+        <option value="addition">Addition</option>
+        <option value="subtraction">Subtraction</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="levelSelect">Level</label>
+      <select id="levelSelect">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="pictureSelect">Pictures</label>
+      <select id="pictureSelect">
+        <option value="apples" selected>Apples</option>
+        <option value="stars">Stars</option>
+        <option value="hearts">Hearts</option>
+        <option value="smileys">Smileys</option>
+        <option value="balls">Balls</option>
+      </select>
+    </div>
+
+    <button class="btn btn-main" id="generateBtn">✨ New Maths Sheet</button>
+    <button class="btn btn-alt" id="refreshBtn">🔢 Refresh Sums</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+    <div class="status" id="statusMsg">🌟 Ready to generate maths practice</div>
+  </div>
+
+  <div class="page" id="worksheet"></div>
+
+  <script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png";
+
+    const pictureSets = {
+      apples: "🍎",
+      stars: "⭐",
+      hearts: "💛",
+      smileys: "🙂",
+      balls: "⚽"
+    };
+
+    const levels = {
+      easy: {
+        title: "Easy Pictorial Maths",
+        subtitle: "Simple picture sums for beginner counters",
+        add: { a:[1,4], b:[1,4] },
+        sub: { a:[3,7], b:[1,3] }
+      },
+      medium: {
+        title: "Medium Pictorial Maths",
+        subtitle: "Visual addition and subtraction with bigger numbers",
+        add: { a:[3,8], b:[2,7] },
+        sub: { a:[6,11], b:[2,6] }
+      },
+      hard: {
+        title: "Hard Pictorial Maths",
+        subtitle: "Challenge picture sums for confident learners",
+        add: { a:[6,12], b:[4,9] },
+        sub: { a:[10,18], b:[3,8] }
+      }
+    };
+
+    function rand(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function chooseOperation(requested, index){
+      if (requested === "addition" || requested === "subtraction") return requested;
+      return index % 2 === 0 ? "addition" : "subtraction";
+    }
+
+    function getRanges(level, op){
+      return op === "addition" ? levels[level].add : levels[level].sub;
+    }
+
+    function makeSum(level, op){
+      const ranges = getRanges(level, op);
+      let a = rand(ranges.a[0], ranges.a[1]);
+      let b = rand(ranges.b[0], ranges.b[1]);
+
+      if (op === "subtraction" && b >= a) {
+        b = Math.max(1, a - 1);
+      }
+
+      return {
+        op,
+        a,
+        b,
+        answer: op === "addition" ? a + b : a - b
+      };
+    }
+
+    function buildData(){
+      const level = document.getElementById("levelSelect").value;
+      const requestedOp = document.getElementById("operationSelect").value;
+      const pictureKey = document.getElementById("pictureSelect").value;
+
+      const sums = [];
+      for(let i = 0; i < 6; i++){
+        sums.push(makeSum(level, chooseOperation(requestedOp, i)));
+      }
+
+      return {
+        level,
+        requestedOp,
+        pictureKey,
+        picture: pictureSets[pictureKey],
+        title: levels[level].title,
+        subtitle: levels[level].subtitle,
+        sums
+      };
+    }
+
+    function pictureRow(symbol, count){
+      let html = '<div class="picture-row">';
+      for(let i = 0; i < count; i++){
+        html += '<span class="counter">' + symbol + '</span>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderSumCard(sum, index, symbol){
+      const sign = sum.op === "addition" ? "+" : "−";
+      const label = sum.op === "addition" ? "Addition" : "Subtraction";
+      const badgeClass = sum.op === "addition" ? "sum-badge" : "sum-badge sub";
+
+      let pictorialHtml = "";
+
+      if(sum.op === "addition"){
+        pictorialHtml = `
+          <div class="visual-wrap">
+            <div class="visual-label">First group</div>
+            ${pictureRow(symbol, sum.a)}
+            <div class="operator-line">Add ${sum.b} more</div>
+            <div class="visual-label">Second group</div>
+            ${pictureRow(symbol, sum.b)}
+          </div>
+        `;
+      } else {
+        pictorialHtml = `
+          <div class="visual-wrap">
+            <div class="visual-label">Start with</div>
+            ${pictureRow(symbol, sum.a)}
+            <div class="sub-row">
+              <div class="visual-label">Take away</div>
+              ${pictureRow(symbol, sum.b)}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="sum-card">
+          <div class="sum-top">
+            <span class="${badgeClass}">${label}</span>
+            <span class="sum-number">Sum ${index + 1}</span>
+          </div>
+          <div class="equation">${sum.a} ${sign} ${sum.b} = ___</div>
+          ${pictorialHtml}
+          <div class="answer-box">
+            <div class="answer-label">Write the answer</div>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function render(data){
+      const cards = data.sums.map((sum, index) => renderSumCard(sum, index, data.picture)).join("");
+
+      document.getElementById("worksheet").innerHTML = `
+        <div class="header">
+          <div class="brand">
+            <div class="logo-wrap">
+              <img src="${logoUrl}" alt="Salam Adventures Logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/72x72.png?text=SA';">
+            </div>
+            <div>
+              <h1>Salam Adventures</h1>
+              <p>Pictorial Addition & Subtraction Generator</p>
+            </div>
+          </div>
+          <div class="meta">
+            <div>Name: <span class="fill-line"></span></div>
+            <div>Date: <span class="fill-line"></span></div>
+            <div>Level: <span class="fill-line">${data.level}</span></div>
+          </div>
+        </div>
+
+        <div class="hero-box">
+          <div class="topline">⭐ Visual Maths Practice ⭐</div>
+          <div class="hero-title">${data.title}</div>
+          <div class="hero-sub">${data.subtitle} • Pictures: ${data.picture} • Mode: ${data.requestedOp}</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">🔢 Part 1: Count the Pictures and Solve</div>
+          <div class="sum-grid">${cards}</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">💡 Part 2: Maths Reminders</div>
+          <div class="mini-grid">
+            <div class="tip-card">
+              <h4>Addition</h4>
+              <p>Count the first group, then count the extra pictures and add them together.</p>
+            </div>
+            <div class="tip-card">
+              <h4>Subtraction</h4>
+              <p>Count the starting group, then count how many need to be taken away.</p>
+            </div>
+            <div class="tip-card">
+              <h4>Check Again</h4>
+              <p>Touch each picture once so you count carefully and do not miss any.</p>
+            </div>
+          </div>
+        </div>
+
+        <footer>Salam Adventures • Visual maths practice made simple and fun</footer>
+      `;
+    }
+
+    let current = null;
+
+    function flashStatus(text){
+      const el = document.getElementById("statusMsg");
+      el.textContent = text;
+      setTimeout(() => {
+        el.textContent = "🌟 Ready to generate maths practice";
+      }, 1800);
+    }
+
+    function generateSheet(){
+      current = buildData();
+      render(current);
+      flashStatus("✅ New pictorial maths sheet ready");
+    }
+
+    function refreshSums(){
+      current = buildData();
+      render(current);
+      flashStatus("🔢 Sums refreshed");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      generateSheet();
+      document.getElementById("generateBtn").addEventListener("click", generateSheet);
+      document.getElementById("refreshBtn").addEventListener("click", refreshSums);
+      document.getElementById("levelSelect").addEventListener("change", generateSheet);
+      document.getElementById("operationSelect").addEventListener("change", generateSheet);
+      document.getElementById("pictureSelect").addEventListener("change", generateSheet);
+    });
+  </script>
+</body>
+</html>
