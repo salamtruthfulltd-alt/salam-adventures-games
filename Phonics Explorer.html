@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Phonics Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --accent: #f59e0b;
+            --secondary: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #dcfce7 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .phonics-toolbar {
+            max-width: 1100px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 14px 28px;
+            border-radius: 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .btn-phonics {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-generate {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-generate:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .btn-sound {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-sound:hover { background: #d97706; transform: translateY(-2px); }
+
+        .btn-print-phonics {
+            background: var(--secondary);
+            color: white;
+        }
+        .btn-print-phonics:hover { background: #7c3aed; transform: translateY(-2px); }
+
+        .status-pill {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .phonics-worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 14mm 18mm;
+        }
+
+        .phonics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand-phonics {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #f0fdf4;
+        }
+
+        .salam-logo-phonics {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .title-phonics h1 {
+            color: var(--primary);
+            font-size: 32px;
+            margin: 0;
+        }
+        .title-phonics p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .student-area {
+            background: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 28px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .phonics-section {
+            margin: 28px 0 32px;
+        }
+
+        .section-badge {
+            background: #ecfdf5;
+            padding: 6px 18px;
+            border-left: 7px solid var(--primary);
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            border-radius: 0 30px 30px 0;
+            display: inline-block;
+        }
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        .sound-card {
+            background: #fefce8;
+            border-radius: 24px;
+            padding: 16px;
+            text-align: center;
+            border: 2px solid #fde68a;
+        }
+
+        .picture-hint {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .word-fragment {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 40px;
+            display: inline-block;
+            margin: 8px 0;
+        }
+
+        .missing-letter {
+            display: inline-block;
+            width: 45px;
+            border-bottom: 3px dashed #10b981;
+            margin: 0 6px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .rhyme-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .rhyme-card {
+            background: #e0f2fe;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .cvc-blocks {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .cvc-block {
+            background: #f3e8ff;
+            border-radius: 20px;
+            padding: 14px 20px;
+            text-align: center;
+            min-width: 110px;
+        }
+
+        .trace-line {
+            border-bottom: 2px solid #cbd5e1;
+            margin: 12px 0 20px;
+            height: 42px;
+            width: 100%;
+        }
+
+        .dotted-line {
+            border-bottom: 2px dashed #94a3b8;
+            margin: 8px 0;
+            height: 32px;
+        }
+
+        @media print {
+            .phonics-toolbar { display: none; }
+            body { background: white; padding: 0; }
+            .phonics-worksheet { box-shadow: none; padding: 15mm; width: 100%; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 35px;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phonics-toolbar">
+    <button class="btn-phonics btn-generate" id="freshPhonicsBtn">🎵 New Phonics Sheet</button>
+    <button class="btn-phonics btn-sound" id="refreshSoundsBtn">🔊 Refresh Sounds</button>
+    <button class="btn-phonics btn-print-phonics" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="status-pill" id="phonicsStatus">🔤 Salam Phonics · Ready</div>
+</div>
+
+<div class="phonics-worksheet" id="phonicsWorksheet">
+    <div style="text-align: center; padding: 60px;">Loading Salam Phonics Adventure...</div>
+</div>
+
+<script>
+    const beginningSounds = [
+        { emoji: "🐱", hint: "at", sound: "c" },
+        { emoji: "🐕", hint: "og", sound: "d" },
+        { emoji: "☀️", hint: "un", sound: "s" },
+        { emoji: "🐭", hint: "ouse", sound: "m" },
+        { emoji: "🐝", hint: "ee", sound: "b" },
+        { emoji: "🐸", hint: "rog", sound: "f" },
+        { emoji: "✈️", hint: "ane", sound: "p" },
+        { emoji: "🐢", hint: "urtle", sound: "t" }
+    ];
+
+    const rhymeFamilies = [
+        { base: "at", words: ["cat", "bat", "hat", "rat", "mat"] },
+        { base: "og", words: ["dog", "frog", "log", "hog"] },
+        { base: "ip", words: ["lip", "zip", "rip", "dip"] },
+        { base: "ake", words: ["cake", "lake", "make", "rake"] }
+    ];
+
+    const cvcWords = [
+        { word: "bug", segmented: "b - u - g", picture: "🐞" },
+        { word: "hat", segmented: "h - a - t", picture: "🧢" },
+        { word: "net", segmented: "n - e - t", picture: "🥅" },
+        { word: "pig", segmented: "p - i - g", picture: "🐷" }
+    ];
+
+    const digraphs = [
+        { digraph: "sh", examples: ["ship", "fish", "shell"], emoji: "🚢" },
+        { digraph: "ch", examples: ["chick", "lunch", "cheese"], emoji: "🐥" },
+        { digraph: "th", examples: ["thumb", "bath", "three"], emoji: "👍" }
+    ];
+
+    function shuffleArray(arr) {
+        let copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+    }
+
+    function randomSubset(arr, count) {
+        return shuffleArray(arr).slice(0, count);
+    }
+
+    function generatePhonicsData() {
+        return {
+            beginning: randomSubset(beginningSounds, 6),
+            rhymeFamily: shuffleArray(rhymeFamilies)[0],
+            cvcSet: randomSubset(cvcWords, 3),
+            digraphFeature: shuffleArray(digraphs)[0]
+        };
+    }
+
+    function renderPhonicsWorksheet(data) {
+        const container = document.getElementById('phonicsWorksheet');
+        
+        // Your logo from GitHub
+        const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+        
+        let beginningHtml = '';
+        data.beginning.forEach(item => {
+            beginningHtml += `
+                <div class="sound-card">
+                    <div class="picture-hint">${item.emoji}</div>
+                    <div class="word-fragment">
+                        <span class="missing-letter">___</span>${item.hint}
+                    </div>
+                    <div style="font-size:13px; margin-top:10px;">✏️ Write first letter: ______</div>
+                    <div style="font-size:11px; margin-top:6px; color:#94a3b8;">(${item.sound} sound)</div>
+                </div>
+            `;
+        });
+
+        const rhymeWords = shuffleArray(data.rhymeFamily.words);
+        let rhymeHtml = `
+            <div style="background:#fef9e3; border-radius:28px; padding:16px;">
+                <div style="font-size:20px; font-weight:bold;">🎈 Rhyme Time! Words ending with "${data.rhymeFamily.base}"</div>
+                <div class="rhyme-row">
+        `;
+        rhymeWords.slice(0, 4).forEach(word => {
+            rhymeHtml += `<div class="rhyme-card">🔊 ${word}</div>`;
+        });
+        rhymeHtml += `</div><div class="trace-line"></div>
+        <p>📝 Write 2 more rhyming words:</p>
+        <div class="dotted-line"></div><div class="dotted-line"></div>
+        </div>`;
+        
+        let cvcHtml = `<div class="cvc-blocks">`;
+        data.cvcSet.forEach(cvc => {
+            cvcHtml += `
+                <div class="cvc-block">
+                    <div style="font-size:38px;">${cvc.picture}</div>
+                    <div style="font-weight:bold; font-size:22px;">${cvc.word}</div>
+                    <div style="font-size:13px;">🔊 ${cvc.segmented}</div>
+                    <div class="dotted-line"></div>
+                </div>
+            `;
+        });
+        cvcHtml += `</div><div class="trace-line"></div>`;
+        
+        const dig = data.digraphFeature;
+        let digraphHtml = `
+            <div style="background:#e6f7ff; border-radius:28px; padding:18px;">
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                    <span style="font-size:48px;">${dig.emoji}</span>
+                    <span style="font-size:28px; font-weight:800; background:white; padding:4px 18px; border-radius:50px;">${dig.digraph}</span>
+                </div>
+                <p><strong>⭐ Two letters, one sound!</strong> Examples: ${dig.examples.join(', ')}</p>
+                <div style="display:flex; gap:15px; margin:15px 0; flex-wrap:wrap;">
+                    <div style="flex:1;">____ ip (${dig.digraph}ip)</div>
+                    <div style="flex:1;">____ oe (${dig.digraph}oe)</div>
+                    <div style="flex:1;">____ ark (${dig.digraph}ark)</div>
+                </div>
+                <div class="dotted-line"></div>
+            </div>
+        `;
+
+        const fullHtml = `
+            <div class="phonics-header">
+                <div class="brand-phonics">
+                    <div class="logo-circle">
+                        <img src="${logoUrl}" alt="Salam Adventures Logo" class="salam-logo-phonics" 
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'width:80px;height:80px;background:linear-gradient(135deg,#10b981,#059669);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:42px;font-weight:bold;\\'>س</div>'">
+                    </div>
+                    <div class="title-phonics">
+                        <h1>Salam Adventures</h1>
+                        <p>Phonics Explorer · Sounds & Blends Studio</p>
+                    </div>
+                </div>
+                <div class="student-area">
+                    🧙‍♂️ Explorer: ___________________ <br>
+                    📅 Date: ______________________
+                </div>
+            </div>
+
+            <div class="phonics-section">
+                <div class="section-badge">🎯 Part 1: Beginning Sounds</div>
+                <div class="sound-grid">${beginningHtml}</div>
+            </div>
+
+            <div class="phonics-section">
+                <div class="section-badge">🎵 Part 2: Rhyming Fun</div>
+                ${rhymeHtml}
+            </div>
+
+            <div class="phonics-section">
+                <div class="section-badge">🧩 Part 3: CVC Blending</div>
+                ${cvcHtml}
+            </div>
+
+            <div class="phonics-section">
+                <div class="section-badge">🔗 Part 4: Digraph Discovery</div>
+                ${digraphHtml}
+            </div>
+
+            <div class="phonics-section">
+                <div class="section-badge">✍️ Part 5: Sound Dictation</div>
+                <div style="display:flex; gap:20px; flex-wrap:wrap; margin:10px 0;">
+                    <div style="flex:1;"><strong>1.</strong> ____ ____ (/s/ sound)<div class="dotted-line"></div></div>
+                    <div style="flex:1;"><strong>2.</strong> ____ ____ (/sh/ sound)<div class="dotted-line"></div></div>
+                    <div style="flex:1;"><strong>3.</strong> ____ ____ (/a/ sound)<div class="dotted-line"></div></div>
+                </div>
+            </div>
+            
+            <footer>
+                🌟 Salam Adventures · Phonics mastery starts here 🌟
+            </footer>
+        `;
+        
+        container.innerHTML = fullHtml;
+    }
+
+    let currentData = null;
+    
+    function refreshFull() {
+        currentData = generatePhonicsData();
+        renderPhonicsWorksheet(currentData);
+        document.getElementById('phonicsStatus').innerHTML = "✅ New worksheet ready!";
+        setTimeout(() => {
+            document.getElementById('phonicsStatus').innerHTML = "🔤 Salam Phonics · Ready";
+        }, 2000);
+    }
+    
+    function refreshSounds() {
+        if (!currentData) refreshFull();
+        else {
+            currentData.beginning = randomSubset(beginningSounds, 6);
+            currentData.rhymeFamily = shuffleArray(rhymeFamilies)[0];
+            currentData.cvcSet = randomSubset(cvcWords, 3);
+            currentData.digraphFeature = shuffleArray(digraphs)[0];
+            renderPhonicsWorksheet(currentData);
+            document.getElementById('phonicsStatus').innerHTML = "🔊 Sounds refreshed!";
+            setTimeout(() => {
+                document.getElementById('phonicsStatus').innerHTML = "🌟 Salam Phonics ready";
+            }, 1800);
+        }
+    }
+    
+    window.addEventListener('DOMContentLoaded', () => {
+        refreshFull();
+        document.getElementById('freshPhonicsBtn').addEventListener('click', refreshFull);
+        document.getElementById('refreshSoundsBtn').addEventListener('click', refreshSounds);
+    });
+</script>
+</body>
+</html>
