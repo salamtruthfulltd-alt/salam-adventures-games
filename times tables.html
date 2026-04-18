@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Salam Adventures | Times Tables Generator</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:linear-gradient(135deg,#fef9c3,#dbeafe,#dcfce7);
+  padding:20px;
+}
+
+.wrap{
+  max-width:1100px;
+  margin:auto;
+}
+
+.panel,.sheet{
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+  margin-bottom:20px;
+}
+
+/* LOGO */
+.logo{
+  text-align:center;
+  margin-bottom:10px;
+}
+
+.logo img{
+  max-width:260px;
+  width:100%;
+}
+
+/* TITLE */
+h1{
+  text-align:center;
+  margin-bottom:10px;
+}
+
+/* CONTROLS */
+.controls{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px;
+}
+
+select{
+  padding:10px;
+  border-radius:10px;
+  border:2px solid #ddd;
+}
+
+/* BUTTONS */
+.btns{
+  margin-top:15px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+button{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.generate{background:#10b981;color:#fff;}
+.print{background:#3b82f6;color:#fff;}
+.clear{background:#f59e0b;color:#fff;}
+
+/* QUESTIONS */
+.questions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:20px;
+}
+
+.q{
+  border:2px solid #eee;
+  padding:15px;
+  border-radius:15px;
+}
+
+.group{
+  margin-bottom:5px;
+}
+
+.icons span{
+  font-size:18px;
+}
+
+.answer{
+  border-bottom:2px solid #000;
+  display:inline-block;
+  width:80px;
+}
+
+/* PRINT */
+@media(max-width:800px){
+  .questions{grid-template-columns:1fr;}
+}
+
+@media print{
+  .panel{display:none;}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<!-- CONTROL PANEL -->
+<div class="panel">
+
+  <div class="logo">
+    <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+  </div>
+
+  <h1>Times Tables Generator</h1>
+
+  <div class="controls">
+    <select id="level">
+      <option value="easy">Easy</option>
+      <option value="middle">Middle</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <select id="table">
+      <option value="mixed">Mixed Tables</option>
+      <option value="2">2 Times Table</option>
+      <option value="3">3 Times Table</option>
+      <option value="4">4 Times Table</option>
+      <option value="5">5 Times Table</option>
+      <option value="10">10 Times Table</option>
+    </select>
+
+    <select id="count">
+      <option value="6">6 Questions</option>
+      <option value="8" selected>8 Questions</option>
+      <option value="10">10 Questions</option>
+    </select>
+  </div>
+
+  <div class="btns">
+    <button class="generate" onclick="generate()">Generate</button>
+    <button class="print" onclick="window.print()">Print</button>
+    <button class="clear" onclick="generate()">Clear</button>
+  </div>
+
+</div>
+
+<!-- WORKSHEET -->
+<div class="sheet">
+
+  <div class="logo">
+    <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+  </div>
+
+  <h1>Times Tables Worksheet</h1>
+
+  <div id="questions" class="questions"></div>
+
+</div>
+
+</div>
+
+<script>
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function makeIcons(n){
+  let s="";
+  for(let i=0;i<n;i++){
+    s+="<span>●</span> ";
+  }
+  return s;
+}
+
+function generate(){
+  const table=document.getElementById("table").value;
+  const count=document.getElementById("count").value;
+
+  let html="";
+
+  for(let i=0;i<count;i++){
+    let groups,items;
+
+    if(table==="mixed"){
+      groups=rand(2,5);
+      items=rand(2,5);
+    }else{
+      items=parseInt(table);
+      groups=rand(2,5);
+    }
+
+    html+=`
+    <div class="q">
+      <b>Q${i+1}</b><br><br>
+
+      ${[...Array(groups)].map(()=>`
+        <div class="group">${makeIcons(items)}</div>
+      `).join("")}
+
+      <br>
+      ${groups} × ${items} = <span class="answer"></span>
+    </div>
+    `;
+  }
+
+  document.getElementById("questions").innerHTML=html;
+}
+
+generate();
+</script>
+
+</body>
+</html>
