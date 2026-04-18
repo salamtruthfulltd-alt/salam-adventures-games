@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attention & Focus Worksheets Generator | Full Page Find, Spot & Scan Activities</title>
+  <meta name="description" content="Create full-page printable attention and focus worksheets for kids. Generate find and circle, SEN-friendly spot the difference, and visual scanning tasks with large images on an A4 worksheet." />
+  <meta name="keywords" content="attention worksheets, focus worksheets, find and circle worksheets, spot the difference SEN, visual scanning worksheets, printable focus tasks, large picture worksheets, A4 worksheet generator, Salam Adventures" />
+  <meta name="author" content="Salam Adventures" />
+  <meta name="robots" content="index, follow" />
+  <style>
+    * { box-sizing: border-box; }
+
+    :root{
+      --blue1:#0ea5e9;
+      --blue2:#2563eb;
+      --ink:#1f2937;
+      --muted:#64748b;
+      --line:#cbd5e1;
+      --soft:#f4f8ff;
+      --panel:#ffffff;
+      --red:#ef4444;
+      --green:#10b981;
+      --orange:#f59e0b;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--soft);
+      color:var(--ink);
+    }
+
+    .app{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px;
+    }
+
+    .topbar{
+      background:linear-gradient(135deg,var(--blue1),var(--blue2));
+      color:#fff;
+      border-radius:24px;
+      padding:18px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      box-shadow:0 12px 26px rgba(37,99,235,0.18);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo img{
+      width:70px;
+      height:70px;
+      object-fit:contain;
+      background:#fff;
+      border-radius:14px;
+      padding:6px;
+      display:block;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.05;
+    }
+
+    .brand p{
+      margin:5px 0 0;
+      font-size:14px;
+      opacity:0.96;
+    }
+
+    .controls{
+      background:var(--panel);
+      border-radius:24px;
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow:0 10px 24px rgba(15,23,42,0.08);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:7px;
+      font-size:13px;
+      font-weight:700;
+      color:#334155;
+    }
+
+    select,input{
+      width:100%;
+      padding:12px 13px;
+      border-radius:12px;
+      border:2px solid var(--line);
+      font-size:15px;
+      background:#fff;
+    }
+
+    select:focus,input:focus{
+      outline:none;
+      border-color:var(--blue2);
+    }
+
+    .actions{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .primary{ background:var(--blue2); color:#fff; }
+    .print{ background:var(--orange); color:#fff; }
+    .new{ background:var(--green); color:#fff; }
+
+    .sheet{
+      width:210mm;
+      min-height:297mm;
+      margin:0 auto;
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 12px 28px rgba(15,23,42,0.10);
+      overflow:hidden;
+    }
+
+    .sheet-header{
+      padding:20px 22px 14px;
+      background:#f8fbff;
+      border-bottom:3px dashed #dbeafe;
+    }
+
+    .sheet-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .mini-brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--blue2);
+      font-size:15px;
+      font-weight:700;
+    }
+
+    .mini-brand img{
+      width:30px;
+      height:30px;
+      object-fit:contain;
+      display:block;
+    }
+
+    .badge{
+      background:var(--blue2);
+      color:#fff;
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .title{
+      margin:0;
+      font-size:34px;
+      color:#0f172a;
+    }
+
+    .subtitle{
+      margin:8px 0 0;
+      font-size:17px;
+      color:#475569;
+    }
+
+    .name-row{
+      margin-top:16px;
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      font-size:15px;
+    }
+
+    .line-fill{
+      display:inline-block;
+      min-width:180px;
+      height:20px;
+      border-bottom:2px solid #94a3b8;
+      vertical-align:bottom;
+    }
+
+    .worksheet-body{
+      padding:20px 22px 24px;
+    }
+
+    .instruction-box{
+      border:2px solid #dbeafe;
+      background:#f8fbff;
+      border-radius:16px;
+      padding:14px 16px;
+      margin-bottom:18px;
+      font-size:20px;
+      font-weight:700;
+      color:#1e3a8a;
+      text-align:center;
+    }
+
+    /* FIND & CIRCLE */
+    .find-grid{
+      display:grid;
+      gap:16px;
+      justify-items:center;
+      align-items:center;
+    }
+
+    .find-grid.easy{ grid-template-columns:repeat(4,1fr); }
+    .find-grid.medium{ grid-template-columns:repeat(5,1fr); }
+    .find-grid.hard{ grid-template-columns:repeat(6,1fr); }
+
+    .icon-card{
+      width:100%;
+      aspect-ratio:1 / 1;
+      border:2px solid #dbeafe;
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+      font-size:72px;
+      line-height:1;
+    }
+
+    .find-grid.medium .icon-card{ font-size:64px; }
+    .find-grid.hard .icon-card{ font-size:56px; }
+
+    /* VISUAL SCAN */
+    .scan-grid{
+      display:grid;
+      gap:14px;
+    }
+
+    .scan-grid.easy{ grid-template-columns:repeat(4,1fr); }
+    .scan-grid.medium{ grid-template-columns:repeat(5,1fr); }
+    .scan-grid.hard{ grid-template-columns:repeat(6,1fr); }
+
+    .scan-card{
+      aspect-ratio:1 / 1;
+      border:3px solid #111827;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:64px;
+      background:#fff;
+    }
+
+    .scan-grid.medium .scan-card{ font-size:56px; }
+    .scan-grid.hard .scan-card{ font-size:48px; }
+
+    /* SPOT THE DIFFERENCE */
+    .diff-wrap{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .diff-panel{
+      border:2px solid #dbeafe;
+      border-radius:18px;
+      padding:14px;
+      background:#fff;
+    }
+
+    .diff-label{
+      text-align:center;
+      font-size:18px;
+      font-weight:700;
+      color:#2563eb;
+      margin-bottom:12px;
+    }
+
+    .diff-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .diff-cell{
+      aspect-ratio:1 / 1;
+      border:2px solid #cbd5e1;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:56px;
+      background:#fff;
+    }
+
+    .diff-grid.hard .diff-cell{ font-size:48px; }
+    .diff-grid.easy .diff-cell{ font-size:64px; }
+
+    .footer-note{
+      margin-top:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    @media (max-width: 1100px){
+      .grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .sheet{
+        width:100%;
+        min-height:auto;
+      }
+    }
+
+    @media (max-width: 760px){
+      .grid{ grid-template-columns:1fr; }
+      .diff-wrap{ grid-template-columns:1fr; }
+      .find-grid.easy,
+      .find-grid.medium,
+      .find-grid.hard,
+      .scan-grid.easy,
+      .scan-grid.medium,
+      .scan-grid.hard{
+        grid-template-columns:repeat(3,1fr);
+      }
+      .title{ font-size:28px; }
+      .icon-card,.scan-card,.diff-cell{ font-size:42px !important; }
+    }
+
+    @page{
+      size:A4 portrait;
+      margin:10mm;
+    }
+
+    @media print{
+      body{
+        background:#fff;
+      }
+
+      .topbar,
+      .controls{
+        display:none !important;
+      }
+
+      .app{
+        max-width:none;
+        padding:0;
+      }
+
+      .sheet{
+        width:190mm;
+        min-height:277mm;
+        box-shadow:none;
+        border-radius:0;
+      }
+
+      .worksheet-body{
+        padding:16px 18px 20px;
+      }
+
+      *{
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+        </div>
+        <div>
+          <h1>Salam Adventures</h1>
+          <p>Attention & Focus Worksheets Generator</p>
+        </div>
+      </div>
+      <div style="font-size:14px;font-weight:700;">Full Page A4 Activities</div>
+    </div>
+
+    <div class="controls">
+      <div class="grid">
+        <div class="field">
+          <label for="type">Worksheet Type</label>
+          <select id="type">
+            <option value="find">Find and Circle</option>
+            <option value="difference">Spot the Difference</option>
+            <option value="scan">Visual Scanning</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="difficulty">Difficulty</label>
+          <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="titleInput">Worksheet Title</label>
+          <input id="titleInput" type="text" value="Attention and Focus Practice">
+        </div>
+
+        <div class="field">
+          <label for="targetInput">Target Image</label>
+          <input id="targetInput" type="text" value="⭐">
+        </div>
+
+        <div class="field">
+          <label for="theme">Theme</label>
+          <select id="theme">
+            <option value="mixed" selected>Mixed</option>
+            <option value="animals">Animals</option>
+            <option value="food">Food</option>
+            <option value="transport">Transport</option>
+            <option value="nature">Nature</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="generate()">Generate Worksheet</button>
+        <button class="print" onclick="window.print()">Print Worksheet</button>
+        <button class="new" onclick="generate()">New Set</button>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-header">
+        <div class="sheet-top">
+          <div class="mini-brand">
+            <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+            <span>Salam Adventures</span>
+          </div>
+          <div id="badge" class="badge">Find and Circle</div>
+        </div>
+
+        <h2 id="title" class="title">Attention and Focus Practice</h2>
+        <p id="subtitle" class="subtitle">Look carefully and complete the task.</p>
+
+        <div class="name-row">
+          <div>Name: <span class="line-fill"></span></div>
+          <div>Date: <span class="line-fill" style="min-width:130px;"></span></div>
+        </div>
+      </div>
+
+      <div class="worksheet-body">
+        <div id="instructionBox" class="instruction-box">Find and circle all ⭐</div>
+        <div id="content"></div>
+        <div class="footer-note">Salam Adventures • Large A4 attention and focus worksheets for kids</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const iconSets = {
+      mixed: ["⭐","🍎","🐶","🚗","🌈","⚽","🍩","🦋","🎈","🍓","🐱","🌙","🚌","🐸","🍋","☁️","🦄","🍪"],
+      animals: ["🐶","🐱","🐸","🐻","🦋","🐰","🐼","🦁","🐵","🐥","🐢","🦄"],
+      food: ["🍎","🍓","🍋","🍪","🍩","🍉","🍌","🥕","🍒","🧁","🍐","🍊"],
+      transport: ["🚗","🚌","🚕","🚙","🚲","✈️","🚂","🚜","🚓","🛵","🚤","🚚"],
+      nature: ["⭐","🌙","☁️","🌈","🌸","🌻","🍃","🌳","🌞","🌼","⛰️","🌊"]
+    };
+
+    function rand(arr){
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function shuffle(arr){
+      const copy = [...arr];
+      for(let i = copy.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getIcons(theme){
+      return iconSets[theme] || iconSets.mixed;
+    }
+
+    function getSubtitle(type){
+      if(type === "find") return "Look carefully and circle all of the matching pictures.";
+      if(type === "difference") return "Look carefully and find the pictures that are different.";
+      return "Scan across the page and circle the matching pictures.";
+    }
+
+    function getBadge(type){
+      if(type === "find") return "Find and Circle";
+      if(type === "difference") return "Spot the Difference";
+      return "Visual Scanning";
+    }
+
+    function ensureTargetInSet(target, icons){
+      return icons.includes(target) ? icons : [target, ...icons];
+    }
+
+    function generateFind(diff, target, icons){
+      let total;
+      if(diff === "easy") total = 12;
+      else if(diff === "medium") total = 20;
+      else total = 24;
+
+      let targetCount;
+      if(diff === "easy") targetCount = 4;
+      else if(diff === "medium") targetCount = 5;
+      else targetCount = 6;
+
+      const items = [];
+      for(let i = 0; i < targetCount; i++) items.push(target);
+
+      while(items.length < total){
+        let pick = rand(icons);
+        if(pick === target && Math.random() < 0.7){
+          pick = rand(icons.filter(x => x !== target));
+        }
+        items.push(pick);
+      }
+
+      const shuffled = shuffle(items);
+      let html = `<div class="find-grid ${diff}">`;
+      shuffled.forEach(item => {
+        html += `<div class="icon-card">${item}</div>`;
+      });
+      html += `</div>`;
+      return html;
+    }
+
+    function generateScan(diff, target, icons){
+      let total;
+      if(diff === "easy") total = 16;
+      else if(diff === "medium") total = 25;
+      else total = 30;
+
+      let targetCount;
+      if(diff === "easy") targetCount = 5;
+      else if(diff === "medium") targetCount = 6;
+      else targetCount = 7;
+
+      const items = [];
+      for(let i = 0; i < targetCount; i++) items.push(target);
+
+      while(items.length < total){
+        let pick = rand(icons);
+        if(pick === target && Math.random() < 0.75){
+          pick = rand(icons.filter(x => x !== target));
+        }
+        items.push(pick);
+      }
+
+      const shuffled = shuffle(items);
+      let html = `<div class="scan-grid ${diff}">`;
+      shuffled.forEach(item => {
+        html += `<div class="scan-card">${item}</div>`;
+      });
+      html += `</div>`;
+      return html;
+    }
+
+    function generateDifference(diff, icons){
+      let total;
+      let differences;
+      if(diff === "easy"){
+        total = 6;
+        differences = 2;
+      } else if(diff === "medium"){
+        total = 9;
+        differences = 3;
+      } else {
+        total = 9;
+        differences = 4;
+      }
+
+      const left = [];
+      for(let i = 0; i < total; i++){
+        left.push(rand(icons));
+      }
+
+      const right = [...left];
+      const positions = shuffle([...Array(total).keys()]).slice(0, differences);
+
+      positions.forEach(index => {
+        let replacement = rand(icons.filter(x => x !== right[index]));
+        right[index] = replacement;
+      });
+
+      function renderPanel(items, label){
+        let html = `<div class="diff-panel"><div class="diff-label">${label}</div><div class="diff-grid ${diff}">`;
+        items.forEach(item => {
+          html += `<div class="diff-cell">${item}</div>`;
+        });
+        html += `</div></div>`;
+        return html;
+      }
+
+      return `<div class="diff-wrap">${renderPanel(left, "Picture A")}${renderPanel(right, "Picture B")}</div>`;
+    }
+
+    function generate(){
+      const type = document.getElementById("type").value;
+      const diff = document.getElementById("difficulty").value;
+      const title = document.getElementById("titleInput").value.trim() || "Attention and Focus Practice";
+      const target = document.getElementById("targetInput").value.trim() || "⭐";
+      const theme = document.getElementById("theme").value;
+
+      let icons = getIcons(theme);
+      icons = ensureTargetInSet(target, icons);
+
+      document.getElementById("title").textContent = title;
+      document.getElementById("subtitle").textContent = getSubtitle(type);
+      document.getElementById("badge").textContent = getBadge(type);
+
+      const instructionBox = document.getElementById("instructionBox");
+      const content = document.getElementById("content");
+
+      if(type === "find"){
+        instructionBox.textContent = `Find and circle all ${target}`;
+        content.innerHTML = generateFind(diff, target, icons);
+      } else if(type === "difference"){
+        const diffText = diff === "easy" ? "2" : diff === "medium" ? "3" : "4";
+        instructionBox.textContent = `Look at both pictures. Find the ${diffText} differences.`;
+        content.innerHTML = generateDifference(diff, icons);
+      } else {
+        instructionBox.textContent = `Scan the page and circle every ${target}`;
+        content.innerHTML = generateScan(diff, target, icons);
+      }
+    }
+
+    generate();
+  </script>
+</body>
+</html>
