@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salam Adventures | Fine Motor Tracing Generator - Lines, Shapes & Patterns</title>
+  <meta name="description" content="Free fine motor tracing worksheet generator for kids. Create printable tracing pages with thick lines, clear direction arrows, shapes, patterns, zig-zags, curves and straight lines." />
+  <meta name="keywords" content="fine motor tracing generator, tracing worksheets, pre writing worksheets, line tracing, shape tracing, pattern tracing, nursery tracing sheets, SEN tracing worksheets, Salam Adventures" />
+  <meta name="author" content="Salam Adventures" />
+  <meta name="robots" content="index, follow" />
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f8ff;
+      color: #1f2937;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #fff;
+      border-radius: 22px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 14px;
+      padding: 5px;
+      display: block;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.05;
+    }
+
+    .brand-text p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      opacity: 0.96;
+    }
+
+    .controls {
+      background: #fff;
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      color: #334155;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    .field select:focus,
+    .field input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary { background: #2563eb; color: #fff; }
+    .print { background: #f59e0b; color: #fff; }
+    .new { background: #10b981; color: #fff; }
+
+    .sheet {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    .sheet-header {
+      padding: 22px;
+      border-bottom: 3px dashed #dbeafe;
+      background: #f8fbff;
+    }
+
+    .sheet-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mini-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: #2563eb;
+      font-size: 15px;
+    }
+
+    .mini-brand img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .level-badge {
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .easy { background: #10b981; }
+    .middle { background: #f59e0b; }
+    .hard { background: #ef4444; }
+
+    .sheet-title {
+      margin: 0;
+      font-size: 32px;
+      color: #0f172a;
+    }
+
+    .sheet-sub {
+      margin: 8px 0 0;
+      color: #475569;
+      font-size: 16px;
+    }
+
+    .name-row {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 15px;
+    }
+
+    .line-fill {
+      display: inline-block;
+      min-width: 180px;
+      height: 20px;
+      border-bottom: 2px solid #94a3b8;
+      vertical-align: bottom;
+    }
+
+    .worksheet-area {
+      padding: 18px;
+    }
+
+    .trace-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .trace-card {
+      border: 2px solid #dbeafe;
+      border-radius: 18px;
+      background: #fff;
+      padding: 14px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .trace-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    .trace-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #ffffff;
+      border-radius: 14px;
+    }
+
+    .footer-note {
+      padding: 0 18px 22px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .arrow-label {
+      font-size: 16px;
+      font-weight: 700;
+      fill: #ef4444;
+    }
+
+    .guide-dot {
+      fill: #93c5fd;
+    }
+
+    .trace-stroke {
+      stroke: #111827;
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      stroke-dasharray: 16 12;
+    }
+
+    .trace-stroke-thin {
+      stroke: #111827;
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      stroke-dasharray: 14 10;
+    }
+
+    .pattern-shape {
+      stroke: #111827;
+      stroke-width: 7;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 12 10;
+    }
+
+    @media (max-width: 920px) {
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sheet-title {
+        font-size: 28px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .topbar,
+      .controls {
+        display: none !important;
+      }
+
+      .app {
+        max-width: 100%;
+        padding: 0;
+      }
+
+      .sheet {
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+        </div>
+        <div class="brand-text">
+          <h1>Salam Adventures</h1>
+          <p>Fine Motor Tracing Generator</p>
+        </div>
+      </div>
+      <div style="font-size:14px;font-weight:700;">Lines, Shapes & Patterns</div>
+    </div>
+
+    <div class="controls">
+      <div class="controls-grid">
+        <div class="field">
+          <label for="level">Level</label>
+          <select id="level">
+            <option value="easy">Easy</option>
+            <option value="middle">Middle</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="worksheetType">Worksheet Type</label>
+          <select id="worksheetType">
+            <option value="mixed">Mixed</option>
+            <option value="lines">Lines</option>
+            <option value="shapes">Shapes</option>
+            <option value="patterns">Patterns</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="rows">Activities</label>
+          <select id="rows">
+            <option value="4">4</option>
+            <option value="5" selected>5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="titleInput">Worksheet Title</label>
+          <input id="titleInput" type="text" value="Fine Motor Tracing Practice">
+        </div>
+
+        <div class="field">
+          <label for="subtitleInput">Instructions</label>
+          <input id="subtitleInput" type="text" value="Trace the thick lines and follow the arrows.">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="generateWorksheet()">Generate Worksheet</button>
+        <button class="print" onclick="window.print()">Print Worksheet</button>
+        <button class="new" onclick="generateWorksheet()">New Set</button>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-header">
+        <div class="sheet-top">
+          <div class="mini-brand">
+            <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+            <span>Salam Adventures</span>
+          </div>
+          <div id="levelBadge" class="level-badge easy">Easy</div>
+        </div>
+
+        <h2 id="sheetTitle" class="sheet-title">Fine Motor Tracing Practice</h2>
+        <p id="sheetSub" class="sheet-sub">Trace the thick lines and follow the arrows.</p>
+
+        <div class="name-row">
+          <div>Name: <span class="line-fill"></span></div>
+          <div>Date: <span class="line-fill" style="min-width:130px;"></span></div>
+        </div>
+      </div>
+
+      <div class="worksheet-area">
+        <div id="traceGrid" class="trace-grid"></div>
+      </div>
+
+      <div class="footer-note">
+        Salam Adventures • Fine motor tracing practice with thick lines and clear direction arrows.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const svgWidth = 980;
+    const svgHeight = 150;
+
+    function randItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function updateBadge(level) {
+      const badge = document.getElementById("levelBadge");
+      badge.className = "level-badge";
+      if (level === "easy") {
+        badge.classList.add("easy");
+        badge.textContent = "Easy";
+      } else if (level === "middle") {
+        badge.classList.add("middle");
+        badge.textContent = "Middle";
+      } else {
+        badge.classList.add("hard");
+        badge.textContent = "Hard";
+      }
+    }
+
+    function svgWrap(title, inner, height = svgHeight) {
+      return `
+        <div class="trace-card">
+          <div class="trace-title">${title}</div>
+          <svg class="trace-svg" viewBox="0 0 ${svgWidth} ${height}" xmlns="http://www.w3.org/2000/svg" aria-label="${title}">
+            <defs>
+              <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                <path d="M0,0 L12,6 L0,12 z" fill="#ef4444"></path>
+              </marker>
+            </defs>
+            ${inner}
+          </svg>
+        </div>
+      `;
+    }
+
+    function startArrow(x1, y1, x2, y2, labelX, labelY) {
+      return `
+        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="5" marker-end="url(#arrowHead)"></line>
+        <text x="${labelX}" y="${labelY}" class="arrow-label">Start</text>
+      `;
+    }
+
+    function endDots(points) {
+      return points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="5" class="guide-dot"></circle>`).join("");
+    }
+
+    function straightLine(level) {
+      let y = 82;
+      let segments = {
+        easy: "M110 82 L900 82",
+        middle: "M90 82 L930 82",
+        hard: "M70 82 L950 82"
+      };
+      return svgWrap(
+        "Trace the straight line",
+        `
+          ${startArrow(42, y, 92, y, 20, 70)}
+          <path d="${segments[level]}" class="trace-stroke"></path>
+          ${endDots([{x:110,y:y},{x:900,y:y}])}
+        `
+      );
+    }
+
+    function zigzagLine(level) {
+      let d = "";
+      if (level === "easy") {
+        d = "M110 88 L220 40 L330 88 L440 40 L550 88 L660 40 L770 88 L880 40";
+      } else if (level === "middle") {
+        d = "M100 92 L180 34 L260 92 L340 34 L420 92 L500 34 L580 92 L660 34 L740 92 L820 34 L900 92";
+      } else {
+        d = "M90 96 L150 26 L210 96 L270 26 L330 96 L390 26 L450 96 L510 26 L570 96 L630 26 L690 96 L750 26 L810 96 L870 26 L930 96";
+      }
+
+      return svgWrap(
+        "Trace the zig-zag line",
+        `
+          ${startArrow(40, 96, 92, 96, 18, 78)}
+          <path d="${d}" class="trace-stroke"></path>
+        `
+      );
+    }
+
+    function curvedLine(level) {
+      let d = "";
+      if (level === "easy") {
+        d = "M110 78 C220 20, 340 20, 450 78 S680 136, 860 78";
+      } else if (level === "middle") {
+        d = "M90 78 C180 10, 280 10, 370 78 S560 146, 650 78 S840 10, 930 78";
+      } else {
+        d = "M80 78 C150 10, 220 10, 290 78 S430 146, 500 78 S640 10, 710 78 S850 146, 940 78";
+      }
+
+      return svgWrap(
+        "Trace the curved line",
+        `
+          ${startArrow(28, 78, 76, 78, 10, 60)}
+          <path d="${d}" class="trace-stroke"></path>
+        `
+      );
+    }
+
+    function circleShape(level) {
+      let r = level === "easy" ? 44 : level === "middle" ? 38 : 32;
+      let centers = level === "easy"
+        ? [200, 400, 600, 800]
+        : level === "middle"
+        ? [160, 320, 480, 640, 800]
+        : [130, 250, 370, 490, 610, 730, 850];
+
+      return svgWrap(
+        "Trace the circles",
+        `
+          ${startArrow(58, 75, 110, 75, 22, 58)}
+          ${centers.map(cx => `<circle cx="${cx}" cy="75" r="${r}" class="pattern-shape"></circle>`).join("")}
+        `
+      );
+    }
+
+    function squareShape(level) {
+      const size = level === "easy" ? 82 : level === "middle" ? 68 : 56;
+      const starts = level === "easy"
+        ? [150, 360, 570, 780]
+        : level === "middle"
+        ? [110, 270, 430, 590, 750]
+        : [80, 200, 320, 440, 560, 680, 800];
+
+      return svgWrap(
+        "Trace the squares",
+        `
+          ${startArrow(28, 50, 74, 50, 8, 36)}
+          ${starts.map(x => `<rect x="${x}" y="${75 - size/2}" width="${size}" height="${size}" rx="10" ry="10" class="pattern-shape"></rect>`).join("")}
+        `
+      );
+    }
+
+    function triangleShape(level) {
+      const sets = level === "easy"
+        ? [150, 360, 570, 780]
+        : level === "middle"
+        ? [120, 280, 440, 600, 760]
+        : [90, 210, 330, 450, 570, 690, 810];
+
+      const size = level === "easy" ? 90 : level === "middle" ? 75 : 60;
+
+      return svgWrap(
+        "Trace the triangles",
+        `
+          ${startArrow(25, 95, 82, 95, 8, 80)}
+          ${sets.map(x => {
+            const y = 102;
+            return `<path d="M ${x} ${y} L ${x + size/2} ${y - size} L ${x + size} ${y} Z" class="pattern-shape"></path>`;
+          }).join("")}
+        `
+      );
+    }
+
+    function patternLoops(level) {
+      let d = "";
+      if (level === "easy") {
+        d = "M110 90 C145 20, 185 20, 220 90 C255 160, 295 160, 330 90 C365 20, 405 20, 440 90 C475 160, 515 160, 550 90 C585 20, 625 20, 660 90 C695 160, 735 160, 770 90 C805 20, 845 20, 880 90";
+      } else if (level === "middle") {
+        d = "M90 90 C120 20, 150 20, 180 90 C210 160, 240 160, 270 90 C300 20, 330 20, 360 90 C390 160, 420 160, 450 90 C480 20, 510 20, 540 90 C570 160, 600 160, 630 90 C660 20, 690 20, 720 90 C750 160, 780 160, 810 90 C840 20, 870 20, 900 90";
+      } else {
+        d = "M80 90 C105 20, 130 20, 155 90 C180 160, 205 160, 230 90 C255 20, 280 20, 305 90 C330 160, 355 160, 380 90 C405 20, 430 20, 455 90 C480 160, 505 160, 530 90 C555 20, 580 20, 605 90 C630 160, 655 160, 680 90 C705 20, 730 20, 755 90 C780 160, 805 160, 830 90 C855 20, 880 20, 905 90";
+      }
+
+      return svgWrap(
+        "Trace the loop pattern",
+        `
+          ${startArrow(28, 90, 76, 90, 8, 72)}
+          <path d="${d}" class="trace-stroke-thin"></path>
+        `
+      );
+    }
+
+    function patternWaves(level) {
+      let d = "";
+      if (level === "easy") {
+        d = "M100 78 Q150 28 200 78 T300 78 T400 78 T500 78 T600 78 T700 78 T800 78 T900 78";
+      } else if (level === "middle") {
+        d = "M80 78 Q120 28 160 78 T240 78 T320 78 T400 78 T480 78 T560 78 T640 78 T720 78 T800 78 T880 78";
+      } else {
+        d = "M70 78 Q105 28 140 78 T210 78 T280 78 T350 78 T420 78 T490 78 T560 78 T630 78 T700 78 T770 78 T840 78 T910 78";
+      }
+
+      return svgWrap(
+        "Trace the wave pattern",
+        `
+          ${startArrow(18, 78, 60, 78, 4, 60)}
+          <path d="${d}" class="trace-stroke"></path>
+        `
+      );
+    }
+
+    function patternSteps(level) {
+      let d = "";
+      if (level === "easy") {
+        d = "M120 100 L120 55 L210 55 L210 100 L300 100 L300 55 L390 55 L390 100 L480 100 L480 55 L570 55 L570 100 L660 100 L660 55 L750 55 L750 100 L840 100";
+      } else if (level === "middle") {
+        d = "M90 104 L90 48 L165 48 L165 104 L240 104 L240 48 L315 48 L315 104 L390 104 L390 48 L465 48 L465 104 L540 104 L540 48 L615 48 L615 104 L690 104 L690 48 L765 48 L765 104 L840 104 L840 48 L915 48";
+      } else {
+        d = "M80 106 L80 42 L140 42 L140 106 L200 106 L200 42 L260 42 L260 106 L320 106 L320 42 L380 42 L380 106 L440 106 L440 42 L500 42 L500 106 L560 106 L560 42 L620 42 L620 106 L680 106 L680 42 L740 42 L740 106 L800 106 L800 42 L860 42 L860 106 L920 106";
+      }
+
+      return svgWrap(
+        "Trace the step pattern",
+        `
+          ${startArrow(28, 106, 70, 106, 10, 90)}
+          <path d="${d}" class="trace-stroke-thin"></path>
+        `
+      );
+    }
+
+    function getLineChoices(level) {
+      return [straightLine(level), zigzagLine(level), curvedLine(level)];
+    }
+
+    function getShapeChoices(level) {
+      return [circleShape(level), squareShape(level), triangleShape(level)];
+    }
+
+    function getPatternChoices(level) {
+      return [patternLoops(level), patternWaves(level), patternSteps(level)];
+    }
+
+    function buildMixed(level, rows) {
+      const lineChoices = getLineChoices(level);
+      const shapeChoices = getShapeChoices(level);
+      const patternChoices = getPatternChoices(level);
+      const pool = [...lineChoices, ...shapeChoices, ...patternChoices];
+      const results = [];
+
+      while (results.length < rows) {
+        results.push(pool[results.length % pool.length]);
+      }
+
+      return shuffle(results).slice(0, rows);
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function buildType(type, level, rows) {
+      let choices = [];
+      if (type === "lines") choices = getLineChoices(level);
+      else if (type === "shapes") choices = getShapeChoices(level);
+      else if (type === "patterns") choices = getPatternChoices(level);
+      else return buildMixed(level, rows);
+
+      const out = [];
+      while (out.length < rows) {
+        out.push(choices[out.length % choices.length]);
+      }
+      return shuffle(out).slice(0, rows);
+    }
+
+    function generateWorksheet() {
+      const level = document.getElementById("level").value;
+      const worksheetType = document.getElementById("worksheetType").value;
+      const rows = parseInt(document.getElementById("rows").value, 10);
+      const title = document.getElementById("titleInput").value.trim() || "Fine Motor Tracing Practice";
+      const subtitle = document.getElementById("subtitleInput").value.trim() || "Trace the thick lines and follow the arrows.";
+
+      document.getElementById("sheetTitle").textContent = title;
+      document.getElementById("sheetSub").textContent = subtitle;
+      updateBadge(level);
+
+      const grid = document.getElementById("traceGrid");
+      grid.innerHTML = buildType(worksheetType, level, rows).join("");
+    }
+
+    generateWorksheet();
+  </script>
+</body>
+</html>
