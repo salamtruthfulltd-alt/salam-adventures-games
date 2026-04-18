@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Now / Next Board Generator - Visual Routine Cards & First Then Boards | Easy, Middle & Hard Levels</title>
+    <meta name="description" content="Free printable Now/Next board generator with visual routine cards. Perfect for SEN support, autism transitions, behavior management, and daily routines. Create First → Then boards for classroom and home use.">
+    <meta name="keywords" content="now next board, first then board, visual routine cards, behavior management, autism transitions, SEN support, visual schedule, daily routine cards, Salam Adventures, PECS, visual supports, special education">
+    <meta name="author" content="Salam Adventures">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Salam Adventures | Now / Next Board Generator - Visual Routine Cards">
+    <meta property="og:description" content="Free printable Now/Next board generator with visual routine cards. Perfect for SEN support, autism transitions, and behavior management.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --now-color: #3b82f6;
+            --next-color: #f59e0b;
+            --easy: #22c55e;
+            --middle: #f97316;
+            --hard: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #dcfce7 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 28px;
+            border-radius: 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-easy { background: var(--easy); color: white; }
+        .btn-easy:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-middle { background: var(--middle); color: white; }
+        .btn-middle:hover { background: #ea580c; transform: translateY(-2px); }
+        .btn-hard { background: var(--hard); color: white; }
+        .btn-hard:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-print { background: var(--primary); color: white; }
+        .btn-print:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .status-pill {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .level-badge {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .level-tag {
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+        .level-easy { background: var(--easy); }
+        .level-middle { background: var(--middle); }
+        .level-hard { background: var(--hard); }
+
+        .worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 15mm 18mm;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981, #059669);
+            overflow: hidden;
+        }
+
+        .salam-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-fallback {
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .title h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin: 0;
+        }
+        .title p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .student-info {
+            background: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 28px;
+            font-size: 12px;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        /* Now/Next Board Styles */
+        .board-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .board-card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            page-break-inside: avoid;
+        }
+
+        .board-title {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .now-next-board {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .now-section {
+            flex: 1;
+            min-width: 200px;
+            background: #eff6ff;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid var(--now-color);
+        }
+
+        .next-section {
+            flex: 1;
+            min-width: 200px;
+            background: #fffbeb;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid var(--next-color);
+        }
+
+        .section-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .now-header { color: var(--now-color); }
+        .next-header { color: var(--next-color); }
+
+        .visual-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .visual-emoji {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .visual-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .visual-desc {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .arrow-icon {
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            color: #9ca3af;
+        }
+
+        .routine-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .routine-card {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .routine-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .routine-emoji {
+            font-size: 48px;
+            display: block;
+        }
+
+        .routine-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .instruction-box {
+            background: #e0f2fe;
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .instruction-text {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0284c7;
+        }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .worksheet { box-shadow: none; padding: 15mm; width: 100%; }
+            .board-card { break-inside: avoid; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 30px;
+            padding-top: 12px;
+        }
+
+        .sen-tip {
+            background: #fef3c7;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #92400e;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn btn-easy" id="easyBtn">🌱 Easy Level (Simple Routines)</button>
+    <button class="btn btn-middle" id="middleBtn">⭐ Middle Level (Daily Routines)</button>
+    <button class="btn btn-hard" id="hardBtn">🔥 Hard Level (Full Day Schedule)</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="status-pill" id="statusMsg">📋 Salam Now/Next · Ready</div>
+</div>
+
+<div class="worksheet" id="worksheetContainer">
+    <div style="text-align: center; padding: 60px;">Loading Salam Adventures Now/Next Board...</div>
+</div>
+
+<script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+    
+    // Easy Level - Simple routine cards
+    const easyRoutines = [
+        { emoji: "✏️", name: "Work", desc: "Complete your task" },
+        { emoji: "🎮", name: "Play", desc: "Free time / games" },
+        { emoji: "🍎", name: "Snack", desc: "Have a healthy snack" },
+        { emoji: "📚", name: "Read", desc: "Reading time" },
+        { emoji: "🧹", name: "Tidy Up", desc: "Clean your space" },
+        { emoji: "😴", name: "Rest", desc: "Take a break" }
+    ];
+    
+    // Middle Level - Daily routines
+    const middleRoutines = [
+        { emoji: "🌅", name: "Wake Up", desc: "Get out of bed" },
+        { emoji: "🪥", name: "Brush Teeth", desc: "Oral hygiene" },
+        { emoji: "🍳", name: "Breakfast", desc: "Morning meal" },
+        { emoji: "📖", name: "Learning", desc: "School / study time" },
+        { emoji: "🏃", name: "Exercise", desc: "Physical activity" },
+        { emoji: "🍽️", name: "Lunch", desc: "Midday meal" },
+        { emoji: "🎨", name: "Creative", desc: "Art / craft time" },
+        { emoji: "🛁", name: "Bath", desc: "Bath or shower" },
+        { emoji: "📺", name: "Screen Time", desc: "TV / tablet time" },
+        { emoji: "📖", name: "Story Time", desc: "Read a book" },
+        { emoji: "😴", name: "Bedtime", desc: "Go to sleep" }
+    ];
+    
+    // Hard Level - Full day schedule with rewards
+    const hardRoutines = [
+        { emoji: "🌅", name: "Morning Routine", desc: "Wake up, wash, dress" },
+        { emoji: "🥣", name: "Breakfast", desc: "Eat healthy meal" },
+        { emoji: "📚", name: "Morning Work", desc: "Academic tasks" },
+        { emoji: "🏃", name: "Movement Break", desc: "Stretch, walk, exercise" },
+        { emoji: "🎓", name: "Lesson Time", desc: "Focused learning" },
+        { emoji: "🍎", name: "Snack Break", desc: "Quick energy boost" },
+        { emoji: "🎨", name: "Creative Time", desc: "Art, music, building" },
+        { emoji: "🍽️", name: "Lunch", desc: "Main meal" },
+        { emoji: "😴", name: "Quiet Time", desc: "Rest or calm activity" },
+        { emoji: "📝", name: "Afternoon Work", desc: "Complete tasks" },
+        { emoji: "🧹", name: "Tidy Up", desc: "Clean workspace" },
+        { emoji: "⭐", name: "Reward Time", desc: "Choice of fun activity" },
+        { emoji: "🛁", name: "Evening Routine", desc: "Bath, get ready" },
+        { emoji: "📖", name: "Bedtime Story", desc: "Read together" },
+        { emoji: "😴", name: "Sleep", desc: "Rest for tomorrow" }
+    ];
+    
+    function generateEasyBoards() {
+        const boards = [];
+        const pairs = [
+            { now: "✏️ Work", next: "🎮 Play" },
+            { now: "🍎 Snack", next: "📚 Read" },
+            { now: "🧹 Tidy Up", next: "😴 Rest" },
+            { now: "📚 Read", next: "✏️ Work" },
+            { now: "🎮 Play", next: "🍎 Snack" },
+            { now: "😴 Rest", next: "🧹 Tidy Up" }
+        ];
+        return pairs.slice(0, 4);
+    }
+    
+    function generateMiddleBoards() {
+        const boards = [];
+        const shuffled = [...middleRoutines].sort(() => 0.5 - Math.random());
+        for (let i = 0; i < 4; i++) {
+            if (i * 2 + 1 < shuffled.length) {
+                boards.push({
+                    now: shuffled[i * 2],
+                    next: shuffled[i * 2 + 1]
+                });
+            }
+        }
+        return boards;
+    }
+    
+    function generateHardBoards() {
+        const boards = [];
+        const shuffled = [...hardRoutines].sort(() => 0.5 - Math.random());
+        for (let i = 0; i < 3; i++) {
+            if (i * 2 + 1 < shuffled.length) {
+                boards.push({
+                    now: shuffled[i * 2],
+                    next: shuffled[i * 2 + 1]
+                });
+            }
+        }
+        return boards;
+    }
+    
+    function renderEasy() {
+        const boards = generateEasyBoards();
+        const container = document.getElementById('worksheetContainer');
+        
+        let boardsHtml = '';
+        boards.forEach((board, idx) => {
+            boardsHtml += `
+                <div class="board-card">
+                    <div class="board-title">📋 First → Then Board ${idx + 1}</div>
+                    <div class="now-next-board">
+                        <div class="now-section">
+                            <div class="section-header now-header">🔵 NOW</div>
+                            <div class="visual-card">
+                                <span class="visual-emoji">${board.now.split(' ')[0]}</span>
+                                <div class="visual-text">${board.now.split(' ')[1]}</div>
+                                <div class="visual-desc">First, complete this task</div>
+                            </div>
+                        </div>
+                        <div class="arrow-icon">→</div>
+                        <div class="next-section">
+                            <div class="section-header next-header">🟠 NEXT</div>
+                            <div class="visual-card">
+                                <span class="visual-emoji">${board.next.split(' ')[0]}</span>
+                                <div class="visual-text">${board.next.split(' ')[1]}</div>
+                                <div class="visual-desc">Then, you can do this</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sen-tip">
+                        💡 Tip: Show the board, say "First ${board.now.split(' ')[1]}, then ${board.next.split(' ')[1]}"
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Routine cards for cutting out
+        let routineCardsHtml = '<div class="board-card"><div class="board-title">✂️ Visual Routine Cards (cut out and use)</div><div class="routine-cards-grid">';
+        easyRoutines.forEach(routine => {
+            routineCardsHtml += `
+                <div class="routine-card">
+                    <span class="routine-emoji">${routine.emoji}</span>
+                    <div class="routine-name">${routine.name}</div>
+                    <div class="visual-desc">${routine.desc}</div>
+                </div>
+            `;
+        });
+        routineCardsHtml += `</div><div class="sen-tip">✂️ Cut out these cards and use them on your Now/Next board. Laminate for longer use!</div></div>`;
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Now / Next Board · Easy Level (Simple Routines)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-easy">🌱 Easy Level · First → Then Boards</span></div>
+            <div class="instruction-box">
+                <div class="instruction-text">🎯 How to use: Show the child the board. Say "First (NOW), then (NEXT)". Complete NOW task before moving to NEXT.</div>
+            </div>
+            <div class="board-container">${boardsHtml}</div>
+            ${routineCardsHtml}
+            <footer>🌟 Salam Adventures · Visual supports for positive behaviour · Easy level 🌟</footer>
+        `;
+    }
+    
+    function renderMiddle() {
+        const boards = generateMiddleBoards();
+        const container = document.getElementById('worksheetContainer');
+        
+        let boardsHtml = '';
+        boards.forEach((board, idx) => {
+            boardsHtml += `
+                <div class="board-card">
+                    <div class="board-title">📋 Daily Routine Board ${idx + 1}</div>
+                    <div class="now-next-board">
+                        <div class="now-section">
+                            <div class="section-header now-header">🔵 NOW</div>
+                            <div class="visual-card">
+                                <span class="visual-emoji">${board.now.emoji}</span>
+                                <div class="visual-text">${board.now.name}</div>
+                                <div class="visual-desc">${board.now.desc}</div>
+                            </div>
+                        </div>
+                        <div class="arrow-icon">→</div>
+                        <div class="next-section">
+                            <div class="section-header next-header">🟠 NEXT</div>
+                            <div class="visual-card">
+                                <span class="visual-emoji">${board.next.emoji}</span>
+                                <div class="visual-text">${board.next.name}</div>
+                                <div class="visual-desc">${board.next.desc}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sen-tip">
+                        💡 After completing "${board.now.name}", check it off and move to "${board.next.name}"
+                    </div>
+                </div>
+            `;
+        });
+        
+        let routineCardsHtml = '<div class="board-card"><div class="board-title">✂️ Daily Routine Cards (cut and laminate)</div><div class="routine-cards-grid">';
+        middleRoutines.slice(0, 12).forEach(routine => {
+            routineCardsHtml += `
+                <div class="routine-card">
+                    <span class="routine-emoji">${routine.emoji}</span>
+                    <div class="routine-name">${routine.name}</div>
+                    <div class="visual-desc">${routine.desc}</div>
+                </div>
+            `;
+        });
+        routineCardsHtml += `</div><div class="sen-tip">📌 Use velcro dots to attach cards to your Now/Next board. Change as needed!</div></div>`;
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Now / Next Board · Middle Level (Daily Routines)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-middle">⭐ Middle Level · Daily Routine Boards</span></div>
+            <div class="instruction-box">
+                <div class="instruction-text">🎯 Create predictability: Show what comes NOW and what comes NEXT to reduce anxiety and transitions.</div>
+            </div>
+            <div class="board-container">${boardsHtml}</div>
+            ${routineCardsHtml}
+            <footer>🌟 Salam Adventures · Visual supports for positive behaviour · Middle level 🌟</footer>
+        `;
+    }
+    
+    function renderHard() {
+        const boards = generateHardBoards();
+        const container = document.getElementById('worksheetContainer');
+        
+        let boardsHtml = '';
+        boards.forEach((board, idx) => {
+            boardsHtml += `
+                <div class="board-card">
+                    <div class="board-title">📋 Full Day Schedule ${idx + 1}</div>
+                    <div class="now-next-board">
+                        <div class="now-section">
+                            <div class="section-header now-header">🔵 CURRENT TASK</div>
+                            <div class="visual-card">
+                                <span class="visual-emoji">${board.now.emoji}</span>
+                                <div class="visual-text">${board.now.name}</div>
+                                <div class="visual-desc">${board.now.desc}</div>
+                            </div>
+                        </div>
+                        <div class="arrow-icon">→</div>
+                        <div class="next-section">
+                            <div class="section-header next-header">🟠 NEXT TASK</div>
+                            <div class="visual-card">
+                                <span class="visual-emoji">${board.next.emoji}</span>
+                                <div class="visual-text">${board.next.name}</div>
+                                <div class="visual-desc">${board.next.desc}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sen-tip">
+                        ⭐ Reward: After completing 3 tasks, earn ${board.next.emoji} ${board.next.name} time!
+                    </div>
+                </div>
+            `;
+        });
+        
+        let routineCardsHtml = '<div class="board-card"><div class="board-title">✂️ Full Day Schedule Cards</div><div class="routine-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));">';
+        hardRoutines.slice(0, 15).forEach(routine => {
+            routineCardsHtml += `
+                <div class="routine-card">
+                    <span class="routine-emoji">${routine.emoji}</span>
+                    <div class="routine-name" style="font-size: 11px;">${routine.name}</div>
+                    <div class="visual-desc" style="font-size: 9px;">${routine.desc}</div>
+                </div>
+            `;
+        });
+        routineCardsHtml += `</div><div class="sen-tip">🏆 Create a full visual schedule: Arrange cards in order, use Now/Next for current and upcoming tasks.</div></div>`;
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Now / Next Board · Hard Level (Full Day Schedule)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-hard">🔥 Hard Level · Full Day Schedule & Rewards</span></div>
+            <div class="instruction-box">
+                <div class="instruction-text">🎯 Advanced visual scheduling: Use for whole day planning, transitions, and reward systems.</div>
+            </div>
+            <div class="board-container">${boardsHtml}</div>
+            ${routineCardsHtml}
+            <footer>🌟 Salam Adventures · Visual supports for positive behaviour · Hard level 🌟</footer>
+        `;
+    }
+    
+    function updateStatus(msg) {
+        const status = document.getElementById('statusMsg');
+        status.innerHTML = msg;
+        setTimeout(() => {
+            status.innerHTML = '📋 Salam Now/Next · Ready';
+        }, 2000);
+    }
+    
+    document.getElementById('easyBtn').addEventListener('click', () => { renderEasy(); updateStatus('🌱 Easy level worksheet ready!'); });
+    document.getElementById('middleBtn').addEventListener('click', () => { renderMiddle(); updateStatus('⭐ Middle level worksheet ready!'); });
+    document.getElementById('hardBtn').addEventListener('click', () => { renderHard(); updateStatus('🔥 Hard level worksheet ready!'); });
+    
+    renderEasy();
+</script>
+</body>
+</html>
