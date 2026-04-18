@@ -5,7 +5,7 @@
     <title>Salam Adventures | Level 1</title>
     <style>
         :root { --primary: #10b981; --accent: #f59e0b; }
-        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; margin: 0; padding: 20px; }
         .page { 
             background: white; width: 210mm; min-height: 297mm; padding: 15mm; 
             margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); box-sizing: border-box; 
@@ -36,25 +36,17 @@
 
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         
-        /* Logo styling - using SVG/canvas for reliability */
+        /* Logo styling */
         .logo-area {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .logo-salam {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 28px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .logo-img {
+            width: 80px;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
         .title-area h1 {
             margin: 0;
@@ -68,8 +60,10 @@
         }
         
         .controls { text-align: center; margin-bottom: 20px; }
-        button { padding: 10px 20px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; transition: transform 0.2s; }
+        button { padding: 10px 20px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; transition: transform 0.2s; background: white; border: 2px solid var(--primary); }
         button:hover { transform: scale(1.05); }
+        .btn-primary { background: var(--primary); color: white; border: none; }
+        .btn-secondary { background: #3b82f6; color: white; border: none; }
         
         .section-title { background: #ecfdf5; padding: 8px; color: var(--primary); font-weight: 800; margin: 20px 0 12px; border-left: 5px solid var(--primary); text-transform: uppercase; font-size: 14px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
@@ -88,21 +82,28 @@
 <body>
 
 <div class="controls">
-    <button style="background:var(--primary); color:white;" onclick="generateNew()">✨ Generate New Sheet</button>
-    <button style="background:#3b82f6; color:white;" onclick="window.print()">🖨️ Print PDF</button>
+    <button class="btn-primary" onclick="generateNew()">✨ Generate New Sheet</button>
+    <button class="btn-secondary" onclick="window.print()">🖨️ Print PDF</button>
 </div>
 
 <div class="page">
     <div class="header">
         <div class="logo-area">
-            <!-- Built-in logo that always works -->
-            <div class="logo-salam">س</div>
+            <!-- YOUR WORKING LOGO URL -->
+            <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" 
+                 alt="Salam Adventures Logo" 
+                 class="logo-img" 
+                 id="mainLogo"
+                 crossorigin="anonymous">
             <div class="title-area">
                 <h1>Salam Adventures</h1>
                 <p>English Expedition: Level 1</p>
             </div>
         </div>
-        <div style="text-align:right; font-size:12px;">Name: ____________ Date: ____________</div>
+        <div style="text-align:right; font-size:12px;">
+            <strong>Name:</strong> ____________________ <br>
+            <strong>Date:</strong> ____________________
+        </div>
     </div>
 
     <div style="border: 2px solid var(--accent); border-radius: 10px; padding: 20px; background: #fffcf0;">
@@ -141,14 +142,12 @@
     ];
 
     function generateNew() {
-        // Random sight word
         const sw = wordList[Math.floor(Math.random() * wordList.length)];
         const rowHTML = `<span class="word-bold">${sw}</span><span class="word-trace">${sw}</span><span class="word-trace">${sw}</span>`;
         
         document.getElementById('sw-row-1').innerHTML = rowHTML;
         document.getElementById('sw-row-2').innerHTML = rowHTML;
 
-        // Randomize phonics section
         const shuffled = [...cvcData].sort(() => 0.5 - Math.random());
         let gridHTML = '';
         shuffled.forEach((item, index) => {
@@ -165,8 +164,17 @@
         document.getElementById('phonics-grid').innerHTML = gridHTML;
     }
 
-    // Run once on load
     generateNew();
+    
+    // Optional: Add a small delay to ensure logo loads
+    window.addEventListener('load', function() {
+        const logo = document.getElementById('mainLogo');
+        if (logo) {
+            console.log('Logo loading from URL:', logo.src);
+            logo.onload = function() { console.log('Logo loaded successfully'); };
+            logo.onerror = function() { console.log('Logo failed to load - check URL'); };
+        }
+    });
 </script>
 
 </body>
