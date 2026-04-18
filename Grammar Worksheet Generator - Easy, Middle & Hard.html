@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salam Adventures | Grammar Worksheet Generator - Easy, Middle & Hard Levels</title>
-    <meta name="description" content="Free printable grammar worksheets for kids with 3 difficulty levels. Practice nouns, verbs, adjectives, punctuation, sentence structure, tenses, and more. Perfect for early learners and ESL students.">
-    <meta name="keywords" content="grammar worksheets, nouns verbs adjectives, punctuation practice, sentence building, tenses worksheet, English grammar for kids, Salam Adventures">
+    <meta name="description" content="Free printable grammar worksheets for kids with 3 difficulty levels. Practice nouns, verbs, adjectives, punctuation, sentence correction, verb tenses, conjunctions, and prepositions. Perfect for ESL students, homeschool, and classroom use.">
+    <meta name="keywords" content="grammar worksheets, nouns verbs adjectives, punctuation practice, sentence correction, verb tenses, conjunctions, prepositions, English grammar for kids, Salam Adventures, ESL grammar, homeschool grammar, literacy activities">
     <meta name="author" content="Salam Adventures">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Salam Adventures | Grammar Worksheet Generator">
+    <meta property="og:description" content="Free printable grammar worksheets with Easy, Middle & Hard levels. Practice nouns, verbs, adjectives, punctuation, tenses, conjunctions, and more.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png">
+    <meta property="og:url" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
         * {
             margin: 0;
@@ -132,13 +139,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: #f0fdf4;
+            overflow: hidden;
         }
 
-        .logo-text {
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
+        .salam-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .title h1 {
@@ -272,6 +281,9 @@
 </div>
 
 <script>
+    // Your logo from GitHub
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+
     // Grammar Data
     const easyNouns = ["cat", "dog", "sun", "tree", "bird", "fish", "house", "car", "ball", "flower"];
     const easyVerbs = ["run", "jump", "sing", "eat", "sleep", "play", "laugh", "dance", "clap", "hop"];
@@ -302,6 +314,10 @@
         return shuffle(arr).slice(0, count);
     }
 
+    function getLogoHtml() {
+        return `<img src="${logoUrl}" alt="Salam Adventures Logo" class="salam-logo" onerror="this.onerror=null; this.parentElement.style.background='linear-gradient(135deg, #10b981, #059669)'; this.parentElement.innerHTML='<div style=\\'color:white;font-size:36px;font-weight:bold;\\'>س</div>'">`;
+    }
+
     function renderEasy() {
         const nouns = randomSubset(easyNouns, 6);
         const verbs = randomSubset(easyVerbs, 6);
@@ -312,7 +328,7 @@
         container.innerHTML = `
             <div class="header">
                 <div class="brand">
-                    <div class="logo-container"><div class="logo-text">س</div></div>
+                    <div class="logo-container">${getLogoHtml()}</div>
                     <div class="title">
                         <h1>Salam Adventures</h1>
                         <p>Grammar Explorer · Easy Level</p>
@@ -365,7 +381,7 @@
         container.innerHTML = `
             <div class="header">
                 <div class="brand">
-                    <div class="logo-container"><div class="logo-text">س</div></div>
+                    <div class="logo-container">${getLogoHtml()}</div>
                     <div class="title">
                         <h1>Salam Adventures</h1>
                         <p>Grammar Explorer · Middle Level</p>
@@ -420,7 +436,7 @@
         container.innerHTML = `
             <div class="header">
                 <div class="brand">
-                    <div class="logo-container"><div class="logo-text">س</div></div>
+                    <div class="logo-container">${getLogoHtml()}</div>
                     <div class="title">
                         <h1>Salam Adventures</h1>
                         <p>Grammar Explorer · Hard Level</p>
