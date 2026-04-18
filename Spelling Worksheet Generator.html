@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salam Adventures | Spelling Worksheet Generator</title>
+  <meta name="description" content="Create printable spelling worksheets for kids in easy, medium, and hard levels. Generate fun practice pages for early learners, primary pupils, and confident spellers." />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#18b887;
+      --green-dark:#11966f;
+      --orange:#f2a23a;
+      --blue:#4b89f0;
+      --ink:#213547;
+      --muted:#6b7a8c;
+      --paper:#fffdf8;
+      --line:#d8e2ea;
+      --soft:#eef8f4;
+      --cream:#f8f2e8;
+    }
+    body{
+      font-family:"Segoe UI",Arial,sans-serif;
+      background:linear-gradient(135deg,#eaf8f1 0%,#d8efe4 100%);
+      color:var(--ink);
+      padding:20px;
+    }
+    .toolbar{
+      max-width:1160px;
+      margin:0 auto 22px;
+      background:#fff;
+      border:1px solid rgba(24,184,135,.16);
+      border-radius:999px;
+      box-shadow:0 10px 24px rgba(0,0,0,.08);
+      padding:14px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      align-items:center;
+    }
+    .control-group{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    label{
+      font-size:13px;
+      font-weight:700;
+      color:#365067;
+    }
+    select,input{
+      border:1px solid #d9e5ec;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:14px;
+      background:#fff;
+      color:var(--ink);
+      outline:none;
+    }
+    input[type="text"]{
+      min-width:240px;
+    }
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:11px 20px;
+      font-size:14px;
+      font-weight:800;
+      color:#fff;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-main{background:var(--green)}
+    .btn-main:hover{background:var(--green-dark)}
+    .btn-alt{background:var(--orange)}
+    .btn-alt:hover{background:#de8c20}
+    .btn-print{background:var(--blue)}
+    .btn-print:hover{background:#2f74e8}
+    .status{
+      background:#f3f8fb;
+      color:var(--green-dark);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .page{
+      width:210mm;
+      min-height:297mm;
+      margin:0 auto;
+      background:var(--paper);
+      border-radius:8px;
+      box-shadow:0 18px 38px rgba(0,0,0,.14);
+      padding:15mm 16mm 14mm;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      border-bottom:3px solid var(--green);
+      padding-bottom:12px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+    .logo-wrap{
+      width:72px;height:72px;border-radius:16px;
+      overflow:hidden;background:#f7fcfa;border:1px solid #dceee7;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .logo-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+    .brand h1{
+      color:var(--green);
+      font-size:31px;
+      line-height:1;
+      margin-bottom:6px;
+    }
+    .brand p{
+      font-size:14px;
+      font-weight:700;
+      color:#64748b;
+    }
+    .meta{
+      min-width:230px;
+      font-size:13px;
+      font-weight:700;
+      color:#111;
+    }
+    .meta div{margin:5px 0}
+    .fill-line{
+      display:inline-block;
+      min-width:120px;
+      border-bottom:2px solid #111;
+      transform:translateY(-2px);
+    }
+
+    .hero-box{
+      background:linear-gradient(180deg,#f7f2e8 0%,#fbf8f2 100%);
+      border:1.5px solid #f0c67b;
+      border-radius:16px;
+      padding:16px 18px;
+      margin-bottom:18px;
+    }
+    .hero-box .topline{
+      color:#d98a00;
+      font-size:13px;
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    .hero-title{
+      font-size:24px;
+      font-weight:900;
+      color:#1f2f3d;
+      margin-bottom:6px;
+    }
+    .hero-sub{
+      font-size:14px;
+      color:#66788a;
+      font-weight:600;
+    }
+
+    .section{margin-top:18px}
+    .section-title{
+      background:linear-gradient(90deg,#dff0ea 0%,#edf8f4 100%);
+      border-left:5px solid var(--green);
+      color:var(--green);
+      font-size:14px;
+      font-weight:900;
+      text-transform:uppercase;
+      padding:9px 14px;
+      margin-bottom:12px;
+    }
+
+    .word-bank{
+      background:#fff;
+      border:1px solid #e2e9ef;
+      border-radius:16px;
+      padding:16px;
+    }
+    .word-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+    .word-pill{
+      background:#f8fbfd;
+      border:1px solid #dce5ec;
+      border-radius:14px;
+      padding:14px 12px;
+      text-align:center;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:.5px;
+    }
+
+    .trace-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .trace-card{
+      background:#fcfcfd;
+      border:1px solid #dce5ec;
+      border-radius:16px;
+      padding:14px;
+    }
+    .trace-word{
+      font-size:28px;
+      font-weight:900;
+      margin-bottom:8px;
+      color:#203243;
+    }
+    .trace-line{
+      height:18px;
+      border-top:1px dashed #cdd8e2;
+      border-bottom:1.5px solid #1f2937;
+      margin:12px 0;
+    }
+
+    .box-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .card{
+      background:#fcfcfd;
+      border:1px solid #dce5ec;
+      border-radius:16px;
+      padding:16px;
+    }
+    .small-title{
+      font-size:15px;
+      font-weight:800;
+      color:#2b465c;
+      margin-bottom:12px;
+    }
+    .question{
+      font-size:18px;
+      font-weight:800;
+      margin:10px 0 12px;
+      color:#1f2f3d;
+    }
+    .answer-line{
+      border-bottom:1.5px dashed #97a8b8;
+      height:24px;
+      margin:10px 0;
+    }
+
+    .sentence-box{
+      background:#f9fbfc;
+      border:1px solid #dce5ec;
+      border-radius:16px;
+      padding:16px;
+    }
+    .sentence-starter{
+      display:inline-block;
+      background:#eef7f3;
+      color:var(--green-dark);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+    .big-write{
+      height:34px;
+      border-bottom:1.5px solid #2a3642;
+      margin:16px 0;
+    }
+
+    footer{
+      margin-top:22px;
+      border-top:1px solid #e4ebf2;
+      padding-top:10px;
+      text-align:center;
+      font-size:10px;
+      color:#96a3b5;
+    }
+
+    @media print{
+      body{background:#fff;padding:0}
+      .toolbar{display:none}
+      .page{width:100%;min-height:auto;box-shadow:none;padding:12mm}
+    }
+
+    @media (max-width: 900px){
+      .page{width:100%;min-height:auto}
+      .word-grid,.trace-grid,.box-grid{grid-template-columns:1fr}
+      input[type="text"]{min-width:180px}
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="control-group">
+      <label for="levelSelect">Level</label>
+      <select id="levelSelect">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="themeInput">Theme</label>
+      <input id="themeInput" type="text" value="Animals" placeholder="Animals, Space, School..." />
+    </div>
+
+    <button class="btn btn-main" id="generateBtn">✨ New Spelling Sheet</button>
+    <button class="btn btn-alt" id="refreshBtn">🔤 Refresh Words</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+    <div class="status" id="statusMsg">🌟 Ready to generate spelling practice</div>
+  </div>
+
+  <div class="page" id="worksheet"></div>
+
+  <script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png";
+
+    const banks = {
+      easy: {
+        title: "Easy Spelling",
+        subtitle: "Simple words for beginner writers",
+        starters: ["I can see a", "My", "The", "I like", "Look at the"],
+        words: {
+          animals:["cat","dog","pig","hen","cow","duck","frog","fish","goat","sheep","bee","ant"],
+          school:["pen","book","bag","mat","desk","glue","card","paint","bell","clip","ruler","chalk"],
+          space:["star","moon","sun","sky","rock","ship","glow","cloud","light","night","alien","comet"],
+          mixed:["cat","dog","sun","hat","pen","frog","fish","bag","star","moon","desk","duck"]
+        }
+      },
+      medium: {
+        title: "Medium Spelling",
+        subtitle: "Growing confidence with longer words",
+        starters: ["I found a", "The", "My favourite", "Today I saw a", "We learned about"],
+        words: {
+          animals:["rabbit","monkey","turtle","zebra","kitten","puppy","parrot","donkey","pigeon","beaver","otter","hamster"],
+          school:["pencil","number","library","teacher","scissors","playtime","reading","writing","classroom","backpack","drawing","learning"],
+          space:["planet","rocket","galaxy","meteor","astronaut","starlight","sunshine","moonbeam","comet","orbiter","crater","telescope"],
+          mixed:["rocket","rabbit","teacher","planet","pencil","parrot","library","galaxy","turtle","writing","crater","donkey"]
+        }
+      },
+      hard: {
+        title: "Hard Spelling",
+        subtitle: "Challenge words for confident spellers",
+        starters: ["During our adventure,", "The most amazing", "I discovered that", "In the distance, a", "Suddenly, the"],
+        words: {
+          animals:["crocodile","chimpanzee","flamingo","porcupine","alligator","butterfly","kangaroo","jellyfish","woodpecker","rhinoceros","hedgehog","armadillo"],
+          school:["dictionary","adventure","information","independent","celebration","imagination","presentation","classroom","mathematics","knowledge","understanding","playground"],
+          space:["constellation","satellite","astronomy","spaceship","asteroid","supernova","orbiting","telescope","gravity","atmosphere","exploration","universe"],
+          mixed:["constellation","kangaroo","dictionary","butterfly","gravity","independent","spaceship","woodpecker","exploration","adventure","rhinoceros","mathematics"]
+        }
+      }
+    };
+
+    function normalizeTheme(theme){
+      const t = (theme || "").trim().toLowerCase();
+      if (t.includes("animal")) return "animals";
+      if (t.includes("school")) return "school";
+      if (t.includes("space")) return "space";
+      return "mixed";
+    }
+
+    function shuffle(arr){
+      const a = [...arr];
+      for(let i=a.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    }
+
+    function pick(arr,n){
+      return shuffle(arr).slice(0,n);
+    }
+
+    function makeSentenceStarter(starters){
+      return starters[Math.floor(Math.random()*starters.length)];
+    }
+
+    function buildData(){
+      const level = document.getElementById("levelSelect").value;
+      const themeRaw = document.getElementById("themeInput").value || "Mixed";
+      const themeKey = normalizeTheme(themeRaw);
+      const bank = banks[level];
+      const words = pick(bank.words[themeKey], 6);
+      return {
+        level,
+        themeLabel: themeRaw.trim() || "Mixed",
+        title: bank.title,
+        subtitle: bank.subtitle,
+        words,
+        scrambled: shuffle(words.slice(0,4)),
+        starter: makeSentenceStarter(bank.starters)
+      };
+    }
+
+    let current = null;
+
+    function render(data){
+      const wordPills = data.words.map(word => `<div class="word-pill">${word}</div>`).join("");
+      const traceCards = data.words.slice(0,4).map(word => `
+        <div class="trace-card">
+          <div class="trace-word">${word}</div>
+          <div class="trace-line"></div>
+          <div class="trace-line"></div>
+          <div class="trace-line"></div>
+        </div>
+      `).join("");
+
+      const missingFirst = data.words.slice(0,3).map(word => `
+        <div class="question">_${word.slice(1)}</div>
+        <div class="answer-line"></div>
+      `).join("");
+
+      const scrambled = data.scrambled.map(word => {
+        const letters = shuffle(word.split("")).join(" ");
+        return `
+          <div class="question">${letters}</div>
+          <div class="answer-line"></div>
+        `;
+      }).join("");
+
+      document.getElementById("worksheet").innerHTML = `
+        <div class="header">
+          <div class="brand">
+            <div class="logo-wrap">
+              <img src="${logoUrl}" alt="Salam Adventures Logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/72x72.png?text=SA';">
+            </div>
+            <div>
+              <h1>Salam Adventures</h1>
+              <p>Spelling Worksheet Generator • ${data.title}</p>
+            </div>
+          </div>
+          <div class="meta">
+            <div>Name: <span class="fill-line"></span></div>
+            <div>Date: <span class="fill-line"></span></div>
+            <div>Level: <span class="fill-line">${data.level}</span></div>
+          </div>
+        </div>
+
+        <div class="hero-box">
+          <div class="topline">⭐ Theme Practice ⭐</div>
+          <div class="hero-title">${data.title}</div>
+          <div class="hero-sub">Theme: ${data.themeLabel} • ${data.subtitle}</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📚 Part 1: Word Bank</div>
+          <div class="word-bank">
+            <div class="word-grid">${wordPills}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">✏️ Part 2: Trace and Write</div>
+          <div class="trace-grid">${traceCards}</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">🔤 Part 3: Missing First Letter</div>
+          <div class="card">
+            <div class="small-title">Write the full word.</div>
+            ${missingFirst}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">🧩 Part 4: Unscramble the Word</div>
+          <div class="card">
+            <div class="small-title">Put the letters in the right order.</div>
+            ${scrambled}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📝 Part 5: Use a Spelling Word in a Sentence</div>
+          <div class="sentence-box">
+            <div class="sentence-starter">Sentence starter: ${data.starter}</div>
+            <div class="big-write"></div>
+            <div class="big-write"></div>
+            <div class="big-write"></div>
+          </div>
+        </div>
+
+        <footer>Salam Adventures • Spelling practice made simple and fun</footer>
+      `;
+    }
+
+    function flashStatus(text){
+      const el = document.getElementById("statusMsg");
+      el.textContent = text;
+      setTimeout(() => {
+        el.textContent = "🌟 Ready to generate spelling practice";
+      }, 1800);
+    }
+
+    function generateSheet(){
+      current = buildData();
+      render(current);
+      flashStatus("✅ New spelling sheet ready");
+    }
+
+    function refreshWordsOnly(){
+      if(!current){
+        generateSheet();
+        return;
+      }
+      const level = document.getElementById("levelSelect").value;
+      const themeRaw = document.getElementById("themeInput").value || "Mixed";
+      const themeKey = normalizeTheme(themeRaw);
+      const bank = banks[level];
+      current = {
+        level,
+        themeLabel: themeRaw.trim() || "Mixed",
+        title: bank.title,
+        subtitle: bank.subtitle,
+        words: pick(bank.words[themeKey], 6),
+        scrambled: shuffle(pick(bank.words[themeKey], 4)),
+        starter: makeSentenceStarter(bank.starters)
+      };
+      render(current);
+      flashStatus("🔤 Words refreshed");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      generateSheet();
+      document.getElementById("generateBtn").addEventListener("click", generateSheet);
+      document.getElementById("refreshBtn").addEventListener("click", refreshWordsOnly);
+      document.getElementById("levelSelect").addEventListener("change", generateSheet);
+    });
+  </script>
+</body>
+</html>
