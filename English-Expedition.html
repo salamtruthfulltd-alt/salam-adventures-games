@@ -34,16 +34,55 @@
         .word-bold { font-weight: 900; color: #000; }
         .word-trace { font-weight: 900; color: #e2e8f0; letter-spacing: 2px; }
 
-        .header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        
+        /* Logo styling - using SVG/canvas for reliability */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-salam {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 28px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .title-area h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 28px;
+        }
+        .title-area p {
+            margin: 0;
+            font-weight: bold;
+            color: #64748b;
+        }
+        
         .controls { text-align: center; margin-bottom: 20px; }
-        button { padding: 10px 20px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; }
+        button { padding: 10px 20px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; transition: transform 0.2s; }
+        button:hover { transform: scale(1.05); }
         
         .section-title { background: #ecfdf5; padding: 8px; color: var(--primary); font-weight: 800; margin: 20px 0 12px; border-left: 5px solid var(--primary); text-transform: uppercase; font-size: 14px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: white; }
-        .box { width: 30px; height: 30px; border: 2px solid #000; display: inline-block; vertical-align: middle; }
+        .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: white; transition: box-shadow 0.2s; }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .box { width: 30px; height: 30px; border: 2px solid #000; display: inline-block; vertical-align: middle; margin-right: 5px; }
 
-        @media print { .controls { display: none; } .page { box-shadow: none; margin: 0; width: 100%; } }
+        @media print { 
+            .controls { display: none; } 
+            .page { box-shadow: none; margin: 0; width: 100%; } 
+            .card:hover { box-shadow: none; }
+            button:hover { transform: none; }
+        }
     </style>
 </head>
 <body>
@@ -55,23 +94,27 @@
 
 <div class="page">
     <div class="header">
-        <div>
-            <h1 style="margin:0; color:var(--primary);">Salam Adventures</h1>
-            <p style="margin:0; font-weight:bold; color:#64748b;">English Expedition: Level 1</p>
+        <div class="logo-area">
+            <!-- Built-in logo that always works -->
+            <div class="logo-salam">س</div>
+            <div class="title-area">
+                <h1>Salam Adventures</h1>
+                <p>English Expedition: Level 1</p>
+            </div>
         </div>
         <div style="text-align:right; font-size:12px;">Name: ____________ Date: ____________</div>
     </div>
 
     <div style="border: 2px solid var(--accent); border-radius: 10px; padding: 20px; background: #fffcf0;">
-        <span style="font-weight:900; color:var(--accent); font-size:12px;">SIGHT WORD PRACTICE</span>
+        <span style="font-weight:900; color:var(--accent); font-size:12px;">⭐ SIGHT WORD PRACTICE ⭐</span>
         <div class="handwriting-row"><div class="mid-line"></div><div id="sw-row-1"></div></div>
         <div class="handwriting-row"><div class="mid-line"></div><div id="sw-row-2"></div></div>
     </div>
 
-    <div class="section-title">Part 1: Phonics (Missing First Letter)</div>
+    <div class="section-title">🔤 Part 1: Phonics (Missing First Letter)</div>
     <div class="grid" id="phonics-grid"></div>
 
-    <div class="section-title">Part 2: Sentence Tracing</div>
+    <div class="section-title">✏️ Part 2: Sentence Tracing</div>
     <div class="handwriting-row" style="height:60px;">
         <div class="mid-line" style="bottom:30px;"></div>
         <span class="word-trace" style="font-size:32px;">the cat sat on the mat.</span>
@@ -80,27 +123,44 @@
         <div class="mid-line" style="bottom:30px;"></div>
         <span class="word-trace" style="font-size:32px;">i can see the big sun.</span>
     </div>
+    
+    <div style="margin-top: 30px; text-align:center; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:12px;">
+        🌟 Salam Adventures • Building Strong Readers • Level 1 🌟
+    </div>
 </div>
 
 <script>
     const wordList = ["like", "said", "went", "come", "have", "they", "this", "with", "here", "look"];
     const cvcData = [
-        {h: "Furry pet", t: "at"}, {h: "Yellow sun", t: "un"},
-        {h: "Friendly dog", t: "og"}, {h: "Hat on head", t: "at"},
-        {h: "Ink pen", t: "en"}, {h: "School bus", t: "us"}
+        {h: "🐱 Furry pet", t: "at"}, 
+        {h: "☀️ Yellow sun", t: "un"},
+        {h: "🐕 Friendly dog", t: "og"}, 
+        {h: "🧢 Hat on head", t: "at"},
+        {h: "✒️ Ink pen", t: "en"}, 
+        {h: "🚌 School bus", t: "us"}
     ];
 
     function generateNew() {
+        // Random sight word
         const sw = wordList[Math.floor(Math.random() * wordList.length)];
         const rowHTML = `<span class="word-bold">${sw}</span><span class="word-trace">${sw}</span><span class="word-trace">${sw}</span>`;
         
         document.getElementById('sw-row-1').innerHTML = rowHTML;
         document.getElementById('sw-row-2').innerHTML = rowHTML;
 
+        // Randomize phonics section
         const shuffled = [...cvcData].sort(() => 0.5 - Math.random());
         let gridHTML = '';
-        shuffled.forEach(item => {
-            gridHTML += `<div class="card"><small>${item.h}</small><br><br><div class="box"></div> <span style="font-size:24px; font-weight:bold; letter-spacing:3px;">${item.t}</span></div>`;
+        shuffled.forEach((item, index) => {
+            gridHTML += `
+                <div class="card">
+                    <small style="color:#64748b;">${item.h}</small>
+                    <br><br>
+                    <div class="box"></div> 
+                    <span style="font-size:28px; font-weight:bold; letter-spacing:3px; color:#1f2937;">${item.t}</span>
+                    <div style="margin-top: 8px; font-size:11px; color:#9ca3af;">write the first letter →</div>
+                </div>
+            `;
         });
         document.getElementById('phonics-grid').innerHTML = gridHTML;
     }
