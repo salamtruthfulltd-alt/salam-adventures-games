@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salam Adventures | ABC Handwriting Worksheet Generator</title>
-    <meta name="description" content="Printable ABC handwriting worksheets with tracing and practice lines. Perfect for early learners and SEN support.">
+    <title>Salam Adventures | ABC Handwriting Worksheet Generator - Letter Tracing & Practice | Easy, Middle & Hard Levels</title>
+    <meta name="description" content="Free printable ABC handwriting worksheets with tracing and practice lines. Perfect for early learners, SEN support, and homeschool handwriting practice. Features uppercase and lowercase letters with rainbow tracing option.">
+    <meta name="keywords" content="ABC handwriting, letter tracing, handwriting worksheets, alphabet practice, learn to write, Salam Adventures, SEN handwriting, homeschool writing, preschool letters, kindergarten writing">
+    <meta name="author" content="Salam Adventures">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Salam Adventures | ABC Handwriting Worksheet Generator">
+    <meta property="og:description" content="Free printable ABC handwriting worksheets with tracing and practice lines. Perfect for early learners and SEN support.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
         * {
             box-sizing: border-box;
@@ -44,18 +52,28 @@
             gap: 15px;
         }
 
-        .logo-placeholder {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 18px;
+        .logo-container {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: linear-gradient(135deg, #10b981, #059669);
+            overflow: hidden;
+        }
+
+        .salam-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-fallback {
             color: white;
             font-size: 32px;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(16,185,129,0.3);
         }
 
         .salam-title h1 {
@@ -333,10 +351,15 @@
 </head>
 <body>
 <div class="main-container">
-    <!-- Salam Adventures Header -->
+    <!-- Salam Adventures Header with Logo -->
     <div class="salam-header">
         <div class="logo-section">
-            <div class="logo-placeholder">SA</div>
+            <div class="logo-container">
+                <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png" 
+                     class="salam-logo" 
+                     alt="Salam Adventures Logo"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+            </div>
             <div class="salam-title">
                 <h1>Salam Adventures</h1>
                 <p>ABC Handwriting Expedition • Learn & Trace</p>
@@ -386,6 +409,9 @@
 </div>
 
 <script>
+    // Your logo URL
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+    
     // Letter sets
     const lowercaseLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     const uppercaseLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -417,7 +443,6 @@
                         selectedLetters.push(letter);
                         btn.classList.add('selected');
                     } else {
-                        // Visual feedback for limit
                         btn.style.transform = 'scale(0.95)';
                         setTimeout(() => { btn.style.transform = ''; }, 150);
                     }
@@ -519,14 +544,14 @@
         worksheetDiv.innerHTML = html;
     }
     
-    // Print function - WORKS RELIABLY
+    // Print function
     function printWorksheet() {
-  if (window.top !== window.self) {
-    window.open(window.location.href, "_blank");
-    return;
-  }
-  window.print();
-}
+        if (window.top !== window.self) {
+            window.open(window.location.href, "_blank");
+            return;
+        }
+        window.print();
+    }
     
     // Event Listeners
     document.getElementById('letterStyle').addEventListener('change', () => {
