@@ -1,218 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Salam Adventures | Division Generator with Pictorials - Easy, Middle & Hard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description" content="Free printable division worksheets with pictorials for kids. Generate easy, middle and hard division practice with visual sharing and grouping from Salam Adventures." />
-  <meta name="keywords" content="division generator, division worksheets, pictorial division, printable maths worksheets, Salam Adventures, division for kids" />
+<title>Division Generator with Pictorials | Free Printable Worksheets for Kids</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+*{box-sizing:border-box;}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f8ff;
-    }
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f8ff;
+}
 
-    .app {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px;
-    }
+.app{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
 
-    .topbar {
-      background: linear-gradient(135deg,#0ea5e9,#2563eb);
-      color: white;
-      border-radius: 20px;
-      padding: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+/* TOP BAR */
+.topbar{
+  background:linear-gradient(135deg,#0ea5e9,#2563eb);
+  color:#fff;
+  border-radius:20px;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-    .logo img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-      background: white;
-      border-radius: 14px;
-      padding: 6px;
-    }
+.logo img{
+  width:65px;
+  height:65px;
+  background:#fff;
+  border-radius:12px;
+  padding:5px;
+  object-fit:contain;
+}
 
-    .brand h1 {
-      margin: 0;
-      font-size: 26px;
-    }
+.brand h1{
+  margin:0;
+  font-size:24px;
+}
 
-    .controls {
-      background: white;
-      padding: 18px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-    }
+/* CONTROLS */
+.controls{
+  background:#fff;
+  padding:15px;
+  border-radius:20px;
+  margin-bottom:20px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(5,1fr);
-      gap: 10px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+}
 
-    select,input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 10px;
-      border: 2px solid #cbd5e1;
-    }
+select,input{
+  padding:10px;
+  border-radius:10px;
+  border:2px solid #cbd5e1;
+  width:100%;
+}
 
-    button {
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button{
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .primary { background:#2563eb;color:white; }
-    .print { background:#f59e0b;color:white; }
-    .new { background:#10b981;color:white; }
+.primary{background:#2563eb;color:#fff;}
+.print{background:#f59e0b;color:#fff;}
+.new{background:#10b981;color:#fff;}
 
-    .sheet {
-      background: white;
-      border-radius: 20px;
-      padding: 20px;
-    }
+.actions{
+  margin-top:10px;
+  display:flex;
+  gap:10px;
+}
 
-    .header {
-      border-bottom: 2px dashed #ccc;
-      padding-bottom: 10px;
-      margin-bottom: 10px;
-    }
+/* WORKSHEET */
+.sheet{
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+}
 
-    .title {
-      font-size: 30px;
-      margin: 5px 0;
-    }
+.header{
+  border-bottom:2px dashed #ccc;
+  padding-bottom:10px;
+  margin-bottom:10px;
+}
 
-    .problems {
-      display: grid;
-      grid-template-columns: repeat(2,1fr);
-      gap: 15px;
-    }
+.title{
+  font-size:28px;
+  margin:5px 0;
+}
 
-    .card {
-      border: 2px solid #dbeafe;
-      border-radius: 15px;
-      padding: 12px;
-    }
+/* PROBLEMS */
+.problems{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
 
-    .equation {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 8px 0;
-    }
+.card{
+  border:2px solid #dbeafe;
+  border-radius:15px;
+  padding:12px;
+}
 
-    .groups {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+.equation{
+  font-size:22px;
+  font-weight:bold;
+  margin:8px 0;
+}
 
-    .box {
-      border: 2px dashed #60a5fa;
-      border-radius: 10px;
-      padding: 5px;
-      min-width: 50px;
-      min-height: 50px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px;
-    }
+.groups{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
 
-    .dot {
-      width: 10px;
-      height: 10px;
-      background: #f59e0b;
-      border-radius: 50%;
-    }
+/* 🔥 FIXED DOTS (PRINT SAFE) */
+.box{
+  border:2px dashed #60a5fa;
+  border-radius:10px;
+  padding:5px;
+  min-width:50px;
+  min-height:50px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
 
-    .line {
-      display:inline-block;
-      width:80px;
-      border-bottom:2px solid black;
-      margin-left:8px;
-    }
+.dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  border:2px solid #111;   /* 👈 ALWAYS VISIBLE */
+  background:#f59e0b;
+  display:inline-block;
+}
 
-    @media print {
-      .topbar,.controls { display:none; }
-      .app { padding:0; }
-    }
-  </style>
+/* ANSWER LINE */
+.line{
+  display:inline-block;
+  width:80px;
+  border-bottom:2px solid black;
+  margin-left:8px;
+}
+
+/* PRINT FIX */
+@media print{
+  *{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  .topbar,.controls{
+    display:none;
+  }
+
+  body{
+    background:#fff;
+  }
+}
+</style>
 </head>
 
 <body>
 <div class="app">
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo">
-        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
-      </div>
-      <h1>Salam Adventures</h1>
+<!-- HEADER -->
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png">
     </div>
-    <div>Division Generator</div>
+    <h1>Salam Adventures</h1>
+  </div>
+  <div>Division Generator</div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="grid">
+    <select id="level">
+      <option value="easy">Easy</option>
+      <option value="middle">Middle</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <select id="count">
+      <option>6</option>
+      <option selected>8</option>
+      <option>10</option>
+    </select>
+
+    <select id="mode">
+      <option value="mixed">Mixed</option>
+      <option value="sharing">Sharing</option>
+      <option value="grouping">Grouping</option>
+    </select>
+
+    <input id="max" type="number" value="24">
+    <input id="titleInput" value="Division with Pictorials">
   </div>
 
-  <div class="controls">
-    <div class="grid">
-      <select id="level">
-        <option value="easy">Easy</option>
-        <option value="middle">Middle</option>
-        <option value="hard">Hard</option>
-      </select>
+  <div class="actions">
+    <button class="primary" onclick="generate()">Generate</button>
+    <button class="print" onclick="window.print()">Print</button>
+    <button class="new" onclick="generate()">New</button>
+  </div>
+</div>
 
-      <select id="count">
-        <option>6</option>
-        <option selected>8</option>
-        <option>10</option>
-      </select>
-
-      <select id="mode">
-        <option value="mixed">Mixed</option>
-        <option value="sharing">Sharing</option>
-        <option value="grouping">Grouping</option>
-      </select>
-
-      <input id="max" type="number" value="24">
-
-      <input id="titleInput" value="Division with Pictorials">
-    </div>
-
-    <div style="margin-top:12px;display:flex;gap:10px;">
-      <button class="primary" onclick="generate()">Generate</button>
-      <button class="print" onclick="window.print()">Print</button>
-      <button class="new" onclick="generate()">New</button>
-    </div>
+<!-- WORKSHEET -->
+<div class="sheet">
+  <div class="header">
+    <h2 id="title" class="title">Division with Pictorials</h2>
+    Name: _________   Date: _________
   </div>
 
-  <div class="sheet">
-    <div class="header">
-      <h2 id="title" class="title">Division with Pictorials</h2>
-      Name: _________   Date: _________
-    </div>
-
-    <div id="problems" class="problems"></div>
-  </div>
+  <div id="problems" class="problems"></div>
+</div>
 
 </div>
 
@@ -250,9 +275,9 @@ function render(p,i){
   let boxes="";
 
   if(p.mode=="sharing"){
-    for(let i=0;i<p.d;i++) boxes+=`<div class="box">${dots(p.q)}</div>`;
+    for(let x=0;x<p.d;x++) boxes+=`<div class="box">${dots(p.q)}</div>`;
   } else {
-    for(let i=0;i<p.q;i++) boxes+=`<div class="box">${dots(p.d)}</div>`;
+    for(let x=0;x<p.q;x++) boxes+=`<div class="box">${dots(p.d)}</div>`;
   }
 
   return `
