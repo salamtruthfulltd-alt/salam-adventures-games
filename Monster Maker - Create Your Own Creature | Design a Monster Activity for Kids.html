@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Monster Maker - Create Your Own Creature | Design a Monster Activity for Kids</title>
+    <meta name="description" content="Free printable 'design your own monster' activity for kids. Mix and match body parts, give it a name, and write its silly story. Perfect for creative fun, imagination, and storytelling.">
+    <meta name="keywords" content="monster maker, create your own monster, design a monster, monster activity, creative writing for kids, imagination activity, Salam Adventures, printable monster craft, draw a monster, storytelling for kids">
+    <meta name="author" content="Salam Adventures">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Salam Adventures | Monster Maker - Create Your Own Creature">
+    <meta property="og:description" content="Free printable 'design your own monster' activity for kids. Mix and match body parts, give it a name, and write its silly story.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --easy: #22c55e;
+            --middle: #f97316;
+            --hard: #ef4444;
+            --purple: #8b5cf6;
+            --pink: #ec489a;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 28px;
+            border-radius: 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-easy { background: var(--easy); color: white; }
+        .btn-easy:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-middle { background: var(--middle); color: white; }
+        .btn-middle:hover { background: #ea580c; transform: translateY(-2px); }
+        .btn-hard { background: var(--hard); color: white; }
+        .btn-hard:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-print { background: var(--purple); color: white; }
+        .btn-print:hover { background: #7c3aed; transform: translateY(-2px); }
+        .btn-random { background: var(--pink); color: white; }
+        .btn-random:hover { background: #db2777; transform: translateY(-2px); }
+
+        .status-pill {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .level-badge {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .level-tag {
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+        .level-easy { background: var(--easy); }
+        .level-middle { background: var(--middle); }
+        .level-hard { background: var(--hard); }
+
+        .worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 15mm 18mm;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981, #059669);
+            overflow: hidden;
+        }
+
+        .salam-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-fallback {
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .title h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin: 0;
+        }
+        .title p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .student-info {
+            background: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 28px;
+            font-size: 12px;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        /* Monster Maker Styles */
+        .monster-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .monster-card {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+            border-radius: 28px;
+            padding: 25px;
+            border: 3px solid #fde68a;
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+        }
+
+        .monster-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #92400e;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .monster-body {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .monster-drawing-area {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .drawing-box {
+            background: white;
+            border: 3px dashed #10b981;
+            border-radius: 24px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .monster-emoji {
+            font-size: 120px;
+        }
+
+        .draw-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 10px;
+        }
+
+        .monster-parts {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .part-option {
+            background: white;
+            border-radius: 16px;
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .part-emoji {
+            font-size: 36px;
+            display: block;
+        }
+
+        .part-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .choice-bubbles {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .choice {
+            background: #f3f4f6;
+            border-radius: 30px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .info-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fefce8;
+            border-radius: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+            flex-wrap: wrap;
+        }
+
+        .info-label {
+            font-weight: bold;
+            min-width: 70px;
+        }
+
+        .info-line {
+            border-bottom: 1px dashed #9ca3af;
+            flex: 1;
+            height: 25px;
+        }
+
+        .story-box {
+            background: #fefce8;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .story-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .story-lines {
+            border-bottom: 1px dashed #9ca3af;
+            height: 60px;
+            margin: 8px 0;
+        }
+
+        .instruction-box {
+            background: #e0f2fe;
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .instruction-text {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0284c7;
+        }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .worksheet { box-shadow: none; padding: 15mm; width: 100%; }
+            .monster-card { break-inside: avoid; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 30px;
+            padding-top: 12px;
+        }
+
+        .fun-fact {
+            background: #fef3c7;
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #92400e;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn btn-easy" id="easyBtn">🌱 Easy Level (Simple Monster)</button>
+    <button class="btn btn-middle" id="middleBtn">⭐ Middle Level (Detailed Monster)</button>
+    <button class="btn btn-hard" id="hardBtn">🔥 Hard Level (Epic Monster + Story)</button>
+    <button class="btn btn-random" id="randomBtn">🎲 Random Monster</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="status-pill" id="statusMsg">👾 Salam Monster Maker · Ready</div>
+</div>
+
+<div class="worksheet" id="worksheetContainer">
+    <div style="text-align: center; padding: 60px;">Loading Salam Adventures Monster Maker...</div>
+</div>
+
+<script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+    
+    // Monster Parts Library
+    const bodies = [
+        { emoji: "🟢", name: "Round & Squishy", desc: "Soft and bouncy body" },
+        { emoji: "🔺", name: "Spiky Triangle", desc: "Sharp and pointy" },
+        { emoji: "⬛", name: "Blocky Square", desc: "Strong and sturdy" },
+        { emoji: "🌀", name: "Wiggly Worm", desc: "Long and twisty" },
+        { emoji: "⭐", name: "Star-shaped", desc: "Magical and bright" },
+        { emoji: "💜", name: "Fluffy Cloud", desc: "Soft and dreamy" }
+    ];
+    
+    const eyes = [
+        { emoji: "👀", name: "Big Round Eyes", desc: "Sees everything" },
+        { emoji: "👁️", name: "One Giant Eye", desc: "All-seeing" },
+        { emoji: "😵", name: "Googly Eyes", desc: "Silly and wobbly" },
+        { emoji: "👁️👁️👁️", name: "Three Eyes", desc: "Sees in all directions" },
+        { emoji: "💤", name: "Sleepy Eyes", desc: "Always tired" },
+        { emoji: "✨", name: "Sparkle Eyes", desc: "Magical vision" }
+    ];
+    
+    const mouths = [
+        { emoji: "😀", name: "Happy Smile", desc: "Friendly and kind" },
+        { emoji: "😲", name: "Surprised O", desc: "Always amazed" },
+        { emoji: "😈", name: "Mischievous Grin", desc: "Loves tricks" },
+        { emoji: "😴", name: "Yawning Mouth", desc: "Very sleepy" },
+        { emoji: "🦷", name: "Sharp Teeth", desc: "Loves to eat" },
+        { emoji: "😋", name: "Tongue Out", desc: "Silly and fun" }
+    ];
+    
+    const arms = [
+        { emoji: "🦾", name: "Robot Arms", desc: "Super strong" },
+        { emoji: "🪶", name: "Feather Wings", desc: "Flies through air" },
+        { emoji: "🐙", name: "Tentacles", desc: "Hugs everything" },
+        { emoji: "🦵", name: "Long Legs", desc: "Runs very fast" },
+        { emoji: "👐", name: "Stretchy Arms", desc: "Reaches far" },
+        { emoji: "🦂", name: "Claws", desc: "Pinchy pinch" }
+    ];
+    
+    const accessories = [
+        { emoji: "👑", name: "Crown", desc: "Royal monster" },
+        { emoji: "🎩", name: "Top Hat", desc: "Fancy monster" },
+        { emoji: "🕶️", name: "Cool Glasses", desc: "Too cool" },
+        { emoji: "🧣", name: "Scarf", desc: "Cozy monster" },
+        { emoji: "🎒", name: "Backpack", desc: "Ready for adventure" },
+        { emoji: "💎", name: "Magic Gem", desc: "Has special powers" }
+    ];
+    
+    const monsterNames = [
+        "Fluffernutter", "Giggleblorp", "Snuggletooth", "Wobblekins", 
+        "Sparklefarts", "Munchkin", "Glitterbeast", "Squishmallow",
+        "Fuzzbucket", "Snorfle", "Wigglesnout", "Cuddlebug"
+    ];
+    
+    function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+    
+    function generateRandomMonster() {
+        return {
+            body: getRandomItem(bodies),
+            eyes: getRandomItem(eyes),
+            mouth: getRandomItem(mouths),
+            arms: getRandomItem(arms),
+            accessory: getRandomItem(accessories),
+            name: monsterNames[Math.floor(Math.random() * monsterNames.length)]
+        };
+    }
+    
+    function generateEasyMonster() {
+        return {
+            body: bodies[0],
+            eyes: eyes[0],
+            mouth: mouths[0],
+            arms: arms[0],
+            accessory: accessories[0],
+            name: "My Monster"
+        };
+    }
+    
+    function generateMiddleMonster() {
+        return {
+            body: bodies[Math.floor(Math.random() * 3)],
+            eyes: eyes[Math.floor(Math.random() * 3)],
+            mouth: mouths[Math.floor(Math.random() * 3)],
+            arms: arms[Math.floor(Math.random() * 3)],
+            accessory: accessories[Math.floor(Math.random() * 3)],
+            name: monsterNames[Math.floor(Math.random() * monsterNames.length)]
+        };
+    }
+    
+    function generateHardMonster() {
+        return {
+            body: getRandomItem(bodies),
+            eyes: getRandomItem(eyes),
+            mouth: getRandomItem(mouths),
+            arms: getRandomItem(arms),
+            accessory: getRandomItem(accessories),
+            name: monsterNames[Math.floor(Math.random() * monsterNames.length)]
+        };
+    }
+    
+    function renderMonster(monster, level) {
+        const container = document.getElementById('worksheetContainer');
+        
+        let levelClass = '';
+        let levelText = '';
+        if (level === 'easy') {
+            levelClass = 'level-easy';
+            levelText = '🌱 Easy Level · Simple Monster';
+        } else if (level === 'middle') {
+            levelClass = 'level-middle';
+            levelText = '⭐ Middle Level · Detailed Monster';
+        } else {
+            levelClass = 'level-hard';
+            levelText = '🔥 Hard Level · Epic Monster + Story';
+        }
+        
+        const storyLines = level === 'hard' ? 
+            '<div class="story-lines" style="height: 80px;"></div><div class="story-lines" style="height: 80px;"></div><div class="story-lines" style="height: 80px;"></div>' :
+            '<div class="story-lines"></div><div class="story-lines"></div>';
+        
+        const extraFields = level === 'hard' ? `
+            <div class="info-row">
+                <div class="info-label">🏠 Lives in:</div>
+                <div class="info-line"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">🍕 Favourite food:</div>
+                <div class="info-line"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">🎵 Special power:</div>
+                <div class="info-line"></div>
+            </div>
+        ` : '';
+        
+        const html = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Monster Maker · ${level === 'easy' ? 'Create Your Own Creature' : level === 'middle' ? 'Design Your Monster' : 'Epic Monster Creator'}</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Artist: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag ${levelClass}">${levelText}</span></div>
+            <div class="instruction-box">
+                <div class="instruction-text">🎨 Design your own monster! Mix and match the parts, give it a name, and write its silly story!</div>
+            </div>
+            
+            <div class="monster-container">
+                <div class="monster-card">
+                    <div class="monster-title">👾 Meet Your Monster! 👾</div>
+                    <div class="monster-body">
+                        <div class="monster-drawing-area">
+                            <div class="drawing-box">
+                                <div class="monster-emoji">
+                                    ${monster.body.emoji}${monster.eyes.emoji}${monster.mouth.emoji}${monster.arms.emoji}${monster.accessory.emoji}
+                                </div>
+                                <div class="draw-label">✏️ Draw your monster here →</div>
+                            </div>
+                            <div class="fun-fact">💡 Tip: Add colours, patterns, and special details!</div>
+                        </div>
+                        <div class="monster-parts">
+                            <div class="parts-grid">
+                                <div class="part-option"><span class="part-emoji">${monster.body.emoji}</span><span class="part-name">${monster.body.name}</span><div class="visual-desc-small">${monster.body.desc}</div></div>
+                                <div class="part-option"><span class="part-emoji">${monster.eyes.emoji}</span><span class="part-name">${monster.eyes.name}</span><div class="visual-desc-small">${monster.eyes.desc}</div></div>
+                                <div class="part-option"><span class="part-emoji">${monster.mouth.emoji}</span><span class="part-name">${monster.mouth.name}</span><div class="visual-desc-small">${monster.mouth.desc}</div></div>
+                                <div class="part-option"><span class="part-emoji">${monster.arms.emoji}</span><span class="part-name">${monster.arms.name}</span><div class="visual-desc-small">${monster.arms.desc}</div></div>
+                                <div class="part-option"><span class="part-emoji">${monster.accessory.emoji}</span><span class="part-name">${monster.accessory.name}</span><div class="visual-desc-small">${monster.accessory.desc}</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-row">
+                            <div class="info-label">📝 Monster Name:</div>
+                            <div class="info-line"></div>
+                            <div class="info-label" style="min-width: auto;">(example: ${monster.name})</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🎂 Age:</div>
+                            <div class="info-line"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">❤️ Likes:</div>
+                            <div class="info-line"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">💔 Dislikes:</div>
+                            <div class="info-line"></div>
+                        </div>
+                        ${extraFields}
+                    </div>
+                    
+                    <div class="story-box">
+                        <div class="story-label">📖 My Monster's Silly Story:</div>
+                        ${storyLines}
+                    </div>
+                    
+                    <div class="fun-fact">
+                        ⭐ Fun Fact: ${level === 'easy' ? 'Your monster is friendly and loves to make new friends!' : level === 'middle' ? 'Every monster has a secret superpower. What\'s yours?' : 'The sillier the story, the more magical your monster becomes!'}
+                    </div>
+                </div>
+            </div>
+            <footer>🌟 Salam Adventures · Let your imagination run wild! · Monster Maker 🌟</footer>
+        `;
+        
+        container.innerHTML = html;
+    }
+    
+    let currentMonster = null;
+    let currentLevel = 'easy';
+    
+    function updateStatus(msg) {
+        const status = document.getElementById('statusMsg');
+        status.innerHTML = msg;
+        setTimeout(function() {
+            status.innerHTML = '👾 Salam Monster Maker · Ready';
+        }, 2000);
+    }
+    
+    document.getElementById('easyBtn').addEventListener('click', function() { 
+        currentLevel = 'easy';
+        currentMonster = generateEasyMonster(); 
+        renderMonster(currentMonster, 'easy'); 
+        updateStatus('🌱 Easy level monster ready!'); 
+    });
+    
+    document.getElementById('middleBtn').addEventListener('click', function() { 
+        currentLevel = 'middle';
+        currentMonster = generateMiddleMonster(); 
+        renderMonster(currentMonster, 'middle'); 
+        updateStatus('⭐ Middle level monster ready!'); 
+    });
+    
+    document.getElementById('hardBtn').addEventListener('click', function() { 
+        currentLevel = 'hard';
+        currentMonster = generateHardMonster(); 
+        renderMonster(currentMonster, 'hard'); 
+        updateStatus('🔥 Hard level epic monster ready!'); 
+    });
+    
+    document.getElementById('randomBtn').addEventListener('click', function() { 
+        currentMonster = generateRandomMonster(); 
+        renderMonster(currentMonster, currentLevel); 
+        updateStatus('🎲 Random monster created!'); 
+    });
+    
+    // Initial load
+    currentMonster = generateEasyMonster();
+    renderMonster(currentMonster, 'easy');
+</script>
+</body>
+</html>
