@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salam Adventures | Phonics Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root{
+      --green:#18b887;
+      --green-dark:#11966f;
+      --mint:#dff1eb;
+      --cream:#f6f1e7;
+      --orange:#f2a028;
+      --ink:#223042;
+      --muted:#718096;
+      --line:#cfd8e3;
+      --card:#fbfcfd;
+    }
+
+    body{
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg,#e9f8f0 0%,#d7efe4 100%);
+      padding: 20px;
+      color: var(--ink);
+    }
+
+    .toolbar{
+      max-width: 1100px;
+      margin: 0 auto 22px;
+      background: #fff;
+      border-radius: 999px;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      border: 1px solid rgba(24,184,135,.18);
+    }
+
+    .btn{
+      border: none;
+      border-radius: 999px;
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .btn:hover{
+      transform: translateY(-1px);
+    }
+
+    .btn-main{ background: var(--green); }
+    .btn-main:hover{ background: var(--green-dark); }
+
+    .btn-alt{ background: #f2a23a; }
+    .btn-alt:hover{ background: #de8d21; }
+
+    .btn-print{ background: #4b89f0; }
+    .btn-print:hover{ background: #2f74e8; }
+
+    .status{
+      background: #f2f7fb;
+      color: var(--green-dark);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .page{
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 18px 38px rgba(0,0,0,.15);
+      padding: 15mm 15mm 14mm;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      border-bottom:3px solid var(--green);
+      padding-bottom:12px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .logo-wrap{
+      width:68px;
+      height:68px;
+      border-radius:14px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#f8fcfa;
+      border:1px solid #dceee7;
+      flex-shrink:0;
+    }
+
+    .logo-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .brand h1{
+      color:var(--green);
+      font-size:32px;
+      line-height:1;
+      margin-bottom:5px;
+    }
+
+    .brand p{
+      color:#64748b;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .meta{
+      min-width:200px;
+      font-size:13px;
+      font-weight:700;
+      color:#111;
+    }
+
+    .meta div{
+      margin:6px 0;
+    }
+
+    .fill-line{
+      display:inline-block;
+      min-width:115px;
+      border-bottom:2px solid #111;
+      transform: translateY(-2px);
+    }
+
+    .section{
+      margin-top:18px;
+    }
+
+    .cream-box{
+      background:var(--cream);
+      border:1.5px solid var(--orange);
+      border-radius:14px;
+      padding:18px 18px 14px;
+    }
+
+    .mini-title{
+      font-size:13px;
+      color:#e78e00;
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+
+    .trace-row{
+      margin:18px 0 24px;
+      position:relative;
+      min-height:68px;
+    }
+
+    .trace-guide-top{
+      border-top:1px dashed #ccd6e0;
+      position:absolute;
+      left:0;
+      right:0;
+      top:22px;
+    }
+
+    .trace-base{
+      border-bottom:1.5px solid #222;
+      position:absolute;
+      left:0;
+      right:0;
+      top:58px;
+    }
+
+    .trace-main{
+      position:absolute;
+      left:18px;
+      top:18px;
+      font-size:34px;
+      font-weight:800;
+      color:#000;
+      letter-spacing:.5px;
+    }
+
+    .trace-ghost{
+      position:absolute;
+      top:18px;
+      font-size:34px;
+      font-weight:800;
+      color:#dce4ef;
+      letter-spacing:.5px;
+    }
+
+    .ghost-one{ left:210px; }
+    .ghost-two{ left:410px; }
+
+    .section-title{
+      background: linear-gradient(90deg,#dcefe8 0%,#edf7f3 100%);
+      border-left:5px solid var(--green);
+      color:var(--green);
+      font-weight:800;
+      font-size:14px;
+      text-transform:uppercase;
+      padding:9px 14px;
+      margin-bottom:12px;
+    }
+
+    .card-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .phonics-card{
+      background:#fcfcfd;
+      border:1px solid #d8dee8;
+      border-radius:14px;
+      padding:14px;
+      min-height:126px;
+      text-align:center;
+    }
+
+    .phonics-prompt{
+      font-size:14px;
+      color:#64748b;
+      margin-bottom:16px;
+      line-height:1.35;
+    }
+
+    .big-word{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:2px;
+      color:#102a43;
+    }
+
+    .missing-box{
+      width:30px;
+      height:30px;
+      border:1.5px solid #333;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-right:8px;
+      vertical-align:middle;
+      background:#fff;
+    }
+
+    .small-note{
+      font-size:12px;
+      color:#8a94a6;
+      margin-top:10px;
+    }
+
+    .sentence-item{
+      position:relative;
+      min-height:64px;
+      margin:18px 0 22px;
+    }
+
+    .sentence-guide-top{
+      position:absolute;
+      left:0;
+      right:0;
+      top:20px;
+      border-top:1px dashed #ccd6e0;
+    }
+
+    .sentence-base{
+      position:absolute;
+      left:0;
+      right:0;
+      top:48px;
+      border-bottom:1.5px solid #222;
+    }
+
+    .sentence-ghost{
+      position:absolute;
+      left:14px;
+      top:10px;
+      font-size:25px;
+      font-weight:700;
+      color:#dce4ef;
+      letter-spacing:1px;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:16px;
+    }
+
+    .write-row{
+      border:1px solid #d8dee8;
+      border-radius:14px;
+      padding:10px 14px;
+      margin-bottom:12px;
+      background:#fcfcfd;
+    }
+
+    .write-word{
+      font-size:30px;
+      font-weight:800;
+      color:#000;
+      letter-spacing:1px;
+    }
+
+    .triple-lines{
+      margin-top:8px;
+    }
+
+    .triple-lines div{
+      border-top:1px dashed #d3dbe6;
+      height:12px;
+    }
+
+    .digraph-card{
+      background:#edf8fb;
+      border:1px solid #cde9ef;
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .digraph-head{
+      color:var(--green);
+      font-size:15px;
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+
+    .digraph-sub{
+      font-size:14px;
+      color:#64748b;
+      margin-bottom:10px;
+    }
+
+    .scene{
+      background:linear-gradient(180deg,#dff4fb 0%,#c8eef7 100%);
+      border-radius:16px;
+      padding:18px 14px;
+      text-align:center;
+      margin:10px 0 12px;
+    }
+
+    .scene-icon{
+      font-size:44px;
+      margin-bottom:4px;
+    }
+
+    .digraph-big{
+      font-size:60px;
+      font-weight:900;
+      line-height:1;
+      color:#1f7ea1;
+    }
+
+    .digraph-words{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:22px;
+      letter-spacing:2px;
+    }
+
+    footer{
+      margin-top:20px;
+      padding-top:10px;
+      border-top:1px solid #e5ebf2;
+      text-align:center;
+      font-size:10px;
+      color:#96a3b5;
+    }
+
+    @media print{
+      body{
+        background:#fff;
+        padding:0;
+      }
+      .toolbar{
+        display:none;
+      }
+      .page{
+        width:100%;
+        min-height:auto;
+        box-shadow:none;
+        padding:12mm;
+      }
+    }
+
+    @media (max-width: 900px){
+      .page{
+        width:100%;
+        min-height:auto;
+      }
+      .card-grid,
+      .two-col{
+        grid-template-columns:1fr;
+      }
+      .ghost-one{ left:45%; }
+      .ghost-two{ left:70%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <button class="btn btn-main" id="newSheetBtn">✨ New Phonics Sheet</button>
+    <button class="btn btn-alt" id="refreshBtn">🔤 Refresh Words</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+    <div class="status" id="statusMsg">🌟 Ready for phonics fun</div>
+  </div>
+
+  <div class="page" id="worksheet"></div>
+
+  <script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png";
+
+    const sightWords = ["come","look","play","this","here","jump","find","little"];
+    const beginningSet = [
+      {emoji:"🐱", label:"Furry pet", shown:"at"},
+      {emoji:"🧢", label:"Hat on head", shown:"at"},
+      {emoji:"🖊️", label:"Ink pen", shown:"en"},
+      {emoji:"🚌", label:"School bus", shown:"us"},
+      {emoji:"🌞", label:"Yellow sun", shown:"un"},
+      {emoji:"🐕", label:"Friendly dog", shown:"og"},
+      {emoji:"🐸", label:"Green frog", shown:"rog"},
+      {emoji:"🐷", label:"Pink pig", shown:"ig"},
+      {emoji:"🛏️", label:"Cozy bed", shown:"ed"}
+    ];
+
+    const tracingSentences = [
+      "the cat sat on the mat.",
+      "i can see the big sun.",
+      "the dog is in the bus.",
+      "we can hop and run.",
+      "the pig is in bed.",
+      "i can look at the frog."
+    ];
+
+    const cvcTrace = [
+      {emoji:"🐈", word:"cat"},
+      {emoji:"🐷", word:"pig"},
+      {emoji:"🛏️", word:"bed"},
+      {emoji:"☀️", word:"sun"},
+      {emoji:"🐶", word:"dog"},
+      {emoji:"🧢", word:"hat"}
+    ];
+
+    const digraphs = [
+      {digraph:"sh", icon:"🚢", prompt:"Read and write an 'sh' word.", parts:["_ip","_oe","_ark"]},
+      {digraph:"ch", icon:"🧀", prompt:"Read and write a 'ch' word.", parts:["_ip","_air","_in"]},
+      {digraph:"th", icon:"👍", prompt:"Read and write a 'th' word.", parts:["_umb","_ree","ba_"]}
+    ];
+
+    function shuffle(arr){
+      const a = [...arr];
+      for(let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pick(arr, n){
+      return shuffle(arr).slice(0, n);
+    }
+
+    function makeData(){
+      return {
+        sight: sightWords[Math.floor(Math.random() * sightWords.length)],
+        beginning: pick(beginningSet, 6),
+        sentences: pick(tracingSentences, 2),
+        cvc: pick(cvcTrace, 3),
+        digraph: pick(digraphs, 1)[0]
+      };
+    }
+
+    let current = makeData();
+
+    function render(data){
+      const beginningCards = data.beginning.map(item => `
+        <div class="phonics-card">
+          <div class="phonics-prompt">${item.emoji} ${item.label}</div>
+          <div class="big-word"><span class="missing-box"></span>${item.shown}</div>
+          <div class="small-note">write the first letter →</div>
+        </div>
+      `).join("");
+
+      const sentenceHtml = data.sentences.map(s => `
+        <div class="sentence-item">
+          <div class="sentence-guide-top"></div>
+          <div class="sentence-base"></div>
+          <div class="sentence-ghost">${s}</div>
+        </div>
+      `).join("");
+
+      const cvcHtml = data.cvc.map(item => `
+        <div class="write-row">
+          <div style="font-size:18px; margin-bottom:6px;">${item.emoji} <span class="write-word">${item.word}</span></div>
+          <div class="triple-lines"><div></div><div></div><div></div></div>
+        </div>
+      `).join("");
+
+      const digraphParts = data.digraph.parts.map(part => `
+        <div style="flex:1; text-align:center;">${part}</div>
+      `).join("");
+
+      document.getElementById("worksheet").innerHTML = `
+        <div class="header">
+          <div class="brand">
+            <div class="logo-wrap">
+              <img src="${logoUrl}" alt="Salam Adventures Logo"
+                   onerror="this.onerror=null;this.src='https://via.placeholder.com/68x68.png?text=SA';">
+            </div>
+            <div>
+              <h1>Salam Adventures</h1>
+              <p>Phonics Expedition: Level 1</p>
+            </div>
+          </div>
+          <div class="meta">
+            <div>Name: <span class="fill-line"></span></div>
+            <div>Date: <span class="fill-line"></span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="cream-box">
+            <div class="mini-title">⭐ Sight Word Practice ⭐</div>
+
+            <div class="trace-row">
+              <div class="trace-guide-top"></div>
+              <div class="trace-base"></div>
+              <div class="trace-main">${data.sight}</div>
+              <div class="trace-ghost ghost-one">${data.sight}</div>
+              <div class="trace-ghost ghost-two">${data.sight}</div>
+            </div>
+
+            <div class="trace-row">
+              <div class="trace-guide-top"></div>
+              <div class="trace-base"></div>
+              <div class="trace-main">${data.sight}</div>
+              <div class="trace-ghost ghost-one">${data.sight}</div>
+              <div class="trace-ghost ghost-two">${data.sight}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">🔤 Part 1: Phonics (Missing First Letter)</div>
+          <div class="card-grid">${beginningCards}</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📝 Part 2: Sentence Tracing</div>
+          ${sentenceHtml}
+        </div>
+
+        <div class="section">
+          <div class="section-title">✏️ Part 3: CVC Word Tracing</div>
+          <div class="two-col">
+            <div>${cvcHtml}</div>
+
+            <div class="digraph-card">
+              <div class="digraph-head">🔎 Part 4: Digraph Discovery</div>
+              <div class="digraph-sub">✏️ ${data.digraph.prompt}</div>
+
+              <div class="scene">
+                <div class="scene-icon">${data.digraph.icon}</div>
+                <div class="digraph-big">${data.digraph.digraph}</div>
+              </div>
+
+              <div class="digraph-words">${digraphParts}</div>
+            </div>
+          </div>
+        </div>
+
+        <footer>Salam Adventures • Phonics practice made simple and fun</footer>
+      `;
+    }
+
+    function flashStatus(text){
+      const s = document.getElementById("statusMsg");
+      s.textContent = text;
+      setTimeout(() => {
+        s.textContent = "🌟 Ready for phonics fun";
+      }, 1800);
+    }
+
+    function newSheet(){
+      current = makeData();
+      render(current);
+      flashStatus("✅ New phonics sheet ready");
+    }
+
+    function refreshWords(){
+      current.sight = sightWords[Math.floor(Math.random() * sightWords.length)];
+      current.beginning = pick(beginningSet, 6);
+      current.sentences = pick(tracingSentences, 2);
+      current.cvc = pick(cvcTrace, 3);
+      current.digraph = pick(digraphs, 1)[0];
+      render(current);
+      flashStatus("🔤 Words refreshed");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      render(current);
+      document.getElementById("newSheetBtn").addEventListener("click", newSheet);
+      document.getElementById("refreshBtn").addEventListener("click", refreshWords);
+    });
+  </script>
+
+</body>
+</html>
