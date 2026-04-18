@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salam Adventures | Division Generator with Pictorials - Easy, Middle & Hard</title>
+
+  <meta name="description" content="Free printable division worksheets with pictorials for kids. Generate easy, middle and hard division practice with visual sharing and grouping from Salam Adventures." />
+  <meta name="keywords" content="division generator, division worksheets, pictorial division, printable maths worksheets, Salam Adventures, division for kids" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f8ff;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg,#0ea5e9,#2563eb);
+      color: white;
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      background: white;
+      border-radius: 14px;
+      padding: 6px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .controls {
+      background: white;
+      padding: 18px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      gap: 10px;
+    }
+
+    select,input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary { background:#2563eb;color:white; }
+    .print { background:#f59e0b;color:white; }
+    .new { background:#10b981;color:white; }
+
+    .sheet {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .header {
+      border-bottom: 2px dashed #ccc;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: 30px;
+      margin: 5px 0;
+    }
+
+    .problems {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 15px;
+    }
+
+    .card {
+      border: 2px solid #dbeafe;
+      border-radius: 15px;
+      padding: 12px;
+    }
+
+    .equation {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
+    .groups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .box {
+      border: 2px dashed #60a5fa;
+      border-radius: 10px;
+      padding: 5px;
+      min-width: 50px;
+      min-height: 50px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #f59e0b;
+      border-radius: 50%;
+    }
+
+    .line {
+      display:inline-block;
+      width:80px;
+      border-bottom:2px solid black;
+      margin-left:8px;
+    }
+
+    @media print {
+      .topbar,.controls { display:none; }
+      .app { padding:0; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">
+        <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
+      </div>
+      <h1>Salam Adventures</h1>
+    </div>
+    <div>Division Generator</div>
+  </div>
+
+  <div class="controls">
+    <div class="grid">
+      <select id="level">
+        <option value="easy">Easy</option>
+        <option value="middle">Middle</option>
+        <option value="hard">Hard</option>
+      </select>
+
+      <select id="count">
+        <option>6</option>
+        <option selected>8</option>
+        <option>10</option>
+      </select>
+
+      <select id="mode">
+        <option value="mixed">Mixed</option>
+        <option value="sharing">Sharing</option>
+        <option value="grouping">Grouping</option>
+      </select>
+
+      <input id="max" type="number" value="24">
+
+      <input id="titleInput" value="Division with Pictorials">
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:10px;">
+      <button class="primary" onclick="generate()">Generate</button>
+      <button class="print" onclick="window.print()">Print</button>
+      <button class="new" onclick="generate()">New</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <div class="header">
+      <h2 id="title" class="title">Division with Pictorials</h2>
+      Name: _________   Date: _________
+    </div>
+
+    <div id="problems" class="problems"></div>
+  </div>
+
+</div>
+
+<script>
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function settings(level){
+  if(level=="easy") return {d:[2,3,4],q:[1,2,3,4]};
+  if(level=="middle") return {d:[2,3,4,5,6,7],q:[2,3,4,5,6]};
+  return {d:[2,3,4,5,6,7,8,9],q:[2,3,4,5,6,7]};
+}
+
+function dots(n){
+  let s="";
+  for(let i=0;i<n;i++) s+="<div class='dot'></div>";
+  return s;
+}
+
+function problem(level,mode,max){
+  let set=settings(level);
+  let d,q,total;
+
+  do{
+    d=rand(set.d);
+    q=rand(set.q);
+    total=d*q;
+  } while(total>max);
+
+  if(mode=="mixed") mode=Math.random()<0.5?"sharing":"grouping";
+
+  return {d,q,total,mode};
+}
+
+function render(p,i){
+  let boxes="";
+
+  if(p.mode=="sharing"){
+    for(let i=0;i<p.d;i++) boxes+=`<div class="box">${dots(p.q)}</div>`;
+  } else {
+    for(let i=0;i<p.q;i++) boxes+=`<div class="box">${dots(p.d)}</div>`;
+  }
+
+  return `
+  <div class="card">
+    <div>Q${i+1}</div>
+    <div class="equation">${p.total} ÷ ${p.d} = <span class="line"></span></div>
+    <div class="groups">${boxes}</div>
+    Answer: <span class="line"></span>
+  </div>`;
+}
+
+function generate(){
+  let level=document.getElementById("level").value;
+  let count=parseInt(document.getElementById("count").value);
+  let mode=document.getElementById("mode").value;
+  let max=parseInt(document.getElementById("max").value);
+  let title=document.getElementById("titleInput").value;
+
+  document.getElementById("title").textContent=title;
+
+  let html="";
+  let used=new Set();
+
+  while(html.split("card").length-1 < count){
+    let p=problem(level,mode,max);
+    let key=p.total+"-"+p.d;
+    if(!used.has(key)){
+      used.add(key);
+      html+=render(p,used.size-1);
+    }
+  }
+
+  document.getElementById("problems").innerHTML=html;
+}
+
+generate();
+</script>
+
+</body>
+</html>
