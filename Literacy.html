@@ -28,7 +28,26 @@
         }
         
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; }
-        .logo-img { width: 80px; height: auto; }
+        .logo-img { 
+            width: 80px; 
+            height: auto; 
+            display: block;
+            object-fit: contain;
+        }
+        .logo-fallback {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
         
         .section-title { background: #ecfdf5; padding: 6px 12px; color: var(--primary); font-weight: 800; margin: 18px 0 8px; border-radius: 5px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; border-left: 4px solid var(--primary); }
 
@@ -63,7 +82,7 @@
 <div class="page" id="main-page"></div>
 
 <script>
-    // ============ DATA SOURCES (like Python lists) ============
+    // ============ DATA SOURCES ============
     const nouns = ["Apple", "Teacher", "London", "Cat", "Table", "Dog", "School"];
     const verbs = ["Jump", "Sing", "Read", "Run", "Sleep", "Write", "Draw"];
     const opposites = [
@@ -73,9 +92,8 @@
     ];
     const abcWords = ["Zebra", "Apple", "Monkey", "Glass", "Bird", "Yarn", "Ocean", "Kite", "Cat", "Dog"];
     
-    // ============ JAVASCRIPT GENERATOR FUNCTION (yields each part) ============
+    // ============ GENERATOR FUNCTION ============
     function* worksheetGenerator() {
-        // Step 1: Randomize all data
         const mixedGrammar = [...nouns.slice(0,4), ...verbs.slice(0,4)].sort(() => 0.5 - Math.random());
         yield { part: 1, type: "Grammar Sort", data: mixedGrammar, message: "✅ Part 1 generated: Grammar words mixed!" };
         
@@ -88,7 +106,6 @@
         const shuffledRight = [...rightOpposites].sort(() => 0.5 - Math.random());
         yield { part: 2, type: "Opposites Match", left: leftOpposites, right: shuffledRight, message: "✅ Part 2 generated: New opposite pairs!" };
         
-        // Final yield with complete data
         yield { 
             complete: true, 
             mixedGrammar, shuffledABC, leftOpposites, shuffledRight,
@@ -99,9 +116,7 @@
     let currentGenerator = null;
     let lastData = null;
 
-    // Function to generate the FULL page (like your original)
     function generateFullPage() {
-        // Reset and run the generator fully
         const gen = worksheetGenerator();
         let result = gen.next();
         let finalData = null;
@@ -119,10 +134,8 @@
         }
     }
     
-    // Step through generator one yield at a time
     function nextGeneratorStep() {
         if (!currentGenerator || lastData?.complete) {
-            // Start new generator
             currentGenerator = worksheetGenerator();
             lastData = null;
         }
@@ -132,16 +145,13 @@
         if (!result.done) {
             const stepData = result.value;
             if (stepData.complete) {
-                // Final step
                 renderWorksheet(stepData);
                 lastData = stepData;
                 document.getElementById('generatorStatus').innerHTML = '✨ ' + stepData.message;
                 currentGenerator = null;
             } else {
-                // Partial step - show progress
                 document.getElementById('generatorStatus').innerHTML = `⚡ ${stepData.message} (${stepData.type}) - Click again for next part`;
                 
-                // Store partial data
                 if (!lastData) lastData = {};
                 if (stepData.part === 1) lastData.mixedGrammar = stepData.data;
                 if (stepData.part === 3) lastData.shuffledABC = stepData.data;
@@ -150,7 +160,6 @@
                     lastData.shuffledRight = stepData.right;
                 }
                 
-                // Show partial worksheet
                 if (lastData.mixedGrammar || lastData.shuffledABC || lastData.leftOpposites) {
                     renderWorksheet(lastData, true);
                 }
@@ -161,7 +170,6 @@
         }
     }
     
-    // Render the worksheet (same as your original render function)
     function renderWorksheet(data, isPartial = false) {
         const page = document.getElementById('main-page');
         
@@ -170,11 +178,17 @@
         const leftOpposites = data.leftOpposites || opposites.slice(0,4).map(o => o.a);
         const shuffledRight = data.shuffledRight || opposites.slice(0,4).map(o => o.b).sort(() => 0.5 - Math.random());
         
+        const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png";
+        
         page.innerHTML = `
             <div class="header">
                 <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-                    <div style="width:80px; height:80px; background:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:14px;">
-                        SALAM
+                    <div style="position: relative;">
+                        <img src="${logoUrl}" alt="Salam Adventures Logo" class="logo-img" id="mainLogo" 
+                             onerror="this.style.display='none'; document.getElementById('fallbackLogo').style.display='flex';">
+                        <div id="fallbackLogo" class="logo-fallback" style="display: none;">
+                            SALAM<br>ADV
+                        </div>
                     </div>
                     <div>
                         <h1 style="margin:0; color:var(--primary); font-size:24px;">Salam Adventures</h1>
@@ -188,22 +202,22 @@
                 </div>
             </div>
 
-            <div class="section-title">Part 1: Grammar Sort (Noun vs. Verb)</div>
+            <div class="section-title">📚 Part 1: Grammar Sort (Noun vs. Verb)</div>
             <div style="text-align:center; margin-bottom:10px;">
                 ${mixedGrammar.map(w => `<span class="word-tag">${w}</span>`).join('')}
             </div>
             <div class="flex-row">
                 <div class="column">
-                    <b style="color:var(--secondary)">NOUNS (Naming)</b>
+                    <b style="color:var(--secondary)">📖 NOUNS (Naming words)</b>
                     <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
                 </div>
                 <div class="column">
-                    <b style="color:var(--primary)">VERBS (Action)</b>
+                    <b style="color:var(--primary)">⚡ VERBS (Action words)</b>
                     <span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span><span class="blank-line"></span>
                 </div>
             </div>
 
-            <div class="section-title">Part 2: Opposites Match</div>
+            <div class="section-title">🔄 Part 2: Opposites Match</div>
             <p style="font-size:12px; margin:0 0 10px;">Draw a line to connect the words with opposite meanings.</p>
             <div style="display:flex; justify-content:space-around; font-size:15px; font-weight:bold; padding:0 20px; flex-wrap:wrap;">
                 <div style="line-height:2.5; min-width:100px;">
@@ -214,13 +228,13 @@
                 </div>
             </div>
 
-            <div class="section-title">Part 3: Alphabetical Order</div>
+            <div class="section-title">🔤 Part 3: Alphabetical Order</div>
             <p style="font-size:12px; margin:0 0 10px;">Rewrite these words in ABC order: <b>${shuffledABC.join(", ")}</b></p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 ${shuffledABC.map((w, i) => `<div class="abc-item">${i+1}. ____________________</div>`).join('')}
             </div>
 
-            <div class="section-title">Part 4: Compound Word Bridge</div>
+            <div class="section-title">🔗 Part 4: Compound Word Bridge</div>
             <p style="font-size:12px; margin:0 0 10px;">Join two words to make one new word!</p>
             <div style="font-size:15px; line-height:2;">
                 1. Rain + Bow = ____________________ <br>
@@ -228,14 +242,27 @@
                 3. Sun + Flower = ____________________
             </div>
 
-            <div class="section-title">Part 5: Sentence Builder</div>
+            <div class="section-title">✍️ Part 5: Sentence Builder</div>
             <p style="font-size:12px; margin:0 0 10px;">Write a sentence using one <b>Noun</b> and one <b>Verb</b> from Part 1.</p>
             <div style="border: 1px solid #e5e7eb; height: 60px; border-radius: 8px; margin-top:5px; padding:10px; color:#9ca3af; background: #fefce8;">__________________________________________________________________</div>
 
             <div style="margin-top: 30px; text-align:center; font-size:10px; color:#9ca3af; border-top:1px solid #eee; padding-top:12px;">
-                © Salam Adventures • Mixed Literacy Skills • Master the Journey!
+                ⭐ Salam Adventures • Mixed Literacy Skills • Master the Journey! ⭐
             </div>
         `;
+        
+        // Try to load logo with cache busting
+        const logoImg = document.getElementById('mainLogo');
+        if (logoImg) {
+            logoImg.onerror = function() {
+                this.style.display = 'none';
+                const fallback = document.getElementById('fallbackLogo');
+                if (fallback) fallback.style.display = 'flex';
+            };
+            
+            // Add timestamp to avoid caching issues if needed
+            logoImg.src = logoUrl;
+        }
     }
     
     // Initial load
