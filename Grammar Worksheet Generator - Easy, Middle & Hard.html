@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Grammar Worksheet Generator - Easy, Middle & Hard Levels</title>
+    <meta name="description" content="Free printable grammar worksheets for kids with 3 difficulty levels. Practice nouns, verbs, adjectives, punctuation, sentence structure, tenses, and more. Perfect for early learners and ESL students.">
+    <meta name="keywords" content="grammar worksheets, nouns verbs adjectives, punctuation practice, sentence building, tenses worksheet, English grammar for kids, Salam Adventures">
+    <meta name="author" content="Salam Adventures">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --accent: #f59e0b;
+            --easy: #22c55e;
+            --middle: #f97316;
+            --hard: #ef4444;
+            --secondary: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #dcfce7 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 28px;
+            border-radius: 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-easy { background: var(--easy); color: white; }
+        .btn-easy:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-middle { background: var(--middle); color: white; }
+        .btn-middle:hover { background: #ea580c; transform: translateY(-2px); }
+        .btn-hard { background: var(--hard); color: white; }
+        .btn-hard:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-print { background: var(--secondary); color: white; }
+        .btn-print:hover { background: #7c3aed; transform: translateY(-2px); }
+
+        .status-pill {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .level-badge {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .level-tag {
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+        .level-easy { background: var(--easy); }
+        .level-middle { background: var(--middle); }
+        .level-hard { background: var(--hard); }
+
+        .worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 14mm 18mm;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .title h1 {
+            color: var(--primary);
+            font-size: 32px;
+            margin: 0;
+        }
+        .title p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .student-info {
+            background: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 28px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .section {
+            margin: 28px 0 32px;
+        }
+
+        .section-title {
+            background: #ecfdf5;
+            padding: 6px 18px;
+            border-left: 7px solid var(--primary);
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            border-radius: 0 30px 30px 0;
+            display: inline-block;
+        }
+
+        .word-bank {
+            background: #fefce8;
+            border-radius: 28px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #fde68a;
+        }
+
+        .word-tag {
+            display: inline-block;
+            background: white;
+            padding: 8px 18px;
+            margin: 6px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .grid-2cols {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .card-box {
+            flex: 1;
+            background: #f9f9ff;
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            min-width: 200px;
+        }
+
+        .blank-line {
+            border-bottom: 2px dashed #cbd5e1;
+            margin: 12px 0;
+            height: 28px;
+        }
+
+        .sentence-box {
+            background: #fefce8;
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 15px;
+            border: 1px solid #fde68a;
+        }
+
+        .dotted-line {
+            border-bottom: 2px dashed #94a3b8;
+            margin: 8px 0;
+            height: 32px;
+        }
+
+        .trace-line {
+            border-bottom: 2px solid #cbd5e1;
+            margin: 12px 0 20px;
+            height: 40px;
+            width: 100%;
+        }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .worksheet { box-shadow: none; padding: 15mm; width: 100%; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 35px;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn btn-easy" id="easyBtn">🌱 Easy Level</button>
+    <button class="btn btn-middle" id="middleBtn">⭐ Middle Level</button>
+    <button class="btn btn-hard" id="hardBtn">🔥 Hard Level</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="status-pill" id="statusMsg">📚 Salam Grammar · Ready</div>
+</div>
+
+<div class="worksheet" id="worksheetContainer">
+    <div style="text-align: center; padding: 60px;">Loading Salam Adventures Grammar...</div>
+</div>
+
+<script>
+    // Grammar Data
+    const easyNouns = ["cat", "dog", "sun", "tree", "bird", "fish", "house", "car", "ball", "flower"];
+    const easyVerbs = ["run", "jump", "sing", "eat", "sleep", "play", "laugh", "dance", "clap", "hop"];
+    const easyAdjectives = ["big", "small", "red", "blue", "happy", "sad", "fast", "slow", "tall", "short"];
+
+    const middleNouns = ["teacher", "garden", "ocean", "mountain", "butterfly", "elephant", "adventure", "journey"];
+    const middleVerbs = ["explore", "discover", "create", "imagine", "celebrate", "whisper", "travel", "wonder"];
+    const middleAdjectives = ["beautiful", "enormous", "mysterious", "courageous", "magnificent", "wonderful"];
+
+    const tenseVerbs = [
+        { present: "run", past: "ran", future: "will run" },
+        { present: "eat", past: "ate", future: "will eat" },
+        { present: "write", past: "wrote", future: "will write" },
+        { present: "sing", past: "sang", future: "will sing" },
+        { present: "jump", past: "jumped", future: "will jump" }
+    ];
+
+    function shuffle(arr) {
+        let copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+    }
+
+    function randomSubset(arr, count) {
+        return shuffle(arr).slice(0, count);
+    }
+
+    function renderEasy() {
+        const nouns = randomSubset(easyNouns, 6);
+        const verbs = randomSubset(easyVerbs, 6);
+        const adjectives = randomSubset(easyAdjectives, 4);
+        const mixedWords = shuffle([...nouns, ...verbs, ...adjectives]);
+
+        const container = document.getElementById('worksheetContainer');
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container"><div class="logo-text">س</div></div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Grammar Explorer · Easy Level</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-easy">🌱 Easy Level · Parts of Speech</span></div>
+            
+            <div class="section">
+                <div class="section-title">📚 Word Bank</div>
+                <div class="word-bank">${mixedWords.map(w => `<span class="word-tag">${w}</span>`).join('')}</div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🏷️ Sort the Words</div>
+                <div class="grid-2cols">
+                    <div class="card-box"><strong>📖 NOUNS</strong><div class="blank-line"></div><div class="blank-line"></div><div class="blank-line"></div></div>
+                    <div class="card-box"><strong>⚡ VERBS</strong><div class="blank-line"></div><div class="blank-line"></div><div class="blank-line"></div></div>
+                </div>
+                <div class="card-box" style="margin-top:15px;"><strong>✨ ADJECTIVES</strong><div class="blank-line"></div><div class="blank-line"></div></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">✏️ Fill in the Blank</div>
+                <div class="sentence-box">
+                    <p>1. The ___ cat is sleeping. (adjective)</p><div class="dotted-line"></div>
+                    <p>2. I like to ___ every morning. (verb)</p><div class="dotted-line"></div>
+                    <p>3. The ___ is shining brightly. (noun)</p><div class="dotted-line"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📝 Write Your Own Sentence</div>
+                <div class="sentence-box">
+                    <p>Write a sentence using a noun and a verb:</p><div class="trace-line"></div>
+                    <p>Write a sentence using an adjective:</p><div class="trace-line"></div>
+                </div>
+            </div>
+            <footer>🌟 Salam Adventures · Building strong writers · Easy level grammar 🌟</footer>
+        `;
+    }
+
+    function renderMiddle() {
+        const nouns = randomSubset(middleNouns, 4);
+        const verbs = randomSubset(middleVerbs, 4);
+        const adjectives = randomSubset(middleAdjectives, 4);
+
+        const container = document.getElementById('worksheetContainer');
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container"><div class="logo-text">س</div></div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Grammar Explorer · Middle Level</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-middle">⭐ Middle Level · Grammar & Punctuation</span></div>
+            
+            <div class="section">
+                <div class="section-title">📚 Word Banks</div>
+                <div class="grid-2cols">
+                    <div class="card-box"><strong>Nouns</strong><br>${nouns.map(w => `<span class="word-tag">${w}</span>`).join('')}</div>
+                    <div class="card-box"><strong>Verbs</strong><br>${verbs.map(w => `<span class="word-tag">${w}</span>`).join('')}</div>
+                    <div class="card-box"><strong>Adjectives</strong><br>${adjectives.map(w => `<span class="word-tag">${w}</span>`).join('')}</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔧 Fix the Sentences</div>
+                <div class="sentence-box">
+                    <p><strong>1.</strong> "the cat sat on the mat"</p><div class="dotted-line"></div>
+                    <p><strong>2.</strong> "she like to play outside"</p><div class="dotted-line"></div>
+                    <p><strong>3.</strong> "we went to the park yesterday"</p><div class="dotted-line"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🎨 Create a Story</div>
+                <div class="sentence-box">
+                    <p>Use at least 2 nouns, 2 verbs, and 1 adjective from the word banks:</p>
+                    <div class="trace-line" style="height:80px;"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">❓ Add Punctuation (. or ?)</div>
+                <div class="sentence-box">
+                    <p>1. What is your favorite color ___</p>
+                    <p>2. The sun rises in the east ___</p>
+                    <p>3. Can you help me ___</p>
+                </div>
+            </div>
+            <footer>🌟 Salam Adventures · Building strong writers · Middle level grammar 🌟</footer>
+        `;
+    }
+
+    function renderHard() {
+        const tenses = shuffle(tenseVerbs).slice(0, 4);
+
+        const container = document.getElementById('worksheetContainer');
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container"><div class="logo-text">س</div></div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Grammar Explorer · Hard Level</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-hard">🔥 Hard Level · Advanced Grammar</span></div>
+            
+            <div class="section">
+                <div class="section-title">⏰ Verb Tenses</div>
+                ${tenses.map(t => `<div class="sentence-box"><strong>${t.present}</strong> → Past: _____ &nbsp;&nbsp; Future: _____<div class="dotted-line"></div></div>`).join('')}
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔗 Conjunctions</div>
+                <div class="sentence-box">Write a sentence using <strong>"because"</strong>:<div class="dotted-line"></div></div>
+                <div class="sentence-box">Write a sentence using <strong>"although"</strong>:<div class="dotted-line"></div></div>
+                <div class="sentence-box">Write a sentence using <strong>"however"</strong>:<div class="dotted-line"></div></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📍 Prepositions</div>
+                <div class="sentence-box">Write a sentence using <strong>"through"</strong>:<div class="dotted-line"></div></div>
+                <div class="sentence-box">Write a sentence using <strong>"beyond"</strong>:<div class="dotted-line"></div></div>
+                <div class="sentence-box">Write a sentence using <strong>"between"</strong>:<div class="dotted-line"></div></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📝 Paragraph Writing</div>
+                <div class="sentence-box">
+                    <p><strong>Challenge:</strong> Write a paragraph (4-6 sentences) about an adventure. Use at least 1 conjunction and 1 preposition.</p>
+                    <div class="trace-line" style="height:120px;"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🏆 Bonus: Fix the Paragraph</div>
+                <div class="sentence-box">
+                    <p><em>"i go to the park yesterday. me and my friend play soccer. it was fun!"</em></p>
+                    <p>Rewrite correctly:</p>
+                    <div class="trace-line" style="height:60px;"></div>
+                </div>
+            </div>
+            <footer>🌟 Salam Adventures · Building strong writers · Hard level grammar 🌟</footer>
+        `;
+    }
+
+    function updateStatus(msg) {
+        const status = document.getElementById('statusMsg');
+        status.innerHTML = msg;
+        setTimeout(() => {
+            status.innerHTML = '📚 Salam Grammar · Ready';
+        }, 2000);
+    }
+
+    document.getElementById('easyBtn').addEventListener('click', () => { renderEasy(); updateStatus('🌱 Easy level worksheet ready!'); });
+    document.getElementById('middleBtn').addEventListener('click', () => { renderMiddle(); updateStatus('⭐ Middle level worksheet ready!'); });
+    document.getElementById('hardBtn').addEventListener('click', () => { renderHard(); updateStatus('🔥 Hard level worksheet ready!'); });
+
+    // Initial load
+    renderEasy();
+</script>
+</body>
+</html>
