@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | Number Line Generator - Addition & Subtraction | Easy, Middle & Hard Levels</title>
+    <meta name="description" content="Free printable number line worksheets for addition and subtraction with 3 difficulty levels. Perfect for K-5 math practice, homeschool, and classroom use.">
+    <meta name="keywords" content="number line, addition worksheets, subtraction worksheets, math for kids, Salam Adventures, homeschool math">
+    <meta name="author" content="Salam Adventures">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Salam Adventures | Number Line Generator">
+    <meta property="og:description" content="Free printable number line worksheets for addition and subtraction">
+    <meta property="og:image" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --easy: #22c55e;
+            --middle: #f97316;
+            --hard: #ef4444;
+            --secondary: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #dcfce7 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            max-width: 1100px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 28px;
+            border-radius: 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-easy { background: var(--easy); color: white; }
+        .btn-easy:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-middle { background: var(--middle); color: white; }
+        .btn-middle:hover { background: #ea580c; transform: translateY(-2px); }
+        .btn-hard { background: var(--hard); color: white; }
+        .btn-hard:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-print { background: var(--secondary); color: white; }
+        .btn-print:hover { background: #7c3aed; transform: translateY(-2px); }
+
+        .status-pill {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .level-badge {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .level-tag {
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+        .level-easy { background: var(--easy); }
+        .level-middle { background: var(--middle); }
+        .level-hard { background: var(--hard); }
+
+        .worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 15mm 18mm;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981, #059669);
+            overflow: hidden;
+        }
+
+        .salam-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-fallback {
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .title h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin: 0;
+        }
+        .title p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .student-info {
+            background: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 28px;
+            font-size: 12px;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        .problems-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .problem-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .math-problem {
+            flex: 1;
+            min-width: 220px;
+            background: #fefce8;
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid #fde68a;
+            page-break-inside: avoid;
+        }
+
+        .problem-number {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .problem-text {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .number-line-container {
+            margin: 12px 0;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .number-line-svg {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+        }
+
+        .instruction {
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .answer-line {
+            border-bottom: 2px dashed #94a3b8;
+            margin: 12px 0 5px;
+            height: 30px;
+            width: 100%;
+        }
+
+        .section {
+            margin: 25px 0 20px;
+        }
+
+        .section-title {
+            background: #ecfdf5;
+            padding: 6px 16px;
+            border-left: 7px solid var(--primary);
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            border-radius: 0 30px 30px 0;
+            display: inline-block;
+        }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .worksheet { box-shadow: none; padding: 15mm; width: 100%; }
+            .math-problem { break-inside: avoid; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 30px;
+            padding-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn btn-easy" id="easyBtn">🌱 Easy Level (0-10)</button>
+    <button class="btn btn-middle" id="middleBtn">⭐ Middle Level (0-20)</button>
+    <button class="btn btn-hard" id="hardBtn">🔥 Hard Level (0-100)</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="status-pill" id="statusMsg">📐 Salam Number Line · Ready</div>
+</div>
+
+<div class="worksheet" id="worksheetContainer">
+    <div style="text-align: center; padding: 60px;">Loading Salam Adventures Number Line...</div>
+</div>
+
+<script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+    
+    function drawNumberLine(start, end, highlightStart, highlightEnd, isAddition, maxNum) {
+        let range = end - start;
+        if (range <= 0) range = 10;
+        const width = 260;
+        const step = width / range;
+        const startX = 20;
+        
+        let svg = `<svg width="300" height="70" xmlns="http://www.w3.org/2000/svg">`;
+        svg += `<line x1="${startX}" y1="35" x2="${startX + width}" y2="35" stroke="#333" stroke-width="2"/>`;
+        
+        let stepCount = Math.min(11, range + 1);
+        let stepInterval = Math.ceil(range / 10);
+        
+        for (let i = start; i <= end; i += stepInterval) {
+            const x = startX + (i - start) * step;
+            if (x >= startX && x <= startX + width) {
+                svg += `<line x1="${x}" y1="30" x2="${x}" y2="40" stroke="#333" stroke-width="1.5"/>`;
+                svg += `<text x="${x}" y="58" text-anchor="middle" font-size="10" fill="#333">${i}</text>`;
+            }
+        }
+        
+        if (highlightStart !== undefined && highlightEnd !== undefined && highlightStart <= maxNum && highlightEnd <= maxNum) {
+            const x1 = startX + (highlightStart - start) * step;
+            const x2 = startX + (highlightEnd - start) * step;
+            const color = isAddition ? "#10b981" : "#ef4444";
+            if (x1 >= startX && x2 <= startX + width) {
+                svg += `<line x1="${x1}" y1="35" x2="${x2}" y2="35" stroke="${color}" stroke-width="5" stroke-linecap="round"/>`;
+                svg += `<circle cx="${x2}" cy="35" r="5" fill="${color}"/>`;
+                svg += `<circle cx="${x1}" cy="35" r="4" fill="${color}"/>`;
+            }
+        }
+        
+        svg += `</svg>`;
+        return svg;
+    }
+    
+    function generateEasyProblems() {
+        const problems = [];
+        for (let i = 0; i < 8; i++) {
+            const isAdd = Math.random() > 0.5;
+            if (isAdd) {
+                let a = Math.floor(Math.random() * 7) + 1;
+                let b = Math.floor(Math.random() * (9 - a)) + 1;
+                if (a + b > 9) b = 9 - a;
+                if (b < 1) b = 1;
+                problems.push({ num1: a, num2: b, op: '+', answer: a + b });
+            } else {
+                let a = Math.floor(Math.random() * 9) + 1;
+                let b = Math.floor(Math.random() * a) + 1;
+                if (a - b < 0) b = a;
+                problems.push({ num1: a, num2: b, op: '-', answer: a - b });
+            }
+        }
+        return problems;
+    }
+    
+    function generateMiddleProblems() {
+        const problems = [];
+        for (let i = 0; i < 8; i++) {
+            const isAdd = Math.random() > 0.5;
+            if (isAdd) {
+                let a = Math.floor(Math.random() * 14) + 1;
+                let b = Math.floor(Math.random() * (18 - a)) + 1;
+                if (a + b > 18) b = 18 - a;
+                if (b < 1) b = 1;
+                problems.push({ num1: a, num2: b, op: '+', answer: a + b });
+            } else {
+                let a = Math.floor(Math.random() * 18) + 1;
+                let b = Math.floor(Math.random() * a) + 1;
+                if (a - b < 0) b = a;
+                problems.push({ num1: a, num2: b, op: '-', answer: a - b });
+            }
+        }
+        return problems;
+    }
+    
+    function generateHardProblems() {
+        const problems = [];
+        for (let i = 0; i < 8; i++) {
+            const isAdd = Math.random() > 0.5;
+            if (isAdd) {
+                let a = Math.floor(Math.random() * 50) + 10;
+                let b = Math.floor(Math.random() * 35) + 1;
+                if (a + b > 95) b = 95 - a;
+                if (b < 1) b = 1;
+                problems.push({ num1: a, num2: b, op: '+', answer: a + b });
+            } else {
+                let a = Math.floor(Math.random() * 80) + 15;
+                let b = Math.floor(Math.random() * a) + 1;
+                if (a - b < 0) b = a;
+                problems.push({ num1: a, num2: b, op: '-', answer: a - b });
+            }
+        }
+        return problems;
+    }
+    
+    function renderEasy() {
+        const problems = generateEasyProblems();
+        const container = document.getElementById('worksheetContainer');
+        
+        let problemsHtml = '';
+        for (let i = 0; i < problems.length; i += 2) {
+            problemsHtml += `<div class="problem-row">`;
+            for (let j = i; j < i + 2 && j < problems.length; j++) {
+                const p = problems[j];
+                const startNum = p.op === '+' ? p.num1 : p.num1;
+                const endNum = p.answer;
+                let numberLineSvg = drawNumberLine(0, 10, startNum, endNum, p.op === '+', 10);
+                
+                problemsHtml += `
+                    <div class="math-problem">
+                        <div class="problem-number">Question ${j + 1}</div>
+                        <div class="problem-text">${p.num1} ${p.op} ${p.num2} = ______</div>
+                        <div class="number-line-container">${numberLineSvg}</div>
+                        <div class="instruction">🔵 Start at ${p.num1}, hop ${p.op === '+' ? 'right' : 'left'} ${p.num2}</div>
+                        <div class="answer-line"></div>
+                    </div>
+                `;
+            }
+            problemsHtml += `</div>`;
+        }
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Number Line Math · Easy Level (Numbers 0-10)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-easy">🌱 Easy Level · Addition & Subtraction (0-10)</span></div>
+            <div class="problems-container">${problemsHtml}</div>
+            <footer>🌟 Salam Adventures · Number line math mastery · Easy level 🌟</footer>
+        `;
+    }
+    
+    function renderMiddle() {
+        const problems = generateMiddleProblems();
+        const container = document.getElementById('worksheetContainer');
+        
+        let problemsHtml = '';
+        for (let i = 0; i < problems.length; i += 2) {
+            problemsHtml += `<div class="problem-row">`;
+            for (let j = i; j < i + 2 && j < problems.length; j++) {
+                const p = problems[j];
+                const startNum = p.op === '+' ? p.num1 : p.num1;
+                const endNum = p.answer;
+                let numberLineSvg = drawNumberLine(0, 20, startNum, endNum, p.op === '+', 20);
+                
+                problemsHtml += `
+                    <div class="math-problem">
+                        <div class="problem-number">Question ${j + 1}</div>
+                        <div class="problem-text">${p.num1} ${p.op} ${p.num2} = ______</div>
+                        <div class="number-line-container">${numberLineSvg}</div>
+                        <div class="instruction">⭐ Start at ${p.num1}, hop ${p.op === '+' ? 'right' : 'left'} ${p.num2}</div>
+                        <div class="answer-line"></div>
+                    </div>
+                `;
+            }
+            problemsHtml += `</div>`;
+        }
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Number Line Math · Middle Level (Numbers 0-20)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-middle">⭐ Middle Level · Addition & Subtraction (0-20)</span></div>
+            <div class="problems-container">${problemsHtml}</div>
+            <footer>🌟 Salam Adventures · Number line math mastery · Middle level 🌟</footer>
+        `;
+    }
+    
+    function renderHard() {
+        const problems = generateHardProblems();
+        const container = document.getElementById('worksheetContainer');
+        
+        let problemsHtml = '';
+        for (let i = 0; i < problems.length; i += 2) {
+            problemsHtml += `<div class="problem-row">`;
+            for (let j = i; j < i + 2 && j < problems.length; j++) {
+                const p = problems[j];
+                const startNum = p.op === '+' ? p.num1 : p.num1;
+                const endNum = p.answer;
+                let minVal = Math.max(0, Math.min(startNum, endNum) - 15);
+                let maxVal = Math.min(100, Math.max(startNum, endNum) + 15);
+                if (maxVal - minVal < 15) maxVal = minVal + 15;
+                let numberLineSvg = drawNumberLine(minVal, maxVal, startNum, endNum, p.op === '+', 100);
+                
+                problemsHtml += `
+                    <div class="math-problem">
+                        <div class="problem-number">Question ${j + 1}</div>
+                        <div class="problem-text">${p.num1} ${p.op} ${p.num2} = ______</div>
+                        <div class="number-line-container">${numberLineSvg}</div>
+                        <div class="instruction">🔥 Draw jumps on the number line</div>
+                        <div class="answer-line"></div>
+                    </div>
+                `;
+            }
+            problemsHtml += `</div>`;
+        }
+        
+        const wordProblemNum1 = Math.floor(Math.random() * 50) + 30;
+        const wordProblemNum2 = Math.floor(Math.random() * 25) + 5;
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Number Line Math · Hard Level (Numbers 0-100)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-hard">🔥 Hard Level · Addition & Subtraction (0-100)</span></div>
+            <div class="problems-container">${problemsHtml}</div>
+            <div class="section">
+                <div class="section-title">🏆 Challenge Word Problem</div>
+                <div class="math-problem">
+                    <div class="problem-text">Salam has ${wordProblemNum1} stickers. He gives away ${wordProblemNum2} to his friend. How many stickers does Salam have left?</div>
+                    <div class="answer-line" style="height:50px;"></div>
+                </div>
+            </div>
+            <footer>🌟 Salam Adventures · Number line math mastery · Hard level 🌟</footer>
+        `;
+    }
+    
+    function updateStatus(msg) {
+        const status = document.getElementById('statusMsg');
+        status.innerHTML = msg;
+        setTimeout(() => {
+            status.innerHTML = '📐 Salam Number Line · Ready';
+        }, 2000);
+    }
+    
+    document.getElementById('easyBtn').addEventListener('click', () => { renderEasy(); updateStatus('🌱 Easy level worksheet ready!'); });
+    document.getElementById('middleBtn').addEventListener('click', () => { renderMiddle(); updateStatus('⭐ Middle level worksheet ready!'); });
+    document.getElementById('hardBtn').addEventListener('click', () => { renderHard(); updateStatus('🔥 Hard level worksheet ready!'); });
+    
+    renderEasy();
+</script>
+</body>
+</html>
