@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Adventures | English Explorer Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --accent: #f59e0b;
+            --secondary: #3b82f6;
+            --ink: #1f2937;
+            --paper: #fefce8;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Neue', sans-serif;
+            background: linear-gradient(135deg, #e6f7ec 0%, #c8f0dc 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Controls Bar */
+        .toolbar {
+            max-width: 1100px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 60px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.3);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .status-badge {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* A4 Worksheet */
+        .worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 15mm 18mm;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        /* Header with Logo */
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-wrapper {
+            background: #f0fdf4;
+            border-radius: 20px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .salam-logo {
+            width: 80px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        .title-section h1 {
+            color: var(--primary);
+            font-size: 32px;
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+
+        .title-section p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .student-info {
+            text-align: right;
+            font-size: 12px;
+            background: #f8fafc;
+            padding: 8px 14px;
+            border-radius: 16px;
+        }
+
+        /* Sections */
+        .section {
+            margin: 28px 0 32px 0;
+        }
+
+        .section-title {
+            background: #ecfdf5;
+            padding: 8px 16px;
+            border-left: 6px solid var(--primary);
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            border-radius: 0 20px 20px 0;
+            display: inline-block;
+        }
+
+        /* Vocabulary cards */
+        .word-bank {
+            background: #fefce8;
+            border-radius: 28px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #fde68a;
+        }
+
+        .word-tag {
+            display: inline-block;
+            background: white;
+            padding: 8px 18px;
+            margin: 6px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Grids */
+        .grid-2cols {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .card-box {
+            flex: 1;
+            background: #f9f9ff;
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .blank-line {
+            border-bottom: 2px dashed #cbd5e1;
+            margin: 12px 0;
+            height: 28px;
+        }
+
+        .match-pair {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            margin: 10px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .abc-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .abc-item {
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-weight: 500;
+        }
+
+        .compound-row {
+            background: #fef2e8;
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .sentence-area {
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 18px;
+            background: #faf9fe;
+            min-height: 85px;
+            margin-top: 12px;
+        }
+
+        @media print {
+            .toolbar {
+                display: none;
+            }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .worksheet {
+                box-shadow: none;
+                padding: 15mm;
+                width: 100%;
+            }
+            .btn, .status-badge {
+                display: none;
+            }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 35px;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button class="btn btn-primary" id="generateBtn">✨ New Adventure Worksheet</button>
+    <button class="btn btn-accent" id="stepBtn">⚡ Step-by-Step Refresh</button>
+    <button class="btn btn-secondary" onclick="window.print()">🖨️ Print / Save PDF</button>
+    <div class="status-badge" id="statusMsg">🌟 Ready to explore English</div>
+</div>
+
+<div class="worksheet" id="worksheetContainer">
+    <!-- dynamic content will be injected here -->
+    <div style="text-align: center; padding: 50px;">Loading Salam Adventures...</div>
+</div>
+
+<script>
+    // =============== DATA BANK ===============
+    const nouns = ["Elephant", "Teacher", "Garden", "Pencil", "Ocean", "Dragon", "Cloud"];
+    const verbs = ["Leap", "Whisper", "Sparkle", "Build", "Explore", "Sing", "Discover"];
+    const oppositesLib = [
+        { a: "Bright", b: "Dark" }, { a: "Heavy", b: "Light" }, { a: "Old", b: "New" },
+        { a: "Laugh", b: "Cry" }, { a: "Strong", b: "Weak" }, { a: "Rich", b: "Poor" }
+    ];
+    const vocabBank = ["brave", "curious", "majestic", "swift", "gentle", "clever", "dazzling"];
+    const compoundBase = [
+        { w1: "Butter", w2: "fly", result: "Butterfly" },
+        { w1: "Rain", w2: "bow", result: "Rainbow" },
+        { w1: "Star", w2: "fish", result: "Starfish" },
+        { w1: "Tooth", w2: "brush", result: "Toothbrush" }
+    ];
+    const abcSource = ["Zebra", "Lemon", "Apple", "Moon", "River", "Island", "Kite", "Falcon"];
+
+    // ---------- Helper: shuffle array ----------
+    function shuffle(arr) {
+        let a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    // ---------- generate dynamic data ----------
+    function generateWorksheetData() {
+        // 4 nouns + 4 verbs mixed
+        const selectedNouns = shuffle(nouns).slice(0, 3);
+        const selectedVerbs = shuffle(verbs).slice(0, 3);
+        const mixedGrammar = shuffle([...selectedNouns, ...selectedVerbs]);
+        
+        // opposites: pick 4 pairs, shuffle left and right
+        const selectedOppos = shuffle(oppositesLib).slice(0, 4);
+        const leftCol = selectedOppos.map(p => p.a);
+        let rightCol = selectedOppos.map(p => p.b);
+        const shuffledRight = shuffle(rightCol);
+        
+        // alphabetical order: random 5 words
+        const abcRaw = shuffle(abcSource).slice(0, 5);
+        
+        // compound word: pick 3 distinct
+        const compoundItems = shuffle(compoundBase).slice(0, 3);
+        
+        // extra challenge: adjective vocabulary
+        const adjBank = shuffle(vocabBank).slice(0, 3);
+        
+        return {
+            mixedGrammar,
+            leftOpposites: leftCol,
+            shuffledRight,
+            abcWords: abcRaw,
+            compoundItems,
+            adjBank,
+            generatedAt: new Date().toLocaleTimeString()
+        };
+    }
+
+    // ---------- RENDER WORKSHEET WITH LOGO (YOUR URL) ----------
+    function renderWorksheet(data, isPartialHint = false) {
+        const container = document.getElementById('worksheetContainer');
+        if (!container) return;
+        
+        const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png";
+        
+        // Build grammar sort lines (blanks)
+        const grammarBlanks = `<div class="blank-line"></div><div class="blank-line"></div><div class="blank-line"></div>`;
+        
+        // Opposites match HTML
+        const leftHtml = data.leftOpposites.map(word => `<div style="margin: 12px 0; font-size: 18px; font-weight:600;">🔹 ${word}</div>`).join('');
+        const rightHtml = data.shuffledRight.map(word => `<div style="margin: 12px 0; font-size: 18px; font-weight:600;">🔸 ${word}</div>`).join('');
+        
+        // ABC order lines
+        const abcLines = data.abcWords.map((w, idx) => `
+            <div class="abc-item">
+                <strong>${idx+1}.</strong> _____________  <span style="color:#94a3b8; font-size:12px;"> (${w})</span>
+            </div>
+        `).join('');
+        
+        // Compound words section
+        const compoundHtml = data.compoundItems.map(item => `
+            <div class="compound-row">
+                🌟 ${item.w1} + ${item.w2} = <span style="border-bottom:2px dotted #10b981; min-width:100px; display:inline-block; width:120px;">___________</span> 
+                <span style="font-size:12px; color:#64748b;"> (hint: ${item.result[0]}______)</span>
+            </div>
+        `).join('');
+        
+        // Build adjectives / vocabulary builder
+        const vocabBuilder = data.adjBank.map(adj => `
+            <span class="word-tag">✨ ${adj}</span>
+        `).join('');
+        
+        const html = `
+            <div class="hero-header">
+                <div class="brand">
+                    <div class="logo-wrapper">
+                        <img src="${logoUrl}" alt="Salam Adventures Logo" class="salam-logo" 
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2248%22 fill=%22%2310b981%22/%3E%3Ctext x=%2250%22 y=%2268%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2242%22 font-weight=%22bold%22%3Eس%3C/text%3E%3C/svg%3E';">
+                    </div>
+                    <div class="title-section">
+                        <h1>Salam Adventures</h1>
+                        <p>English Expedition • Creative Literacy Lab</p>
+                    </div>
+                </div>
+                <div class="student-info">
+                    📖 Explorer: _________________ <br>
+                    📅 Date: ___________________ <br>
+                    🌟 Level: Adventurer
+                </div>
+            </div>
+            
+            <!-- WORD BANK / GRAMMAR MIX -->
+            <div class="section">
+                <div class="section-title">📚 Part 1: Grammar Mix-Up (Noun / Verb Sort)</div>
+                <div class="word-bank">
+                    ${data.mixedGrammar.map(w => `<span class="word-tag">${w}</span>`).join('')}
+                </div>
+                <div class="grid-2cols">
+                    <div class="card-box">
+                        <strong>🏷️ NOUNS (person, place, thing)</strong>
+                        ${grammarBlanks}
+                    </div>
+                    <div class="card-box">
+                        <strong>⚡ VERBS (action / doing)</strong>
+                        ${grammarBlanks}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- OPPOSITES MATCH -->
+            <div class="section">
+                <div class="section-title">🔄 Part 2: Opposite Expedition</div>
+                <p style="margin-bottom: 12px; font-size: 13px;">✏️ Draw a line or write the matching opposite number.</p>
+                <div class="grid-2cols" style="gap: 30px;">
+                    <div class="card-box" style="background:#fefce8;">
+                        <strong>COLUMN A</strong>
+                        ${leftHtml}
+                    </div>
+                    <div class="card-box" style="background:#fefce8;">
+                        <strong>COLUMN B</strong>
+                        ${rightHtml}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ALPHABETICAL ORDER -->
+            <div class="section">
+                <div class="section-title">🔤 Part 3: Alphabetical Mastery</div>
+                <p style="margin-bottom: 6px;">📝 Rewrite these words in correct ABC order:</p>
+                <div class="abc-list">
+                    ${abcLines}
+                </div>
+            </div>
+            
+            <!-- COMPOUND WORDS + VOCABULARY BUILDER -->
+            <div class="section">
+                <div class="section-title">🧩 Part 4: Compound Word Bridge</div>
+                <p style="font-size:13px; margin-bottom: 8px;">Join two words to make a brand new word!</p>
+                ${compoundHtml}
+            </div>
+            
+            <!-- ADJECTIVE / DESCRIBING WORDS -->
+            <div class="section">
+                <div class="section-title">✨ Part 5: Vocabulary Spark</div>
+                <div class="word-bank" style="background:#e6f7f0;">
+                    <strong>⭐ Describe the world! Use these adjectives:</strong><br><br>
+                    ${vocabBuilder}
+                </div>
+                <div class="sentence-area">
+                    <strong>📝 Your sentence (use one adjective + noun from Part 1):</strong><br>
+                    <div style="height: 55px; border-bottom: 1px solid #cbd5e1; margin-top: 10px;"></div>
+                </div>
+            </div>
+            
+            <!-- BONUS CHALLENGE -->
+            <div class="section">
+                <div class="section-title">🏆 Part 6: Salam Story Starter</div>
+                <div class="sentence-area" style="background:#fff7ed;">
+                    ✨ Write a short adventure sentence using the word <strong>"Adventure"</strong> or <strong>"Discover"</strong>:<br>
+                    <div style="height: 65px; border-bottom: 2px dashed #f59e0b; margin-top: 12px;"></div>
+                </div>
+            </div>
+            
+            <footer>
+                🐉 Salam Adventures • Where every word becomes a journey • Mixed Literacy Explorer 🌍
+            </footer>
+        `;
+        
+        container.innerHTML = html;
+        
+        // optional: fix logo loading with retry awareness
+        const logoImg = container.querySelector('.salam-logo');
+        if (logoImg) {
+            logoImg.onerror = function(e) {
+                // fallback SVG if external fails (keeps brand identity)
+                this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2310b981'/%3E%3Ctext x='50' y='68' text-anchor='middle' fill='white' font-size='42' font-weight='bold'%3Eس%3C/text%3E%3C/svg%3E";
+            };
+        }
+    }
+    
+    // ---------- GENERATOR WITH STEP LOGIC (playful) ----------
+    let currentStepData = null;
+    let stepIndex = 0;
+    let fullDataCache = null;
+    
+    function freshFullGenerate() {
+        const newData = generateWorksheetData();
+        fullDataCache = newData;
+        currentStepData = null;
+        renderWorksheet(newData);
+        updateStatus("✅ New worksheet generated! Salam logo active.", true);
+        return newData;
+    }
+    
+    function stepByStepRefresh() {
+        if (!fullDataCache || stepIndex >= 3) {
+            // start fresh cycle
+            fullDataCache = generateWorksheetData();
+            stepIndex = 0;
+        }
+        
+        // Simulate progressive reveal: update parts of the data incrementally
+        if (stepIndex === 0) {
+            // rotate grammar mix
+            const newNouns = shuffle(nouns).slice(0, 3);
+            const newVerbs = shuffle(verbs).slice(0, 3);
+            fullDataCache.mixedGrammar = shuffle([...newNouns, ...newVerbs]);
+            updateStatus("⚡ Step 1: Grammar words refreshed!", false);
+        } else if (stepIndex === 1) {
+            // rotate opposites
+            const newOpp = shuffle(oppositesLib).slice(0, 4);
+            fullDataCache.leftOpposites = newOpp.map(o => o.a);
+            fullDataCache.shuffledRight = shuffle(newOpp.map(o => o.b));
+            updateStatus("🔄 Step 2: New opposite pairs generated!", false);
+        } else if (stepIndex === 2) {
+            // rotate ABC words and adjectives
+            fullDataCache.abcWords = shuffle(abcSource).slice(0, 5);
+            fullDataCache.adjBank = shuffle(vocabBank).slice(0, 3);
+            fullDataCache.compoundItems = shuffle(compoundBase).slice(0, 3);
+            updateStatus("✨ Step 3: Alphabet & vocabulary refreshed! Ready to print.", true);
+        }
+        
+        renderWorksheet(fullDataCache, true);
+        stepIndex++;
+        if (stepIndex >= 3) stepIndex = 0; // reset cycle after complete
+    }
+    
+    function updateStatus(msg, isSuccess) {
+        const statusDiv = document.getElementById('statusMsg');
+        if (statusDiv) {
+            statusDiv.innerHTML = isSuccess ? `🎉 ${msg}` : `⚡ ${msg}`;
+            setTimeout(() => {
+                if (statusDiv.innerHTML.includes(msg)) {
+                    if (!isSuccess) statusDiv.innerHTML = "🌟 Salam generator ready!";
+                }
+            }, 1800);
+        }
+    }
+    
+    // ---- attach events & initial load ----
+    window.addEventListener('DOMContentLoaded', () => {
+        freshFullGenerate();
+        
+        const genBtn = document.getElementById('generateBtn');
+        const stepBtn = document.getElementById('stepBtn');
+        
+        if (genBtn) genBtn.addEventListener('click', () => {
+            freshFullGenerate();
+            stepIndex = 0;   // reset step index on full generate
+        });
+        if (stepBtn) stepBtn.addEventListener('click', () => {
+            if (!fullDataCache) freshFullGenerate();
+            stepByStepRefresh();
+        });
+    });
+</script>
+</body>
+</html>
