@@ -1,16 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salam Adventures | Time Worksheet Generator - Reading Clocks & Elapsed Time | Easy, Middle & Hard Levels</title>
     <meta name="description" content="Free printable time worksheets with pictorial clock faces. Learn to read analog clocks, draw clock hands, and calculate elapsed time. 3 difficulty levels for K-5 math, homeschool, and classroom use.">
-    <meta name="keywords" content="time worksheets, reading clocks, analog clock, telling time, elapsed time, draw clock hands, hour and half hour, 5 minute intervals, Salam Adventures, homeschool math, K-5 math, printable math worksheets, time practice">
+    <meta name="keywords" content="time worksheets, reading clocks, analog clock, telling time, elapsed time, draw clock hands, Salam Adventures, homeschool math, K-5 math">
     <meta name="author" content="Salam Adventures">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="Salam Adventures | Time Worksheet Generator - Reading Clocks & Elapsed Time">
-    <meta property="og:description" content="Free printable time worksheets with pictorial clock faces. Learn to read analog clocks, draw hands, and calculate elapsed time. 3 difficulty levels for K-5 math.">
+    <meta property="og:description" content="Free printable time worksheets with pictorial clock faces. 3 difficulty levels for K-5 math.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png">
-    <meta property="og:url" content="https://salamtruthfulltd-alt.github.io/salam-adventures-games/">
-    <meta name="twitter:card" content="summary_large_image">
-    <!-- Your styles here -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --easy: #22c55e;
+            --middle: #f97316;
+            --hard: #ef4444;
+            --secondary: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #dcfce7 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .toolbar {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px 28px;
+            border-radius: 80px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .btn {
+            padding: 10px 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-easy { background: var(--easy); color: white; }
+        .btn-easy:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-middle { background: var(--middle); color: white; }
+        .btn-middle:hover { background: #ea580c; transform: translateY(-2px); }
+        .btn-hard { background: var(--hard); color: white; }
+        .btn-hard:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-print { background: var(--secondary); color: white; }
+        .btn-print:hover { background: #7c3aed; transform: translateY(-2px); }
+
+        .status-pill {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .level-badge {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .level-tag {
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+        .level-easy { background: var(--easy); }
+        .level-middle { background: var(--middle); }
+        .level-hard { background: var(--hard); }
+
+        .worksheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 15mm 18mm;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #10b981, #059669);
+            overflow: hidden;
+        }
+
+        .salam-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-fallback {
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .title h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin: 0;
+        }
+        .title p {
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .student-info {
+            background: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 28px;
+            font-size: 12px;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        .problems-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .problem-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .time-card {
+            flex: 1;
+            min-width: 250px;
+            background: #fefce8;
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid #fde68a;
+            page-break-inside: avoid;
+            text-align: center;
+        }
+
+        .problem-number {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .clock-img {
+            margin: 10px auto;
+            display: block;
+            width: 140px;
+            height: 140px;
+        }
+
+        .time-text {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .answer-line {
+            border-bottom: 2px dashed #94a3b8;
+            margin: 12px 0 5px;
+            height: 35px;
+            width: 100%;
+        }
+
+        .instruction {
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .section {
+            margin: 25px 0 20px;
+        }
+
+        .section-title {
+            background: #ecfdf5;
+            padding: 6px 16px;
+            border-left: 7px solid var(--primary);
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            border-radius: 0 30px 30px 0;
+            display: inline-block;
+        }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; padding: 0; margin: 0; }
+            .worksheet { box-shadow: none; padding: 15mm; width: 100%; }
+            .time-card { break-inside: avoid; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 30px;
+            padding-top: 12px;
+        }
+        
+        .flex-clocks {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .clock-label {
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
+<body>
+
+<div class="toolbar">
+    <button class="btn btn-easy" id="easyBtn">🌱 Easy Level (Hour & Half Hour)</button>
+    <button class="btn btn-middle" id="middleBtn">⭐ Middle Level (5-Minute Intervals)</button>
+    <button class="btn btn-hard" id="hardBtn">🔥 Hard Level (Minutes & Elapsed Time)</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
+    <div class="status-pill" id="statusMsg">⏰ Salam Time · Ready</div>
+</div>
+
+<div class="worksheet" id="worksheetContainer">
+    <div style="text-align: center; padding: 60px;">Loading Salam Adventures Time Worksheet...</div>
+</div>
+
+<script>
+    const logoUrl = "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png";
+    
+    function drawClock(hours, minutes, showHands = true) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 140;
+        canvas.height = 140;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw clock face
+        ctx.beginPath();
+        ctx.arc(70, 70, 65, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw numbers
+        ctx.font = 'bold 14px Arial';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (let i = 1; i <= 12; i++) {
+            let angle = (i * 30 - 90) * Math.PI / 180;
+            let x = 70 + 48 * Math.cos(angle);
+            let y = 70 + 48 * Math.sin(angle);
+            ctx.fillText(i.toString(), x, y);
+        }
+        
+        // Draw tick marks
+        for (let i = 0; i < 60; i++) {
+            let angle = (i * 6 - 90) * Math.PI / 180;
+            let isHour = i % 5 === 0;
+            let length = isHour ? 10 : 5;
+            let x1 = 70 + 58 * Math.cos(angle);
+            let y1 = 70 + 58 * Math.sin(angle);
+            let x2 = 70 + (58 - length) * Math.cos(angle);
+            let y2 = 70 + (58 - length) * Math.sin(angle);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = isHour ? 2 : 1;
+            ctx.stroke();
+        }
+        
+        if (showHands) {
+            // Draw hour hand
+            let hourAngle = ((hours % 12) * 30 + minutes * 0.5 - 90) * Math.PI / 180;
+            let hourX = 70 + 35 * Math.cos(hourAngle);
+            let hourY = 70 + 35 * Math.sin(hourAngle);
+            ctx.beginPath();
+            ctx.moveTo(70, 70);
+            ctx.lineTo(hourX, hourY);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Draw minute hand
+            let minuteAngle = (minutes * 6 - 90) * Math.PI / 180;
+            let minuteX = 70 + 50 * Math.cos(minuteAngle);
+            let minuteY = 70 + 50 * Math.sin(minuteAngle);
+            ctx.beginPath();
+            ctx.moveTo(70, 70);
+            ctx.lineTo(minuteX, minuteY);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+        }
+        
+        // Draw center dot
+        ctx.beginPath();
+        ctx.arc(70, 70, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        
+        return canvas.toDataURL();
+    }
+    
+    function drawBlankClockImg() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 140;
+        canvas.height = 140;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.beginPath();
+        ctx.arc(70, 70, 65, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.font = 'bold 14px Arial';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (let i = 1; i <= 12; i++) {
+            let angle = (i * 30 - 90) * Math.PI / 180;
+            let x = 70 + 48 * Math.cos(angle);
+            let y = 70 + 48 * Math.sin(angle);
+            ctx.fillText(i.toString(), x, y);
+        }
+        
+        for (let i = 0; i < 60; i++) {
+            let angle = (i * 6 - 90) * Math.PI / 180;
+            let isHour = i % 5 === 0;
+            let length = isHour ? 10 : 5;
+            let x1 = 70 + 58 * Math.cos(angle);
+            let y1 = 70 + 58 * Math.sin(angle);
+            let x2 = 70 + (58 - length) * Math.cos(angle);
+            let y2 = 70 + (58 - length) * Math.sin(angle);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = isHour ? 2 : 1;
+            ctx.stroke();
+        }
+        
+        ctx.beginPath();
+        ctx.arc(70, 70, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        
+        return canvas.toDataURL();
+    }
+    
+    function formatTime(hours, minutes) {
+        let period = hours >= 12 ? "PM" : "AM";
+        let displayHour = hours % 12;
+        if (displayHour === 0) displayHour = 12;
+        if (minutes === 0) {
+            return `${displayHour}:00 ${period}`;
+        } else if (minutes < 10) {
+            return `${displayHour}:0${minutes} ${period}`;
+        } else {
+            return `${displayHour}:${minutes} ${period}`;
+        }
+    }
+    
+    function generateEasyTimes() {
+        const times = [];
+        for (let i = 0; i < 8; i++) {
+            const hour = Math.floor(Math.random() * 12) + 1;
+            const minute = Math.random() > 0.5 ? 0 : 30;
+            times.push({ hour: hour, minute: minute });
+        }
+        return times;
+    }
+    
+    function generateMiddleTimes() {
+        const times = [];
+        const minutesList = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        for (let i = 0; i < 8; i++) {
+            const hour = Math.floor(Math.random() * 12) + 1;
+            const minute = minutesList[Math.floor(Math.random() * minutesList.length)];
+            times.push({ hour: hour, minute: minute });
+        }
+        return times;
+    }
+    
+    function generateHardTimes() {
+        const times = [];
+        for (let i = 0; i < 6; i++) {
+            const startHour = Math.floor(Math.random() * 10) + 1;
+            const startMinute = Math.floor(Math.random() * 60);
+            let addHours = Math.floor(Math.random() * 3);
+            let addMinutes = Math.floor(Math.random() * 60);
+            let endHour = startHour + addHours;
+            let endMinute = startMinute + addMinutes;
+            if (endMinute >= 60) {
+                endMinute -= 60;
+                endHour++;
+            }
+            if (endHour > 12) endHour -= 12;
+            times.push({ startHour: startHour, startMinute: startMinute, endHour: endHour, endMinute: endMinute, addHours: addHours, addMinutes: addMinutes });
+        }
+        return times;
+    }
+    
+    function renderEasy() {
+        const times = generateEasyTimes();
+        const container = document.getElementById('worksheetContainer');
+        
+        let problemsHtml = '';
+        for (let i = 0; i < times.length; i += 2) {
+            problemsHtml += `<div class="problem-row">`;
+            for (let j = i; j < i + 2 && j < times.length; j++) {
+                const t = times[j];
+                const clockSrc = drawClock(t.hour, t.minute, true);
+                
+                problemsHtml += `
+                    <div class="time-card">
+                        <div class="problem-number">Question ${j + 1}</div>
+                        <img src="${clockSrc}" class="clock-img" alt="clock">
+                        <div class="time-text">⏰ What time is it?</div>
+                        <div class="answer-line"></div>
+                        <div class="instruction">✨ Write the time shown on the clock</div>
+                    </div>
+                `;
+            }
+            problemsHtml += `</div>`;
+        }
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Time Worksheet · Easy Level (Hour & Half Hour)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-easy">🌱 Easy Level · Reading Clocks (Hour & Half Hour)</span></div>
+            <div class="problems-container">${problemsHtml}</div>
+            <footer>🌟 Salam Adventures · Telling time mastery · Easy level 🌟</footer>
+        `;
+    }
+    
+    function renderMiddle() {
+        const times = generateMiddleTimes();
+        const container = document.getElementById('worksheetContainer');
+        
+        let problemsHtml = '';
+        for (let i = 0; i < times.length; i += 2) {
+            problemsHtml += `<div class="problem-row">`;
+            for (let j = i; j < i + 2 && j < times.length; j++) {
+                const t = times[j];
+                const clockSrc = drawClock(t.hour, t.minute, true);
+                const timeString = formatTime(t.hour, t.minute);
+                
+                problemsHtml += `
+                    <div class="time-card">
+                        <div class="problem-number">Question ${j + 1}</div>
+                        <img src="${clockSrc}" class="clock-img" alt="clock">
+                        <div class="time-text">⏰ Time: ______ : ______</div>
+                        <div class="answer-line"></div>
+                        <div class="instruction">✨ Write the time in words: ${timeString}</div>
+                        <div class="answer-line" style="height: 30px;"></div>
+                    </div>
+                `;
+            }
+            problemsHtml += `</div>`;
+        }
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Time Worksheet · Middle Level (5-Minute Intervals)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-middle">⭐ Middle Level · Reading Clocks (5-Minute Intervals)</span></div>
+            <div class="problems-container">${problemsHtml}</div>
+            <footer>🌟 Salam Adventures · Telling time mastery · Middle level 🌟</footer>
+        `;
+    }
+    
+    function renderHard() {
+        const times = generateHardTimes();
+        const container = document.getElementById('worksheetContainer');
+        
+        let problemsHtml = '';
+        for (let i = 0; i < times.length; i += 2) {
+            problemsHtml += `<div class="problem-row">`;
+            for (let j = i; j < i + 2 && j < times.length; j++) {
+                const t = times[j];
+                const startClock = drawClock(t.startHour, t.startMinute, true);
+                const endClock = drawClock(t.endHour, t.endMinute, true);
+                const blankClock = drawBlankClockImg();
+                const startTime = formatTime(t.startHour, t.startMinute);
+                const endTime = formatTime(t.endHour, t.endMinute);
+                
+                problemsHtml += `
+                    <div class="time-card">
+                        <div class="problem-number">Question ${j + 1}</div>
+                        <div class="flex-clocks">
+                            <div>
+                                <div class="clock-label">Start Time</div>
+                                <img src="${startClock}" class="clock-img" alt="start clock">
+                            </div>
+                            <div style="font-size: 24px;">→</div>
+                            <div>
+                                <div class="clock-label">End Time</div>
+                                <img src="${endClock}" class="clock-img" alt="end clock">
+                            </div>
+                        </div>
+                        <div class="time-text">Start: ${startTime}</div>
+                        <div class="time-text">End: ${endTime}</div>
+                        <div class="instruction">🔥 How much time has passed? ${t.addHours} hours and ${t.addMinutes} minutes</div>
+                        <div class="answer-line"></div>
+                        <div class="instruction">📝 Draw the hands on the blank clock for the end time:</div>
+                        <img src="${blankClock}" class="clock-img" alt="blank clock">
+                        <div class="answer-line" style="height: 25px;"></div>
+                    </div>
+                `;
+            }
+            problemsHtml += `</div>`;
+        }
+        
+        const wordHour = Math.floor(Math.random() * 6) + 1;
+        const wordMinute = Math.floor(Math.random() * 60);
+        const blankClock = drawBlankClockImg();
+        
+        container.innerHTML = `
+            <div class="header">
+                <div class="brand">
+                    <div class="logo-container">
+                        <img src="${logoUrl}" class="salam-logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'logo-fallback\\'>س</div>'">
+                    </div>
+                    <div class="title">
+                        <h1>Salam Adventures</h1>
+                        <p>Time Worksheet · Hard Level (Elapsed Time)</p>
+                    </div>
+                </div>
+                <div class="student-info">🧒 Name: ___________________<br>📅 Date: ___________________</div>
+            </div>
+            <div class="level-badge"><span class="level-tag level-hard">🔥 Hard Level · Elapsed Time & Drawing Hands</span></div>
+            <div class="problems-container">${problemsHtml}</div>
+            <div class="section">
+                <div class="section-title">🏆 Challenge Word Problem</div>
+                <div class="time-card">
+                    <div class="time-text" style="font-size: 16px;">Salam starts his homework at ${wordHour}:${wordMinute < 10 ? '0' + wordMinute : wordMinute} AM. He finishes 1 hour and 30 minutes later. What time does he finish?</div>
+                    <div class="answer-line" style="height: 50px;"></div>
+                    <div class="instruction">🔥 Draw the start time on this clock:</div>
+                    <img src="${drawClock(wordHour, wordMinute, true)}" class="clock-img" alt="start clock">
+                    <div class="instruction">📝 Draw the end time on this clock:</div>
+                    <img src="${blankClock}" class="clock-img" alt="blank clock">
+                </div>
+            </div>
+            <footer>🌟 Salam Adventures · Telling time mastery · Hard level 🌟</footer>
+        `;
+    }
+    
+    function updateStatus(msg) {
+        const status = document.getElementById('statusMsg');
+        status.innerHTML = msg;
+        setTimeout(() => {
+            status.innerHTML = '⏰ Salam Time · Ready';
+        }, 2000);
+    }
+    
+    document.getElementById('easyBtn').addEventListener('click', () => { renderEasy(); updateStatus('🌱 Easy level worksheet ready!'); });
+    document.getElementById('middleBtn').addEventListener('click', () => { renderMiddle(); updateStatus('⭐ Middle level worksheet ready!'); });
+    document.getElementById('hardBtn').addEventListener('click', () => { renderHard(); updateStatus('🔥 Hard level worksheet ready!'); });
+    
+    renderEasy();
+</script>
+</body>
+</html>
