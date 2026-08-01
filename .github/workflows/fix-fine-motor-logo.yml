@@ -1,0 +1,34 @@
+name: Fix fine motor logo
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-fine-motor-logo.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace broken external logo URL
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('fine motor skills.html')
+          text = path.read_text(encoding='utf-8')
+          old = 'https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png'
+          new = 'Salam Adventures.png'
+          if old not in text:
+              raise SystemExit('Expected logo URL was not found')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "fine motor skills.html"
+          git commit -m "Fix fine motor generator logo path"
+          git push
