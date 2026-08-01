@@ -1,0 +1,37 @@
+name: Run Salam Adventures SEO Upgrade
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/seo_upgrade.py
+      - .github/workflows/run-seo-upgrade.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply SEO and parent experience upgrade
+        run: python scripts/seo_upgrade.py
+
+      - name: Commit generated improvements
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html' robots.txt sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+          else
+            git commit -m "Upgrade titles, activity descriptions and parent guidance [skip ci]"
+            git push
+          fi
