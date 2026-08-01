@@ -1,0 +1,97 @@
+name: Upgrade homepage story and footer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/upgrade-homepage-story-footer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade-homepage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upgrade parent, about and footer sections
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+
+          old_css = ".parents{padding:48px 22px;background:#fff}.panel{max-width:1100px;margin:auto;border:1px solid var(--line);border-radius:24px;padding:28px}footer{background:#10294a;color:#fff;padding:34px 22px}.footer{max-width:1280px;margin:auto}.small{color:#d8e3f0;font-size:.9rem}"
+          new_css = ".parents{padding:72px 22px;background:linear-gradient(180deg,#fff 0%,#f7f3ff 100%)}.parent-grid{max-width:1280px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:24px}.story-card{border:1px solid var(--line);border-radius:28px;padding:34px;background:#fff;box-shadow:0 14px 36px rgba(35,39,92,.08)}.story-card h2{font-size:clamp(1.8rem,3vw,2.5rem);margin:0 0 14px}.story-card p{color:var(--muted);font-size:1.04rem;line-height:1.75}.tips{display:grid;gap:12px;margin-top:22px}.tip{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:18px;background:#faf8ff}.tip b{display:block;margin-bottom:3px}.about-card{background:linear-gradient(145deg,#172c55,#44248b);color:#fff}.about-card p{color:#e8e5ff}.about-mark{font-size:2.7rem;margin-bottom:12px}.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.story-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 17px;border-radius:14px;text-decoration:none;font-weight:900;background:#7138e6;color:#fff}.story-btn.light{background:#fff;color:#39206f}.site-footer{background:#0d1d3c;color:#fff;padding:58px 22px 24px}.footer-grid{max-width:1280px;margin:auto;display:grid;grid-template-columns:1.35fr .8fr .8fr .95fr;gap:34px}.footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:15px}.footer-logo{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.75)}.footer-title{font-size:1.45rem;font-weight:1000}.footer-tagline{color:#cfd8f2;line-height:1.65}.footer-grid h3{font-size:1rem;margin:0 0 14px;color:#fff}.footer-links{display:grid;gap:10px}.footer-links a{color:#dce5ff;text-decoration:none}.footer-links a:hover{text-decoration:underline}.footer-note{max-width:1280px;margin:36px auto 0;padding-top:22px;border-top:1px solid rgba(255,255,255,.15);display:grid;grid-template-columns:1fr auto;gap:24px;color:#bfcbe7;font-size:.88rem;line-height:1.65}.social-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.24);padding:10px 13px;border-radius:999px;color:#fff;text-decoration:none;margin:0 8px 8px 0}.small{color:#c9d4ec;font-size:.9rem}"
+          if old_css not in html:
+              raise SystemExit('Expected old footer CSS was not found')
+          html = html.replace(old_css, new_css, 1)
+          html = html.replace("@media(max-width:800px){.controls{grid-template-columns:1fr}.visual{overflow-x:hidden}.library{padding-top:35px}}", "@media(max-width:900px){.parent-grid,.footer-grid{grid-template-columns:1fr 1fr}.footer-note{grid-template-columns:1fr}}@media(max-width:800px){.controls{grid-template-columns:1fr}.visual{overflow-x:hidden}.library{padding-top:35px}.parent-grid,.footer-grid{grid-template-columns:1fr}.parents{padding:48px 18px}.story-card{padding:25px}}", 1)
+
+          old_section = '<section id="parents" class="parents"><div class="panel"><h2>For parents and carers</h2><p>Use short sessions, follow the child’s interests, offer breaks and celebrate effort as much as correct answers.</p><div id="about"><h2>About Salam Adventures</h2><p>Where faith, imagination and learning come together through child-friendly games, activities and practical learning generators.</p></div></div></section>'
+          new_section = '''<section id="parents" class="parents">
+<div class="parent-grid">
+  <article class="story-card">
+    <div class="about-mark">💛</div>
+    <h2>For parents, carers and the grown-ups who make learning possible</h2>
+    <p>Learning does not need to be rushed, perfect or completed in one sitting. Salam Adventures is designed to help children explore at their own pace, with activities that can be repeated, adapted and enjoyed together.</p>
+    <div class="tips">
+      <div class="tip"><span>⏱️</span><div><b>Keep it comfortable</b>Short, successful sessions often build more confidence than pushing through tiredness or frustration.</div></div>
+      <div class="tip"><span>🌈</span><div><b>Follow their interests</b>Let favourite themes, characters and activities become a bridge into reading, maths, communication and creativity.</div></div>
+      <div class="tip"><span>🌿</span><div><b>Make space for breaks</b>Movement, quiet time and sensory breaks are part of learning—not time away from it.</div></div>
+      <div class="tip"><span>⭐</span><div><b>Celebrate every step</b>Notice effort, curiosity, communication and perseverance as warmly as correct answers.</div></div>
+    </div>
+  </article>
+  <article id="about" class="story-card about-card">
+    <div class="about-mark">✨</div>
+    <h2>About Salam Adventures</h2>
+    <p>Salam Adventures is a growing world of children’s books, learning games, printable activities and practical generators created by author and educator Salma Kadri.</p>
+    <p>It brings faith, imagination and learning together in a warm, inclusive space where children can read, play, create and grow. Every resource is made to support real learning moments at home, in school and wherever a child feels most comfortable.</p>
+    <p>The aim is simple: make learning feel welcoming, meaningful and full of possibility—especially for children who benefit from visual support, repetition, choice and a gentler pace.</p>
+    <div class="cta-row">
+      <a class="story-btn light" href="https://www.amazon.co.uk/s?k=Salma+Kadri&i=stripbooks" target="_blank" rel="noopener">📚 Discover the books</a>
+      <a class="story-btn" href="https://www.youtube.com/results?search_query=Salam+Adventures+Salma+Kadri" target="_blank" rel="noopener">▶ Watch and learn</a>
+    </div>
+  </article>
+</div>
+</section>'''
+          if old_section not in html:
+              raise SystemExit('Expected old parent/about section was not found')
+          html = html.replace(old_section, new_section, 1)
+
+          old_footer = '<footer><div class="footer"><strong>Salam Adventures</strong><p class="small">© 2026 Salma Kadri. Free for personal and educational use unless otherwise stated. Do not resell or republish. Children should use online activities with suitable adult supervision.</p></div></footer>'
+          new_footer = '''<footer class="site-footer">
+<div class="footer-grid">
+  <div>
+    <div class="footer-brand"><img class="footer-logo" src="/assets/salam-adventures-home.png" alt="Salam Adventures"><div><div class="footer-title">Salam Adventures</div><div class="small">Created by author and educator Salma Kadri</div></div></div>
+    <p class="footer-tagline">Where faith, imagination and learning come together through stories, games and resources made for growing minds.</p>
+    <a class="social-pill" href="https://www.amazon.co.uk/s?k=Salma+Kadri&i=stripbooks" target="_blank" rel="noopener">📚 Books on Amazon</a>
+    <a class="social-pill" href="https://www.youtube.com/results?search_query=Salam+Adventures+Salma+Kadri" target="_blank" rel="noopener">▶ YouTube</a>
+    <a class="social-pill" href="mailto:hello@salamadventures.com">✉ Contact</a>
+  </div>
+  <nav aria-label="Explore Salam Adventures"><h3>Explore</h3><div class="footer-links"><a href="/">Home</a><a href="#tools">All games and generators</a><a href="#tools" data-category="Literacy">Literacy and reading</a><a href="#tools" data-category="Maths">Maths and counting</a><a href="#tools" data-category="SEN">SEN support</a></div></nav>
+  <nav aria-label="For families"><h3>For families</h3><div class="footer-links"><a href="#parents">Parent guidance</a><a href="#about">Our story</a><a href="https://www.amazon.co.uk/s?k=Salma+Kadri&i=stripbooks" target="_blank" rel="noopener">Children’s books</a><a href="https://www.youtube.com/results?search_query=Salam+Adventures+Salma+Kadri" target="_blank" rel="noopener">Learning videos</a></div></nav>
+  <div><h3>Safe, thoughtful learning</h3><p class="small">Activities are designed to support learning and enjoyment. Children should use online resources with suitable adult guidance, especially when following external links.</p><p class="small">Resources may be adapted for personal, family, classroom and non-commercial educational use unless a resource states otherwise.</p></div>
+</div>
+<div class="footer-note"><div><strong>© 2026 Salma Kadri · Salam Adventures.</strong><br>Original stories, designs, learning resources and branding are protected by copyright. They may not be resold, republished, uploaded to other websites or presented as another person’s work.</div><div>Made with care for curious minds 🌟</div></div>
+</footer>'''
+          if old_footer not in html:
+              raise SystemExit('Expected old footer was not found')
+          html = html.replace(old_footer, new_footer, 1)
+
+          path.write_text(html, encoding='utf-8')
+
+      - name: Commit upgraded homepage
+        run: |
+          if git diff --quiet; then
+            echo "No homepage changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Upgrade parent story, about section and site footer"
+          git push
