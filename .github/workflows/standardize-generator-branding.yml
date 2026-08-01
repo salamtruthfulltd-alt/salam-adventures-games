@@ -1,0 +1,84 @@
+name: Standardize generator branding
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/standardize-generator-branding.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-generator-logos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Update generator logo references
+        shell: python
+        run: |
+          from pathlib import Path
+
+          approved_logo = "/assets/salam-adventures-home.png"
+          old_references = (
+              "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam%20Adventures.png",
+              "https://salamtruthfulltd-alt.github.io/salam-adventures-games/Salam Adventures.png",
+              "./Salam Adventures.png",
+              "Salam Adventures.png",
+          )
+
+          changed = []
+          for path in Path('.').rglob('*.html'):
+              if 'generator' not in path.name.lower():
+                  continue
+              try:
+                  original = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+
+              updated = original
+              for old in old_references:
+                  updated = updated.replace(old, approved_logo)
+
+              # Add the approved logo as the social preview where generators have no OG image.
+              if 'property="og:image"' not in updated and "property='og:image'" not in updated:
+                  marker = '</head>'
+                  if marker in updated:
+                      updated = updated.replace(
+                          marker,
+                          f'    <meta property="og:image" content="{approved_logo}">\n{marker}',
+                          1,
+                      )
+
+              # Add a consistent favicon without changing the visible generator layout.
+              if 'rel="icon"' not in updated and "rel='icon'" not in updated:
+                  marker = '</head>'
+                  if marker in updated:
+                      updated = updated.replace(
+                          marker,
+                          f'    <link rel="icon" type="image/png" href="{approved_logo}">\n{marker}',
+                          1,
+                      )
+
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(str(path))
+
+          print(f"Updated {len(changed)} generator files")
+          for item in changed:
+              print(item)
+
+      - name: Commit generator branding updates
+        run: |
+          if git diff --quiet; then
+            echo "No generator branding changes were needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.html'
+          git commit -m "Standardize Salam Adventures generator logos"
+          git push
