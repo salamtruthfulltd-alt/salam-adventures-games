@@ -3,82 +3,138 @@
 
   const LOGO = '/assets/salam-adventures-official-logo.svg';
   const COPYRIGHT = '© 2026 Salam Adventures. All rights reserved.';
-  const BRAND_ID = 'salam-generator-branding';
   const FOOTER_ID = 'salam-generator-copyright';
+  const OLD_INJECTED_ID = 'salam-generator-branding';
 
   function addStyles() {
     if (document.getElementById('salam-generator-branding-styles')) return;
     const style = document.createElement('style');
     style.id = 'salam-generator-branding-styles';
     style.textContent = `
-      #${BRAND_ID} { display:flex; align-items:center; justify-content:center; margin:12px auto 18px; width:min(100%,920px); }
-      #${BRAND_ID} img { width:110px; height:110px; object-fit:contain; display:block; }
-      #${FOOTER_ID} { margin:20px auto 8px; padding:12px 16px; width:min(100%,920px); text-align:center; font:600 12px/1.4 Arial,sans-serif; color:#334155; border-top:1px solid rgba(51,65,85,.18); }
+      .salam-official-logo-wrap {
+        width: 75px !important;
+        height: 75px !important;
+        min-width: 75px !important;
+        border-radius: 50% !important;
+        background: transparent !important;
+        overflow: visible !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      .salam-official-logo {
+        width: 75px !important;
+        height: 75px !important;
+        object-fit: contain !important;
+        display: block !important;
+        border-radius: 50% !important;
+      }
+      #${FOOTER_ID} {
+        margin: 20px auto 8px;
+        padding: 12px 16px;
+        width: min(100%, 920px);
+        text-align: center;
+        font: 600 12px/1.4 Arial, sans-serif;
+        color: #334155;
+        border-top: 1px solid rgba(51,65,85,.18);
+      }
       @media print {
-        #${BRAND_ID} { display:flex !important; margin:0 auto 10mm; }
-        #${BRAND_ID} img { width:25mm; height:25mm; }
-        #${FOOTER_ID} { display:block !important; margin:8mm auto 0; padding-top:3mm; font-size:9pt; color:#000; border-top:.2mm solid #777; break-inside:avoid; }
+        .salam-official-logo-wrap,
+        .salam-official-logo {
+          width: 25mm !important;
+          height: 25mm !important;
+          min-width: 25mm !important;
+        }
+        #${FOOTER_ID} {
+          display: block !important;
+          margin: 8mm auto 0;
+          padding-top: 3mm;
+          font-size: 9pt;
+          color: #000;
+          border-top: .2mm solid #777;
+          break-inside: avoid;
+        }
       }
     `;
     document.head.appendChild(style);
   }
 
-  function removeOldBrandImages() {
-    document.querySelectorAll('img').forEach((img) => {
-      if (img.closest(`#${BRAND_ID}`)) return;
-      const src = (img.getAttribute('src') || '').toLowerCase();
-      const alt = (img.getAttribute('alt') || '').toLowerCase();
-      const classes = (img.className || '').toString().toLowerCase();
-      const isOldBrandImage =
-        src.includes('salam-adventures-home') ||
-        src.includes('logo') ||
-        alt.includes('salam adventures') ||
-        alt.includes('logo') ||
-        classes.includes('logo-img');
-      if (isOldBrandImage) img.remove();
+  function removeDuplicateTopLogo() {
+    document.getElementById(OLD_INJECTED_ID)?.remove();
+  }
+
+  function findBrandArea() {
+    return document.querySelector(
+      '.logo-container, .brand-logo, .logo-wrap, .header-logo, .worksheet-logo, .brand .logo, header .logo'
+    );
+  }
+
+  function createOfficialLogo() {
+    const img = document.createElement('img');
+    img.src = LOGO;
+    img.alt = 'Salam Adventures logo';
+    img.className = 'salam-official-logo';
+    img.setAttribute('data-official-salam-logo', 'true');
+    return img;
+  }
+
+  function placeLogoInHeader() {
+    removeDuplicateTopLogo();
+
+    let holder = findBrandArea();
+
+    if (!holder) {
+      const brand = document.querySelector('.header .brand, header .brand, .worksheet-header .brand');
+      if (!brand) return;
+      holder = document.createElement('div');
+      brand.insertBefore(holder, brand.firstChild);
+    }
+
+    holder.classList.add('salam-official-logo-wrap');
+
+    const existingOfficial = holder.querySelector('[data-official-salam-logo="true"]');
+    if (existingOfficial && holder.children.length === 1) return;
+
+    holder.replaceChildren(createOfficialLogo());
+  }
+
+  function ensureFooter() {
+    if (document.getElementById(FOOTER_ID)) return;
+    const target = document.querySelector('.worksheet, .container, main, .app, .worksheet-container') || document.body;
+    const footer = document.createElement('footer');
+    footer.id = FOOTER_ID;
+    footer.textContent = COPYRIGHT;
+    target.appendChild(footer);
+  }
+
+  function applyBranding() {
+    addStyles();
+    placeLogoInHeader();
+    ensureFooter();
+  }
+
+  let scheduled = false;
+  function scheduleApply() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      applyBranding();
     });
   }
 
-  function ensureBranding() {
-    addStyles();
-    removeOldBrandImages();
-
-    const target = document.querySelector('.container, main, .app, .worksheet-container') || document.body;
-    const header = target.querySelector('.header, header, .worksheet-header');
-
-    if (!document.getElementById(BRAND_ID)) {
-      const brand = document.createElement('div');
-      brand.id = BRAND_ID;
-      brand.setAttribute('aria-label', 'Salam Adventures');
-
-      const logo = document.createElement('img');
-      logo.src = LOGO;
-      logo.alt = 'Salam Adventures logo';
-      logo.setAttribute('data-official-salam-logo', 'true');
-      brand.appendChild(logo);
-
-      if (header) header.insertBefore(brand, header.firstChild);
-      else target.insertBefore(brand, target.firstChild);
-    }
-
-    if (!document.getElementById(FOOTER_ID)) {
-      const footer = document.createElement('footer');
-      footer.id = FOOTER_ID;
-      footer.textContent = COPYRIGHT;
-      target.appendChild(footer);
-    }
-  }
-
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', ensureBranding, { once: true });
+    document.addEventListener('DOMContentLoaded', applyBranding, { once: true });
   } else {
-    ensureBranding();
+    applyBranding();
   }
 
-  new MutationObserver(() => {
-    if (!document.getElementById(BRAND_ID) || !document.getElementById(FOOTER_ID)) ensureBranding();
-    else removeOldBrandImages();
-  }).observe(document.documentElement, { childList: true, subtree: true });
+  new MutationObserver(scheduleApply).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
 
-  window.addEventListener('beforeprint', ensureBranding);
+  window.addEventListener('beforeprint', applyBranding);
 })();
