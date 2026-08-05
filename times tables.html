@@ -1,237 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Times Tables Quest</title><style>*{box-sizing:border-box}body{margin:0;padding:16px;font-family:Arial,sans-serif;background:#eef4fa;color:#183247}.wrap{max-width:900px;margin:auto;background:#fff;border-radius:28px;padding:22px;box-shadow:0 12px 30px #0002;overflow:hidden}.stats,.answers,.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.pill{background:#eef3fc;padding:10px 15px;border-radius:999px;font-weight:800}.question{text-align:center;font-size:clamp(42px,9vw,76px);font-weight:900;background:#fff8e8;border-radius:25px;padding:35px;margin:20px 0}.answer{min-width:145px;min-height:105px;border:4px solid #dfe7ee;background:#fff;border-radius:24px;font-size:38px;font-weight:900;cursor:pointer}.answer:hover{border-color:#f59e0b;transform:scale(1.03)}.message{text-align:center;padding:14px;background:#eef3fc;border-radius:18px;font-size:19px;font-weight:800;margin:16px 0}.btn{border:0;border-radius:999px;padding:14px 24px;font-size:17px;font-weight:800;background:#10b981;color:#fff;cursor:pointer}.hidden{display:none}.spark{position:fixed;pointer-events:none;font-size:28px;animation:fly 1.2s ease-out forwards}@keyframes fly{to{transform:translate(var(--x),var(--y)) rotate(360deg);opacity:0}}</style>
 
-<title>Salam Adventures | Times Tables Generator | Free Learning Activity for Children | Salam Adventures</title>
 
-<style>
-body{
-  font-family:Arial;
-  background:linear-gradient(135deg,#fef9c3,#dbeafe,#dcfce7);
-  padding:20px;
-}
 
-.wrap{
-  max-width:1100px;
-  margin:auto;
-}
 
-.panel,.sheet{
-  background:#fff;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-  margin-bottom:20px;
-}
 
-/* LOGO */
-.logo{
-  text-align:center;
-  margin-bottom:10px;
-}
 
-.logo img{
-  max-width:260px;
-  width:100%;
-}
 
-/* TITLE */
-h1{
-  text-align:center;
-  margin-bottom:10px;
-}
 
-/* CONTROLS */
-.controls{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:10px;
-}
 
-select{
-  padding:10px;
-  border-radius:10px;
-  border:2px solid #ddd;
-}
-
-/* BUTTONS */
-.btns{
-  margin-top:15px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-button{
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.generate{background:#10b981;color:#fff;}
-.print{background:#3b82f6;color:#fff;}
-.clear{background:#f59e0b;color:#fff;}
-
-/* QUESTIONS */
-.questions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin-top:20px;
-}
-
-.q{
-  border:2px solid #eee;
-  padding:15px;
-  border-radius:15px;
-}
-
-.group{
-  margin-bottom:5px;
-}
-
-.icons span{
-  font-size:18px;
-}
-
-.answer{
-  border-bottom:2px solid #000;
-  display:inline-block;
-  width:80px;
-}
-
-/* PRINT */
-@media(max-width:800px){
-  .questions{grid-template-columns:1fr;}
-}
-
-@media print{
-  .panel{display:none;}
-}
+<style data-compass-hardwired-branding>
+.compass-brand-bar{width:min(1180px,calc(100% - 24px));margin:12px auto 18px;padding:12px 18px;background:#fff;border:1px solid #dfe8ef;border-radius:20px;box-shadow:0 8px 22px rgba(9,49,73,.08);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:Arial,sans-serif}.compass-brand-logo{width:190px;max-width:42vw;height:auto;display:block}.compass-back-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 18px;border:2px solid #0a98a8;border-radius:999px;color:#06365b;background:#fff;text-decoration:none;font-weight:800;font-size:16px}.compass-back-link:hover,.compass-back-link:focus{background:#eaf9fb;outline:3px solid rgba(10,152,168,.18)}.compass-copyright{width:min(1180px,calc(100% - 24px));margin:22px auto 12px;padding:14px;text-align:center;border-top:1px solid #dfe8ef;color:#31536a;font:700 13px/1.5 Arial,sans-serif;background:#fff;border-radius:16px}.compass-copyright .tagline{display:block;margin-top:4px;color:#6d3fb2;font-weight:700}@media print{.compass-back-link{display:none}.compass-brand-bar{box-shadow:none;border:none;margin:0 auto 10px}.compass-brand-logo{width:150px}.compass-copyright{box-shadow:none;border-radius:0;margin-top:12px}}@media(max-width:560px){.compass-brand-bar{justify-content:center;text-align:center}.compass-brand-logo{width:170px}.compass-back-link{width:100%}}
 </style>
-<meta name="description" content="Try Salam Adventures | Times Tables Generator, a free child-friendly Salam Adventures activity supporting personalised printable learning practice. Designed for short, positive learning sessions at home or in educational settings.">
-<meta name="robots" content="index, follow, max-image-preview:large">
-<meta property="og:title" content="Salam Adventures | Times Tables Generator | Free Learning Activity for Children | Salam Adventures">
-<meta property="og:description" content="Try Salam Adventures | Times Tables Generator, a free child-friendly Salam Adventures activity supporting personalised printable learning practice. Designed for short, positive learning sessions at home or in educational settings.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.salamadventures.com/times%20tables.html">
-<meta property="og:site_name" content="Salam Adventures">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://www.salamadventures.com/times%20tables.html">
-<script type="application/ld+json" data-salam-seo>{"@context":"https://schema.org","@type":"LearningResource","name":"Salam Adventures | Times Tables Generator","url":"https://www.salamadventures.com/times%20tables.html","description":"Try Salam Adventures | Times Tables Generator, a free child-friendly Salam Adventures activity supporting personalised printable learning practice. Designed for short, positive learning sessions at home or in educational settings.","provider":{"@type":"Organization","name":"Salam Adventures","url":"https://www.salamadventures.com"},"educationalUse":"Practice","learningResourceType":"Mathematics","isAccessibleForFree":true,"inLanguage":"en-GB"}</script>
-</head>
 
-<body>
-<div class="wrap">
+</head><body>
 
-<!-- CONTROL PANEL -->
-<div class="panel">
+<header class="compass-brand-bar" data-compass-hardwired-branding>
+  <img class="compass-brand-logo" src="assets/compass-sen-support-logo.svg" alt="Compass SEN Support — Guiding Every Step. Empowering Every Child.">
+  <a class="compass-back-link" href="index.html" aria-label="Back to Games">← Back to Games</a>
+</header>
 
-  <div class="logo">
-    <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
-  </div>
 
-  <h1>Times Tables Generator</h1>
 
-  <div class="controls">
-    <select id="level">
-      <option value="easy">Easy</option>
-      <option value="middle">Middle</option>
-      <option value="hard">Hard</option>
-    </select>
 
-    <select id="table">
-      <option value="mixed">Mixed Tables</option>
-      <option value="2">2 Times Table</option>
-      <option value="3">3 Times Table</option>
-      <option value="4">4 Times Table</option>
-      <option value="5">5 Times Table</option>
-      <option value="10">10 Times Table</option>
-    </select>
 
-    <select id="count">
-      <option value="6">6 Questions</option>
-      <option value="8" selected>8 Questions</option>
-      <option value="10">10 Questions</option>
-    </select>
-  </div>
 
-  <div class="btns">
-    <button class="generate" onclick="generate()">Generate</button>
-    <button class="print" onclick="window.print()">Print</button>
-    <button class="clear" onclick="generate()">Clear</button>
-  </div>
 
-</div>
 
-<!-- WORKSHEET -->
-<div class="sheet">
 
-  <div class="logo">
-    <img src="https://salamtruthfulltd-alt.github.io/salam-adventures-games/salam.png" alt="Salam Adventures Logo">
-  </div>
+<main class="wrap"><h1 style="text-align:center">✖️ Times Tables Quest</h1><div class="stats"><span class="pill">Level <b id="level">1</b>/5</span><span class="pill">Round <b id="round">1</b>/6</span><span class="pill">⭐ <b id="stars">0</b></span></div><div class="question" id="question"></div><div class="answers" id="answers"></div><div class="message" id="message">Choose the correct product.</div><div class="actions"><button class="btn hidden" id="next">Next</button></div></main><script>let level=1,round=1,stars=0,correct=0,locked=false;const e=id=>document.getElementById(id),shuffle=a=>a.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);function make(){locked=false;const tables=[[2,5],[2,5,10],[2,3,4,5,10],[3,4,6,7,8],[4,6,7,8,9,11,12]][level-1],a=tables[Math.floor(Math.random()*tables.length)],b=1+Math.floor(Math.random()*(4+level*2));correct=a*b;e('question').textContent=`${a} × ${b} = ?`;let opts=new Set([correct]);while(opts.size<4)opts.add(Math.max(0,correct+a*(Math.floor(Math.random()*5)-2)));e('answers').innerHTML=shuffle([...opts]).map(v=>`<button class="answer" data-v="${v}">${v}</button>`).join('');document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>check(+b.dataset.v));e('message').textContent='Choose the correct product.';e('next').classList.add('hidden');e('level').textContent=level;e('round').textContent=round}function check(v){if(locked)return;if(v===correct){locked=true;stars+=3;e('stars').textContent=stars;e('message').textContent='✅ Correct! Table mastered!';tone(760);burst();e('next').textContent=round===6?(level===5?'Play again':'Next level'):'Next round';e('next').classList.remove('hidden')}else{e('message').textContent='Try again. Count in equal jumps.';tone(180)}}function tone(f){const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const c=new A,o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.value=.05;o.start();o.stop(c.currentTime+.14)}function burst(){for(let i=0;i<22;i++){const s=document.createElement('span');s.className='spark';s.textContent=i%2?'⭐':'✨';s.style.left='50%';s.style.top='45%';s.style.setProperty('--x',(Math.random()*500-250)+'px');s.style.setProperty('--y',(Math.random()*-380)+'px');document.body.appendChild(s);setTimeout(()=>s.remove(),1300)}}e('next').onclick=()=>{if(round<6)round++;else if(level<5){level++;round=1}else{level=1;round=1;stars=0;e('stars').textContent=0}make()};make();</script>
 
-  <h1>Times Tables Worksheet</h1>
 
-  <div id="questions" class="questions"></div>
 
-</div>
 
-</div>
 
-<script>
-function rand(min,max){
-  return Math.floor(Math.random()*(max-min+1))+min;
-}
 
-function makeIcons(n){
-  let s="";
-  for(let i=0;i<n;i++){
-    s+="<span>●</span> ";
-  }
-  return s;
-}
 
-function generate(){
-  const table=document.getElementById("table").value;
-  const count=document.getElementById("count").value;
 
-  let html="";
 
-  for(let i=0;i<count;i++){
-    let groups,items;
+<footer class="compass-copyright" data-compass-hardwired-branding>
+  © 2026 Compass SEN Support. All rights reserved.
+  <span class="tagline">Guiding Every Step. Empowering Every Child.</span>
+</footer>
 
-    if(table==="mixed"){
-      groups=rand(2,5);
-      items=rand(2,5);
-    }else{
-      items=parseInt(table);
-      groups=rand(2,5);
-    }
-
-    html+=`
-    <div class="q">
-      <b>Q${i+1}</b><br><br>
-
-      ${[...Array(groups)].map(()=>`
-        <div class="group">${makeIcons(items)}</div>
-      `).join("")}
-
-      <br>
-      ${groups} × ${items} = <span class="answer"></span>
-    </div>
-    `;
-  }
-
-  document.getElementById("questions").innerHTML=html;
-}
-
-generate();
-</script>
-
-</body>
-</html>
+</body></html>
