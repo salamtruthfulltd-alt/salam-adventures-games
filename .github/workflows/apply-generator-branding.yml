@@ -1,0 +1,60 @@
+name: Apply generator branding
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  brand-generators:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add branding loader to every generator
+        shell: python
+        run: |
+          from pathlib import Path
+
+          loader = '<script src="/assets/generator-branding.js" defer data-salam-generator-branding></script>'
+          changed = []
+
+          for path in Path('.').rglob('*.html'):
+              if '.git' in path.parts:
+                  continue
+              if 'generator' not in path.name.lower():
+                  continue
+
+              text = path.read_text(encoding='utf-8')
+              if 'data-salam-generator-branding' in text:
+                  continue
+
+              if '</head>' in text:
+                  text = text.replace('</head>', f'    {loader}\n</head>', 1)
+              elif '<body' in text:
+                  text = text.replace('<body', f'{loader}\n<body', 1)
+              else:
+                  continue
+
+              path.write_text(text, encoding='utf-8')
+              changed.append(str(path))
+
+          print(f'Updated {len(changed)} generator files')
+          for item in changed:
+              print(item)
+
+      - name: Commit generator branding
+        run: |
+          if git diff --quiet; then
+            echo "All generator files already protected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.html'
+          git commit -m "Hardwire Salam Adventures branding into all generators"
+          git push
