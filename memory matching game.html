@@ -7,6 +7,9 @@
 *{box-sizing:border-box}body{font-family:Segoe UI,Tahoma,sans-serif;background:#eef4fa;margin:0;padding:16px;color:#17324d}.container{max-width:900px;margin:auto;background:#fff;border-radius:28px;padding:20px;box-shadow:0 10px 28px #0001}.header,.status,.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.header{border-bottom:2px solid #f5a623;padding-bottom:12px}.logo{height:50px}.badge{margin-left:auto;background:#f2f4f7;padding:8px 14px;border-radius:30px;font-weight:800}.status{justify-content:center;margin:18px 0;font-size:18px;font-weight:800}.pill{background:#eef7ff;padding:9px 16px;border-radius:999px}.grid{display:grid;gap:16px;margin:20px auto;max-width:760px}.card{min-height:128px;border:3px solid #d6e4f2;border-radius:22px;background:#0d6f91;color:#fff;font-size:52px;font-weight:900;cursor:pointer;box-shadow:0 7px 0 #084f68;transition:.15s;display:flex;align-items:center;justify-content:center}.card:hover{transform:translateY(-2px)}.card.open{background:#fff7df;color:#17324d;border-color:#f5a623}.card.matched{background:#dff8e8;color:#17324d;border-color:#43a96b;box-shadow:none}.message{text-align:center;background:#f4f8fc;border-radius:18px;padding:14px;font-size:18px;font-weight:700;min-height:54px}.actions{justify-content:center;margin-top:16px}button.action{border:0;border-radius:999px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#079bb6,#326fe3);color:#fff}.hidden{display:none!important}.celebrate{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}.spark{position:absolute;font-size:30px;animation:fly 1.4s ease-out forwards}@keyframes fly{0%{transform:translateY(20vh) scale(.5);opacity:0}20%{opacity:1}100%{transform:translateY(-85vh) rotate(480deg) scale(1.4);opacity:0}}body.flash{animation:flash .7s}@keyframes flash{50%{filter:brightness(1.25)}}@media(max-width:620px){.card{min-height:100px;font-size:42px}.grid{gap:10px}.container{padding:14px}}
 </style>
 
+
+
+
 <style data-compass-hardwired-branding>
 .compass-brand-bar{width:min(1180px,calc(100% - 24px));margin:12px auto 18px;padding:12px 18px;background:#fff;border:1px solid #dfe8ef;border-radius:20px;box-shadow:0 8px 22px rgba(9,49,73,.08);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:Arial,sans-serif}.compass-brand-logo{width:190px;max-width:42vw;height:auto;display:block}.compass-back-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 18px;border:2px solid #0a98a8;border-radius:999px;color:#06365b;background:#fff;text-decoration:none;font-weight:800;font-size:16px}.compass-back-link:hover,.compass-back-link:focus{background:#eaf9fb;outline:3px solid rgba(10,152,168,.18)}.compass-copyright{width:min(1180px,calc(100% - 24px));margin:22px auto 12px;padding:14px;text-align:center;border-top:1px solid #dfe8ef;color:#31536a;font:700 13px/1.5 Arial,sans-serif;background:#fff;border-radius:16px}.compass-copyright .tagline{display:block;margin-top:4px;color:#6d3fb2;font-weight:700}@media print{.compass-back-link{display:none}.compass-brand-bar{box-shadow:none;border:none;margin:0 auto 10px}.compass-brand-logo{width:150px}.compass-copyright{box-shadow:none;border-radius:0;margin-top:12px}}@media(max-width:560px){.compass-brand-bar{justify-content:center;text-align:center}.compass-brand-logo{width:170px}.compass-back-link{width:100%}}
 </style>
@@ -18,6 +21,9 @@
   <img class="compass-brand-logo" src="assets/compass-sen-support-logo.svg" alt="Compass SEN Support — Guiding Every Step. Empowering Every Child.">
   <a class="compass-back-link" href="index.html" aria-label="Back to Games">← Back to Games</a>
 </header>
+
+
+
 
 <div class="container">
 <div class="header"><img class="logo" src="assets/compass-sen-support-logo.svg" alt="Compass SEN Support" onerror="this.style.display='none'"><div><strong style="font-size:24px;color:#2c5a2e">Salam</strong><div style="color:#e0910f;font-weight:700">Adventures</div></div><div class="badge">🧠 Memory Match</div></div>
@@ -38,6 +44,9 @@ function flip(i){if(locked||cards[i].open||cards[i].done)return;cards[i].open=tr
 function complete(){stars();tone(true);$('message').textContent=level===5?'🏆 You completed every level!':'🎉 Level complete!';if(level<5){$('next').classList.remove('hidden')}else{$('next').textContent='Play again from level 1';$('next').classList.remove('hidden')}}
 $('next').onclick=()=>{level=level<5?level+1:1;$('next').textContent='Next level ▶';start()};$('restart').onclick=start;start();
 </script>
+
+
+
 
 <footer class="compass-copyright" data-compass-hardwired-branding>
   © 2026 Compass SEN Support. All rights reserved.

@@ -7,6 +7,9 @@
 *{box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,sans-serif;background:#eef4fa;margin:0;padding:16px;color:#1a2a3a}.container{max-width:1000px;margin:auto;background:#fff;border-radius:28px;box-shadow:0 10px 25px rgba(0,0,0,.08);padding:20px;overflow:hidden;position:relative}.header{display:flex;align-items:center;gap:12px;border-bottom:2px solid #f5a623;padding-bottom:12px;flex-wrap:wrap}.logo-img{height:50px;max-width:150px}.brand-salam{font-size:22px;font-weight:800;color:#2c5a2e}.brand-adventures{font-size:16px;font-weight:700;color:#f5a623}.game-badge{margin-left:auto;background:#f0f2f5;padding:7px 14px;border-radius:30px;font-weight:800;color:#d88400}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.stat{background:#eef3fc;padding:12px;border-radius:16px;text-align:center;font-weight:800}.cards-grid{display:grid;gap:14px;margin:18px 0}.card{min-height:120px;border:0;border-radius:22px;background:#2c5a2e;color:#fff;font-size:52px;font-weight:900;cursor:pointer;box-shadow:0 6px 12px rgba(0,0,0,.14);transition:.18s;touch-action:manipulation}.card:hover{transform:translateY(-2px)}.card.flipped{background:#fff4e6;color:#1a2a3a;border:4px solid #f5a623}.card.matched{background:#d9f0e1;color:#245c2d;border:4px solid #63b36e;cursor:default}.message{text-align:center;padding:15px;background:#eef3fc;border-radius:18px;font-size:20px;font-weight:800;min-height:58px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}.action{flex:1;min-width:180px;border:0;border-radius:40px;padding:16px 24px;font-size:18px;font-weight:900;cursor:pointer;background:#2c5a2e;color:#fff}.action.secondary{background:#f5a623}.hidden{display:none}.celebration{position:absolute;inset:0;pointer-events:none;overflow:hidden}.spark{position:absolute;font-size:32px;animation:fly 1.5s ease-out forwards}@keyframes fly{0%{transform:translateY(40px) scale(.4);opacity:0}30%{opacity:1}100%{transform:translateY(-360px) rotate(360deg) scale(1.4);opacity:0}}.flash{animation:flash .7s ease}@keyframes flash{0%,100%{box-shadow:0 10px 25px rgba(0,0,0,.08)}50%{box-shadow:0 0 42px 14px #ffd95a}}@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.card{min-height:92px;font-size:42px}.cards-grid{gap:9px}.container{padding:14px}.message{font-size:17px}}@media print{.actions,.celebration{display:none}}
 </style>
 
+
+
+
 <style data-compass-hardwired-branding>
 .compass-brand-bar{width:min(1180px,calc(100% - 24px));margin:12px auto 18px;padding:12px 18px;background:#fff;border:1px solid #dfe8ef;border-radius:20px;box-shadow:0 8px 22px rgba(9,49,73,.08);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:Arial,sans-serif}.compass-brand-logo{width:190px;max-width:42vw;height:auto;display:block}.compass-back-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 18px;border:2px solid #0a98a8;border-radius:999px;color:#06365b;background:#fff;text-decoration:none;font-weight:800;font-size:16px}.compass-back-link:hover,.compass-back-link:focus{background:#eaf9fb;outline:3px solid rgba(10,152,168,.18)}.compass-copyright{width:min(1180px,calc(100% - 24px));margin:22px auto 12px;padding:14px;text-align:center;border-top:1px solid #dfe8ef;color:#31536a;font:700 13px/1.5 Arial,sans-serif;background:#fff;border-radius:16px}.compass-copyright .tagline{display:block;margin-top:4px;color:#6d3fb2;font-weight:700}@media print{.compass-back-link{display:none}.compass-brand-bar{box-shadow:none;border:none;margin:0 auto 10px}.compass-brand-logo{width:150px}.compass-copyright{box-shadow:none;border-radius:0;margin-top:12px}}@media(max-width:560px){.compass-brand-bar{justify-content:center;text-align:center}.compass-brand-logo{width:170px}.compass-back-link{width:100%}}
 </style>
@@ -18,6 +21,9 @@
   <img class="compass-brand-logo" src="assets/compass-sen-support-logo.svg" alt="Compass SEN Support — Guiding Every Step. Empowering Every Child.">
   <a class="compass-back-link" href="index.html" aria-label="Back to Games">← Back to Games</a>
 </header>
+
+
+
 <div class="container" id="container"><div class="celebration" id="celebration"></div>
 <div class="header"><img src="assets/compass-sen-support-logo.svg" alt="Compass SEN Support" class="logo-img" onerror="this.style.display='none'"><div><div class="brand-salam">Salam</div><div class="brand-adventures">Adventures</div></div><div class="game-badge">🎮 Matching Pairs</div></div>
 <div class="stats"><div class="stat">⭐ Level <span id="level">1</span>/5</div><div class="stat">🎯 Matches <span id="matches">0</span></div><div class="stat">🔄 Moves <span id="moves">0</span></div><div class="stat">🏆 Stars <span id="stars">0</span></div></div>
@@ -37,6 +43,9 @@ function pick(i){if(locked||cards[i].open||cards[i].matched)return;cards[i].open
 function finish(){const target=LEVELS[level-1].pairs*3;const bonus=moves<=target?2:1;stars+=bonus;celebrate();message.textContent=level<5?`🌟 Level ${level} complete! You earned ${bonus} bonus stars.`:'🏆 All five levels complete! Brilliant matching!';if(level<5)next.classList.remove('hidden');else{next.textContent='Play again ▶';next.classList.remove('hidden')}}
 document.getElementById('restart').onclick=startLevel;next.onclick=()=>{if(level<5)level++;else{level=1;stars=0;next.textContent='Next level ▶'}startLevel()};startLevel();
 </script>
+
+
+
 <footer class="compass-copyright" data-compass-hardwired-branding>
   © 2026 Compass SEN Support. All rights reserved.
   <span class="tagline">Guiding Every Step. Empowering Every Child.</span>

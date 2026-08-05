@@ -20,6 +20,9 @@
 <link rel="canonical" href="https://www.compasssensupport.vercel.app/">
 <script type="application/ld+json" data-salam-seo>{"@context":"https://schema.org","@type":"WebSite","name":"Compass SEN Support | Learning Games & Generators","url":"https://www.compasssensupport.vercel.app/","description":"Explore free child-friendly learning games, printable worksheet generators and SEN-supportive activities for literacy, maths, communication, creativity and everyday skills.","provider":{"@type":"Organization","name":"Compass SEN Support","url":"https://www.compasssensupport.vercel.app"},"inLanguage":"en-GB"}</script>
 
+
+
+
 <style data-compass-hardwired-branding>
 .compass-brand-bar{width:min(1180px,calc(100% - 24px));margin:12px auto 18px;padding:12px 18px;background:#fff;border:1px solid #dfe8ef;border-radius:20px;box-shadow:0 8px 22px rgba(9,49,73,.08);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:Arial,sans-serif}.compass-brand-logo{width:190px;max-width:42vw;height:auto;display:block}.compass-back-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 18px;border:2px solid #0a98a8;border-radius:999px;color:#06365b;background:#fff;text-decoration:none;font-weight:800;font-size:16px}.compass-back-link:hover,.compass-back-link:focus{background:#eaf9fb;outline:3px solid rgba(10,152,168,.18)}.compass-copyright{width:min(1180px,calc(100% - 24px));margin:22px auto 12px;padding:14px;text-align:center;border-top:1px solid #dfe8ef;color:#31536a;font:700 13px/1.5 Arial,sans-serif;background:#fff;border-radius:16px}.compass-copyright .tagline{display:block;margin-top:4px;color:#6d3fb2;font-weight:700}@media print{.compass-back-link{display:none}.compass-brand-bar{box-shadow:none;border:none;margin:0 auto 10px}.compass-brand-logo{width:150px}.compass-copyright{box-shadow:none;border-radius:0;margin-top:12px}}@media(max-width:560px){.compass-brand-bar{justify-content:center;text-align:center}.compass-brand-logo{width:170px}.compass-back-link{width:100%}}
 </style>
@@ -31,6 +34,9 @@
   <img class="compass-brand-logo" src="assets/compass-sen-support-logo.svg" alt="Compass SEN Support — Guiding Every Step. Empowering Every Child.">
   <a class="compass-back-link" href="index.html" aria-label="Back to Games">← Back to Games</a>
 </header>
+
+
+
 
 <main>
 <section class="visual" aria-label="Compass SEN Support homepage navigation and learning categories">
@@ -76,6 +82,9 @@ const tools=[['Science','Science.html','Science','🧪'],['Addition','addition.h
 function descriptionFor(x){const n=x[0].toLowerCase(),c=x[2];if(n.includes('phon'))return 'Build letter-sound awareness and early reading confidence through clear, playful practice.';if(n.includes('spell')||n.includes('word')||n.includes('grammar')||c==='Literacy')return 'Support vocabulary, spelling, reading and language confidence with an engaging child-friendly activity.';if(n.includes('count')||n.includes('number'))return 'Practise counting, number recognition and quantity skills in a visual, approachable way.';if(c==='Maths')return 'Strengthen maths confidence, calculation and problem-solving skills through interactive practice.';if(c==='Generators')return 'Create a personalised printable worksheet with adjustable content for home or educational use.';if(c==='Attention')return 'Encourage visual attention, working memory, concentration and careful observation.';if(c==='Communication')return 'Support understanding, vocabulary and everyday communication through clear visual learning.';if(c==='SEN')return 'A flexible visual activity designed to support confidence, routines, regulation or everyday learning.';if(c==='Creative')return 'Make, imagine and express ideas while developing creativity and fine motor confidence.';if(c==='Science')return 'Explore early science ideas through curiosity, observation and child-friendly discovery.';return 'A free child-friendly game supporting confidence, coordination, attention and learning through play.'}
 const aliases={Maths:['Maths','Counting'],Literacy:['Literacy'],Communication:['Communication'],Attention:['Attention'],SEN:['SEN'],Creative:['Creative'],Generators:['Generators'],Games:['Games']};const cats=['All','Literacy','Maths','Communication','Attention','SEN','Creative','Generators','Games','Science'];const grid=document.getElementById('grid'),filters=document.getElementById('filters'),search=document.getElementById('search'),count=document.getElementById('count'),empty=document.getElementById('empty');let active='All';function matchCat(x){if(active==='All')return true;return (aliases[active]||[active]).includes(x[2])}function render(){const q=search.value.toLowerCase().trim(),items=tools.filter(x=>matchCat(x)&&(`${x[0]} ${x[2]} ${descriptionFor(x)}`.toLowerCase().includes(q)));grid.innerHTML=items.map(x=>`<a class="tool" href="${encodeURI(x[1])}" aria-label="Open ${x[0]}"><span class="icon">${x[3]}</span><span class="eyebrow">${x[2]}</span><h3>${x[0]}</h3><p>${descriptionFor(x)}</p><span class="tag">Open activity →</span></a>`).join('');count.textContent=`${items.length} activities`;empty.style.display=items.length?'none':'block'}function buttons(){filters.innerHTML=cats.map(c=>`<button class="filter${c===active?' active':''}" data-c="${c}">${c}</button>`).join('');filters.querySelectorAll('button').forEach(b=>b.onclick=()=>setCategory(b.dataset.c))}function setCategory(c){active=c||'All';buttons();render();document.getElementById('tools').scrollIntoView({behavior:'smooth'})}document.querySelectorAll('[data-category]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();setCategory(a.dataset.category)}));search.oninput=render;buttons();render();
 </script>
+
+
+
 
 <footer class="compass-copyright" data-compass-hardwired-branding>
   © 2026 Compass SEN Support. All rights reserved.
