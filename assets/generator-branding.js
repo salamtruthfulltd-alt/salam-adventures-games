@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const LOGO = '/assets/salam-adventures-home.png';
+  const LOGO = '/assets/salam-adventures-official-logo.svg';
   const COPYRIGHT = '© 2026 Salam Adventures. All rights reserved.';
   const BRAND_ID = 'salam-generator-branding';
   const FOOTER_ID = 'salam-generator-copyright';
@@ -23,19 +23,42 @@
     document.head.appendChild(style);
   }
 
+  function removeOldBrandImages() {
+    document.querySelectorAll('img').forEach((img) => {
+      if (img.closest(`#${BRAND_ID}`)) return;
+      const src = (img.getAttribute('src') || '').toLowerCase();
+      const alt = (img.getAttribute('alt') || '').toLowerCase();
+      const classes = (img.className || '').toString().toLowerCase();
+      const isOldBrandImage =
+        src.includes('salam-adventures-home') ||
+        src.includes('logo') ||
+        alt.includes('salam adventures') ||
+        alt.includes('logo') ||
+        classes.includes('logo-img');
+      if (isOldBrandImage) img.remove();
+    });
+  }
+
   function ensureBranding() {
     addStyles();
+    removeOldBrandImages();
+
     const target = document.querySelector('.container, main, .app, .worksheet-container') || document.body;
+    const header = target.querySelector('.header, header, .worksheet-header');
 
     if (!document.getElementById(BRAND_ID)) {
       const brand = document.createElement('div');
       brand.id = BRAND_ID;
       brand.setAttribute('aria-label', 'Salam Adventures');
+
       const logo = document.createElement('img');
       logo.src = LOGO;
       logo.alt = 'Salam Adventures logo';
+      logo.setAttribute('data-official-salam-logo', 'true');
       brand.appendChild(logo);
-      target.insertBefore(brand, target.firstChild);
+
+      if (header) header.insertBefore(brand, header.firstChild);
+      else target.insertBefore(brand, target.firstChild);
     }
 
     if (!document.getElementById(FOOTER_ID)) {
@@ -46,12 +69,16 @@
     }
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureBranding, { once:true });
-  else ensureBranding();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ensureBranding, { once: true });
+  } else {
+    ensureBranding();
+  }
 
   new MutationObserver(() => {
     if (!document.getElementById(BRAND_ID) || !document.getElementById(FOOTER_ID)) ensureBranding();
-  }).observe(document.documentElement, { childList:true, subtree:true });
+    else removeOldBrandImages();
+  }).observe(document.documentElement, { childList: true, subtree: true });
 
   window.addEventListener('beforeprint', ensureBranding);
 })();
