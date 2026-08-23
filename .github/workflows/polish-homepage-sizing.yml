@@ -1,0 +1,30 @@
+name: Polish Salam Adventures homepage sizing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/enlarge_homepage_layout.py
+      - .github/workflows/polish-homepage-sizing.yml
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply homepage sizing polish
+        run: python scripts/enlarge_homepage_layout.py
+      - name: Commit homepage layout
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No homepage sizing changes"
+          else
+            git commit -m "Improve Salam Adventures homepage scale and readability [skip ci]"
+            git push
+          fi
