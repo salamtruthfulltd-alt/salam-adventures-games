@@ -13,31 +13,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inject arcade theme into game pages
+      - name: Inject arcade theme into game pages only
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-          excluded = ('generator','worksheet','index.html','policy','about','contact','parent','literacy.html')
+
+          filename_excluded = ('generator','worksheet','index.html','policy','about','contact','parent','literacy.html')
+          generator_markers = ('generator', 'worksheet', 'printable', 'generate worksheet', 'create worksheet')
           changed=[]
+
           for p in Path('.').glob('*.html'):
               name=p.name.lower()
-              if any(x in name for x in excluded):
-                  continue
               text=p.read_text(encoding='utf-8',errors='ignore')
-              interactive = any(k in text.lower() for k in ['<button','onclick=','<canvas','input type=','game','score','level','puzzle','maze','match'])
+              lower=text.lower()
+
+              is_generator = any(x in name for x in filename_excluded) or any(x in lower for x in generator_markers)
+              if is_generator:
+                  cleaned=re.sub(r'\s*<link[^>]+href=["\']/arcade-theme\.css["\'][^>]*>\s*', '\n', text, flags=re.I)
+                  if cleaned != text:
+                      p.write_text(cleaned,encoding='utf-8')
+                      changed.append(p.name + ' (arcade theme removed)')
+                  continue
+
+              interactive = any(k in lower for k in ['<button','onclick=','<canvas','input type=','game','score','level','puzzle','maze','match'])
               if not interactive:
                   continue
-              if 'arcade-theme.css' not in text:
+              if 'arcade-theme.css' not in lower:
                   text=re.sub(r'</head>', '<link rel="stylesheet" href="/arcade-theme.css">\n</head>', text, count=1, flags=re.I)
                   p.write_text(text,encoding='utf-8')
                   changed.append(p.name)
           print('Updated:', changed)
           PY
-      - name: Commit themed game pages
+      - name: Commit game theme separation
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add '*.html'
-          git diff --cached --quiet || git commit -m 'Apply large arcade styling to all games [skip ci]'
+          git diff --cached --quiet || git commit -m 'Keep generators separate from arcade games [skip ci]'
           git push
