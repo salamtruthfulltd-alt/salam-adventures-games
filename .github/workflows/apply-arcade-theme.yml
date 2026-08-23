@@ -1,0 +1,43 @@
+name: Apply Arcade Theme
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'arcade-theme.css'
+      - '.github/workflows/apply-arcade-theme.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  theme-games:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject arcade theme into game pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          excluded = ('generator','worksheet','index.html','policy','about','contact','parent','literacy.html')
+          changed=[]
+          for p in Path('.').glob('*.html'):
+              name=p.name.lower()
+              if any(x in name for x in excluded):
+                  continue
+              text=p.read_text(encoding='utf-8',errors='ignore')
+              interactive = any(k in text.lower() for k in ['<button','onclick=','<canvas','input type=','game','score','level','puzzle','maze','match'])
+              if not interactive:
+                  continue
+              if 'arcade-theme.css' not in text:
+                  text=re.sub(r'</head>', '<link rel="stylesheet" href="/arcade-theme.css">\n</head>', text, count=1, flags=re.I)
+                  p.write_text(text,encoding='utf-8')
+                  changed.append(p.name)
+          print('Updated:', changed)
+          PY
+      - name: Commit themed game pages
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add '*.html'
+          git diff --cached --quiet || git commit -m 'Apply large arcade styling to all games [skip ci]'
+          git push
