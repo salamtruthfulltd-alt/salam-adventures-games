@@ -1,0 +1,42 @@
+name: Add varied games to Salam Adventures
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-variety-games.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add varied game cards
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          new=[
+            "['Mystery Sound Detective','Mystery Sound Detective.html','Games','🔊']",
+            "['Picture Pair Quest','Picture Pair Quest.html','Games','🧩']",
+            "['Maze Mission','Maze Mission.html','Games','🗺️']",
+            "['What Is Missing?','What Is Missing.html','Games','❓']",
+            "['Sort It Factory','Sort It Factory.html','Games','🏭']",
+            "['Riddle Room','Riddle Room.html','Games','🕵️']",
+          ]
+          if 'Mystery Sound Detective' not in s:
+              marker="];\nfunction descriptionFor"
+              insert=','+','.join(new)+'];\nfunction descriptionFor'
+              if marker not in s:
+                  raise SystemExit('tools array marker not found')
+              s=s.replace(marker,insert,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit homepage update
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Show varied puzzle matching and guessing games [skip ci]'
+          git push
