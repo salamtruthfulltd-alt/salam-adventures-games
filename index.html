@@ -25,6 +25,74 @@
 @media(max-width:980px){.site-nav{position:relative;grid-template-columns:1fr;gap:10px;min-height:90px}.nav-links{width:100%;justify-content:flex-start;overflow:auto;padding-bottom:3px}.nav-links a{min-width:84px;white-space:nowrap}.hero{height:auto}.hero img{position:relative;top:0;width:100%}.hero-actions{display:none}.quick{margin:16px auto 22px;grid-template-columns:1fr}.controls{grid-template-columns:1fr}.filters{justify-content:flex-start}.welcome-grid,.parent-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.brand img{width:50px;height:50px}.brand-title{font-size:1.25rem}.site-nav{padding:10px 14px}.nav-links a{min-width:76px;font-size:.8rem}.nav-links a .nav-icon{font-size:1.2rem}.section{padding:52px 16px}.quick{width:calc(100% - 24px);padding:12px}.welcome-grid,.parent-grid,.grid{grid-template-columns:1fr}.tool{min-height:250px}.head{align-items:flex-start;flex-direction:column}h2{font-size:2.45rem}}
 </style>
+<style id="salam-home-layout-polish">
+/* Layout/card polish only: keep existing content, links and behaviour intact. */
+@media screen {
+  html, body { width: 100%; max-width: none; }
+  body { overflow-x: hidden; }
+  main { width: 100%; max-width: none; }
+
+  .visual { width:100%; max-width:none; margin:0; border-radius:0; }
+  .visual > img { display:block; width:100%; max-width:none; height:auto; }
+
+  .wrap,.welcome-grid,.parent-grid,.parents-intro,.kind-note,.faq .wrap,.footer {
+    width:min(1500px,calc(100% - 48px)); max-width:none; margin-left:auto; margin-right:auto;
+  }
+
+  /* Pull the three quick-link cards clear of the hero instead of covering it. */
+  .quick {
+    margin: 26px auto 42px !important;
+    gap: 24px !important;
+    padding: 24px !important;
+    border-radius: 32px !important;
+    box-shadow: 0 22px 55px rgba(31,49,92,.14) !important;
+  }
+  .quick a {
+    min-height: 132px;
+    padding: 28px 30px !important;
+    border-radius: 24px !important;
+    border: 1px solid #dce5f0 !important;
+    box-shadow: 0 10px 28px rgba(31,48,88,.09);
+  }
+  .quick-icon { flex-basis:68px !important; height:68px !important; border-radius:20px !important; font-size:2rem !important; }
+  .quick strong { font-size:1.35rem !important; line-height:1.2; }
+  .quick span small { font-size:1rem !important; line-height:1.5 !important; margin-top:8px !important; }
+
+  /* Upgrade all card families consistently. */
+  .info-card,.tool,.faq details,.kind-note {
+    border-radius: 28px !important;
+    border: 1px solid #dce5f0 !important;
+    box-shadow: 0 14px 36px rgba(31,48,88,.09) !important;
+  }
+  .info-card { padding:36px !important; min-height:245px; }
+  .info-card .bigicon { font-size:3rem !important; }
+  .info-card h3 { font-size:1.62rem !important; margin:18px 0 12px !important; }
+  .info-card p { font-size:1.08rem !important; line-height:1.72 !important; }
+
+  .grid { grid-template-columns:repeat(auto-fill,minmax(285px,1fr)) !important; gap:26px !important; }
+  .tool { min-height:330px !important; padding:34px !important; }
+  .tool .icon { font-size:3.35rem !important; }
+  .tool h3 { font-size:1.52rem !important; }
+  .tool p { font-size:1.06rem !important; line-height:1.68 !important; }
+  .tool .tag { padding:11px 16px !important; border-radius:14px !important; }
+
+  .faq details { padding:26px 30px !important; margin:18px 0 !important; }
+  .kind-note { padding:34px !important; }
+
+  .quick a:hover,.info-card:hover,.tool:hover {
+    transform:translateY(-5px);
+    box-shadow:0 22px 48px rgba(31,48,88,.15) !important;
+  }
+}
+
+@media screen and (max-width:800px) {
+  .wrap,.welcome-grid,.parent-grid,.parents-intro,.kind-note,.faq .wrap,.footer { width:calc(100% - 28px); }
+  .quick { width:calc(100% - 28px) !important; margin:18px auto 30px !important; grid-template-columns:1fr !important; padding:14px !important; gap:14px !important; }
+  .quick a { min-height:108px; padding:22px !important; }
+  .grid { grid-template-columns:1fr !important; gap:18px !important; }
+  .tool { min-height:270px !important; }
+}
+</style>
 </head>
 <body>
 <header class="site-nav">
