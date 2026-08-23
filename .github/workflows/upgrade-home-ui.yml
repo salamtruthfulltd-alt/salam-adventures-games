@@ -1,4 +1,4 @@
-name: Upgrade Salam Adventures homepage UI
+name: Adjust Salam Adventures hero crop
 
 on:
   push:
@@ -9,92 +9,34 @@ permissions:
   contents: write
 
 jobs:
-  upgrade-home:
+  adjust-hero:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Upgrade homepage navigation and visual depth
+      - name: Crop hero top and reveal more of bottom
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          marker = 'id="salam-home-ui-upgrade"'
-          if marker in s:
-              raise SystemExit('already upgraded')
-
-          css = r'''
-<style id="salam-home-ui-upgrade">
-/* Real navigation + stronger visual hierarchy. Keeps existing hero artwork/content. */
-.sa-real-nav{position:absolute;z-index:20;top:0;left:0;right:0;height:clamp(82px,6vw,108px);display:flex;align-items:center;gap:24px;padding:0 clamp(20px,3.5vw,58px);background:rgba(255,255,255,.97);backdrop-filter:blur(12px);box-shadow:0 8px 30px rgba(33,51,96,.12);line-height:1.2}
-.sa-brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:max-content}.sa-brand img{width:58px;height:58px;object-fit:contain;border-radius:50%;box-shadow:0 5px 16px rgba(75,44,170,.18)}.sa-brand-copy{display:flex;flex-direction:column}.sa-brand-title{font-weight:900;font-size:clamp(1.2rem,1.9vw,2rem);letter-spacing:-.03em;background:linear-gradient(90deg,#6335df,#1768df);-webkit-background-clip:text;color:transparent}.sa-brand-sub{font-size:.78rem;color:#52647d;font-weight:700;margin-top:3px}
-.sa-navlinks{display:flex;align-items:center;justify-content:center;gap:8px;flex:1}.sa-navlinks a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-weight:800;font-size:.98rem;padding:12px 14px;border-radius:14px;color:#15305a;transition:.2s ease}.sa-navlinks a:hover{background:#f1edff;color:#6235dd;transform:translateY(-1px)}.sa-navlinks a.active{color:#fff;background:linear-gradient(135deg,#6c3be8,#4930cf);box-shadow:0 8px 20px rgba(91,54,221,.28)}
-.sa-nav-cta{display:inline-flex!important;align-items:center;gap:8px!important;padding:13px 18px!important;border-radius:14px!important;background:linear-gradient(135deg,#7542ee,#5a32d8)!important;color:#fff!important;box-shadow:0 9px 22px rgba(95,53,219,.3);white-space:nowrap}.sa-nav-cta:hover{transform:translateY(-2px)!important;box-shadow:0 13px 28px rgba(95,53,219,.38)!important}
-.sa-quick-actions{position:relative;z-index:9;width:min(1450px,calc(100% - 40px));margin:-28px auto 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:18px;background:rgba(255,255,255,.96);border:1px solid rgba(114,87,207,.14);border-radius:24px;box-shadow:0 18px 48px rgba(37,52,92,.16);backdrop-filter:blur(10px)}.sa-quick-actions a{display:flex;align-items:center;gap:14px;text-decoration:none;padding:18px 20px;border-radius:18px;border:1px solid #e6e8f2;background:linear-gradient(180deg,#fff,#faf9ff);transition:.2s ease}.sa-quick-actions a:hover{transform:translateY(-3px);border-color:#cfc3ff;box-shadow:0 12px 26px rgba(70,54,145,.13)}.sa-quick-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;font-size:1.5rem;background:linear-gradient(135deg,#eee8ff,#dff4ff);box-shadow:inset 0 0 0 1px rgba(95,72,190,.08)}.sa-quick-copy strong{display:block;font-size:1.08rem;color:#142d57}.sa-quick-copy span{display:block;margin-top:4px;color:#65758c;font-size:.9rem;line-height:1.35}
-.filter{box-shadow:0 5px 14px rgba(39,52,85,.08)!important;transition:.2s ease!important}.filter:hover{transform:translateY(-2px);border-color:#c7b8ff!important}.filter.active{box-shadow:0 9px 22px rgba(105,59,225,.26)!important}
-.tool{position:relative;overflow:hidden;border-color:#e1e5ef!important;box-shadow:0 10px 26px rgba(39,54,94,.09)!important}.tool:before{content:'';position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#6d3be6,#21a4ef);opacity:.9}.tool:hover{transform:translateY(-6px)!important;box-shadow:0 18px 38px rgba(42,55,94,.16)!important;border-color:#cfc4fb!important}.tool .tag{display:inline-flex;align-items:center;align-self:flex-start;padding:9px 13px;border-radius:12px;background:#f1edff;color:#6035d9!important;margin-top:auto}.welcome-card,.parent-card,.faq details,.kind-note{transition:.2s ease}.welcome-card:hover,.parent-card:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(43,45,90,.12)!important}.welcome-card{border-top:4px solid #7140e7!important}.parent-card{border-top:4px solid #27a6df!important}.faq details[open]{box-shadow:0 10px 24px rgba(37,52,92,.09);border-color:#d8cff8!important}
-@media(max-width:1180px){.sa-brand-sub{display:none}.sa-navlinks a{padding:10px 9px;font-size:.9rem}.sa-navlinks{gap:3px}.sa-real-nav{gap:12px}}
-@media(max-width:900px){.sa-real-nav{position:relative;height:auto;min-height:76px;padding:12px 16px;flex-wrap:wrap}.sa-navlinks{order:3;width:100%;overflow:auto;justify-content:flex-start;padding-bottom:2px}.sa-navlinks a{white-space:nowrap}.sa-brand img{width:46px;height:46px}.sa-brand-sub{display:none}.sa-nav-cta{margin-left:auto}.sa-quick-actions{margin:14px auto 0;grid-template-columns:1fr}.visual>.sa-real-nav+img{margin-top:0}}
-@media(max-width:600px){.sa-brand-title{font-size:1.15rem}.sa-nav-cta{font-size:.86rem!important;padding:10px 12px!important}.sa-quick-actions{width:calc(100% - 24px);padding:12px;border-radius:18px}.sa-quick-actions a{padding:14px}.sa-quick-icon{width:42px;height:42px}.sa-navlinks a{font-size:.84rem}}
-</style>
-'''
-
-          js = r'''
-<script id="salam-home-ui-upgrade-script">
-(function(){
-  const hero=document.querySelector('.visual');
-  if(!hero || hero.querySelector('.sa-real-nav')) return;
-  const nav=document.createElement('nav');
-  nav.className='sa-real-nav';
-  nav.setAttribute('aria-label','Main navigation');
-  nav.innerHTML=`
-    <a class="sa-brand" href="/" aria-label="Salam Adventures home">
-      <img src="/assets/salam-adventures-official-logo.svg" alt="">
-      <span class="sa-brand-copy"><span class="sa-brand-title">Salam Adventures ✨</span><span class="sa-brand-sub">Where Faith, Imagination & Learning Come Together</span></span>
-    </a>
-    <div class="sa-navlinks">
-      <a class="active" href="/">⌂ Home</a>
-      <a href="#tools" data-category="Literacy">📖 Learn</a>
-      <a href="#tools" data-category="Games">🎮 Games</a>
-      <a href="#tools" data-category="Generators">🛠 Generators</a>
-      <a href="#parents">👨‍👩‍👧 For Parents</a>
-      <a href="#about">ⓘ About</a>
-      <a href="mailto:hello@salamadventures.com">✉ Contact</a>
-    </div>
-    <a class="sa-nav-cta" href="#mission">⭐ Today's Mission</a>`;
-  hero.appendChild(nav);
-
-  const quick=document.createElement('section');
-  quick.className='sa-quick-actions';
-  quick.setAttribute('aria-label','Quick actions');
-  quick.innerHTML=`
-    <a href="#tools" data-category="All"><span class="sa-quick-icon">🚀</span><span class="sa-quick-copy"><strong>Explore activities</strong><span>Games, learning tools and creative play</span></span></a>
-    <a href="#tools" data-category="Generators"><span class="sa-quick-icon">📝</span><span class="sa-quick-copy"><strong>Make a worksheet</strong><span>Open the printable generator collection</span></span></a>
-    <a href="#parents"><span class="sa-quick-icon">💜</span><span class="sa-quick-copy"><strong>Parent support</strong><span>Simple ideas for calmer, confident learning</span></span></a>`;
-  hero.insertAdjacentElement('afterend',quick);
-
-  document.querySelectorAll('.sa-real-nav [data-category],.sa-quick-actions [data-category]').forEach(a=>{
-    a.addEventListener('click',e=>{
-      const c=a.dataset.category;
-      if(typeof setCategory==='function'){
-        e.preventDefault();
-        setCategory(c);
-      }
-    });
-  });
-})();
-</script>
-'''
-          s = s.replace('</head>', css + '\n</head>', 1)
-          s = s.replace('</body>', js + '\n</body>', 1)
+          old = ".hero{position:relative;overflow:hidden;background:#eaf6ff;height:clamp(500px,35vw,640px)}.hero img{position:absolute;left:0;top:-18.5%;display:block;width:100%;height:auto;max-width:none}"
+          new = ".hero{position:relative;overflow:hidden;background:#eaf6ff;height:clamp(560px,39vw,710px)}.hero img{position:absolute;left:0;top:-22.5%;display:block;width:100%;height:auto;max-width:none}"
+          if old not in s:
+              raise SystemExit('Expected hero CSS not found; refusing unrelated changes')
+          s = s.replace(old, new, 1)
+          old2 = "@media(max-width:1280px){.brand-sub{display:none}.nav-links{gap:7px}.nav-links a{min-width:78px;padding:10px 9px;font-size:.9rem}.grid{grid-template-columns:repeat(3,1fr)}.hero{height:clamp(460px,37vw,560px)}}"
+          new2 = "@media(max-width:1280px){.brand-sub{display:none}.nav-links{gap:7px}.nav-links a{min-width:78px;padding:10px 9px;font-size:.9rem}.grid{grid-template-columns:repeat(3,1fr)}.hero{height:clamp(520px,41vw,620px)}}"
+          if old2 not in s:
+              raise SystemExit('Expected desktop hero media rule not found')
+          s = s.replace(old2, new2, 1)
           p.write_text(s, encoding='utf-8')
           PY
-      - name: Commit homepage upgrade
+      - name: Commit hero crop fix
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Upgrade Salam Adventures homepage navigation and visual depth [skip ci]"
+          git commit -m "Fix Salam Adventures hero crop and reveal bottom"
           git push origin main
