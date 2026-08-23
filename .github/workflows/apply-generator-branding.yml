@@ -15,10 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Add branding loader to every generator
+      - name: Brand generator pages and remove arcade styling
         shell: python
         run: |
           from pathlib import Path
+          import re
 
           loader = '<script src="/assets/generator-branding.js" defer data-salam-generator-branding></script>'
           changed = []
@@ -26,28 +27,40 @@ jobs:
           for path in Path('.').rglob('*.html'):
               if '.git' in path.parts:
                   continue
-              if 'generator' not in path.name.lower():
+
+              text = path.read_text(encoding='utf-8', errors='ignore')
+              lower = text.lower()
+              name = path.name.lower()
+
+              is_generator = (
+                  'generator' in name or
+                  'worksheet' in name or
+                  'generator' in lower or
+                  'worksheet generator' in lower or
+                  'times tables generator' in lower or
+                  'printable generator' in lower
+              )
+              if not is_generator:
                   continue
 
-              text = path.read_text(encoding='utf-8')
-              if 'data-salam-generator-branding' in text:
-                  continue
+              original = text
+              text = re.sub(r'\s*<link[^>]+href=["\']/arcade-theme\.css["\'][^>]*>\s*', '\n', text, flags=re.I)
 
-              if '</head>' in text:
-                  text = text.replace('</head>', f'    {loader}\n</head>', 1)
-              elif '<body' in text:
-                  text = text.replace('<body', f'{loader}\n<body', 1)
-              else:
-                  continue
+              if 'data-salam-generator-branding' not in text:
+                  if '</head>' in text:
+                      text = text.replace('</head>', f'    {loader}\n</head>', 1)
+                  elif '<body' in text:
+                      text = text.replace('<body', f'{loader}\n<body', 1)
 
-              path.write_text(text, encoding='utf-8')
-              changed.append(str(path))
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
 
           print(f'Updated {len(changed)} generator files')
           for item in changed:
               print(item)
 
-      - name: Commit generator branding
+      - name: Commit generator separation and branding
         run: |
           if git diff --quiet; then
             echo "All generator files already protected."
@@ -56,5 +69,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- '*.html'
-          git commit -m "Hardwire Salam Adventures branding into all generators"
+          git commit -m "Separate generators from games and hardwire Salam branding"
           git push
