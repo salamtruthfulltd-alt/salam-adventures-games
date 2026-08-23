@@ -1,0 +1,38 @@
+name: Fix Salam Adventures hero buttons
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-hero-buttons.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-buttons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Enlarge hero action buttons only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = ".hero-actions{position:absolute;left:10.8%;bottom:7%;display:flex;gap:14px;z-index:5}.hero-btn{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:900;font-size:clamp(1rem,1.2vw,1.18rem);padding:16px 22px;border-radius:17px;box-shadow:0 12px 26px rgba(36,48,89,.16);transition:.2s}"
+          new = ".hero-actions{position:absolute;left:10.8%;bottom:8%;display:flex;gap:18px;z-index:5;align-items:center}.hero-btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;text-decoration:none;font-weight:900;font-size:clamp(1.18rem,1.45vw,1.42rem);min-height:64px;min-width:235px;padding:18px 28px;border-radius:18px;box-shadow:0 14px 30px rgba(36,48,89,.18);transition:.2s;white-space:nowrap;line-height:1.15}"
+          if old not in s:
+              raise SystemExit('Hero button CSS target not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit hero button fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Enlarge Salam Adventures hero action buttons [skip ci]"
+          git push origin main
