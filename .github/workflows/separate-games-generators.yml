@@ -1,0 +1,57 @@
+name: Separate games and generators
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  separate-sections:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Put generator resources only in Generators
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          original = text
+
+          # Any homepage card whose title/path identifies it as a generator or worksheet
+          # belongs only to the Generators section. The older times tables page is also
+          # a worksheet generator despite its short filename.
+          pattern = re.compile(r"\['([^']*)','([^']*)','([^']*)','([^']*)'\]")
+          def fix(m):
+              title, path, category, icon = m.groups()
+              marker = f'{title} {path}'.lower()
+              is_generator = (
+                  'generator' in marker or
+                  'worksheet' in marker or
+                  path.lower() == 'times tables.html'
+              )
+              if is_generator and category != 'Generators':
+                  category = 'Generators'
+              return "['%s','%s','%s','%s']" % (title, path, category, icon)
+
+          text = pattern.sub(fix, text)
+          if text != original:
+              p.write_text(text, encoding='utf-8')
+              print('Homepage categories corrected')
+          else:
+              print('Homepage categories already correct')
+
+      - name: Commit homepage category separation
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Keep generators out of game and subject sections [skip ci]"
+          git push
