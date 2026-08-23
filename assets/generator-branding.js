@@ -6,15 +6,24 @@
   const FOOTER_ID = 'salam-generator-copyright';
   const OLD_INJECTED_ID = 'salam-generator-branding';
 
+  function disableArcadeTheme() {
+    document.documentElement.classList.add('salam-generator-page');
+    document.querySelectorAll('link[href*="arcade-theme.css"]').forEach(link => link.remove());
+    document.querySelectorAll('style[id="salam-game-size-2026"]').forEach(style => style.remove());
+  }
+
   function addStyles() {
     if (document.getElementById('salam-generator-branding-styles')) return;
     const style = document.createElement('style');
     style.id = 'salam-generator-branding-styles';
     style.textContent = `
+      html.salam-generator-page, html.salam-generator-page body {
+        color-scheme: light !important;
+      }
       .salam-official-logo-wrap {
-        width: 75px !important;
-        height: 75px !important;
-        min-width: 75px !important;
+        width: 86px !important;
+        height: 86px !important;
+        min-width: 86px !important;
         border-radius: 50% !important;
         background: transparent !important;
         overflow: visible !important;
@@ -22,23 +31,25 @@
         align-items: center !important;
         justify-content: center !important;
         padding: 0 !important;
+        margin: 0 auto 10px !important;
         box-shadow: none !important;
       }
       .salam-official-logo {
-        width: 75px !important;
-        height: 75px !important;
+        width: 86px !important;
+        height: 86px !important;
         object-fit: contain !important;
         display: block !important;
         border-radius: 50% !important;
       }
       #${FOOTER_ID} {
-        margin: 20px auto 8px;
-        padding: 12px 16px;
-        width: min(100%, 920px);
+        margin: 24px auto 8px;
+        padding: 14px 16px;
+        width: min(100%, 980px);
         text-align: center;
-        font: 600 12px/1.4 Arial, sans-serif;
+        font: 700 12px/1.4 Arial, sans-serif;
         color: #334155;
-        border-top: 1px solid rgba(51,65,85,.18);
+        border-top: 1px solid rgba(51,65,85,.22);
+        background: transparent !important;
       }
       @media print {
         .salam-official-logo-wrap,
@@ -67,7 +78,7 @@
 
   function findBrandArea() {
     return document.querySelector(
-      '.logo-container, .brand-logo, .logo-wrap, .header-logo, .worksheet-logo, .brand .logo, header .logo'
+      '.logo-container, .brand-logo, .logo-wrap, .header-logo, .worksheet-logo, .brand .logo, header .logo, .logo'
     );
   }
 
@@ -82,27 +93,22 @@
 
   function placeLogoInHeader() {
     removeDuplicateTopLogo();
-
     let holder = findBrandArea();
-
     if (!holder) {
-      const brand = document.querySelector('.header .brand, header .brand, .worksheet-header .brand');
-      if (!brand) return;
+      const target = document.querySelector('header, .header, .panel, main, .container, .wrap');
+      if (!target) return;
       holder = document.createElement('div');
-      brand.insertBefore(holder, brand.firstChild);
+      target.insertBefore(holder, target.firstChild);
     }
-
     holder.classList.add('salam-official-logo-wrap');
-
     const existingOfficial = holder.querySelector('[data-official-salam-logo="true"]');
     if (existingOfficial && holder.children.length === 1) return;
-
     holder.replaceChildren(createOfficialLogo());
   }
 
   function ensureFooter() {
     if (document.getElementById(FOOTER_ID)) return;
-    const target = document.querySelector('.worksheet, .container, main, .app, .worksheet-container') || document.body;
+    const target = document.querySelector('.worksheet, .sheet, .container, main, .app, .worksheet-container, .wrap') || document.body;
     const footer = document.createElement('footer');
     footer.id = FOOTER_ID;
     footer.textContent = COPYRIGHT;
@@ -110,10 +116,13 @@
   }
 
   function applyBranding() {
+    disableArcadeTheme();
     addStyles();
     placeLogoInHeader();
     ensureFooter();
   }
+
+  disableArcadeTheme();
 
   let scheduled = false;
   function scheduleApply() {
