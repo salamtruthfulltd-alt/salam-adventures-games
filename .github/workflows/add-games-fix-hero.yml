@@ -1,0 +1,35 @@
+name: Add Salam Adventures games and fix hero
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/add_new_games_and_fix_hero.py
+      - .github/workflows/add-games-fix-hero.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Apply homepage game cards, sitemap and hero fix
+        run: python scripts/add_new_games_and_fix_hero.py
+      - name: Commit generated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+          else
+            git commit -m "Show 10 new games and restore large hero buttons [skip ci]"
+            git push origin main
+          fi
