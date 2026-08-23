@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Brand generator pages and remove arcade styling
+      - name: Keep branding only on generator pages
         shell: python
         run: |
           from pathlib import Path
@@ -24,6 +24,16 @@ jobs:
           loader = '<script src="/assets/generator-branding.js" defer data-salam-generator-branding></script>'
           changed = []
 
+          # Pages that are definitely not generators and must never run the generator branding observer.
+          force_non_generators = {
+              'index.html', 'literacy.html', 'science.html', 'mandela colouring.html',
+              'certificate.html', 'fine motor skills.html', 'now and next boards.html',
+              'number formation.html'
+          }
+
+          # Generator pages whose filenames do not necessarily contain the word generator.
+          force_generators = {'times tables.html'}
+
           for path in Path('.').rglob('*.html'):
               if '.git' in path.parts:
                   continue
@@ -31,43 +41,56 @@ jobs:
               text = path.read_text(encoding='utf-8', errors='ignore')
               lower = text.lower()
               name = path.name.lower()
+              original = text
+
+              if name in force_non_generators:
+                  text = re.sub(
+                      r'\s*<script[^>]+src=["\']/assets/generator-branding\.js["\'][^>]*data-salam-generator-branding[^>]*></script>\s*',
+                      '\n', text, flags=re.I
+                  )
+                  if text != original:
+                      path.write_text(text, encoding='utf-8')
+                      changed.append(str(path))
+                  continue
 
               is_generator = (
+                  name in force_generators or
                   'generator' in name or
                   'worksheet' in name or
-                  'generator' in lower or
                   'worksheet generator' in lower or
                   'times tables generator' in lower or
                   'printable generator' in lower
               )
-              if not is_generator:
-                  continue
 
-              original = text
-              text = re.sub(r'\s*<link[^>]+href=["\']/arcade-theme\.css["\'][^>]*>\s*', '\n', text, flags=re.I)
-
-              if 'data-salam-generator-branding' not in text:
-                  if '</head>' in text:
-                      text = text.replace('</head>', f'    {loader}\n</head>', 1)
-                  elif '<body' in text:
-                      text = text.replace('<body', f'{loader}\n<body', 1)
+              if is_generator:
+                  text = re.sub(r'\s*<link[^>]+href=["\']/arcade-theme\.css["\'][^>]*>\s*', '\n', text, flags=re.I)
+                  if 'data-salam-generator-branding' not in text:
+                      if '</head>' in text:
+                          text = text.replace('</head>', f'    {loader}\n</head>', 1)
+                      elif '<body' in text:
+                          text = text.replace('<body', f'{loader}\n<body', 1)
+              else:
+                  text = re.sub(
+                      r'\s*<script[^>]+src=["\']/assets/generator-branding\.js["\'][^>]*data-salam-generator-branding[^>]*></script>\s*',
+                      '\n', text, flags=re.I
+                  )
 
               if text != original:
                   path.write_text(text, encoding='utf-8')
                   changed.append(str(path))
 
-          print(f'Updated {len(changed)} generator files')
+          print(f'Updated {len(changed)} files')
           for item in changed:
               print(item)
 
-      - name: Commit generator separation and branding
+      - name: Commit generator branding cleanup
         run: |
           if git diff --quiet; then
-            echo "All generator files already protected."
+            echo "Generator branding scope already correct."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- '*.html'
-          git commit -m "Separate generators from games and hardwire Salam branding"
+          git commit -m "Remove generator branding from main and non-generator pages [skip ci]"
           git push
