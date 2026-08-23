@@ -10,10 +10,13 @@ style = r'''<style id="salam-home-layout-polish">
   html,body{width:100%;max-width:none}body{overflow-x:hidden}main{width:100%;max-width:none}
   .wrap,.welcome-grid,.parent-grid,.parents-intro,.kind-note,.faq .wrap,.footer{width:min(1500px,calc(100% - 48px));max-width:none;margin-left:auto;margin-right:auto}
 
-  /* Hero overlay buttons - keep them large enough to cover the baked-in artwork buttons cleanly. */
-  .hero-actions{left:10.7%!important;bottom:2.3%!important;gap:18px!important;align-items:center}
-  .hero-btn{min-width:250px!important;min-height:72px!important;padding:20px 32px!important;border-radius:20px!important;justify-content:center;white-space:nowrap;font-size:1.26rem!important;line-height:1!important;background:#fff!important;color:#17325c!important;border:2px solid #d9e4f0!important;box-shadow:0 14px 32px rgba(29,48,86,.2)!important}
-  .hero-btn:first-child{border-color:#b9ddf6!important}.hero-btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 18px 36px rgba(29,48,86,.24)!important}.hero-btn.selected{color:#fff!important;background:linear-gradient(135deg,#7542ee,#5a32da)!important;border-color:transparent!important}
+  /* Match the live buttons to the two buttons baked into the hero artwork. */
+  .hero-actions{left:10.7%!important;bottom:8%!important;gap:20px!important;align-items:center}
+  .hero-btn{min-height:90px!important;padding:24px 34px!important;border-radius:22px!important;justify-content:center;white-space:nowrap;font-size:1.3rem!important;line-height:1!important;background:#fff!important;color:#17325c!important;border:2px solid #d9e4f0!important;box-shadow:0 14px 32px rgba(29,48,86,.2)!important}
+  .hero-btn:first-child{min-width:320px!important;border-color:#b9ddf6!important}
+  .hero-btn:nth-child(2){min-width:290px!important}
+  .hero-btn:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 18px 36px rgba(29,48,86,.24)!important}
+  .hero-btn.selected{color:#fff!important;background:linear-gradient(135deg,#7542ee,#5a32da)!important;border-color:transparent!important}
 
   /* Quick cards below hero. */
   .quick{width:min(1440px,calc(100% - 64px))!important;margin:56px auto 68px!important;gap:28px!important;padding:28px!important;border:0!important;border-radius:36px!important;background:linear-gradient(180deg,#fff,#f7fbff)!important;box-shadow:0 24px 64px rgba(31,49,92,.13)!important}
