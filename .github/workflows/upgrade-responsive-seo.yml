@@ -1,0 +1,32 @@
+name: Upgrade Salam Adventures responsive layouts and SEO
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/upgrade_responsive_seo.py'
+      - '.github/workflows/upgrade-responsive-seo.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply responsive and SEO upgrade
+        run: python scripts/upgrade_responsive_seo.py
+      - name: Commit upgraded pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html'
+          if git diff --cached --quiet; then
+            echo "No HTML changes required"
+            exit 0
+          fi
+          git commit -m "Enlarge games and improve responsive SEO across Salam Adventures [skip ci]"
+          git push origin main
