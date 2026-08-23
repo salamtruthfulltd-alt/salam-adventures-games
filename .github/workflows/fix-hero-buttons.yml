@@ -16,23 +16,33 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Enlarge hero action buttons only
+      - name: Precisely align hero action buttons
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          old = ".hero-actions{position:absolute;left:10.8%;bottom:7%;display:flex;gap:14px;z-index:5}.hero-btn{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:900;font-size:clamp(1rem,1.2vw,1.18rem);padding:16px 22px;border-radius:17px;box-shadow:0 12px 26px rgba(36,48,89,.16);transition:.2s}"
-          new = ".hero-actions{position:absolute;left:10.8%;bottom:8%;display:flex;gap:18px;z-index:5;align-items:center}.hero-btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;text-decoration:none;font-weight:900;font-size:clamp(1.18rem,1.45vw,1.42rem);min-height:64px;min-width:235px;padding:18px 28px;border-radius:18px;box-shadow:0 14px 30px rgba(36,48,89,.18);transition:.2s;white-space:nowrap;line-height:1.15}"
-          if old not in s:
-              raise SystemExit('Hero button CSS target not found')
-          s = s.replace(old, new, 1)
+          style = '''<style id="hero-button-final-tune">
+          @media screen and (min-width:981px){
+            .hero-actions{left:10.8%!important;bottom:6.6%!important;gap:20px!important;align-items:center!important}
+            .hero-btn{height:58px!important;min-height:58px!important;padding:0 22px!important;border-radius:16px!important;font-size:1.05rem!important;line-height:1!important;box-shadow:0 10px 24px rgba(36,48,89,.18)!important}
+            .hero-btn:first-child{width:220px!important;min-width:220px!important}
+            .hero-btn:nth-child(2){width:195px!important;min-width:195px!important}
+          }
+          </style>'''
+          s = re.sub(r'<style id="hero-button-final-tune">.*?</style>\s*', '', s, flags=re.S)
+          s = s.replace('</head>', style + '\n</head>', 1)
           p.write_text(s, encoding='utf-8')
           PY
-      - name: Commit hero button fix
+      - name: Commit hero button alignment
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Enlarge Salam Adventures hero action buttons [skip ci]"
-          git push origin main
+          if git diff --cached --quiet; then
+            echo "No hero button changes to commit"
+          else
+            git commit -m "Precisely align Salam Adventures hero buttons [skip ci]"
+            git push origin main
+          fi
